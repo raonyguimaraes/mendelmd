@@ -1,0 +1,64 @@
+
+<div class="accordion" id="accordion2">
+	<div class="accordion-group">
+		<div id="collapseOne" class="accordion-body in">
+			<div class="accordion-inner">
+				<form id='filterform' action="." method="get" enctype="multipart/form-data">
+					<div class="tabbable tabs-left ">
+						<ul class="nav nav-tabs">
+							<li class="active"><a href="#main" data-toggle="tab">Main</a></li>
+							<li><a href="#variants" data-toggle="tab">Variants</a></li>
+							<li><a href="#databases" data-toggle="tab">Databases</a></li>
+							<li><a href="#diseases" data-toggle="tab">Diseases</a></li>
+							<li>
+								<a href="#filterconfig" data-toggle="tab">Saved Configs</a>
+							</li>
+							<li>
+								<a href="#filters" data-toggle="tab">Saved Analysis</a>
+							</li>
+							<li>
+								<a href="#faq" data-toggle="tab">FAQ</a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="main">
+								{% include "tabs/main.html" %}
+							</div>
+							<div class="tab-pane" id="variants">
+								{% include "tabs/variants_pathwayanalysis.html" %}
+							</div>
+							<div class="tab-pane" id="databases">
+								{% include "tabs/databases.html" %}
+							</div>
+							<div class="tab-pane" id="diseases">
+								{% include "tabs/diseases.html" %}
+							</div>
+							<div class="tab-pane" id="filterconfig">
+								{% include "tabs/filter_config.html" %}
+							</div>
+							<div class="tab-pane" id="filters">
+								{% include "tabs/filter_analysis.html" %}
+							</div>
+							<div class="tab-pane" id="faq">
+								{% include "tabs/faq.html" %}
+							</div>
+						</div>
+					</div>
+					<input id="newwindow" type="checkbox" name="newwindow" value="newwindow"/>
+					Open result in a new window
+					<br>
+					<input class="btn btn-primary btn-large" type="button" value="Submit" onclick="formSubmit()" />
+
+					<img id="loading_img" style="display:none;" src="{{ STATIC_URL }}img/ajax-loader.gif"><img>
+				</form>
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'filter_analysis' %}">Reset Filter</a>
+	{% if query_string %} 
+		| <a href="{% url 'create_config' %}?{{query_string}}">Save Config</a>
+		| <a href="{% url 'create_filter' %}?{{query_string}}">Save Analysis</a> 
+	{% endif %}
+	<br>
+	<br>
+</div>

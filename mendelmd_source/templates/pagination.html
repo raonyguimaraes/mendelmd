@@ -1,0 +1,13 @@
+<div class="pagination">
+    <span class="page-links">
+        {% if variants.has_previous %}
+            <a href="?{{ query_string }}&page={{ variants.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="page-current">
+            Page {{ variants.number }} of {{ variants.paginator.num_pages }}.
+        </span>
+        {% if variants.has_next %}
+            <a href="?{{ query_string }}&page={{ variants.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>

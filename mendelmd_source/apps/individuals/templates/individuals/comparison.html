@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+
+{% load get_genotype %}
+
+{% block extra_css %}
+{% if summary %}
+ <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Type', 'Number of Variants'],
+          ['Genotypes in common',     {{ summary.genotypes_in_common }}],
+          ['Genotypes not in common',      {{ summary.genotypes_not_in_common }}]
+          
+        ]);
+
+        var options = {
+          title: 'Variants in Common'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+{% endif %}
+{% endblock %}
+
+{% block head_title %}{% trans "View Group" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Comparison" %}</h1>
+<form action="{% url 'comparison' %}" method="get" enctype="multipart/form-data">
+	   <table>
+	   
+	    {{ form.as_table }}
+	    </table>
+	    <input type="submit" value="Compare" />
+</form>
+Number of variants in individual one:{{ summary.variants_ind_one }} - ({{ summary.percent_ind_one }}% in common)<br>
+Number of variants in individual two:{{ summary.variants_ind_two }} - ({{ summary.percent_ind_two }}% in common)<br>
+Number of variants in common: {{ summary.total_variants }}
+
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+{% endblock %}

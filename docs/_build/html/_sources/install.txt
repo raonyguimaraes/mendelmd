@@ -1,0 +1,46 @@
+Install
+=========
+
+This is where you write how to get a new laptop to run this project.
+
+Requirements
+============
+
+* Python 2.7.3
+* MongoDB 2.4
+* Mongoengine 0.8
+
+Dependencies
+============
+
+Django Tables 2
+BeautifulSoup
+goatools
+numpy
+fisher
+django-celery
+wikitools
+SOAPpy
+Fabric
+django-sorting
+
+
+Other Softwares
+***************
+
+* Genome Analysis Toolkit 2.6-5
+* VEP 
+* vcftools 0.1.10
+* tabix
+* Snpeff
+* Snpsift
+
+Installation
+============
+
+sudo apt-get install python-pip python-dev build-essential zlib1g-dev libmemcached-dev
+
+pip install Fabric
+fab install
+
+pip install -r requirements.txt

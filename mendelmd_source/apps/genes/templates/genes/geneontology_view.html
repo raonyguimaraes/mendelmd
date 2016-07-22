@@ -1,0 +1,75 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load gene_extras %}
+
+{% block head_title %}{% trans "Gene Ontology" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Gene Ontology" %}</h1>
+    
+      {{ goterm.goid }} - {{ goterm.name }}
+      <h2>Parents</h2>
+      <ul>
+	{% for goterm in parents.all %}
+	  <li><a href="{% url geneontology_view goterm.goid %}">{{ goterm.name }}</a></li>
+	{% endfor %}
+      </ul>
+      
+      <h2>Children</h2>
+      <ul>
+	{% for goterm in children.all %}
+	  <li><a href="{% url geneontology_view goterm.goid %}">{{ goterm.name }}</a></li>
+	{% endfor %}
+      </ul>
+      {% if genes %}
+      <h2>Genes</h2>
+      <div class="pagination">
+		<ul>
+			{% if genes.has_previous %}
+			<li>
+				<a href="?page={{ genes.previous_page_number }}">previous</a>
+        	</li>
+			{% else %}
+			<li class="disabled prev">
+				<a href="#">&lsaquo;&lsaquo; {% trans "previous" %}</a>
+			</li>
+			{% endif %}
+			{% for page in genes.paginator.page_range %}
+			{% if page %}
+			{% ifequal page genes.number %}
+			<li class="current page active">
+				<a href="#">{{ page }}</a>
+			</li>
+			{% else %} <!-- print pages around -->
+			{% if page|adjust_for_pagination:genes.number %}
+			<li>
+				<a href="?page={{ page }}" class="page">{{ page }}</a>
+			</li>
+			{% endif %}
+	
+			{% endifequal %}
+			{% else %}
+	
+			{% endif %}
+			{% endfor %}
+			{% if genes.has_next %}
+			<li>
+				<a href="?page={{ genes.next_page_number }}" class="next">{% trans "next" %} &rsaquo;&rsaquo;</a>
+			</li>
+			{% else %}
+			<li class="disabled next">
+				<a href="#">{% trans "next" %} &rsaquo;&rsaquo;</a>
+			</li>
+			{% endif %}
+		</ul>
+	</div>
+      <ul>
+      {% for gene in genes %}
+      <li>{{gene.gene.symbol}}</li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+
+    
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Databases Admin" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Database Admin" %}</h1>
+	<ul>
+		<h3>Genes</h3>
+	<li><a href="{% url 'genes_populate' %}">Populate Genes from hgnc</a></li>
+
+	<li><a href="{% url 'diseases_populate' %}">Populate Diseases from omim</a></li>
+	<li><a href="{% url 'populate_genes' %}">Populate Omim Genes coordinates from refseq</a></li>
+	
+	<li><a href="{% url 'populate_cgd' %}">Populate Clinical Genomics Database</a></li>
+	<li><a href="{#% url 'populate_varisnp' %#}">Populate VariSNP</a></li>
+	
+	<li><a href="{% url 'create_cgd_categories' %}">Create CGD Lupski Gene Lists</a></li>
+
+	
+	
+	
+	</ul>
+{% endblock %}

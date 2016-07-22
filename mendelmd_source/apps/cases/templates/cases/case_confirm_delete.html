@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Delete Case" %}{% endblock %}
+
+{% block content %}
+<h1>Really delete the case {{ object.name }}?</h1>
+<h4>This action cannot be undone</h4>
+<form action="{% url 'delete_case' object.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

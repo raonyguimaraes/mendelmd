@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<form id="ratingform" class="form-horizontal" action="." method="post">{% csrf_token %}
+<fieldset>
+<p>Step {{ step }} of {{ step_count }}</p>
+{{ form.as_p }}
+<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+{{ previous_fields|safe }}
+<input class="btn btn-primary btn-large" type="submit" value="Next">
+</fieldset>
+</form>
+{% endblock %}

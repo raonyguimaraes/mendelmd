@@ -1,0 +1,70 @@
+<table class="table table-nonfluid table-striped table-bordered table-condensed">
+
+	<h3>Genes at Omim</h3>
+	{% for gene in genes_omim %}
+	<a href="?{{ query_string }}&gene_list={{ gene.official_name }}" target="_blank">{{ gene.official_name }}</a>,
+	{% endfor %}
+
+	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+	{% for gene in genes_omim %}
+		<tr>
+	    <td><a href="?{{ query_string }}&gene_list={{ gene.official_name }}" target="_blank">{{ gene.official_name }}</a></td>
+
+	    <td>
+	    	{% for disease in gene.diseases.all %} 
+				{{disease.name}}<br>
+			{% endfor %}
+	    </td>
+
+	    </tr>
+	{% endfor %}
+	</table>
+	<h3>Genes at Clinical Genomics Database</h3>
+
+	{% for gene in genes_cgd %}
+	<a href="?{{ query_string }}&gene_list={{ gene.GENE }}" target="_blank">{{ gene.GENE }}</a>,
+	{% endfor %}
+
+	<table  class="table table-nonfluid table-striped table-bordered table-condensed">
+	
+	{% for gene in genes_cgd %}
+		
+		<tr>
+			<td><a href="?{{ query_string }}&gene_list={{ gene.GENE }}" target="_blank">{{ gene.GENE }}</a></td>
+			<td> 						
+			{% for phenotype in gene.CONDITIONS.all %} 
+				{{phenotype.name}}<br>
+			{% endfor %}
+
+			</td>
+		</tr>	
+		
+
+	{% endfor %}
+	
+	</table>
+
+	<!-- <h3>Genes at HGMD</h3> -->
+	
+	{% for gene in genes_hgmd %}
+	<a href="?{{ query_string }}&gene_list={{ gene.symbol }}" target="_blank">{{ gene.symbol }}</a>
+	{% endfor %}
+
+	<table  class="table table-nonfluid table-striped table-bordered table-condensed">
+	
+	{% for gene in genes_hgmd %}
+		
+		<tr>
+			<td><a href="?{{ query_string }}&gene_list={{ gene.symbol }}" target="_blank">{{ gene.symbol }}</a></td>
+			<td> 
+			{% for phenotype in gene.diseases.all %} 
+				{{phenotype.name}}<br>
+			{% endfor %}
+			</td>
+		</tr>	
+		
+
+	{% endfor %}
+
+
+</table>

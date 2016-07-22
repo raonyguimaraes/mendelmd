@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% load paginator %}
+
+{% block title %}{% trans "List Individuals" %}{% endblock %}
+
+{% block content %}
+<h1>Individuals</h1>
+<div class="row">
+    <div class="btn-group" style="float:right;">
+        <a class="btn btn-primary" href="{% url 'individual_create' %}">{% trans "Upload VCF Files" %}</a>
+        <a class="btn btn-primary" href="{% url 'create_group' %}">{% trans "Create a new Group" %}</a>
+    </div>
+</div>
+<br>
+{% if individuals %}
+    <div class="container">
+      <div class="row">
+       {% for individual in ind_featured %}
+                    {% if individual.is_featured %}
+                    <div id="boxes" class="col-lg-2 col-md-3 col-xs-5"> <a href="{% url 'individual_view' individual.id %}">{{ individual.name }}</a></div>
+                    {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+{% endif %}
+
+    {% if groups %}
+<h1>{% trans "Groups" %}</h1>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th style="width: 3%">#</th>
+            <th>Group Name</th>
+            <th>Members</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for group in groups %}
+        <tr>
+            <td></td>
+            <td>
+                <a href="{% url 'view_group' group.id %}">{{ group }}</a>
+            </td>
+            <td>{{ group.members.count }}</td>
+            <td>
+		{% if user.is_staff %}
+                View, Edit,
+                <li>
+                    <a href="{% url 'group_delete' group.id %}">Delete</a>
+                </li>
+		{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% if individuals %}
+<div class="pagination">
+    <ul>
+        {% if show_first %}
+        <li>
+            <a href="?page=1">&laquo; First</a>
+        </li>
+        {% endif %}
+    {% if has_previous %}
+        <li>
+            <a href="?page={{ individuals.previous_page_number }}">&lsaquo; Previous</a>
+        </li>
+        {% endif %}
+    {% for one_page in page_numbers %}
+        {% ifequal one_page page %}
+        <li class="current">{{ page }}</li>
+        {% else %}
+        <li>
+            <a href="?page={{ one_page }}">{{ one_page }}</a>
+        </li>
+        {% endifequal %}
+    {% endfor %}
+    {% if has_next %}
+        <li>
+            <a href="?page={{ individuals.next_page_number }}">Next &rsaquo;</a>
+        </li>
+        {% endif %}
+    {% if show_last %}
+        <li>
+            <a href="?page=last">Last &raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <span class="step-links">
+        {% if individuals.has_previous %}
+        <a href="?page={{ individuals.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="current">
+            Page {{ individuals.number }} of {{ individuals.paginator.num_pages }}.
+        </span>
+        {% if individuals.has_next %}
+        <a href="?page={{ individuals.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+<form action="." method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <select name="selectionField">
+        <option value="Show" >Show on Grid</option>
+        <option value="Hide" >Hide on Grid</option>
+        <option value="Delete" >Delete</option>
+        <option value="Populate" >Populate</option>
+        <option value="Annotate" >Annotate</option>
+        <option value="Find_Medical_Conditions_and_Medicines" >Find Medical Conditions and Medicines</option>
+    </select>
+    <input type="submit" value="Submit" />
+    <table class="table table-bordered table-condensed">
+        <tr>
+            <th style="width: 3%">
+                #
+                <input type="checkbox" id="select_all"></th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Options</th>
+            <th>Uploaded By</th>
+            <th>Nº Lines</th>
+            <th>Created on</th>
+            <th>Modified on</th>
+            <th>Annotation Time</th>
+            <th>Insertion Time</th>
+            <th>Insertion Time MongoDB</th>
+            <th>Status</th>
+            {% if user.is_staff %}
+            <th>Operations</th>
+            {% endif %}
+        </tr>
+        {% for individual in individuals %}
+        <tr>
+            <td>
+                <input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}" value="{{individual.id}}" />
+            </td>
+            <td>{{ individual.id }}</td>
+
+            <td>
+                <a href="{% url 'individual_view' individual.id %}">{{ individual.name }}</a>
+            </td>
+            <td>
+                <ul>
+                    <li>
+                        <a href="{% url 'individual_edit' individual.id %}">Edit</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'individual_browse' individual.id %}">Browse</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'individual_delete' individual.id %}">Delete</a>
+                    </li>
+                </ul>
+            </td>
+            <td>{{ individual.user.username }}</td>
+            <td>{{ individual.n_lines }}</td>
+            <td>{{ individual.creation_date }}</td>
+            <td>{{ individual.modified_date }}</td>
+            <td>{{ individual.annotation_time }}</td>
+            <td>{{ individual.insertion_time }}</td>
+            <td>{{ individual.insertion_time_mongo }}</td>
+
+            
+
+            <td>{{ individual.status }}</td>
+            {% if user.is_staff %}
+            <td>
+                
+                    <a href="{% url 'individual_annotate' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate Individual</i></button>
+                    </a>
+                    <a href="{% url 'individual_populate' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate Individual</i></button>
+                    </a>
+                    <a href="{% url 'individual_populate_mongo' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-center">Populate to MongoDB</i></button>
+                    </a>
+                        
+                
+
+                    
+                   
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    
+</form>
+{% else %}
+You still have no individuals uploaded. <br>
+Please upload your individuals to the system!
+
+{% endif %}
+{% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".individuals:checkbox").attr('checked', this.checked);
+});
+</script>
+{% endblock %}
+

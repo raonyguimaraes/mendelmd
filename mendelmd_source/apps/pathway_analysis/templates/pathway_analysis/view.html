@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Pathway" %} {{ pathway.name }} {% endblock %}
+
+{% block content %}
+    <h1>{% trans "Pathway" %}  {{ pathway.name }} </h1>
+	<h2>Genes</h2>
+		<ul>
+		{% for gene in pathway.genes %}
+			<li>{{ gene }}</li>
+		{% endfor %}
+		</ul>
+	    
+{% endblock %}

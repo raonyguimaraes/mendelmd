@@ -1,0 +1,31 @@
+{% load staticfiles %}
+
+{% block javascript %}
+      
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<!-- Your stuff: Third-party javascript libraries go here -->
+<script src="{{ STATIC_URL }}js/tooltip.js"></script>
+<script src="{{ STATIC_URL }}js/popover.js"></script>
+
+<script>
+	{% for pathway in pathways %}
+		{% for variant in pathway.variants %}
+		
+			$(function() {
+				$('#variant{{ variant.id }}').popover({
+					placement : 'left'
+				})
+			})
+		
+		{% endfor %}
+	{% endfor %}
+</script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
+
+      <!-- place project specific Javascript in this file -->
+      <script src="{% static 'js/project.js' %}"></script>
+{% endblock javascript %}
+

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load django_select2_tags %}
+
+{% block title %}{% trans "Pathway Analysis" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "List Pathway Analysis" %}</h1>
+	<form action="" method="post" enctype="multipart/form-data">
+		   
+		   {% csrf_token %}
+		    {{ form.as_p }}
+		    
+		    <input type="submit" value="Search" />
+	</form>
+	{% if pathways %}
+		<ul>
+		{% for pathway in pathways %}
+			<li><a href="{% url 'pathway_view' pathway.kegg %}">{{pathway.name}}</a></li>
+		{% endfor %}
+		</ul>
+	{% endif %}    
+{% endblock %}

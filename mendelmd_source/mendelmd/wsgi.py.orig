@@ -1,0 +1,36 @@
+"""
+WSGI config for mendelmd project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
+"""
+
+import os
+
+import site
+import sys
+
+<<<<<<< HEAD
+site.addsitedir('/home/raony/.virtualenvs/mendelmd/lib/python2.7/site-packages')
+
+site.addsitedir('/lgc/mendelmd_master/mendelmd_source')
+=======
+# site.addsitedir('/usr/local/lib/python2.7/site-packages')
+
+site.addsitedir('/projects/mendelmd_master/mendelmd_source')
+
+# sys.path.append('/usr/local/lib/python2.7/site-packages')
+
+sys.path.append('/projects/mendelmd_master/mendelmd_source')
+>>>>>>> 6c8d374a998041ed2c9a79500c012816dc23e74c
+
+sys.path.append('/home/raony/.virtualenvs/mendelmd/lib/python2.7/site-packages')
+sys.path.append('/lgc/mendelmd_master/mendelmd_source')
+
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mendelmd.settings")
+
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()

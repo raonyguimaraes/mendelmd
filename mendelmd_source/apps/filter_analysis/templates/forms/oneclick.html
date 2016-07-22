@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                      Individuals
+                    </a>
+                  </div>
+                  <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                      <form id='filterform' action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+<fieldset>
+	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+			<th colspan="2">Select Variants From</th>
+			<th colspan="2">Exclude Variants From</th>
+		</tr>
+		<tr>
+			<td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+			<br>
+			{{ form.individuals }}
+			<br>
+			{{ form.snp_list.errors }}
+			{{ form.snp_list.label }}:<br>
+			{{ form.snp_list }} 
+			</td>
+			<td>
+			{{ form.groups.label }}:
+			<br>
+			{{ form.groups }}
+			<br>
+			{{ form.gene_list.errors }}
+			{{ form.gene_list.label }}:
+			<br>
+			{{ form.gene_list }} 
+			</td>
+			<td> {{ form.exclude_individuals.errors }}
+			{{ form.exclude_individuals.label }}:
+			<br>
+			{{ form.exclude_individuals }}
+			<br>{{ form.exclude_snp_list.label }}:<br>
+			{{ form.exclude_snp_list }}
+			</td>
+			<td>
+			{{ form.exclude_groups.label }}:
+			<br>
+			{{ form.exclude_groups }} 
+			<br>
+			{{ form.exclude_gene_list.errors }}
+			{{ form.exclude_gene_list.label }}:
+			<br>
+			{{ form.exclude_gene_list }}</td>
+		</tr>
+		
+
+	</table>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                      Collapsible Group Item #2
+                    </a>
+                  </div>
+                  <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                      Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+                      Collapsible Group Item #3
+                    </a>
+                  </div>
+                  <div id="collapseThree" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                      Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+	
+
+<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+{{ previous_fields|safe }}
+<input class="btn btn-primary btn-large" type="submit" value="Next">
+</fieldset>
+</form>
+{% endblock %}

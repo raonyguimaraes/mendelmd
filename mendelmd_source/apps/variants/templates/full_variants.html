@@ -1,0 +1,204 @@
+
+<br>
+<div class="pagination">
+    <span class="step-links">
+        {% if variants.has_previous %}
+        <a href="?page={{ variants.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ variants.number }} of {{ variants.paginator.num_pages }}.
+        </span>
+
+        {% if variants.has_next %}
+        <a href="?page={{ variants.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+<table class="table table-bordered table-striped">
+    <tr>
+        <td>options</td>
+        <td>index</td>
+        <td>chr</td>
+        <td>pos</td>
+        <td>variant_id</td>
+        <td>ref</td>
+        <td>alt</td>
+        <td>qual</td>
+        <td>filter</td>
+        <td>info</td>
+        <td>format</td>
+        <td>genotype_col</td>
+        <td>genotype</td>
+        <td>read_depth</td>
+        <td>gene</td>
+        <td>mutation_type</td>
+        <td>vartype</td>
+        
+
+
+
+
+    <!-- <td>dbsnp_pm</td>
+    <td>dbsnp_clnsig</td>
+    
+    
+    <td>esp_maf_total</td>
+    <td>protein_position</td>
+    <td>cln_omim</td>
+    <td>tac</td>
+    <td>cadd_pred</td>
+    <td>hi_index_str</td>
+    <td>hi_index</td>
+    <td>hi_index_perc</td>
+    <td>is_at_hgmd</td>
+    <td>is_at_omim</td> -->
+</tr>
+{% for variant in variants.object_list %}
+<tr>
+    <td>
+        <a href="{% url 'variant_view' variant.id %}"> View </a>
+    </td>
+    <td>{{ variant.index }}</td>
+    <td>{{ variant.chr }}</td>
+    <td>{{ variant.pos }}</td>
+    <td>{{ variant.variant_id }}</td>
+    <td>{{ variant.ref|truncatechars:5 }}</td>
+    <td>{{ variant.alt|truncatechars:5 }}</td>
+    <td>{{ variant.qual }}</td>
+    <td>{{ variant.filter }}</td>
+    <td>-</td>
+    <td>{{ variant.format }}</td>
+    <td>{{ variant.genotype_col }}</td>
+    <td>{{ variant.genotype }}</td>
+    <td>{{ variant.read_depth }}</td>
+    <td>{{ variant.gene }}</td>
+    <td>{{ variant.mutation_type }}</td>
+    <td>{{ variant.vartype }}</td>
+
+
+
+        <!-- 
+        <td>{{ variant.dbsnp_pm }}</td>
+        <td>{{ variant.dbsnp_clnsig }}</td>
+
+        
+        <td>{{ variant.esp_maf_total }}</td>
+        <td>{{ variant.protein_position }}</td>
+        <td>{{ variant.cln_omim }}</td>
+        <td>{{ variant.tac }}</td>
+        
+        <td>{{ variant.cadd_pred }}</td>
+        <td>{{ variant.hi_index_str }}</td>
+        <td>{{ variant.hi_index }}</td>
+        <td>{{ variant.hi_index_perc }}</td>
+        <td>{{ variant.is_at_hgmd }}</td>
+        <td>{{ variant.is_at_omim }}</td> -->
+    </tr>
+    <tr>
+        <td></td>
+        <td colspan=16>
+
+            {% if variant.effect %}
+
+            <table class="table">
+                <tr>
+                    <th>effect</th>
+                    <th>impact</th>
+                    <th>functional_class</th>
+                    <th>codon_change</th>
+                    <th>aa_change</th>
+                    <th>aa_len</th>
+                    <th>gene_name</th>
+                    <th>biotype</th>
+                    <th>gene_coding</th>
+                    <th>transcript_id</th>
+                    <th>exon_rank</th>
+                    <th>genotype_number</th>
+                </tr>
+                <tr>
+
+                    <td>{{ variant.effect }}</td>
+                    <td>{{ variant.impact }}</td>
+                    <td>{{ variant.func_class }}</td>
+                    <td>{{ variant.codon_change }}</td>
+                    <td>{{ variant.aa_change }}</td>
+                    <td>{{ variant.aa_len }}</td>
+                    <td>{{ variant.gene_name }}</td>
+                    <td>{{ variant.biotype }}</td>
+                    <td>{{ variant.gene_coding }}</td>
+                    <td>{{ variant.transcript_id }}</td>
+                    <td>{{ variant.exon_rank }}</td>
+                    <td>{{ variant.genotype_number }}</td>
+                </tr>
+                
+
+            </table>
+            {% endif %}
+            <table class="table">
+            <tr>
+                <th>genomes1k_maf</th>
+                <th>dbsnp_maf</th>
+                <th>esp_maf</th>
+                <th>dbsnp_build</th>
+                
+            </tr>
+            <tr>
+                <td>{{ variant.genomes1k_maf }}</td>
+                <td>{{ variant.dbsnp_maf }}</td>
+                <td>{{ variant.esp_maf }}</td>
+                <td>{{ variant.dbsnp_build }}</td>
+                
+
+            </tr>
+            </table>
+            <table class="table">
+                <tr>
+                    <th>sift</th>
+                    <th>sift_pred</th>
+                    <th>polyphen2</th>
+                    <th>polyphen2_pred</th>
+                    <th>condel</th>
+                    <th>condel_pred</th>
+                    <th>dann</th>
+                    <th>cadd</th>
+                    <th>is_at_omim</th>
+                    <th>is_at_hgmd</th>
+                    <th>hgmd_entries</th>
+
+                </tr>
+                <tr>
+                    <td>{{ variant.sift }}</td>
+                    <td>{{ variant.sift_pred }}</td>
+                    <td>{{ variant.polyphen2 }}</td>
+                    <td>{{ variant.polyphen2_pred }}</td>
+                    <td>{{ variant.condel }}</td>
+                    <td>{{ variant.condel_pred }}</td>
+                    <td>{{ variant.dann }}</td>
+                    <td>{{ variant.cadd }}</td>
+                    <td>{{ variant.is_at_omim }}</td>
+                    <td>{{ variant.is_at_hgmd }}</td>
+                    <td>{{ variant.hgmd_entries }}</td>
+                </tr>
+            </table>
+
+        </tr>
+    </td>
+</tr>
+{% endfor %}
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if variants.has_previous %}
+        <a href="?page={{ variants.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ variants.number }} of {{ variants.paginator.num_pages }}.
+        </span>
+
+        {% if variants.has_next %}
+        <a href="?page={{ variants.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>

@@ -1,0 +1,16 @@
+<table class="table table-condensed">
+									{% for filteranalysis in filteranalysis %}
+									<tr>
+										<th>Name</th>
+										<th>User</th>
+										<th>Created on</th>
+										<th>Options</th>
+									</tr>
+									<tr>
+										<td><a href="?{{filteranalysis.filterstring}}">{{ filteranalysis.name }}</a></td>
+										<td> {{ filteranalysis.user }} </td>
+										<td> {{ filteranalysis.created }} </td>
+										<td><a href="{% url 'analysis_update' filteranalysis.id %}">Edit</a><a href="{% url 'analysis_delete' filteranalysis.id %}">Delete</a></td>
+									</tr>
+									{% endfor %}
+								</table>

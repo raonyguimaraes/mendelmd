@@ -1,0 +1,110 @@
+<style type="text/css">
+	#s2id_id_groups, #s2id_id_individuals, #s2id_id_exclude_individuals, #s2id_id_exclude_groups, #s2id_id_genelists, #s2id_id_exclude_genelists{
+		width:200px;
+		/*height: 50px;*/
+	}
+	#id_individuals, #id_exclude_individuals, #id_groups, #id_exclude_groups, #id_genelists, #id_exclude_genelists{
+		display:none;
+	}
+</style>
+<script>
+	$(document).ready(function() { 
+	$("#id_individuals").select2(
+	{ 
+		width: 'off',
+		placeholder: "Select your Cases",
+		allowClear: true,
+	}
+	); });
+	$(document).ready(function() { $("#id_exclude_individuals").select2(
+		{ width: 'off',
+		placeholder: "Select your Controls", }
+		); });
+	$(document).ready(function() { $("#id_groups").select2(
+		{ width: 'off',
+		placeholder: "Select your Groups", }
+		); });
+	$(document).ready(function() { $("#id_exclude_groups").select2(
+		{ width: 'off',
+		placeholder: "Select your Groups", }
+		); });
+	
+	$(document).ready(function() { $("#id_genelists").select2(
+		{ width: 'auto',
+		placeholder: "Select your Gene Lists", }
+		); });
+
+	$(document).ready(function() { $("#id_exclude_genelists").select2(
+		{ width: 'off',
+		placeholder: "Select your Gene Lists", }
+		); });
+
+</script>
+
+<div class="span10">
+	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+			<th colspan="2">SELECT VARIANTS FROM</th>
+			<th colspan="2">EXCLUDE VARIANTS FROM</th>
+		</tr>
+		<tr>
+			<td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+				<br>
+				{{ form.individuals }}
+				
+			</td>
+			<td>
+				{{ form.groups.label }}:
+				<br>
+				{{ form.groups }}
+				
+			</td>
+			<td> {{ form.exclude_individuals.errors }}
+				{{ form.exclude_individuals.label }}:
+				<br>
+				{{ form.exclude_individuals }}
+				
+			</td>
+			<td>
+				{{ form.exclude_groups.label }}:
+				<br>
+				{{ form.exclude_groups }} 				
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{{ form.snp_list.errors }}
+				{{ form.snp_list.label }}:<br>
+				{{ form.snp_list }} 
+			</td>
+			<td>
+				{{ form.genelists.errors }}
+				{{ form.genelists.label }}:
+				<br>
+				{{ form.genelists }}
+				<br>
+				{{ form.gene_list.errors }}
+				{{ form.gene_list.label }}:
+				<br>
+				{{ form.gene_list }} 
+			</td>
+			<td>
+				{{ form.exclude_snp_list.label }}:<br>
+				{{ form.exclude_snp_list }}
+			</td>
+			<td>
+				{{ form.exclude_genelists.errors }}
+				{{ form.exclude_genelists.label }}:
+				<br>
+				{{ form.exclude_genelists }}
+				<br>
+				{{ form.exclude_gene_list.errors }}
+				{{ form.exclude_gene_list.label }}:
+				<br>
+				{{ form.exclude_gene_list }}
+			</td>
+		</tr>
+	</table>
+</div>
+

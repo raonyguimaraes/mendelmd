@@ -1,0 +1,29 @@
+<p>
+									Example of genotype information:
+								</p>
+								0/1:0.45:10,12:22:99:211,0,262
+								<br>
+								<p>
+									<b>GT:AB:AD:DP:GQ:PL</b>
+								</p>
+								<b>GT: Genotype</b>
+								<p>
+									Genotype, encoded as allele values separated by either of ”/” or “|”. The allele values are 0 for the reference allele (what is in the REF field), 1 for the first allele listed in ALT, 2 for the second allele list in ALT and so on. For diploid calls examples could be 0/1, 1|0, or 1/2, etc. For haploid calls, e.g. on Y, male non-pseudoautosomal X, or mitochondrion, only one allele value should be given; a triploid call might look like 0/0/1. If a call cannot be made for a sample at a given locus, ”.” should be specified for each missing allele in the GT field (for example "./." for a diploid genotype and "." for haploid genotype). The meanings of the separators are as follows (see the PS field below for more details on incorporating phasing information into the genotypes)
+								</p>
+								<b>AB: Allele balance for each het genotype</b>
+								<p>
+									The allele balance (fraction of ref bases over ref + alt bases) across all bialleleic het-called samples
+								</p>
+								<b>AD: Allelic depths for the ref and alt alleles in the order listed</b>
+								<p>
+									The depth of coverage of each VCF allele in this sample.
+								</p>
+								<b>DP: Read Depth (only filtered reads used for calling)</b>
+								<b>GQ: Genotype Quality</b>
+								<p>
+									Conditional genotype quality, encoded as a phred quality -10log_10p(genotype call is wrong, conditioned on the site's being variant) (Float)
+								</p>
+								<b>PL: Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification</b>
+								<p>
+									The phred-scaled genotype likelihoods rounded to the closest integer (and otherwise defined precisely as the GL field) (Integers)
+								</p>

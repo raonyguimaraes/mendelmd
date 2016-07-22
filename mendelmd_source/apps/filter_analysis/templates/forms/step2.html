@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block extra_head %}
+<link href="{% static "css/style.css" %}" rel="stylesheet">
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+
+<link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% block content %}
+
+
+<form id="ratingform" class="form-horizontal" action="." method="get">{% csrf_token %}
+<p>Step {{ step }} of {{ step_count }}</p>
+<table class="table table-nonfluid table-striped table-bordered">
+	<tr>
+		<td>1000Genomes Frequency</td>
+		<td>
+			
+			{{ form.genomes1000.errors }}{{ form.genomes1000 }}
+			<!-- Slider -->
+            <br><br>
+            <div id="g1000-slider-range_wz"></div>
+            <br>
+            <!--end slider-->
+            {{form.genomes1000_exclude}}{{form.genomes1000_exclude.label}}
+		</td>
+	</tr>
+	<tr>
+		<td>dbSNP Frequency</td>
+		<td>
+			
+			{{ form.dbsnp_frequency.errors }}{{ form.dbsnp_frequency }}
+			<br><br>
+			<!-- Slider -->
+            <div id="dbsnp-slider-range_wz"></div>
+            <br>
+            <!--end slider-->
+			
+			{{form.dbsnp_exclude}}{{form.dbsnp_exclude.label}}
+		</td>
+	</tr>
+	<tr>
+		<td>Exome Variation Server Frequency</td>
+		<td>
+			{{ form.esp_frequency.errors }}{{ form.esp_frequency }}
+			<br><br>
+			<!-- Slider -->
+            <div id="esp-slider-range_wz"></div>
+            <br>
+            <!--end slider-->
+			{{form.esp_exclude}}{{form.esp_exclude.label}}
+		</td>
+	</tr>
+	<tr>
+		<td>Sift Score</td>
+		<td>{{ form.sift_option }}
+			{{ form.sift.errors }}{{ form.sift }}
+			<br>
+			{{ form.sift_exclude.errors }}
+			{{ form.sift_exclude }}{{ form.sift_exclude.label }}
+			<br><br>
+			<!-- Slider -->
+            <div id="sift-slider-range_wz"></div>
+            <br>
+            <!--end slider-->			
+
+		</td>
+	</tr>
+	<tr>
+		<td>Polyphen Score</td>
+		<td>
+			{{ form.polyphen_option }}
+			{{ form.polyphen.errors }}{{ form.polyphen }}
+			<br><br>
+			<!-- Slider -->
+            <div id="pp2-slider-range_wz"></div>
+            <br>
+            <!--end slider-->
+			{{ form.polyphen_exclude.errors }}
+			{{ form.polyphen_exclude }}{{ form.polyphen_exclude.label }}
+
+		</td>
+	</tr>
+	<tr>
+		<td>Mendel,MD Score</td>
+		<td>
+			{{ form.mendelmd_score }}
+			{{ form.mendelmd_score.errors }}
+			<br><br>
+			<!-- Slider -->
+            <div id="mendelmd-slider-range_wz"></div>
+            <br>
+            <!--end slider-->
+			
+		</td>
+	</tr>
+	
+</table>
+<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+{{ previous_fields|safe }}
+<p>
+<input class="btn btn-primary btn-large" type="submit" value="Next">
+</p>
+
+</form>
+{% endblock %}
+{% block extra_script %}
+ 
+<script src="{% static "bootstrap/js/bootstrap-tooltip.js" %}"></script>
+
+<script src="{% static "bootstrap/js/bootstrap-popover.js" %}"></script>
+<script type="text/javascript" src={% static "jquery-ui-bootstrap/js/jquery-1.8.2.min.js" %}></script>
+
+<script type="text/javascript" src={% static "jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js" %}></script>
+<script type="text/javascript" src={% static "jquery-ui-bootstrap/js/init-ui.js" %}></script>
+
+<script>
+	$(function() {
+		$('body').on('hover.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function(e) {
+			e.preventDefault()
+			$(this).tab('show')
+		})
+	})
+</script>
+{% endblock %} 

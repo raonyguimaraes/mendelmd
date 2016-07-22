@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% load paginator %}
+
+{% block title %}{% trans "List Cases" %}{% endblock %}
+
+{% block content %}
+<h1>Cases</h1>
+<div class="row">
+    <div class="btn-group" style="float:right;">
+        <a class="btn btn-primary" href="{% url 'create_case' %}">{% trans "Create a new Case" %}</a>
+    </div>
+</div>
+<br>
+
+{% if cases %}
+<table class="table table-bordered table-striped table-condensed">
+	<tr>
+		<th>id</th>
+		<th>status</th>
+		<th width="20%">name</th>
+		<th width="20%">description</th>
+		<th>members</th>
+		<th>Options</th>
+	</tr>
+	{% for case in cases %}
+	<tr>
+		<td>{{case.id}}</td>
+		<td>{{case.status}}</td>
+		<td>{{case.name}}</td>
+		<td>{{case.description}}</td>
+		<td>
+		Mother:{{case.mother.name}}<br>
+		Father:{{case.father.name}}<br>
+		Children:<br>
+		{% for individual in case.children.all %}
+			{{individual.name}}<br>
+		{% endfor %}<br>
+		Cases:
+		{% for individual in case.cases.all %}
+				{{individual.name}}<br>
+			{% endfor %}<br>
+		Controls:
+		{% for individual in case.controls.all %}
+				{{individual.name}}<br>
+			{% endfor %}<br>
+		</td>
+		<td>
+			<a href="{% url 'view_case' case.id %}" class="btn btn-primary">View</a>
+			<a href="{% url 'edit_case' case.id %}" class="btn btn-primary">Edit</a>
+			<a href="{% url 'delete_case' case.id %}" class="btn btn-primary">Delete</a>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+You still have no cases created. <br>
+
+Please create your cases into the system!
+
+{% endif %}
+{% endblock %}
+

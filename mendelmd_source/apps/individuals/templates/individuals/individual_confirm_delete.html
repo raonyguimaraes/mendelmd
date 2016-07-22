@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Delete Individual" %}{% endblock %}
+
+{% block content %}
+<h1>Really delete this individual {{ object }}?</h1>
+<h2>This action cannot be undone</h2>
+<form action="{% url 'individual_delete' object.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

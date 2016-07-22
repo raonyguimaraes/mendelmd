@@ -1,0 +1,14 @@
+Django
+psycopg2
+django-allauth
+django-debug-toolbar
+django-crispy-forms
+django_select2
+SOAPpy#to pathways
+Sphinx
+Fabric
+pysam
+celery
+django-celery
+#mongoengine
+pynnotator

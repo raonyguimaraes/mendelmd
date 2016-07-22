@@ -1,0 +1,16 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Gene Ontology" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Gene Ontology" %}</h1>
+    <ul>
+    {% for goterm in goterms %}
+      <li><a href="{% url geneontology_view goterm.goid %}">{{ goterm.name }}</a></li>
+      
+    {% endfor %}
+    </ul>
+    
+{% endblock %}

@@ -1,0 +1,640 @@
+{% extends "base.html" %}
+
+
+{% load humanize %}
+
+{% load staticfiles %}
+{% load django_select2_tags %}
+
+
+{% block extra_css %}
+<script type="text/javascript">
+	function formSubmit() {
+		newwindow = document.getElementById("newwindow");
+		if(newwindow.checked == true)
+			document.getElementById("filterform").target = "_blank";
+		document.getElementById("filterform").submit();
+	}
+</script>
+
+
+<link href="{% static "css/style.css" %}" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+
+<link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
+
+<script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
+	{% import_django_select2_css %}
+	{% import_django_select2_js %}
+
+{% endblock %}
+
+{% load i18n %}
+{% load sorting_tags %}
+{% load pagination_tags %}
+{% load filter_extras %}
+
+{% block title %}{% trans "Filter Analysis" %}{% endblock %}
+
+{% block content %}
+<div class="accordion" id="accordion2">
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne"> Filtering </a>
+		</div>
+		<div id="collapseOne" class="accordion-body {% if not variants %}in{% endif %} collapse">
+			<div class="accordion-inner">
+				<form id='filterform' action="." method="get" enctype="multipart/form-data">
+					<div class="tabbable tabs-left">
+						<ul class="nav nav-tabs">
+							<li class="active"><a href="#individuals" data-toggle="tab">Individuals</a></li>
+							<li><a href="#variants" data-toggle="tab">Variants</a></li>
+							<li><a href="#databases" data-toggle="tab">Databases</a></li>
+							<li>
+								<a href="#filterconfig" data-toggle="tab">Saved Configs</a>
+							</li>
+							<li>
+								<a href="#filters" data-toggle="tab">Saved Analysis</a>
+							</li>
+							<li>
+								<a href="#faq" data-toggle="tab">FAQ</a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="individuals">
+								<div class="span10">
+									
+									<table class="table table-nonfluid table-striped table-bordered table-condensed">
+										<tr>
+											<th >Father</th>
+											<th >Mother</th>
+											<th >Children</th>
+										</tr>
+										<tr>
+											<td>{{ form.father }}</td>
+											<td>{{ form.mother }}</td>
+											<td>{{ form.children }}</td>
+										</tr>
+										<tr>
+											<td>Inheritance Model:<br>
+											{{ form.inheritance_option }}</td>
+											<td>
+											{{ form.remove_not_in_parents }}
+											{{ form.remove_not_in_parents.label }}
+											<br>
+											{{ form.remove_in_both_parents }}
+											{{ form.remove_in_both_parents.label }}
+
+											</td>
+										</tr>
+
+<style type="text/css">
+#s2id_id_groups, #s2id_id_individuals, #s2id_id_exclude_individuals, #s2id_id_exclude_groups{
+width:200px;
+height: 50px;
+}
+</style>
+
+									</table>
+									
+									
+									<table class="table table-nonfluid table-striped table-bordered table-condensed">
+										<tr>
+											<th colspan="2">Select Variants From</th>
+											<th colspan="2">Exclude Variants From</th>
+										</tr>
+										<tr>
+											<td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+											<br>
+											{{ form.individuals }}
+											<br>
+											{{ form.snp_list.errors }}
+											{{ form.snp_list.label }}:<br>
+											{{ form.snp_list }} 
+											</td>
+											<td>
+											{{ form.groups.label }}:
+											<br>
+											{{ form.groups }}
+											<br>
+											{{ form.gene_list.errors }}
+											{{ form.gene_list.label }}:
+											<br>
+											{{ form.gene_list }} 
+											</td>
+											<td> {{ form.exclude_individuals.errors }}
+											{{ form.exclude_individuals.label }}:
+											<br>
+											{{ form.exclude_individuals }}
+											<br>{{ form.exclude_snp_list.label }}:<br>
+											{{ form.exclude_snp_list }}
+											</td>
+											<td>
+											{{ form.exclude_groups.label }}:
+											<br>
+											{{ form.exclude_groups }} 
+											<br>
+											{{ form.exclude_gene_list.errors }}
+											{{ form.exclude_gene_list.label }}:
+											<br>
+											{{ form.exclude_gene_list }}</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+<script>
+	$(document).ready(function() { 
+
+	$("#id_father").select2({ 
+	width: 'off',
+	placeholder: "Select Father",
+	allowClear: true,
+	 });
+
+	$("#id_mother").select2({ 
+	width: 'off',
+	placeholder: "Select Mother",
+	allowClear: true,
+	 });
+
+	$("#id_children").select2({ 
+	width: 'off',
+	placeholder: "Select Children",
+	allowClear: true,
+	 });
+
+	$("#id_individuals").select2({ 
+	width: 'off',
+	placeholder: "Select your Cases",
+	allowClear: true,
+	 });
+
+
+	});
+
+	$(document).ready(function() { $("#id_exclude_individuals").select2(
+	{ width: 'off',
+	placeholder: "Select your Controls", }
+		); });
+	$(document).ready(function() { $("#id_groups").select2(
+	{ width: 'off',
+	placeholder: "Select your Group of Cases", }
+		); });
+	$(document).ready(function() { $("#id_exclude_groups").select2(
+	{ width: 'off',
+	placeholder: "Select your Group of Controls", }
+		); });
+
+</script>
+
+
+							<div class="tab-pane" id="variants">
+								<table class="table table-nonfluid table-striped table-bordered">
+									<tr>
+										<td>
+											{{ form.mutation_type.errors }}
+											{{ form.mutation_type.label }}:<br>{{ form.mutation_type }}
+										</td>
+										<td>
+											{{ form.chr.errors }}
+											{{ form.chr.label }}:<br>{{ form.chr }}
+										</td>
+										<td>
+											{{ form.pos.errors }}
+											{{ form.pos.label }}:<br>{{ form.pos }}
+										</td>
+										<td>
+											{{ form.filter }}
+										</td>
+									</tr>
+									<tr>
+										<th>Variant Effect</th>
+										<th>Functional Class</th>
+										<th>Impact</th>
+									</tr>
+									<tr>
+										<td>
+											{{ form.variant_type }}
+										</td>
+										<td>
+											{{ form.func_class }}
+										</td>
+										<td>
+										{{ form.impact }}			
+										</td>
+									</tr>
+									<tr>
+										<td>
+											{{ form.dbsnp_option.label }}:
+											<br>
+											{{ form.dbsnp_option }}
+											{{ form.dbsnp_build }}
+										</td>
+										<td>
+											{{ form.read_depth_option.errors }}
+											{{ form.read_depth_option.label }}:
+											<br>
+											{{ form.read_depth_option }}
+											{{ form.read_depth.errors }}{{ form.read_depth }}								
+										</td>
+										<td>
+											{{ form.variants_per_gene_option.errors }}
+											{{ form.variants_per_gene_option.label }}:
+											<br>
+											{{ form.variants_per_gene_option }}
+											{{ form.variants_per_gene.errors }}{{ form.variants_per_gene }}
+										</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+											{{ form.genes_in_common.errors }}
+											{{ form.genes_in_common }}
+											{{ form.genes_in_common.label }}
+											<br>
+											{{ form.dbsnp.errors }}
+											{{ form.dbsnp }}
+											{{ form.dbsnp.label }}
+											<br>
+											{{ form.cln.errors }}
+											{{ form.cln }}
+											{{ form.cln.label }}
+										</td>
+										
+									</tr>
+								
+								</table>
+							</div>
+							<div class="tab-pane" id="filterconfig">
+								<table class="table table-condensed">
+									{% for filterconfig in filterconfigs %}
+									<tr>
+										<th>Name</th>
+										<th>User</th>
+										<th>Created on</th>
+										<th>Options</th>
+									</tr>
+									<tr>
+										<td><a href="?{{filterconfig.filterstring}}">{{ filterconfig.name }}</a></td>
+										<td> {{ filterconfig.user }} </td>
+										<td> {{ filterconfig.created }} </td>
+										<td><a href="{% url 'config_update' filterconfig.id %}">Edit</a><a href="{% url 'config_delete' filterconfig.id %}">Delete</a></td>
+									</tr>
+									{% endfor %}
+								</table>
+							</div>
+							<div class="tab-pane" id="filters">
+								<table class="table table-condensed">
+									{% for filteranalysis in filteranalysis %}
+									<tr>
+										<th>Name</th>
+										<th>User</th>
+										<th>Created on</th>
+										<th>Options</th>
+									</tr>
+									<tr>
+										<td><a href="?{{filteranalysis.filterstring}}">{{ filteranalysis.name }}</a></td>
+										<td> {{ filteranalysis.user }} </td>
+										<td> {{ filteranalysis.created }} </td>
+										<td><a href="{% url 'analysis_update' filteranalysis.id %}">Edit</a><a href="{% url 'analysis_delete' filteranalysis.id %}">Delete</a></td>
+									</tr>
+									{% endfor %}
+								</table>
+							</div>
+							<div class="tab-pane" id="databases">
+								<table class="table table-nonfluid table-striped table-bordered">
+									<tr>
+										<td>1000Genomes Frequency</td>
+										<td>
+											{{ form.genomes1000_option }}
+											{{ form.genomes1000.errors }}{{ form.genomes1000 }}
+										</td>
+									</tr>
+									<tr>
+										<td>dbSNP Frequency</td>
+										<td>
+											{{ form.dbsnp_freq_option }}
+											{{ form.dbsnp_frequency.errors }}{{ form.dbsnp_frequency }}
+										</td>
+									</tr>
+									<tr>
+										<td>Exome Variation Server Frequency</td>
+										<td>{{ form.variationserver_option }}
+											{{ form.variationserver_frequency.errors }}{{ form.variationserver_frequency }}
+										</td>
+									</tr>
+									<tr>
+										<td>Sift Score</td>
+										<td>{{ form.sift_option }}
+											{{ form.sift.errors }}{{ form.sift }}
+											<br>
+											{{ form.sift_exclude.errors }}
+											{{ form.sift_exclude }}{{ form.sift_exclude.label }}
+								
+										</td>
+									</tr>
+									<tr>
+										<td>Polyphen Score</td>
+										<td>
+											{{ form.polyphen_option }}
+											{{ form.polyphen.errors }}{{ form.polyphen }}
+											<br>
+											{{ form.polyphen_exclude.errors }}
+											{{ form.polyphen_exclude }}{{ form.polyphen_exclude.label }}
+								
+										</td>
+									</tr>
+									
+								</table>
+							</div>
+							<div class="tab-pane" id="faq">
+								<p>
+									Example of genotype information:
+								</p>
+								0/1:0.45:10,12:22:99:211,0,262
+								<br>
+								<p>
+									<b>GT:AB:AD:DP:GQ:PL</b>
+								</p>
+								<b>GT: Genotype</b>
+								<p>
+									Genotype, encoded as allele values separated by either of ”/” or “|”. The allele values are 0 for the reference allele (what is in the REF field), 1 for the first allele listed in ALT, 2 for the second allele list in ALT and so on. For diploid calls examples could be 0/1, 1|0, or 1/2, etc. For haploid calls, e.g. on Y, male non-pseudoautosomal X, or mitochondrion, only one allele value should be given; a triploid call might look like 0/0/1. If a call cannot be made for a sample at a given locus, ”.” should be specified for each missing allele in the GT field (for example "./." for a diploid genotype and "." for haploid genotype). The meanings of the separators are as follows (see the PS field below for more details on incorporating phasing information into the genotypes)
+								</p>
+								<b>AB: Allele balance for each het genotype</b>
+								<p>
+									The allele balance (fraction of ref bases over ref + alt bases) across all bialleleic het-called samples
+								</p>
+								<b>AD: Allelic depths for the ref and alt alleles in the order listed</b>
+								<p>
+									The depth of coverage of each VCF allele in this sample.
+								</p>
+								<b>DP: Read Depth (only filtered reads used for calling)</b>
+								<b>GQ: Genotype Quality</b>
+								<p>
+									Conditional genotype quality, encoded as a phred quality -10log_10p(genotype call is wrong, conditioned on the site's being variant) (Float)
+								</p>
+								<b>PL: Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification</b>
+								<p>
+									The phred-scaled genotype likelihoods rounded to the closest integer (and otherwise defined precisely as the GL field) (Integers)
+								</p>
+							</div>
+						</div>
+					</div>
+					<input id="newwindow" type="checkbox" name="newwindow" value="newwindow"/>
+					Open result in a new window
+					<br>
+					<input type="button" value="Submit" onclick="formSubmit()" />
+					
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo"> Summary </a>
+		</div>
+		<div id="collapseTwo" class="accordion-body {% if summary.genes|length <= 100 %}in{% endif %} collapse">
+			<div class="accordion-inner">
+				Genes:
+				<br>
+				{% for gene in summary.genes %} <a href="?{{ query_string }}&gene_list={{ gene }}" target="_blank">{{ gene }}</a>,
+
+				{% endfor %} <!-- <a href="#{#{ gene.gene_name }}">{#{ gene.gene_name }}</a>, -->
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'filter_analysis' %}">Reset Filter</a>
+	{% if query_string %} 
+		| <a href="{% url 'create_config' %}?{{query_string}}">Save Config</a>
+		| <a href="{% url 'family_analysis_create_filter' %}?{{query_string}}">Save Analysis</a> 
+	{% endif %}
+	<br>
+	<br>
+	
+	{%if summary.n_variants %} <h4>Summary</h4>
+	<p>
+		Number of Variants: {{ summary.n_variants }}
+		<br>
+		Number of Genes: {{ summary.n_genes }}
+		<br>
+	</p>
+	{% endif %} <!-- <div class="accordion-group">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree"> Variants </a>
+	</div>
+	<div id="collapseThree" class="accordion-body collapse" style="height: 0px; ">
+	<div class="accordion-inner">
+
+	</div>
+	</div>
+	</div> -->
+</div>
+{% if variants %}
+
+Export to: <a href="?{{ query_string }}&export=csv">CSV</a><a href="?{{ query_string }}&export=txt">TXT</a>
+{% autosort variants %}
+<div class="pagination">
+	<ul>
+		{% if variants.has_previous %}
+		<li>
+			<a href="?{{ query_string }}&page={{ variants.previous_page_number }}">&lsaquo;&lsaquo; {% trans "previous" %}</a>
+		</li>
+		{% else %}
+		<li class="disabled prev">
+			<a href="#">&lsaquo;&lsaquo; {% trans "previous" %}</a>
+		</li>
+		{% endif %}
+		{% for page in variants.paginator.page_range %}
+		{% if page %}
+		{% ifequal page variants.number %}
+		<li class="current page active">
+			<a href="#">{{ page }}</a>
+		</li>
+		{% else %} <!-- print pages around -->
+		{% if page|adjust_for_pagination:variants.number %}
+		<li>
+			<a href="?{{ query_string }}&page={{ page }}" class="page">{{ page }}</a>
+		</li>
+		{% endif %}
+
+		{% endifequal %}
+		{% else %}
+
+		{% endif %}
+		{% endfor %}
+		{% if variants.has_next %}
+		<li>
+			<a href="?{{ query_string }}&page={{ variants.next_page_number }}" class="next">{% trans "next" %} &rsaquo;&rsaquo;</a>
+		</li>
+		{% else %}
+		<li class="disabled next">
+			<a href="#">{% trans "next" %} &rsaquo;&rsaquo;</a>
+		</li>
+		{% endif %}
+	</ul>
+</div>
+<table id="tablevariants" class="table table-striped table-bordered table-condensed">
+	<!-- class="table table-condensed" -->
+	<tr>
+		<thead>
+			<th style="width: 4%">{% anchor individual Individual %}</th>
+			<th style="width: 2%">{% anchor chromossome Chr %}</th>
+			<th style="width: 3%">{% anchor id  RsId %}</th>
+			<th style="width: 3%">{% anchor pos Pos %}</th>
+			<th style="width: 2%">{% anchor qual Qual %}</th>
+			<th style="width: 2%">{% anchor ref Ref %}</th>
+			<th style="width: 2%">{% anchor alt Alt %}</th>
+			<th style="width: 2%">{% anchor filter Filter %}</th>
+			<th style="width: 2%">{% anchor genotype Gen %}</th>
+			<th style="width: 3%">{% anchor father Father %}</th>
+			<th style="width: 3%">{% anchor mother Mother %}</th>
+			<th style="width: 2%">{% anchor read_depth "Read Depth" %}</th>
+			<th style="width: 5%">{% anchor snp_eff "Mutation Type"" %}</th>
+			<th style="width: 3%">{% anchor snp_eff_functional_class "Protein Impact" %}</th>
+			<th style="width: 3%">{% anchor impact "SnpEff Class" %}</th>
+			<th style="width: 3%">{% anchor genomes1k_af "1kgenomes" %}</th>
+			<th style="width: 3%">{% anchor dbsnp_gmaf "dbSNP137" %}</th>
+			<th style="width: 3%">{% anchor ann_esp_maf "ESP6500" %}</th>
+			<th style="width: 2%">{% anchor sift Sift %}</th>
+			<th style="width: 2.5%">{% anchor polyphen Polyphen %}</th>
+			<th style="width: 4%">Other Info</th>
+		</thead>
+	</tr>
+	<tbody>
+		{% regroup variants.object_list by gene_name as gene_list %}
+		{% for gene in gene_list %}
+		{% if gene.grouper %}
+		<tr>
+			<td><span id='{{ gene.grouper }}'></span><h3><a href="{% url 'gene_view' gene.grouper %}" target="_blank">{{ gene.grouper }}</a></h3></td>
+		</tr>
+		{% endif %}
+		<tr>
+			<td colspan="3"><a href="http://omim.org/search?index=entry&sort=score+desc%2C+prefix_sort+desc&start=1&limit=10&search={{ gene.grouper }}" target="_blank">Omim</a> - <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={{ gene.grouper }}" target="_blank">GeneCards</a> - <a href="http://www.ncbi.nlm.nih.gov/gquery/?term={{ gene.grouper }}&SITE=NcbiHome&submit=Go" target="_blank">NCBI</a></td>
+		</tr>
+		{% for variant in gene.list %}
+		<tr>
+			<td>{{ variant.individual }}</td>
+			<td>{{ variant.chromossome }}</td>
+			<td>{{ variant.variant_id }}
+			{% if variant.variant_id != "." %}
+			<br>
+			<a href="http://www.ncbi.nlm.nih.gov/snp/?term={{ variant.variant_id }}&SITE=NcbiHome&submit=Go">dbSNP</a></td>
+			{% endif %} <td>{{ variant.pos }}</td>
+			<td>{{ variant.qual }}</td>
+			<td>{{ variant.ref }}</td>
+			<td>{{ variant.alt }}</td>
+			<td>{{ variant.filter }}</td>
+			<td>{{ variant.genotype }}</td>
+			<td>{{ variant.father }}</td>
+			<td>{{ variant.mother }}</td>
+			<td>{{ variant.read_depth }}</td>
+			<td>{{ variant.snp_eff|cleanstr }}</td>
+			<td>{{ variant.snp_eff_functional_class }}</td>
+			<!-- <td>
+			{{ variant.gene_name }}<br>
+			<a href="http://omim.org/search?index=entry&sort=score+desc%2C+prefix_sort+desc&start=1&limit=10&search={{ variant.gene_name }}">Omim</a>
+			<br>
+			<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={{ variant.gene_name }}">GeneCards</a>
+			<br>
+			<a href="http://www.ncbi.nlm.nih.gov/gquery/?term={{ variant.gene_name }}&SITE=NcbiHome&submit=Go">NCBI</a>
+
+			</td> -->
+			<td>{{ variant.impact }}</td>
+			<td> {% if variant.genomes1k_af != None %}
+			{{ variant.genomes1k_af }}
+			{% endif %} </td>
+			<td>{{ variant.gmaf_dbsnp135|floatformat:5|intcomma }}</td>
+			<td>{{ variant.ann_esp_maf|floatformat:5|intcomma }}</td>
+			<td>{{ variant.sift|floatformat:2 }}</td>
+			<td>{{ variant.polyphen|floatformat:2 }}</td>
+			<td><a href="#" onclick="return false;" id="variant{{ variant.id }}" class="btn btn-primary" rel="popover" data-content="
+			{% if variant.cln_omim %}
+			<b>Variant is Clinical</b>
+			{% if variant.cln_omim != 'unknown' %}
+			{% for item in variant|cut %} <a href={{ item }}>{{ item }}</a> {% endfor %}
+			<br>
+			{% endif %}
+			{% endif %}
+			{% if variant.amino_acid_change %} <b>Aminoacid change:</b> {{ variant.amino_acid_change }}
+			<br>
+			{% endif %}
+			{% if variant.cdna_position %} <b>CDNA pos:</b> {{ variant.cdna_position }}
+			<br>
+			{% endif %}
+			{% if variant.granthamscore %} <b>granthamscore:</b> {{ variant.granthamscore }}
+			<br>
+			{% endif %}
+			{% if variant.protein_position %} <b>prot_pos:</b> {{ variant.protein_position }}
+			<br>
+			{% endif %}
+			{% if variant.genotype_info %} <b>genotype info:</b> {{ variant.genotype_info }}
+			<br>
+			{% endif %}
+			{% if variant.ann_esp_maf %} <b>esp maf:</b> {{ variant.ann_esp_maf }}
+			<br>
+			{% endif %}
+			{% if variant.tac %} <b>esp tac:</b> {{ variant.tac }}
+			<br>
+			{% endif %}" data-original-title="Other Info">View More</a></td>
+		</tr>
+		{% endfor %}
+		{% endfor %}<!-- end grouping -->
+	</tbody>
+</table>
+{% endif %}
+<script type="text/javascript">
+	var selectmenu = document.getElementById("preconfig")
+	selectmenu.onchange = function() {//run some code when "onchange" event fires
+		var chosenoption = this.options[this.selectedIndex]//this refers to "selectmenu"
+		if(chosenoption.value == "1") {
+			oFormObject = document.forms['filterform'];
+			oFormObject.elements["genomes1000"].value = '0.01';
+			oFormObject.elements["dbsnp_frequency"].value = '0.01';
+			oFormObject.elements["variationserver_frequency"].value = '0.01';
+			oFormObject.elements["sift"].value = '0.05';
+			//change select option
+			oFormObject.elements["impact"][1].selected = true;
+			oFormObject.elements["impact"][3].selected = true;
+			//.value = new Array('MODERATE', 'HIGH');
+
+			oFormObject.elements["polyphen_option"].value = '>';
+			oFormObject.elements["polyphen"].value = '0.85';
+			oFormObject.elements["dbsnp_option"].value = '>';
+			oFormObject.elements["dbsnp_build"].value = '130';
+
+		}
+	}
+</script>
+{% endblock %}
+
+
+
+{% block javascript %}
+      
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+      <!-- Your stuff: Third-party javascript libraries go here -->
+
+      <!-- place project specific Javascript in this file -->
+      <script src="{% static 'js/project.js' %}"></script>
+{% endblock javascript %}
+
+
+{% block extra_script %} <script src="{% static "bootstrap/js/bootstrap-tooltip.js" %}"></script>
+<script src="{% static "bootstrap/js/bootstrap-popover.js" %}"></script>
+{% for variant in variants.object_list %}
+<script>
+	$(function() {
+		$('#variant{{ variant.id }}').popover({
+			placement : 'left',
+			html:true
+			
+		})
+	})
+</script>
+{% endfor %}
+
+{% endblock %} 

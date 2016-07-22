@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash;  0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title=" 0.1 documentation" href="index.html" />
+    <link rel="next" title="Annotation" href="annotation.html" />
+    <link rel="prev" title="Welcome to Mendel,MD’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="annotation.html" title="Annotation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Mendel,MD’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html"> 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python 2.7</li>
+<li>Java 1.7</li>
+<li>Ubuntu LTS 12.04 or 14.04</li>
+</ul>
+</div>
+<div class="section" id="other-softwares-needed">
+<h2>Other Softwares Needed<a class="headerlink" href="#other-softwares-needed" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>snpEff</li>
+<li>VEP</li>
+<li>vcftools</li>
+<li>samtools</li>
+</ul>
+</div>
+<div class="section" id="quick-install-in-ubuntu-14-04">
+<h2>Quick Install in Ubuntu 14.04<a class="headerlink" href="#quick-install-in-ubuntu-14-04" title="Permalink to this headline">¶</a></h2>
+<p>wget install.py
+python install.py</p>
+</div>
+<div class="section" id="populating-database">
+<h2>Populating database<a class="headerlink" href="#populating-database" title="Permalink to this headline">¶</a></h2>
+<p>Register an access to the FTP site of omim: <a class="reference external" href="http://omim.org/downloads">http://omim.org/downloads</a> and download a file named &#8220;morbidmap&#8221; :</p>
+<p>You will need to manually download a copy of this file from OMIM to the folder: mendelmd_source/data  !</p>
+</div>
+<div class="section" id="for-installation-using-posgresql-database-9-3-4">
+<h2>For installation using PosgreSQL Database  9.3.4<a class="headerlink" href="#for-installation-using-posgresql-database-9-3-4" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install tasksel libpq-dev
+sudo tasksel
+</pre></div>
+</div>
+<p>Select the following options:</p>
+<ul class="simple">
+<li>Basic Ubuntu Server</li>
+<li>LAMP Server</li>
+<li>PostgreSQL database</li>
+</ul>
+<p>Now you can create a database called &#8220;mendelmd&#8221; in PostgreSQL with the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo su
+su postgres
+psql template1
+CREATE USER mendelmd WITH PASSWORD <span class="s1">&#39;yourpassword&#39;</span>;
+CREATE DATABASE mendelmd;
+GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
+<span class="se">\q</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="for-installation-on-ubuntu-12-04-14-04-with-python-2-7">
+<h2>For Installation On Ubuntu 12.04/14.04 with Python 2.7<a class="headerlink" href="#for-installation-on-ubuntu-12-04-14-04-with-python-2-7" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install python-pip virtualenvwrapper python-dev memcached libmemcached-dev tabix
+</pre></div>
+</div>
+</div>
+<div class="section" id="installation-of-mendel-md-in-a-virtual-enviroment">
+<h2>Installation of Mendel,MD in a Virtual Enviroment<a class="headerlink" href="#installation-of-mendel-md-in-a-virtual-enviroment" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#install and create a virtual enviroment</span>
+sudo pip install virtualenvwrapper
+<span class="nb">source </span>virtualenvwrapper.sh
+mkvirtualenv mendelmd
+
+<span class="c">#clone the repository</span>
+git clone https://raonyguimaraes@bitbucket.org/raonyguimaraes/mendelmd_master
+<span class="nb">cd </span>mendelmd_master
+<span class="c">#install numpy first</span>
+easy_install numpy
+<span class="c">#install all the requirements (go to take a cup of coffee)</span>
+pip install -r requirements.txt
+<span class="c">#create tables in database and migrate</span>
+python manage.py syncdb --migrate
+
+<span class="c">#create a static folder in your webserver</span>
+sudo mkdir /var/www/mendelmd_static
+sudo chown www-data:www-data /var/www/mendelmd_static/
+sudo chmod 775 /var/www/mendelmd_static/
+<span class="c">#copy media files to /var/www/mendelmd_static/</span>
+python manage.py collectstatic
+<span class="c">#now you can create the administrator user</span>
+python manage.py createsuperuser
+
+<span class="c">#and now we can finally start the server</span>
+python manage.py runserver
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-the-annotator">
+<h2>Installing the Annotator<a class="headerlink" href="#installing-the-annotator" title="Permalink to this headline">¶</a></h2>
+<p>In order to filter the variants using the web interface of Mendel,MD you first need to annotate your VCF File using a pipeline developed together with this tool.</p>
+</div>
+<div class="section" id="running-the-annotator">
+<h2>Running the Annotator<a class="headerlink" href="#running-the-annotator" title="Permalink to this headline">¶</a></h2>
+<p>Mendel,MD comes with an annotator pipeline that integrates the most common annotators available.
+After uploading your VCF to the system you can run the annotation pipeline with the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python manage.py celeryd
+</pre></div>
+</div>
+<p>This scheduler should start annotating all you uploaded VCFs. The full annotation pipeline should take around 40 minutes per VCF exome file.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#other-softwares-needed">Other Softwares Needed</a></li>
+<li><a class="reference internal" href="#quick-install-in-ubuntu-14-04">Quick Install in Ubuntu 14.04</a></li>
+<li><a class="reference internal" href="#populating-database">Populating database</a></li>
+<li><a class="reference internal" href="#for-installation-using-posgresql-database-9-3-4">For installation using PosgreSQL Database  9.3.4</a></li>
+<li><a class="reference internal" href="#for-installation-on-ubuntu-12-04-14-04-with-python-2-7">For Installation On Ubuntu 12.04/14.04 with Python 2.7</a></li>
+<li><a class="reference internal" href="#installation-of-mendel-md-in-a-virtual-enviroment">Installation of Mendel,MD in a Virtual Enviroment</a></li>
+<li><a class="reference internal" href="#installing-the-annotator">Installing the Annotator</a></li>
+<li><a class="reference internal" href="#running-the-annotator">Running the Annotator</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Mendel,MD&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="annotation.html"
+                        title="next chapter">Annotation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="annotation.html" title="Annotation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Mendel,MD’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html"> 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, ChangeMyName.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

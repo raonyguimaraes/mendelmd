@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% load pagination_tags %}
+
+{% load get_genotype %}
+
+{% block title %}{% trans "View Individual" %}{% endblock %}
+
+{% block content %}
+
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+    <li><a href="#summary" data-toggle="tab">Summary</a></li>
+    <li><a href="#snp_eff" data-toggle="tab">SNP Effect</a></li>
+    <li><a href="#func_class" data-toggle="tab">Functional Class</a></li>
+    <li><a href="#impact" data-toggle="tab">Impact</a></li>
+    <li><a href="#filter" data-toggle="tab">Filter</a></li>
+    <li><a href="#qual" data-toggle="tab">Quality</a></li>
+    <li><a href="#read_depth" data-toggle="tab">Read Depth</a></li>
+    <li><a href="#cln" data-toggle="tab">Clinical Associated</a></li>
+    <li><a href="#chr" data-toggle="tab">Variants per Chromossome</a></li>
+    
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="home">
+      <p>
+      	Name: {{ individual.name }}<br>
+		Variants: {{ individual.n_variants }}<br>
+		Novel Variants: <a href="{% url 'individual_browse' individual.id %}?ID=.">{{ individual.novel_variants }}</a> (Not in latest DbSNP Build)
+    <ul>
+	<li><a href={% url 'individual_download' individual.id %}>Download Original VCF File</a></li>
+	<li><a href={% url 'individual_download_annotated' individual.id %}>Download Annotated VCF File</a></li>
+	
+	</ul>
+      </p>
+    </div>
+    <div class="tab-pane" id="summary">
+    	<p>	
+    		 <div class="span4">
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+			<tr>
+				<th>Type</th>
+				<th>Total Variants</th>
+				<th></th>
+				
+				
+			</tr>
+			
+				
+				{% for item in individual.summary %}
+				<tr>
+				<td> {{ item.type }}</td>
+				<td><a href="{% url 'individual_browse' individual.id %}">{{ item.total }}</a></td>
+					{% for value in item.discrete %}
+						<td><a href="{% url 'individual_browse' individual.id %}?genotype={{ value.genotype }}">{{ value.total }} {{ value.genotype }}</a></td>
+					{% endfor %}
+				</tr>			
+				{% endfor %}
+			
+			</table>
+		</div>
+    	</p>
+    </div>
+    <div class="tab-pane" id="snp_eff">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+			<th>Type</th>
+			<th>Total Variants</th>
+		</tr>
+		{% for item in individual.snp_eff %}
+			<tr>
+			<td>{{ item.snpeff_effect }}</td><td><a href="{% url 'individual_browse' individual.id %}?effect={{ item.snpeff_effect }}">{{ item.snpeff_effect__count }}</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="func_class">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Type</th>
+		    <th>Total Variants</th>
+		</tr>
+		{% for item in individual.functional_class %}
+		    <tr>
+		    <td>{{ item.snpeff_func_class }}</td><td><a href="{% url 'individual_browse' individual.id %}?func_class={{ item.snpeff_func_class }}">{{ item.snpeff_func_class__count }}</a></td>
+		    </tr>
+		{% endfor %}
+	</table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="impact">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Type</th>
+		    <th>Total Variants</th>
+		</tr>    
+		{% for item in individual.impact_variants %}
+		<tr>
+		<td>{{ item.snpeff_impact }}</td><td><a href="{% url 'individual_browse' individual.id %}?impact={{ item.snpeff_impact }}">{{ item.snpeff_impact__count }}</a></td>
+		</tr>
+		{% endfor %}
+	</table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="filter">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Type</th>
+		    <th>Total Variants</th>
+		</tr>    
+		{% for item in individual.filter_variants %}
+		<tr>
+		<td>{{ item.filter }}</td><td><a href="{% url 'individual_browse' individual.id %}?filter={{ item.filter }}">{{ item.filter__count }}</a></td>
+		</tr>
+		{% endfor %}
+	</table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="qual">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Quality</th>
+		    <th>Value</th>
+		</tr>
+		<tr>
+		<td>Min</td><td>{{ individual.quality.qual__min }}</td>
+		</tr>
+		<tr>
+		<td>Average</td><td>{{ individual.quality.qual__avg }}</td>
+		</tr>
+		<tr>
+		<td>Max</td><td>{{ individual.quality.qual__max }}</td>
+		</tr>
+    </table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="read_depth">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Read Depth</th>
+		    <th>Value</th>
+		</tr>
+		<tr>
+		<td>Min</td><td>{{ individual.read_depth.read_depth__min }}</td>
+		</tr>
+		<tr>
+		<td>Average</td><td>{{ individual.read_depth.read_depth__avg }}</td>
+		</tr>
+		<tr>
+		<td>Max</td><td>{{ individual.read_depth.read_depth__max }}</td>
+		</tr>
+    </table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="cln">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Type</th>
+		    <th>Total Variants</th>
+		</tr>
+		{% for item in individual.dbsnp_pm %}
+		<tr>
+		<td>{{ item.dbsnp_pm }}</td><td><a href="{% url 'individual_browse' individual.id %}?cln={{ item.dbsnp_pm }}">{{ item.total }}</a></td>
+		</tr>
+		{% endfor %}
+		
+    </table>
+    	</p>
+    </div>
+    <div class="tab-pane" id="chr">
+    	<p>
+    		<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+		    <th>Chromossome</th>
+		    <th>Total Variants</th>
+		</tr>
+		{% for item in individual.chromossome %}
+		<tr>
+		<td>{{ item.chr }}</td><td><a href="{% url 'individual_browse' individual.id %}?chr={{ item.chr }}">{{ item.total }}</a></td>
+		</tr>
+		{% endfor %}
+    </table>
+    	</p>
+    </div>
+    
+  </div>
+
+
+<div class="tabbable">
+<div class="tab-content">
+
+    <div class="tab-pane" id="medical_conditions">
+    	{% for individual_medical_condition in individual_medical_conditions %}
+    	<h2>{{ individual_medical_condition.medical_condition.name }}</h2><br>
+    	{% autoescape off %}
+		{{ individual_medical_condition.medical_condition.description_html }}
+		{% endautoescape %}
+    		{% for variant in individual_medical_condition.variants.all %}
+	    		<h2><a href="http://www.snpedia.com/index.php/{{ variant.snp.name }}">{{ variant.snp.name }}</a></h2>
+	    		{% autoescape off %}
+				{{ variant.snp.description_html }}
+				{% endautoescape %}
+	    		<h2>
+	    		Individual Genotype:
+	    		{{ variant.individual_variant|get_genotype }},
+	    		genoinfo:{{ variant.individual_variant.genotype_info }}
+			    qual: {{ variant.individual_variant.qual }}<br>
+	    		</h2>
+	    	  	<table>
+				<tr>
+				    <th>Genotype</th>
+				    <th>Magnitude</th>
+				    <th>Summary</th>
+				</tr>
+				{% for snpgenotype in variant.snp.snpgenotype_set.all %}
+				    <tr>
+				    <td>{{ snpgenotype.genotype }}</td>
+				    <td>{{ snpgenotype.magnitude }}</td>
+				    <td>{{ snpgenotype.summary }}</td>
+				    </tr>
+				{% endfor %}
+				</table>
+			{% endfor %}
+    	{% endfor %}    	
+    </div>
+    <div class="tab-pane" class="active" id="medicines">
+    	{% for individual_medicine in individual_medicines %}
+    	<h2>{{ individual_medicine.medicine.name }}</h2><br>
+    	{% autoescape off %}
+		{{ individual_medicine.medicine.description_html }}
+		{% endautoescape %}
+    		{% for variant in individual_medicine.variants.all %}
+	    		<h2><a href="http://www.snpedia.com/index.php/{{ variant.snp.name }}">{{ variant.snp.name }}</a></h2>
+	    		{% autoescape off %}
+				{{ variant.snp.description_html }}
+				{% endautoescape %}
+	    		<h2>
+	    		Individual Genotype:
+	    		{{ variant.individual_variant|get_genotype }},
+	    		genoinfo:{{ variant.individual_variant.genotype_info }}
+			    qual: {{ variant.individual_variant.qual }}<br>
+	    		</h2>
+	    	  	<table>
+				<tr>
+				    <th>Genotype</th>
+				    <th>Magnitude</th>
+				    <th>Summary</th>
+				</tr>
+				{% for snpgenotype in variant.snp.snpgenotype_set.all %}
+				    <tr>
+				    <td>{{ snpgenotype.genotype }}</td>
+				    <td>{{ snpgenotype.magnitude }}</td>
+				    <td>{{ snpgenotype.summary }}</td>
+				    </tr>
+				{% endfor %}
+				</table>
+			{% endfor %}
+		{% endfor %}    	
+    </div>
+</div>
+</div><!-- tabblabe -->
+
+<script>
+    $(function () {
+        $('.nav').tabs()
+    })
+</script>
+    
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<h2>{% trans "Variants" %}</h2>
+	<div class="pagination">
+	    <span class="step-links">
+	        {% if variants.has_previous %}
+	            <a href="?page={{ variants.previous_page_number }}">previous</a>
+	        {% endif %}
+	
+	        <span class="current">
+	            Page {{ variants.number }} of {{ variants.paginator.num_pages }}.
+	        </span>
+	
+	        {% if variants.has_next %}
+	            <a href="?page={{ variants.next_page_number }}">next</a>
+	        {% endif %}
+	    </span>
+	</div>
+	
+	{% include "full_variants.html" %}
+	
+	
+	
+    
+
+{% endblock %}

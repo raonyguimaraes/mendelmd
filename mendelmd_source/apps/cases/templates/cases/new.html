@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+{% load django_select2_tags %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+<link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
+<link href="{% static "css/style.css" %}" rel="stylesheet">
+<script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
+    {% import_django_select2_css %}
+    {% import_django_select2_js %}
+
+{% endblock %}
+
+
+{% block title %}{% trans "Create Case" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Create Case" %}</h1>
+    <form action="{% url 'create_case' %}" method="post" enctype="multipart/form-data">
+           
+           {% csrf_token %}
+            
+            <table class="table">
+           <tr>
+               <td>status</td><td>{{form.status}}</td>
+           </tr>
+           <tr>
+               <td>name</td><td>{{form.name}}</td>
+           </tr>
+           <tr>
+               <td>description</td><td>{{form.description}}</td>
+           </tr>
+           <tr>
+               <td>Shared with</td><td>{{form.shared_with}}</td>
+           </tr>
+           </table>
+           <div class="col-md-4" style="float:none;">
+                <table class="table">
+               <tr>
+                   <td>Father</td><td>{{form.father}}</td><td>Mother</td><td>{{form.mother}}</td>
+               </tr>
+               <tr>
+                   
+                   <td>Children</td><td colspan="3">
+                   
+                   {{form.children}}
+                   </td>
+               </tr>
+               </table>
+            </div>
+            <table class="table">
+           <tr>
+               <th>Cases</th><th>Controls</th>
+           </tr>
+           <tr>
+               <td>{{form.cases}}</td><td>{{form.controls}}</td>
+           </tr>
+           <tr>
+               <td>{{form.case_groups}}</td><td>{{form.control_groups}}</td>
+           </tr>
+           </table>
+           
+
+
+           
+            
+            <input type="submit" value="Create" />
+    </form>    
+<script>
+    $(document).ready(function() { $("#id_mother").select2(
+        { width: 'off',
+        placeholder: "Select your Individuals", }
+        ); });
+    $(document).ready(function() { $("#id_father").select2(
+        { width: 'off',
+        placeholder: "Select your Individuals", }
+        ); });
+
+    $(document).ready(function() { $("#id_children").select2(
+        { width: 'off',
+        placeholder: "Select your Individuals", }
+        ); });
+    $(document).ready(function() { $("#id_cases").select2(
+        { width: 'off',
+        placeholder: "Select your Individuals", }
+        ); });
+    $(document).ready(function() { $("#id_case_groups").select2(
+        { width: 'off',
+        placeholder: "Select your Groups", }
+        ); });
+    $(document).ready(function() { $("#id_controls").select2(
+        { width: 'off',
+        placeholder: "Select your Individuals", }
+        ); });
+    $(document).ready(function() { $("#id_control_groups").select2(
+        { width: 'off',
+        placeholder: "Select your Groups", }
+        ); });
+    
+
+</script>
+{% endblock %}
+
+
+{% block javascript %}
+      
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<!-- Your stuff: Third-party javascript libraries go here -->
+<script src="{{ STATIC_URL }}js/tooltip.js"></script>
+<script src="{{ STATIC_URL }}js/popover.js"></script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
+
+      <!-- place project specific Javascript in this file -->
+      <script src="{% static 'js/project.js' %}"></script>
+{% endblock javascript %}

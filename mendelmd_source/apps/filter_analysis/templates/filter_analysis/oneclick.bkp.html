@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load django_select2_tags %}
+
+
+{% block extra_css %}
+
+<link href="{% static "css/style.css" %}" rel="stylesheet">
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+
+<link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
+
+<script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
+	{% import_django_select2_css %}
+	{% import_django_select2_js %}
+
+<script type="text/javascript">
+	function formSubmit() {
+		// newwindow = document.getElementById("newwindow");
+		// if(newwindow.checked == true)
+		// 	document.getElementById("filterform").target = "_blank";
+		$('#loading_img').show();
+		$('#loading_img2').show();
+
+		document.getElementById("filterform").submit();
+		//document.getElementById('loading_img').style.display = "block";
+		
+	}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                      Individuals <img id="loading_img" style="display:none;" src="{{ STATIC_URL }}img/ajax-loader.gif">
+                    </a>
+                  </div>
+                  <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                      <form id='filterform' action="." method="get" enctype="multipart/form-data">{% csrf_token %}
+<fieldset>
+	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+			<th colspan="2">Select Variants From</th>
+			<th colspan="2">Exclude Variants From</th>
+		</tr>
+		<tr>
+			<td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+			<br>
+			{{ form.individuals }}
+			</td>
+			<td>
+			{{ form.groups.label }}:
+			<br>
+			{{ form.groups }}
+			</td>
+			<td> {{ form.exclude_individuals.errors }}
+			{{ form.exclude_individuals.label }}:<br>
+			{{ form.exclude_individuals }}
+			</td>
+			<td>
+			{{ form.exclude_groups.label }}:
+			<br>
+			{{ form.exclude_groups }} 
+			<br>
+			</td>
+		</tr>
+<script>
+	$(document).ready(function() { $("#id_individuals").select2(
+	{ 
+	width: 'off',
+	placeholder: "Select your Cases",
+	allowClear: true,
+	 }
+		); });
+	$(document).ready(function() { $("#id_exclude_individuals").select2(
+	{ width: 'off',
+	placeholder: "Select your Controls", }
+		); });
+	$(document).ready(function() { $("#id_groups").select2(
+	{ width: 'off',
+	placeholder: "Select your Group of Cases", }
+		); });
+	$(document).ready(function() { $("#id_exclude_groups").select2(
+	{ width: 'off',
+	placeholder: "Select your Group of Controls", }
+		); });
+
+</script>
+<style type="text/css">
+#s2id_id_groups, #s2id_id_individuals, #s2id_id_exclude_individuals, #s2id_id_exclude_groups{
+width:200px;
+height: 50px;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active{
+	background-color: #d2322d;
+	color: #fff;
+	border-color: #d43f3a;
+	background-image: -webkit-linear-gradient(top,#d2322d 0,#d2322d 100%); */
+/* background-image: linear-gradient(to bottom,#428bca 0,#2d6ca2 100%); */
+/* background-repeat: repeat-x; */
+/* border-color: #2b669a; */
+}
+</style>
+
+		
+		<tr>
+			<td colspan="4">
+			<div class="control-group">
+		      <label class="control-label">Select Inheritance:</label>
+		      <div class="controls">
+		        <div class="btn-group" data-toggle="buttons-radio">
+		          <button type="button" data-toggle="button" onclick="recessive()" name="option" value="1" class="btn btn-primary">Recessive</button>
+		          <button type="button" data-toggle="button" onclick="dominant()" name="option" value="2" class="btn btn-primary">Dominant</button>
+		          <button type="button" data-toggle="button" onclick="x_linked()" name="option" value="3" class="btn btn-primary">X-linked</button>
+		          <button type="button" data-toggle="button" onclick="compound_heterozygous()" name="option" value="4" class="btn btn-primary">Recessive (Compound Heterozygous)</button>
+		        </div>
+		      </div>
+		    </div>
+		</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+			<b>Select your diseases:</b>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+			Omim:{{form.omim}}<br>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				Clinical Genomics Database: {{form.cgd}}<br>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				HGMD: {{form.hgmd}}
+			</td>
+		</tr>
+
+		
+
+	</table>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                      Options
+                    </a>
+                  </div>
+                  <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                      <table class="table table-nonfluid table-striped table-bordered">
+  	<tr>
+  		<td>
+  			<br>
+			{{ form.snp_list.errors }}
+			{{ form.snp_list.label }}:<br>
+			{{ form.snp_list }} 
+			
+  		</td>
+  		<td>
+			<br>
+			{{ form.gene_list.errors }}
+			{{ form.gene_list.label }}:
+			<br>
+			{{ form.gene_list }} 
+		</td>
+		<td>
+			<br>{{ form.exclude_snp_list.label }}:<br>
+			{{ form.exclude_snp_list }}
+		</td>
+		<td>
+			<br>
+			{{ form.exclude_gene_list.errors }}
+			{{ form.exclude_gene_list.label }}:
+			<br>
+			{{ form.exclude_gene_list }}
+		</td>
+
+
+  	</tr>
+	<tr>
+		<td>
+			{{ form.mutation_type.errors }}
+			{{ form.mutation_type.label }}:<br>{{ form.mutation_type }}
+		</td>
+		<td>
+			{{ form.chr.errors }}
+			{{ form.chr.label }}:<br>{{ form.chr }}
+		</td>
+		<td>
+			{{ form.pos.errors }}
+			{{ form.pos.label }}:<br>{{ form.pos }}
+		</td>
+	</tr>
+	<tr>
+		<th>Variant Effect</th>
+		<th>Functional Class</th>
+		<th>Impact</th>
+	</tr>
+	<tr>
+		<td>
+			{{ form.variant_type }}
+		</td>
+		<td>
+			{{ form.func_class }}
+		</td>
+		<td>
+		{{ form.impact }}			
+		</td>
+	</tr>
+	<tr>
+		<td>
+			{{ form.dbsnp_option.label }}:
+			<br>
+			{{ form.dbsnp_option }}
+			{{ form.dbsnp_build }}
+		</td>
+		<td>
+			{{ form.read_depth_option.errors }}
+			{{ form.read_depth_option.label }}:
+			<br>
+			{{ form.read_depth_option }}
+			{{ form.read_depth.errors }}{{ form.read_depth }}								
+		</td>
+		<td>
+			{{ form.variants_per_gene_option.errors }}
+			{{ form.variants_per_gene_option.label }}:
+			<br>
+			{{ form.variants_per_gene_option }}
+			{{ form.variants_per_gene.errors }}{{ form.variants_per_gene }}
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			{{ form.genes_in_common.errors }}
+			{{ form.genes_in_common }}
+			{{ form.genes_in_common.label }}
+			<br>
+			{{ form.dbsnp.errors }}
+			{{ form.dbsnp }}
+			{{ form.dbsnp.label }}
+			<br>
+			{{ form.cln.errors }}
+			{{ form.cln }}
+			{{ form.cln.label }}
+			<br>
+			{{ form.exclude_segdup.errors }}
+			{{ form.exclude_segdup }}
+			{{ form.exclude_segdup.label }}
+
+		</td>
+		
+	</tr>
+
+</table>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+                      Databases
+                    </a>
+                  </div>
+                  <div id="collapseThree" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                      <table class="table table-nonfluid table-striped table-bordered">
+	<tr>
+		<td>1000Genomes Frequency</td>
+		<td>
+			
+			{{ form.genomes1000.errors }}{{ form.genomes1000 }}
+			<!-- Slider -->
+            <br><br>
+            <div id="g1000-slider-range_oc"></div>
+            <br>
+            <!--end slider-->
+            {{form.genomes1000_exclude}}{{form.genomes1000_exclude.label}}
+		</td>
+	</tr>
+	<tr>
+		<td>dbSNP Frequency</td>
+		<td>
+			
+			{{ form.dbsnp_frequency.errors }}{{ form.dbsnp_frequency }}
+			<br><br>
+			<!-- Slider -->
+            <div id="dbsnp-slider-range_oc"></div>
+            <br>
+            <!--end slider-->
+			
+			{{form.dbsnp_exclude}}{{form.dbsnp_exclude.label}}
+		</td>
+	</tr>
+	<tr>
+		<td>Exome Variation Server Frequency</td>
+		<td>
+			{{ form.esp_frequency.errors }}{{ form.esp_frequency }}
+			<br><br>
+			<!-- Slider -->
+            <div id="esp-slider-range_oc"></div>
+            <br>
+            <!--end slider-->
+			{{form.esp_exclude}}{{form.esp_exclude.label}}
+		</td>
+	</tr>
+	<tr>
+		<td>Sift Score</td>
+		<td>{{ form.sift_option }}
+			{{ form.sift.errors }}{{ form.sift }}
+			<br>
+			{{ form.sift_exclude.errors }}
+			{{ form.sift_exclude }}{{ form.sift_exclude.label }}
+			<br><br>
+			<!-- Slider -->
+            <div id="sift-slider-range_oc"></div>
+            <br>
+            <!--end slider-->			
+
+		</td>
+	</tr>
+	<tr>
+		<td>Polyphen Score</td>
+		<td>
+			{{ form.polyphen_option }}
+			{{ form.polyphen.errors }}{{ form.polyphen }}
+			<br><br>
+			<!-- Slider -->
+            <div id="pp2-slider-range_oc"></div>
+            <br>
+            <!--end slider-->
+			{{ form.polyphen_exclude.errors }}
+			{{ form.polyphen_exclude }}{{ form.polyphen_exclude.label }}
+
+		</td>
+	</tr>
+	
+	
+</table>
+                  </div>
+                </div>
+              </div>
+
+	
+
+<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+{{ previous_fields|safe }}
+<input class="btn btn-primary btn-large" type="button" value="One Click" onclick="formSubmit()" />
+<img id="loading_img2" style="display:none;" src="{{ STATIC_URL }}img/ajax-loader.gif">
+</fieldset>
+
+</form>
+
+{% endblock %}
+
+
+{% block javascript %}
+      
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+      <!-- Your stuff: Third-party javascript libraries go here -->
+
+      <!-- place project specific Javascript in this file -->
+      <script src="{% static 'js/project.js' %}"></script>
+{% endblock javascript %}
+
+
+{% block extra_script %} 
+<script>
+function recessive(){
+oFormObject = document.forms['filterform'];
+oFormObject.elements["mutation_type"][1].selected = true;
+}
+function dominant(){
+oFormObject = document.forms['filterform'];
+oFormObject.elements["mutation_type"][2].selected = true;
+}
+function x_linked(){
+oFormObject = document.forms['filterform'];
+oFormObject.elements["chr"].value = 'X';
+oFormObject.elements["mutation_type"][1].selected = true;
+}
+function compound_heterozygous(){
+oFormObject = document.forms['filterform'];
+oFormObject.elements["mutation_type"][2].selected = true;
+oFormObject.elements["variants_per_gene_option"][1].selected = true;
+oFormObject.elements["variants_per_gene"].value = '2';
+
+}
+
+</script>
+<script type="text/javascript">
+	var selectmenu = document.getElementById("preconfig")
+	selectmenu.onchange = function() {//run some code when "onchange" event fires
+		var chosenoption = this.options[this.selectedIndex]//this refers to "selectmenu"
+		if(chosenoption.value == "1") {
+			oFormObject = document.forms['filterform'];
+			oFormObject.elements["genomes1000"].value = '0.01';
+			oFormObject.elements["dbsnp_frequency"].value = '0.01';
+			oFormObject.elements["variationserver_frequency"].value = '0.01';
+			oFormObject.elements["sift"].value = '0 - 0.05';
+			//change select option
+			oFormObject.elements["impact"][1].selected = true;
+			oFormObject.elements["impact"][3].selected = true;
+			//.value = new Array('MODERATE', 'HIGH');
+
+			oFormObject.elements["polyphen_option"].value = '>';
+			oFormObject.elements["polyphen"].value = '0.85';
+			oFormObject.elements["dbsnp_option"].value = '>';
+			oFormObject.elements["dbsnp_build"].value = '130';
+
+		}
+	}
+</script>
+<script type="text/javascript">
+
+oFormObject = document.forms['filterform'];
+
+oFormObject.elements["genes_in_common"].checked = true;
+oFormObject.elements["exclude_segdup"].checked = true;
+oFormObject.elements["read_depth_option"][1].selected = true;
+oFormObject.elements["read_depth"].value = '10';
+
+oFormObject.elements["impact"][0].selected = true;
+oFormObject.elements["impact"][2].selected = true;
+
+</script>
+
+<script src="{% static "bootstrap/js/bootstrap-tooltip.js" %}"></script>
+<script src="{% static "bootstrap/js/bootstrap-popover.js" %}"></script>
+<script type="text/javascript" src={% static "jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js" %}></script>
+<script type="text/javascript" src={% static "jquery-ui-bootstrap/js/init-ui.js" %}></script>
+
+
+
+{% endblock %}

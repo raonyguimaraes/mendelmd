@@ -1,0 +1,144 @@
+<style type="text/css">
+    #s2id_id_groups, #s2id_id_individuals, #s2id_id_exclude_individuals, #s2id_id_exclude_groups, #s2id_id_genelists, #s2id_id_exclude_genelists{
+        width:200px;
+    }
+    #id_individuals, #id_exclude_individuals, #id_groups, #id_exclude_groups, #id_genelists, #id_exclude_genelists{
+        display:none;
+    }
+    .btn-primary:hover, .btn-primary:focus, .btn-primary:active{
+        background-color: #d2322d;
+        color: #fff;
+        border-color: #d43f3a;
+        background-image: -webkit-linear-gradient(top,#d2322d 0,#d2322d 100%);
+    }
+    
+    
+</style>
+<script>
+    $(document).ready(function() { 
+        $("#id_individuals").select2(
+        { 
+            width: 'off',
+            placeholder: "SELECT YOUR CASES",
+            allowClear: true,
+        }
+        ); });
+    $(document).ready(function() { $("#id_exclude_individuals").select2(
+        { width: 'off',
+        placeholder: "SELECT YOUR CONTROLS", }
+        ); });
+    $(document).ready(function() { $("#id_groups").select2(
+        { width: 'off',
+        placeholder: "SELECT YOUR GROUPS", }
+        ); });
+    $(document).ready(function() { $("#id_exclude_groups").select2(
+        { width: 'off',
+        placeholder: "SELECT YOUR GROUPS", }
+        ); });
+    
+    $(document).ready(function() { $("#id_genelists").select2(
+        { width: 'off',
+        placeholder: "SELECT YOUR GENE LISTS", }
+        ); });
+
+    $(document).ready(function() { $("#id_exclude_genelists").select2(
+        { width: 'off',
+        placeholder: "SELECT YOUR GENE LISTS", }
+        ); });
+
+</script>
+
+<div class="span10">
+    <table class="table table-nonfluid table-striped table-bordered table-condensed">
+        <tr>
+            <th colspan="2">SELECT VARIANTS FROM</th>
+            <th colspan="2">EXCLUDE VARIANTS FROM</th>
+        </tr>
+        <tr>
+            <td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+                <br>
+                {{ form.individuals }}
+                <br>
+                {{ form.snp_list.errors }}
+                {{ form.snp_list.label }}:<br>
+                {{ form.snp_list }} 
+            </td>
+            <td>
+                {{ form.groups.label }}:
+                <br>
+                {{ form.groups }}
+                <br>
+                {{ form.genelists.errors }}
+                {{ form.genelists.label }}:
+                <br>
+                {{ form.genelists }}
+                <br>
+                {{ form.gene_list.errors }}
+                {{ form.gene_list.label }}:
+                <br>
+                {{ form.gene_list }} 
+            </td>
+            <td> {{ form.exclude_individuals.errors }}
+                {{ form.exclude_individuals.label }}:
+                <br>
+                {{ form.exclude_individuals }}
+                <br>{{ form.exclude_snp_list.label }}:<br>
+                {{ form.exclude_snp_list }}
+            </td>
+            <td>
+                {{ form.exclude_groups.label }}:
+                <br>
+                {{ form.exclude_groups }} 
+                <br>
+                {{ form.exclude_genelists.errors }}
+                {{ form.exclude_genelists.label }}:
+                <br>
+                {{ form.exclude_genelists }}
+                <br>
+                {{ form.exclude_gene_list.errors }}
+                {{ form.exclude_gene_list.label }}:
+                <br>
+                {{ form.exclude_gene_list }}
+
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <div class="control-group">
+                  <label class="control-label">SELECT INHERITANCE:</label>
+                  <div class="controls">
+                    <div class="btn-group inheritance" data-toggle="buttons-radio">
+                      <button type="button" data-toggle="button" onclick="recessive()" name="option" value="1" class="btn btn-primary">RECESSIVE HOMOZYGOUS</button>
+                      <button type="button" data-toggle="button" onclick="compound_heterozygous()" name="option" value="2" class="btn btn-primary">RECESSIVE COMPOUND HETEROZYGOUS</button>
+                      <button type="button" data-toggle="button" onclick="dominant()" name="option" value="3" class="btn btn-primary">DOMINANT HETEROZYGOUS</button>
+                      <button type="button" data-toggle="button" onclick="x_linked_recessive()" name="option" value="4" class="btn btn-primary">X-LINKED RECESSIVE HEMIZYGOUS</button>
+                      <button type="button" data-toggle="button" onclick="x_linked_dominant()" name="option" value="5" class="btn btn-primary">X-LINKED DOMINANT HETEROZYGOUS</button>
+                      
+                  </div>
+              </div>
+          </div>
+      </td>
+  </tr>
+  <tr>
+        <td colspan="4">
+            <b>SELECT YOUR DISEASES:</b>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            OMIM: {{form.omim}}<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            CLINICAL GENOMICS DATABASE: {{form.cgd}}<br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            HGMD: {{form.hgmd}}
+        </td>
+    </tr>
+
+</table>
+</div>

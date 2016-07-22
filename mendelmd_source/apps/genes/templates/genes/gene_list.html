@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "List Genes" %}{% endblock %}
+
+{% block content %}
+
+	<h1>Gene Lists</h1>
+	
+	<div class="btn-group">	    
+		<a class="btn btn-sm" href="{% url 'geneset-create' %}">Create GeneList</a>
+	</div>
+	<table class="table table-striped table-bordered table-condensed">
+		<tr>
+			<th>Name</th>
+			<th>Options</th>
+
+		</tr>
+	{% for genelist in genelists %}
+		<tr>
+			<td>{{genelist.name}}</td>
+			<td>
+				<a class="btn btn-sm" href="{% url 'geneset-detail' genelist.id %}">View</a>
+				<a class="btn btn-sm" href="{% url 'geneset-delete' genelist.id %}">Delete</a>
+				
+			</td>
+		</tr>
+	{% endfor %}
+	</table>
+
+    <h1>{% trans "Genes" %}</h1>
+    {% include "search.html" %}
+
+    <div class="pagination">
+    <span class="page-links">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="page-current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+    
+    <form action="." method="post">{% csrf_token %}
+	<input type="submit" value="Use selected genes for Filter Analysis" />
+	
+	<table class="table table-striped table-bordered table-condensed">
+		<tr>
+			<th style="width: 3%">#<input type="checkbox" id="select_all"></th>
+			<th>Symbol</th>
+			<th>Name</th>
+			<th>Options</th>
+			
+		</tr>
+		{% for gene in genes %}
+		<tr>
+			<td><input type="checkbox" name="genes" class="genes" id="option{{gene.id}}" value="{{gene.id}}" /></td>
+			<td><a href="{% url 'gene_detail' gene.id %}">{{ gene.symbol }}</a></td>
+			<td>{{ gene.name }}</td>
+			<td><a href="{% url 'gene_view' gene.symbol %}">View Gene Variants</a></td>
+			
+		</tr>
+		{% endfor %}
+	</table>
+	{% include "pagination.html" %}
+	<input type="submit" value="Use selected genes for Filter Analysis" />
+	</form>
+    
+{% endblock %}
+
+{% block extra_script %} 
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".genes:checkbox").attr('checked', this.checked);
+});
+</script>
+{% endblock %}

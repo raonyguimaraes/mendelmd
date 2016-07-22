@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% load pagination_tags %}
+
+{% load get_genotype %}
+
+{% block title %}{% trans "View Group" %}{% endblock %}
+
+{% block content %}
+<h1>{{ group }}</h1>
+<h2>Members</h2>
+<ul>
+{% for member in group.members.all %}
+
+	<li>{{ member }}</li>
+
+{% endfor %}
+</ul>
+
+{% endblock %}

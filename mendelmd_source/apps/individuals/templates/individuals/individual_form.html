@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% load i18n %}
+{% load account %}
+{% load url from future %}
+
+{% block head_title %}{% trans "Edit Individual" %}{% endblock %}
+
+{% block content %}
+<div class="col-md-4">
+
+<h1>{% trans "Edit Individual" %}</h1>
+
+<form method="post" action=".">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button class="btn btn-primary" type="submit">{% trans "Save" %} &raquo;</button>
+</form>
+</div>
+{% endblock %}

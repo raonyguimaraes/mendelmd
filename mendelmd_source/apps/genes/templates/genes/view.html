@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% load gene_extras %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Gene" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Gene" %} - {{ gene_object.symbol }}</h1>
+    <div class="tabbable"> <!-- Only required for left/right tabs -->
+	  <ul class="nav nav-tabs">
+	    <li class="active"><a href="#tab1" data-toggle="tab">Gene Description</a></li>
+	    <li><a href="#tab2" data-toggle="tab">Variants</a></li>
+	  </ul>
+	  <div class="tab-content">
+	    <div class="tab-pane active" id="tab1">
+	      <table class="table table-striped table-bordered table-condensed">
+			{% for field, value in gene_object.get_fields %}
+				<tr>
+					<td style="width: 22%">{{ field }}</td>
+					<td>{{ value }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	    </div>
+	    <div class="tab-pane" id="tab2">
+    	  <h2>Variants By Individual</h2>
+	      <table class="table table-nonfluid table-striped table-bordered table-condensed">
+	    	<tr>
+	    		<th>Name</th>
+	    		<th>Novel</th>
+	    		<th>Known</th>
+	    		<th>Total Variants</th>
+	    	</tr>
+		{% for individual in variants_by_individuals %}
+			<tr>
+				<td>{{ individual.individual }}</td>
+				<td>{{ individual.novel }}</td>
+				<td>{{ individual.known }}</td>
+				<td>{{ individual.total }}</td>
+			</tr>
+		{% endfor %}
+		<tr>
+				<td>Total</td>
+				<td>{{variants_summary.individual.novel}}</td>
+				<td>{{variants_summary.individual.known}}</td>
+				<td>{{variants_summary.individual.total}}</td>
+	    		
+			</tr>
+	    </table>
+	    
+	    	<h2>Variants by Effect</h2>
+	    	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		    	<tr>
+		    		<th>Name</th>
+		    		{% for item in dna_variation_classes %}
+		    		<th>{{ item }}</th>
+		    		{% endfor %}
+		    	</tr>
+			{% for individual,variants in individuals_dna_variation.items %}
+				<tr>
+					<td>{{ individual }}</td>
+					{% for item in dna_variation_classes %}
+					<td>{% dictKeyLookup variants item %}</td>
+		    		{% endfor %}
+				</tr>
+			{% endfor %}
+				<tr>
+					<td>Total</td>
+					{% for item in dna_variation %}
+		    		<td>{{ item.total }}</td>
+		    		{% endfor %}
+				</tr>
+		    </table>
+	    
+	    	<h2>Variants By Functional Class</h2>
+	    	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		    	<tr>
+		    		<th>Name</th>
+		    		{% for item in functional_class_classes %}
+		    		<th>{{ item }}</th>
+		    		{% endfor %}
+		    	</tr>
+			{% for individual,variants in individuals_functional_class.items %}
+				<tr>
+					<td>{{ individual }}</td>
+					{% for item in functional_class_classes %}
+					<td>{% dictKeyLookup variants item %}</td>
+		    		{% endfor %}
+				</tr>
+			{% endfor %}
+				<tr>
+					<td>Total</td>
+					{% for item in functional_class %}
+		    		<td>{{ item.total }}</td>
+		    		{% endfor %}
+				</tr>
+		    </table>
+	    	
+	    
+	    	<h2>Variants By Impact</h2>
+	    	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		    	<tr>
+		    		<th>Name</th>
+		    		{% for item in impact_classes %}
+		    		<th>{{ item }}</th>
+		    		{% endfor %}
+		    	</tr>
+			{% for individual,variants in individuals_impact.items %}
+				<tr>
+					<td>{{ individual }}</td>
+					{% for item in impact_classes %}
+					<td>{% dictKeyLookup variants item %}</td>
+		    		{% endfor %}
+				</tr>
+			{% endfor %}
+				<tr>
+					<td>Total</td>
+					{% for item in impact %}
+		    		<td>{{ item.total }}</td>
+		    		{% endfor %}
+				</tr>
+		    </table>
+	    </div>
+	    
+	  </div>
+	</div>
+    
+    
+    
+    <a href="http://omim.org/search?index=entry&sort=score+desc%2C+prefix_sort+desc&start=1&limit=10&search={{ gene_object.symbol }}" target="_blank">Omim</a> - <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={{ gene_object.symbol }}" target="_blank">GeneCards</a> - <a href="http://www.ncbi.nlm.nih.gov/gquery/?term={{ gene_object.symbol }}&SITE=NcbiHome&submit=Go" target="_blank">NCBI</a>
+    
+    
+    
+    
+    
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% load paginator %}
+
+{% block title %}{% trans "View Case" %}{% endblock %}
+
+{% block content %}
+<h1>Case {{case.id}} {{case.name}}</h1>
+<div class="row">
+    <div class="btn-group" style="float:right;">
+    	<a class="btn btn-primary" href="{% url 'cases_list' %}">{% trans "Cases List" %}</a>
+        <a class="btn btn-primary" href="#">{% trans "New Analysis" %}</a>
+    </div>
+</div>
+<br>
+<div class="row">
+  <div class="col-md-4">
+  	<table class="table">
+	<colgroup>
+	    <col class="span1" />
+	    <col class="span1" />
+	  </colgroup>
+	<tr>
+		<th>id</th><td>{{case.id}}</td>
+	</tr>
+	<tr>
+		<th>user</th><td>{{case.user}}</td>
+	</tr>
+	<tr>
+		<th>name</th><td>{{case.name}}</td>
+	</tr>
+	<tr>
+		<th>description</th><td>{{case.description}}</td>
+	</tr>
+	<tr>
+		<th>mother</th><td>{{case.mother}}</td>
+	</tr>
+	<tr>
+		<th>father</th><td>{{case.father}}</td>
+	</tr>
+	
+	<tr>
+		<th>children</th>
+		<td>
+		<!-- {{case.affected_individuals.all}} -->
+		{% for individual in case.children.all %}
+			{{individual.name}} <br>
+		{% endfor %}
+		</td>
+	</tr>
+	<tr>
+		<th>cases</th>
+		<td>
+			{% for individual in case.cases.all %}
+			{{individual.name}}<br>
+		{% endfor %}
+		</td>
+	</tr>
+	<tr>
+		<th>controls</th>
+		<td>
+			{% for individual in case.controls.all %}
+			{{individual.name}}<br>
+		{% endfor %}
+		</td>
+	</tr>
+	<tr>
+		<th>Options</th>
+		<td>
+			<a href="{% url 'edit_case' case.id %}" class="btn btn-primary">Edit</a>
+			<a href="{% url 'delete_case' case.id %}" class="btn btn-primary">Delete</a>
+		</td>
+	</tr>
+</table>
+
+  </div>
+    
+</div>
+
+<div class="col-md-8">
+    <h2>One Click</h2>
+<div class="row">
+    <div class="btn-group" style="float:left;">
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'filter_analysis' 'one_click' %}">{% trans "One Click" %}</a>
+        
+    </div>
+</div>
+
+    <h2>Filter Analysis</h2>
+<div class="row">
+    <div class="btn-group" style="float:left;">
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'filter_analysis' 'recessive_homozygous' %}">{% trans "Autosomal Recessive" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'filter_analysis' 'compound_heterozygous' %}">{% trans "Recessive Compound Heterozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'filter_analysis' 'dominant_heterozygous' %}">{% trans "Dominant Heterozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'filter_analysis' 'x_linked' %}">{% trans "X-Linked" %}</a>
+    </div>
+</div>
+
+<h2>Family Analysis</h2>
+<div class="row">
+    <div class="btn-group" style="float:left;">
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'family_analysis' 'recessive_homozygous' %}">{% trans "Recessive Homozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'family_analysis' 'compound_heterozygous' %}">{% trans "Recessive Compound Heterozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'family_analysis' 'dominant_heterozygous' %}">{% trans "Dominant Heterozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'family_analysis' 'x_linked' %}">{% trans "X-Linked" %}</a>
+    </div>
+</div>
+
+<h2>Pathway Analysis</h2>
+<div class="row">
+    <div class="btn-group" style="float:left;">
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'pathway_analysis' 'recessive_homozygous' %}">{% trans "Recessive Homozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'pathway_analysis' 'compound_heterozygous' %}">{% trans "Recessive Compound Heterozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'pathway_analysis' 'dominant_heterozygous' %}">{% trans "Dominant Heterozygous" %}</a>
+        <a target="_blank" class="btn btn-primary" href="{% url 'analyze_case' case.id 'pathway_analysis' 'x_linked' %}">{% trans "X-Linked" %}</a>
+    </div>
+</div>
+
+
+	</div>
+
+<!-- 
+<h2>Analysis</h2>
+<div class="row">
+    <div class="btn-group" style="float:left;">
+        <a class="btn btn-primary" href="#">{% trans "New Analysis" %}</a>
+    </div>
+</div>
+<br>
+
+
+<h2>Variants</h2>
+
+<br>
+ -->
+
+{% endblock %}
+

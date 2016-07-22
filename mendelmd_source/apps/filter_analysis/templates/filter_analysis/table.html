@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load django_select2_tags %}
+{% load i18n %}
+{% load sorting_tags %}
+{% load pagination_tags %}
+{% load filter_extras %}
+
+{% block title %}{% trans "Filter Analysis - Table" %}{% endblock %}
+
+{% block extra_css %}
+<script type="text/javascript">
+	function formSubmit() {
+		newwindow = document.getElementById("newwindow");
+		if(newwindow.checked == true)
+			document.getElementById("filterform").target = "_blank";
+		document.getElementById("filterform").submit();
+		//document.getElementById('loading_img').style.display = "block";
+		$('#loading_img').show();
+		$('#loading_img2').show();
+	}
+</script>
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+<link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
+<link href="{% static "css/style.css" %}" rel="stylesheet">
+<script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
+	{% import_django_select2_css %}
+	{% import_django_select2_js %}
+
+{% endblock %}
+
+{% block content %}
+
+	<table class="table table-nonfluid table-striped table-bordered">
+	<tr>
+		<td>Options</td>
+		<td>Variants</td>
+		<td>Genes</td>
+		<td>Genes at OMIM</td>
+	</tr>
+	{% for row in table %}
+		<tr>
+		{% for key, value in row.items %}
+			<td>{{key}}</td>
+			{% for key2, item in value.items %}
+				<td>{{item}}</td>
+			{% endfor %}
+
+		{% endfor %}
+		</tr>
+	{% endfor %}
+	</table>
+
+{% endblock %}
+
+
+{% block javascript %}
+      
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<!-- Your stuff: Third-party javascript libraries go here -->
+<script src="{{ STATIC_URL }}js/tooltip.js"></script>
+<script src="{{ STATIC_URL }}js/popover.js"></script>
+
+{% for variant in variants.object_list %}
+<script>
+	$(function() {
+		$('#variant{{ variant.id }}').popover({
+			placement : 'left',
+			html:true
+		})
+	})
+</script>
+{% endfor %}
+
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
+
+      <!-- place project specific Javascript in this file -->
+      <script src="{% static 'js/project.js' %}"></script>
+{% endblock javascript %}

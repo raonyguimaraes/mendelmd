@@ -1,0 +1,62 @@
+
+<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onClick="return false;">
+          + Filter Options <img id="loading_img2" style="display:none;" src="{{ STATIC_URL }}img/ajax-loader.gif">
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse {% if not variants %}in{% endif %} ">
+      <div class="panel-body">
+        {% include "filter_analysis/filter_form_pathanalysis.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="panel-group" id="accordion2">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" onClick="return false;">
+          + Genes {% if summary.genes %}{{summary.genes|length}}{% endif %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse {% if summary.n_genes < 500 %}in{% endif %} ">
+      <div class="panel-body">
+        Genes:
+		<br>
+		{% if summary.n_genes < 500 %}
+			{% for gene in summary.genes %} 
+				<a href="?{{ query_string }}&gene_list={{ gene }}" target="_blank">{{ gene }}</a>,
+			{% endfor %}
+		{% else %}
+		    <li>Your list of genes is bigger than 500. Please, try to increase the parameters.</li>
+		{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="panel-group" id="accordion3">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion3" href="#collapseThree" onClick="return false;">
+          + Genes associated with diseases {% if genes_omim %}{{genes_omim|length}}{% endif %}
+          </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+        {% include "tabs/genes.html" %}		
+      </div>
+    </div>
+  </div>
+</div>
+

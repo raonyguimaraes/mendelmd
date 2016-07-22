@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>Create GeneList</h1>
+<h5>Here you can add your list of genes separated by line or by comma.</h5>
+<form role="form" class="form" enctype="multipart/form-data" action="." method="post">{% csrf_token %}
+	{{ form.as_p }}
+	<div class="form-actions">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+{% endblock %}

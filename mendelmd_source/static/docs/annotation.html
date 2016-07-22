@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Annotation &mdash;  0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title=" 0.1 documentation" href="index.html" />
+    <link rel="next" title="Models" href="models.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="models.html" title="Models"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html"> 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="annotation">
+<h1>Annotation<a class="headerlink" href="#annotation" title="Permalink to this headline">¶</a></h1>
+<p>The annotation pipeline was developed to allow the integration of new methods and tools to the annotation process and quickly annotate your VCF files with the most possible new information available and tools.</p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>GATK</li>
+<li>vcftools</li>
+<li>Annovar - versão (Fri, 23 Aug 2013),</li>
+<li>VEP - versão 72</li>
+<li>SnpEff - versão SnpEff 3.3h (build 2013-08-20), by Pablo Cingolani</li>
+</ul>
+</div>
+<div class="section" id="files">
+<h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>HI_Score - versão vcftools_0.1.10</li>
+<li>dbSNP- versão 138</li>
+<li>1000Genomes - versão ALL.wgs.integrated_phase1_v3.20101123</li>
+<li>Exome Sequencing Project - versão 6500_si</li>
+</ul>
+</div>
+<div class="section" id="annotation-from-command-line">
+<h2>Annotation from Command Line<a class="headerlink" href="#annotation-from-command-line" title="Permalink to this headline">¶</a></h2>
+<p>In order to annotate your VCF file from the command line you can use the following command:</p>
+<p>python ../scripts/annotator.py -v sample.1000.vcf</p>
+<p>This should run all possible annotations against your vcf files and generate at the end of the process a VCF file that was annotated with all the possible annotations from the pipeline.</p>
+<p>In order to help you download and visualize the data we also convert this VCF file to a CSV format that can be easily opened with in your favorite spreadsheet tool (Ex. Excel, Calc and etc)</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../Diagrams/Annotation_Pipeline.png"><img alt="../Diagrams/Annotation_Pipeline.png" src="../Diagrams/Annotation_Pipeline.png" /></a>
+<p class="caption">Mendel,MD Annotation Pipeline.</p>
+</div>
+</div>
+<div class="section" id="description-of-methods">
+<h2>Description of Methods<a class="headerlink" href="#description-of-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>First of all the run the methods &#8220;vcf-validator&#8221; from vcftools make sure this it&#8217;s a valid VCF file before we start annotating.Thread</dt>
+<dd>from</dd>
+</dl>
+<p>After this validation we run a script called &#8220;sanitycheck&#8221; that removes the genotypes such as [0/0, ./.] from the VCF, removes &#8220;chr&#8221; from the beggining of the CHROM column and finally sort the file on this order [1...22, X, Y, MT].</p>
+<p>After the sanitycheck is finished we can use the &#8220;Thread&#8221; module from &#8220;threading&#8221; library to parallelize multiple tasks execute each a different program and can annotate your vcf file all simultaneously.</p>
+<p>This is useful in situations where you have good computational resources available and you want to get the results of your tasks in the fastest tiem possible.</p>
+<p>So in this configuration we run tools such as snpeff, annovar and VEP to annotate your vcf file with each of this tools.</p>
+<p>After all the tasks from this tools are finished we run a script called &#8220;merge&#8221; that uses VariantAnnotator from GenomeAnalysisTK in order to integrate all the results and also annotate other fields to your VCF file such as rsid from dbSNP138.</p>
+</div>
+<div class="section" id="installation-of-vep">
+<h2>Installation of VEP<a class="headerlink" href="#installation-of-vep" title="Permalink to this headline">¶</a></h2>
+<p>In order to install VEP you need the following commands:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><blockquote class="first">
+<div><p>perl INSTALL.pl
+#Do you want to install any cache files (y/n)? y</p>
+<p>#The following species/files are available; which do you want (can specify multiple separated by spaces or 0 for all):
+# 28 : homo_sapiens_vep_75.tar.gz  (3,5 GB)
+#? 28
+#This will take an enormous amount of time and you won&#8217;t even be able to see the time left for the download to finish. Do some other things during this time!</p>
+<p>#Do you want to install any FASTA files (y/n)? y
+? 27</p>
+</div></blockquote>
+<ul class="simple">
+<li>downloading Homo_sapiens.GRCh37.75.dna.primary_assembly.fa.gz</li>
+</ul>
+<p>The FASTA file should be automatically detected by the VEP when using &#8211;cache or &#8211;offline. If it is not, use &#8220;&#8211;fasta /home/raony/.vep/homo_sapiens/75/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa&#8221;</p>
+<blockquote class="last">
+<div>perl variant_effect_predictor.pl &#8211;offline
+#testing vep installation
+sudo perl variant_effect_predictor.pl -i example.vcf &#8211;offline</div></blockquote>
+</dd>
+</dl>
+<p>Installing snpeff</p>
+<blockquote>
+<div>#wget <a class="reference external" href="http://sourceforge.net/projects/snpeff/files/snpEff_latest_core.zip">http://sourceforge.net/projects/snpeff/files/snpEff_latest_core.zip</a>
+wget <a class="reference external" href="http://downloads.sourceforge.net/project/snpeff/snpEff_v3_6_core.zip">http://downloads.sourceforge.net/project/snpeff/snpEff_v3_6_core.zip</a>
+unzip snpEff_latest_core.zip</div></blockquote>
+<p>Annotation Sources</p>
+<ul class="simple">
+<li>Snpeff</li>
+<li>VEP</li>
+<li>SnpSift</li>
+<li>HI_Index</li>
+</ul>
+<p>1000Genomes</p>
+<p>dbSNP138
+VCF FileS</p>
+<p>ESP
+(VCF file)</p>
+<p>dbNSFP2.4
+<a class="reference external" href="http://dbnsfp.houstonbioinformatics.org/dbNSFPzip/dbNSFP2.4.readme.txt">http://dbnsfp.houstonbioinformatics.org/dbNSFPzip/dbNSFP2.4.readme.txt</a></p>
+</div>
+<div class="section" id="annovar">
+<h2>Annovar<a class="headerlink" href="#annovar" title="Permalink to this headline">¶</a></h2>
+<p>Annotated Fields</p>
+<p>&#8216;Func.refGene&#8217;, &#8216;Gene.refGene&#8217;, &#8216;ExonicFunc.refGene&#8217;, &#8216;AAChange.refGene&#8217;, &#8216;phastConsElements46way&#8217;, &#8216;genomicSuperDups&#8217;, &#8216;esp6500si_all&#8217;, &#8216;1000g2012apr_all&#8217;, &#8216;LJB2_SIFT&#8217;, &#8216;LJB2_PolyPhen2_HDIV&#8217;, &#8216;LJB2_PP2_HDIV_Pred&#8217;, &#8216;LJB2_PolyPhen2_HVAR&#8217;, &#8216;LJB2_PolyPhen2_HVAR_Pred&#8217;, &#8216;LJB2_LRT&#8217;, &#8216;LJB2_LRT_Pred&#8217;, &#8216;LJB2_MutationTaster&#8217;, &#8216;LJB2_MutationTaster_Pred&#8217;, &#8216;LJB_MutationAssessor&#8217;, &#8216;LJB_MutationAssessor_Pred&#8217;, &#8216;LJB2_FATHMM&#8217;, &#8216;LJB2_GERP++&#8217;, &#8216;LJB2_PhyloP&#8217;, &#8216;LJB2_SiPhy&#8217;, &#8216;cosmic65&#8217;, &#8216;avsift&#8217;</p>
+<p>Description of the fields can be found in www.openbioinformatics.org/annovar/</p>
+<p>Func_refGene
+Gene_refGene
+ExonicFunc_refGene
+AAChange_refGene
+phastConsElements46way
+genomicSuperDups
+esp6500si_all
+1000g2012apr_all
+LJB2_SIFT
+LJB2_PolyPhen2_HDIV
+LJB2_PP2_HDIV_Pred
+LJB2_PolyPhen2_HVAR
+LJB2_PolyPhen2_HVAR_Pred
+LJB2_LRT
+LJB2_LRT_Pred
+LJB2_MutationTaster
+LJB2_MutationTaster_Pred
+LJB_MutationAssessor
+LJB_MutationAssessor_Pred
+LJB2_FATHMM
+LJB2_GERP++
+LJB2_PhyloP
+LJB2_SiPhy
+cosmic65
+avsift</p>
+<p>record.annovar.func_refgene
+record.annovar.gene_refgene
+record.annovar.exonicfunc_refgene
+record.annovar.aachange_refgene
+record.annovar.phastconselements46way
+record.annovar.genomicsuperdups
+record.annovar.esp6500si_all
+record.annovar.1000g2012apr_all
+record.annovar.ljb2_sift
+record.annovar.ljb2_polyphen2_hdiv
+record.annovar.ljb2_pp2_hdiv_pred
+record.annovar.ljb2_polyphen2_hvar
+record.annovar.ljb2_polyphen2_hvar_pred
+record.annovar.ljb2_lrt
+record.annovar.ljb2_lrt_pred
+record.annovar.ljb2_mutationtaster
+record.annovar.ljb2_mutationtaster_pred
+record.annovar.ljb_mutationassessor
+record.annovar.ljb_mutationassessor_pred
+record.annovar.ljb2_fathmm
+record.annovar.ljb2_gerp++
+record.annovar.ljb2_phylop
+record.annovar.ljb2_siphy
+record.annovar.cosmic65
+record.annovar.avsift</p>
+<p>Sources: <a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_gene.html">http://www.openbioinformatics.org/annovar/annovar_gene.html</a></p>
+<p>func_refgene classes:
+splicing
+UTR5
+ncRNA_exonic
+intergenic
+intronic
+UTR3
+exonic
+upstream
+ncRNA_intronic</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Annotation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#files">Files</a></li>
+<li><a class="reference internal" href="#annotation-from-command-line">Annotation from Command Line</a></li>
+<li><a class="reference internal" href="#description-of-methods">Description of Methods</a></li>
+<li><a class="reference internal" href="#installation-of-vep">Installation of VEP</a></li>
+<li><a class="reference internal" href="#annovar">Annovar</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="models.html"
+                        title="next chapter">Models</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/annotation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="models.html" title="Models"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html"> 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, ChangeMyName.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

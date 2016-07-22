@@ -1,0 +1,133 @@
+<style type="text/css">
+	#s2id_id_groups, #s2id_id_individuals, #s2id_id_exclude_individuals, #s2id_id_exclude_groups, #s2id_id_genelists, #s2id_id_exclude_genelists, #s2id_id_father, #s2id_id_mother, #s2id_id_children{
+		width:200px;
+		/*height: 50px;*/
+	}
+	#id_individuals, #id_exclude_individuals, #id_groups, #id_exclude_groups, #id_genelists, #id_exclude_genelists{
+		display:none;
+	}
+</style>
+<script>
+	$(document).ready(function() { 
+
+	$("#id_father").select2({ 
+	width: 'off',
+	placeholder: "SELECT FATHER",
+	allowClear: true,
+	 });
+
+	$("#id_mother").select2({ 
+	width: 'off',
+	placeholder: "SELECT MOTHER",
+	allowClear: true,
+	 });
+
+	$("#id_children").select2({ 
+	width: 'off',
+	placeholder: "SELECT CHILDREN",
+	allowClear: true,
+	 });
+
+	$("#id_individuals").select2(
+	{ 
+		width: 'off',
+		placeholder: "SELECT YOUR CASES",
+		allowClear: true,
+	}
+	); });
+	$(document).ready(function() { $("#id_exclude_individuals").select2(
+		{ width: 'off',
+		placeholder: "SELECT YOUR CONTROLS", }
+		); });
+	$(document).ready(function() { $("#id_groups").select2(
+		{ width: 'off',
+		placeholder: "SELECT YOUR GROUPS", }
+		); });
+	$(document).ready(function() { $("#id_exclude_groups").select2(
+		{ width: 'off',
+		placeholder: "SELECT YOUR GROUPS", }
+		); });
+	
+	$(document).ready(function() { $("#id_genelists").select2(
+		{ width: 'off',
+		placeholder: "SELECT YOUR GENELISTS", }
+		); });
+
+	$(document).ready(function() { $("#id_exclude_genelists").select2(
+		{ width: 'off',
+		placeholder: "SELECT YOUR GENELISTS", }
+		); });
+
+</script>
+
+<div class="span10">
+	<table class="table table-nonfluid table-striped table-bordered table-condensed">
+		<tr>
+			<th >FATHER</th>
+			<th >MOTHER</th>
+			
+			<th >INHERITANCE</th>
+		</tr>
+		<tr>
+			<td>{{ form.father }}</td>
+			<td>{{ form.mother }}</td>
+			
+			<td>{{ form.inheritance_option }}</td>
+		</tr>
+		
+		<tr>
+			<th colspan="2">SELECT VARIANTS FROM</th>
+			<th colspan="2">EXCLUDE VARIANTS FROM</th>
+		</tr>
+		<tr>
+			<td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+				<br>
+				{#{ form.individuals }#}
+				{{ form.children }}
+				<br>
+				{{ form.snp_list.errors }}
+				{{ form.snp_list.label }}:<br>
+				{{ form.snp_list }} 
+			</td>
+			<td>
+				{{ form.groups.label }}:
+				<br>
+				{{ form.groups }}
+				<br>
+				{{ form.genelists.errors }}
+				{{ form.genelists.label }}:
+				<br>
+				{{ form.genelists }}
+				<br>
+				{{ form.gene_list.errors }}
+				{{ form.gene_list.label }}:
+				<br>
+				{{ form.gene_list }} 
+			</td>
+			<td> {{ form.exclude_individuals.errors }}
+				{{ form.exclude_individuals.label }}:
+				<br>
+				{{ form.exclude_individuals }}
+				<br>{{ form.exclude_snp_list.label }}:<br>
+				{{ form.exclude_snp_list }}
+			</td>
+			<td>
+				{{ form.exclude_groups.label }}:
+				<br>
+				{{ form.exclude_groups }} 
+				<br>
+				{{ form.exclude_genelists.errors }}
+				{{ form.exclude_genelists.label }}:
+				<br>
+				{{ form.exclude_genelists }}
+				<br>
+				{{ form.exclude_gene_list.errors }}
+				{{ form.exclude_gene_list.label }}:
+				<br>
+				{{ form.exclude_gene_list }}
+
+			</td>
+		</tr>
+	</table>
+</div>
+

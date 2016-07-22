@@ -1,0 +1,16 @@
+<table class="table table-condensed">
+	{% for filterconfig in filterconfigs %}
+	<tr>
+		<th>Name</th>
+		<th>User</th>
+		<th>Created on</th>
+		<th>Options</th>
+	</tr>
+	<tr>
+		<td><a href="?{{filterconfig.filterstring}}">{{ filterconfig.name }}</a></td>
+		<td> {{ filterconfig.user }} </td>
+		<td> {{ filterconfig.created }} </td>
+		<td><a href="{% url 'config_update' filterconfig.id %}">Edit</a><a href="{% url 'config_delete' filterconfig.id %}">Delete</a></td>
+	</tr>
+	{% endfor %}
+</table>

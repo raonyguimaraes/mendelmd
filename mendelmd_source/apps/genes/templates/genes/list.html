@@ -1,0 +1,28 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "List Genes" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Genes" %}</h1>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Options</th>
+			<th>File</th>
+			<th>Uploaded By</th>
+			<th>Status</th>
+		</tr>
+		{% for gene in genes %}
+		<tr>
+			<td>{{ gene.symbol }}</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		{% endfor %}
+	</table>
+    
+{% endblock %}

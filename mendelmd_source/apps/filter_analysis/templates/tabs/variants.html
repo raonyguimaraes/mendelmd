@@ -1,0 +1,87 @@
+<table class="table table-nonfluid table-striped table-bordered">
+									<tr>
+										<td>
+											{{ form.mutation_type.errors }}
+											{{ form.mutation_type.label }}:<br>{{ form.mutation_type }}
+										</td>
+										<td>
+											{{ form.chr.errors }}
+											{{ form.chr.label }}:<br>{{ form.chr }}
+											<br>
+											{{ form.pos.errors }}
+											{{ form.pos.label }}:<br>{{ form.pos }}
+										</td>
+										<td>
+											{{ form.filter }}
+										</td>
+									</tr>
+									<tr>
+										<th>VARIANT EFFECT</th>
+										<th>FUNCTIONAL CLASS</th>
+										<th>IMPACT</th>
+									</tr>
+									<tr>
+										<td>
+											{{ form.effect }}
+										</td>
+										<td>
+											{{ form.func_class }}
+										</td>
+										<td>
+										{{ form.impact }}			
+										</td>
+									</tr>
+									<tr>
+										<td>
+											{{ form.dbsnp_option.label }}:
+											<br>
+											{{ form.dbsnp_option }}
+											{{ form.dbsnp_build }}
+											<br><br>
+											{{ form.exclude_varisnp }}
+											{{ form.exclude_varisnp.label }}
+										</td>
+										<td>
+											{{ form.read_depth_option.errors }}
+											{{ form.read_depth_option.label }}:
+											<br>
+											{{ form.read_depth_option }}
+											{{ form.read_depth.errors }}{{ form.read_depth }}
+											<br>
+											{{ form.qual_option.errors }}
+											{{ form.qual_option.label }}:
+											<br>
+											{{ form.qual_option }}
+											{{ form.qual.errors }}{{ form.qual }}								
+										</td>
+										<td>
+											{{ form.variants_per_gene_option.errors }}
+											{{ form.variants_per_gene_option.label }}:
+											<br>
+											{{ form.variants_per_gene_option }}
+											{{ form.variants_per_gene.errors }}{{ form.variants_per_gene }}
+										</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+											{{ form.genes_in_common.errors }}
+											{{ form.genes_in_common }}
+											{{ form.genes_in_common.label }}
+											<br>
+											{{ form.positions_in_common.errors }}
+											{{ form.positions_in_common }}
+											{{ form.positions_in_common.label }}
+											<br>
+											{{ form.dbsnp.errors }}
+											{{ form.dbsnp }}
+											{{ form.dbsnp.label }}
+											<br>
+											{{ form.is_at_hgmd.errors }}
+											{{ form.is_at_hgmd }}
+											{{ form.is_at_hgmd.label }}
+											
+										</td>
+										
+									</tr>
+								
+								</table>

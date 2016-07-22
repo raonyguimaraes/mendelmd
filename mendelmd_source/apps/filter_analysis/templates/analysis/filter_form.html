@@ -1,0 +1,427 @@
+
+<div class="accordion" id="accordion2">
+	<div class="accordion-group">
+		<div id="collapseOne" class="accordion-body in">
+			<div class="accordion-inner">
+				<form id='filterform' action="." method="get" enctype="multipart/form-data">
+					<div class="tabbable tabs-left ">
+						<ul class="nav nav-tabs">
+							<li class="active"><a href="#individuals" data-toggle="tab">Individuals</a></li>
+							<li><a href="#variants" data-toggle="tab">Variants</a></li>
+							<li><a href="#databases" data-toggle="tab">Databases</a></li>
+							<li><a href="#diseases" data-toggle="tab">Diseases</a></li>
+							<li>
+								<a href="#filterconfig" data-toggle="tab">Saved Configs</a>
+							</li>
+							<li>
+								<a href="#filters" data-toggle="tab">Saved Analysis</a>
+							</li>
+							<li>
+								<a href="#faq" data-toggle="tab">FAQ</a>
+							</li>
+							<li>
+								<a href="#fields" data-toggle="tab">Fields</a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="individuals">
+								<div class="span10">
+									<table class="table table-nonfluid table-striped table-bordered table-condensed">
+										<tr>
+											<th colspan="2">Select Variants From</th>
+											<th colspan="2">Exclude Variants From</th>
+										</tr>
+										<tr>
+											<td> {{ form.individuals.errors }}{{ form.individuals.label }}:
+											<br>
+											{{ form.individuals }}
+											<br>
+											{{ form.snp_list.errors }}
+											{{ form.snp_list.label }}:<br>
+											{{ form.snp_list }} 
+											</td>
+											<td>
+											{{ form.groups.label }}:
+											<br>
+											{{ form.groups }}
+											<br>
+											{{ form.genelists.errors }}
+											{{ form.genelists.label }}:
+											<br>
+											{{ form.genelists }}
+											<br>
+											{{ form.gene_list.errors }}
+											{{ form.gene_list.label }}:
+											<br>
+											{{ form.gene_list }} 
+											</td>
+											<td> {{ form.exclude_individuals.errors }}
+											{{ form.exclude_individuals.label }}:
+											<br>
+											{{ form.exclude_individuals }}
+											<br>{{ form.exclude_snp_list.label }}:<br>
+											{{ form.exclude_snp_list }}
+											</td>
+											<td>
+											{{ form.exclude_groups.label }}:
+											<br>
+											{{ form.exclude_groups }} 
+											<br>
+											{{ form.exclude_genelists.errors }}
+											{{ form.exclude_genelists.label }}:
+											<br>
+											{{ form.exclude_genelists }}
+											<br>
+											{{ form.exclude_gene_list.errors }}
+											{{ form.exclude_gene_list.label }}:
+											<br>
+											{{ form.exclude_gene_list }}
+
+											</td>
+										</tr>
+									</table>
+								</div>
+
+<script>
+	$(document).ready(function() { $("#id_individuals").select2(
+	{ 
+	width: 'off',
+	placeholder: "Select your Cases",
+	allowClear: true,
+	 }
+		); });
+	$(document).ready(function() { $("#id_exclude_individuals").select2(
+	{ width: 'off',
+	placeholder: "Select your Controls", }
+		); });
+	$(document).ready(function() { $("#id_groups").select2(
+	{ width: 'off',
+	placeholder: "Select your Group of Cases", }
+		); });
+	$(document).ready(function() { $("#id_exclude_groups").select2(
+	{ width: 'off',
+	placeholder: "Select your Group of Controls", }
+		); });
+	
+	$(document).ready(function() { $("#id_genelists").select2(
+	{ width: 'off',
+	placeholder: "Select your GeneLists", }
+		); });
+
+	$(document).ready(function() { $("#id_exclude_genelists").select2(
+	{ width: 'off',
+	placeholder: "Select your GeneLists to exclude", }
+		); });
+
+</script>
+<style type="text/css">
+#s2id_id_groups, #s2id_id_individuals, #s2id_id_exclude_individuals, #s2id_id_exclude_groups{
+width:200px;
+height: 50px;
+}
+</style>
+							</div>
+							<div class="tab-pane" id="variants">
+								<table class="table table-nonfluid table-striped table-bordered">
+									<tr>
+										<td>
+											{{ form.mutation_type.errors }}
+											{{ form.mutation_type.label }}:<br>{{ form.mutation_type }}
+										</td>
+										<td>
+											{{ form.chr.errors }}
+											{{ form.chr.label }}:<br>{{ form.chr }}
+											<br>
+											{{ form.pos.errors }}
+											{{ form.pos.label }}:<br>{{ form.pos }}
+										</td>
+										<td>
+											{{ form.filter }}
+										</td>
+									</tr>
+									<tr>
+										<th>Variant Effect</th>
+										<th>Functional Class</th>
+										<th>Impact</th>
+									</tr>
+									<tr>
+										<td>
+											{{ form.variant_type }}
+										</td>
+										<td>
+											{{ form.func_class }}
+										</td>
+										<td>
+										{{ form.impact }}			
+										</td>
+									</tr>
+									<tr>
+										<td>
+											{{ form.dbsnp_option.label }}:
+											<br>
+											{{ form.dbsnp_option }}
+											{{ form.dbsnp_build }}
+										</td>
+										<td>
+											{{ form.read_depth_option.errors }}
+											{{ form.read_depth_option.label }}:
+											<br>
+											{{ form.read_depth_option }}
+											{{ form.read_depth.errors }}{{ form.read_depth }}
+											<br>
+											{{ form.qual_option.errors }}
+											{{ form.qual_option.label }}:
+											<br>
+											{{ form.qual_option }}
+											{{ form.qual.errors }}{{ form.qual }}								
+										</td>
+										<td>
+											{{ form.variants_per_gene_option.errors }}
+											{{ form.variants_per_gene_option.label }}:
+											<br>
+											{{ form.variants_per_gene_option }}
+											{{ form.variants_per_gene.errors }}{{ form.variants_per_gene }}
+										</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+											{{ form.genes_in_common.errors }}
+											{{ form.genes_in_common }}
+											{{ form.genes_in_common.label }}
+											<br>
+											{{ form.positions_in_common.errors }}
+											{{ form.positions_in_common }}
+											{{ form.positions_in_common.label }}
+											<br>
+											{{ form.dbsnp.errors }}
+											{{ form.dbsnp }}
+											{{ form.dbsnp.label }}
+											<br>
+											{{ form.cln.errors }}
+											{{ form.cln }}
+											{{ form.cln.label }}
+											<br>
+											{{ form.exclude_segdup.errors }}
+											{{ form.exclude_segdup }}
+											{{ form.exclude_segdup.label }}
+										</td>
+										
+									</tr>
+								
+								</table>
+							</div>
+							<div class="tab-pane" id="diseases">
+								<table class="table table-condensed">
+									<tr>
+										<td>OMIM</td>
+										<td>{{ form.omim }}</td>
+									</tr>
+									<tr>
+										<td>CGD</td>
+										<td>{{ form.cgd }}</td>
+									</tr>
+									<tr>
+										<td>CGD Manifestation</td>
+										<td>{{ form.cgdmanifestation }}</td>
+									</tr>
+									<tr>
+										<td>HGMD</td>
+										<td>{{ form.hgmd }}</td>
+									</tr>
+								</table>
+							</div>
+							<div class="tab-pane" id="filterconfig">
+								<table class="table table-condensed">
+									{% for filterconfig in filterconfigs %}
+									<tr>
+										<th>Name</th>
+										<th>User</th>
+										<th>Created on</th>
+										<th>Options</th>
+									</tr>
+									<tr>
+										<td><a href="?{{filterconfig.filterstring}}">{{ filterconfig.name }}</a></td>
+										<td> {{ filterconfig.user }} </td>
+										<td> {{ filterconfig.created }} </td>
+										<td><a href="{% url 'config_update' filterconfig.id %}">Edit</a><a href="{% url 'config_delete' filterconfig.id %}">Delete</a></td>
+									</tr>
+									{% endfor %}
+								</table>
+							</div>
+							<div class="tab-pane" id="filters">
+								<table class="table table-condensed">
+									{% for filteranalysis in filteranalysis %}
+									<tr>
+										<th>Name</th>
+										<th>User</th>
+										<th>Created on</th>
+										<th>Options</th>
+									</tr>
+									<tr>
+										<td><a href="?{{filteranalysis.filterstring}}">{{ filteranalysis.name }}</a></td>
+										<td> {{ filteranalysis.user }} </td>
+										<td> {{ filteranalysis.created }} </td>
+										<td><a href="{% url 'analysis_update' filteranalysis.id %}">Edit</a><a href="{% url 'analysis_delete' filteranalysis.id %}">Delete</a></td>
+									</tr>
+									{% endfor %}
+								</table>
+							</div>
+							<div class="tab-pane" id="databases">
+								<table class="table table-nonfluid table-striped table-bordered">
+									<tr>
+										<td>1000Genomes Frequency</td>
+										<td>
+											
+											{{ form.genomes1000.errors }}{{ form.genomes1000 }}
+											
+											<!-- Slider -->
+								            <div id="g1000-slider-range"></div>
+								            <br>
+								            <!--end slider-->
+											{{form.genomes1000_exclude}}{{form.genomes1000_exclude.label}}
+											
+										</td>
+									</tr>
+									<tr>
+										<td>dbSNP Frequency</td>
+										<td>
+											
+											{{ form.dbsnp_frequency.errors }}{{ form.dbsnp_frequency }}
+											<br>
+											<!-- Slider -->
+								            <div id="dbsnp-slider-range"></div>
+								            <br>
+								            <!--end slider-->
+											
+											{{form.dbsnp_exclude}}{{form.dbsnp_exclude.label}}
+										</td>
+									</tr>
+									<tr>
+										<td>Exome Variation Server Frequency</td>
+										<td>
+											{{ form.esp_frequency.errors }}{{ form.esp_frequency }}
+											<br>
+											<!-- Slider -->
+								            <div id="esp-slider-range"></div>
+								            <br>
+								            <!--end slider-->
+											{{form.esp_exclude}}{{form.esp_exclude.label}}
+											
+										</td>
+									</tr>
+									<tr>
+										<td>Sift Score <br>*from snpEff</td>
+										<td>
+											{{ form.sift.errors }}
+											{{ form.sift }}
+											<br>
+											
+											
+											<!-- Slider -->
+								            <div id="sift-slider-range"></div>
+								            <br>
+								            <!--end slider-->
+								            {{ form.sift_exclude.errors }}
+											{{ form.sift_exclude }}{{ form.sift_exclude.label }}
+								
+										</td>
+									</tr>
+									<tr>
+										<td>Polyphen Score</td>
+										<td>
+											
+											{{ form.polyphen.errors }}{{ form.polyphen }}
+											<br>
+											<!-- Slider -->
+								            <div id="pp2-slider-range"></div>
+								            <br>
+								            <!--end slider-->
+											
+											{{ form.polyphen_exclude }}{{ form.polyphen_exclude.label }}
+								
+										</td>
+									</tr>
+									<tr>
+										<td>Haploinsufficiency</td>
+										<td>
+											
+											{{ form.hi_frequency.errors }}{{ form.hi_frequency }}
+											<br>
+											<!-- Slider -->
+								            <div id="hi-slider-range"></div>
+								            <br>
+								            <!--end slider-->
+											
+											{{ form.hi_exclude }}{{ form.hi_exclude.label }}
+								
+										</td>
+									</tr>
+
+									
+								</table>
+							</div>
+							<div class="tab-pane" id="faq">
+								<p>
+									Example of genotype information:
+								</p>
+								0/1:0.45:10,12:22:99:211,0,262
+								<br>
+								<p>
+									<b>GT:AB:AD:DP:GQ:PL</b>
+								</p>
+								<b>GT: Genotype</b>
+								<p>
+									Genotype, encoded as allele values separated by either of ”/” or “|”. The allele values are 0 for the reference allele (what is in the REF field), 1 for the first allele listed in ALT, 2 for the second allele list in ALT and so on. For diploid calls examples could be 0/1, 1|0, or 1/2, etc. For haploid calls, e.g. on Y, male non-pseudoautosomal X, or mitochondrion, only one allele value should be given; a triploid call might look like 0/0/1. If a call cannot be made for a sample at a given locus, ”.” should be specified for each missing allele in the GT field (for example "./." for a diploid genotype and "." for haploid genotype). The meanings of the separators are as follows (see the PS field below for more details on incorporating phasing information into the genotypes)
+								</p>
+								<b>AB: Allele balance for each het genotype</b>
+								<p>
+									The allele balance (fraction of ref bases over ref + alt bases) across all bialleleic het-called samples
+								</p>
+								<b>AD: Allelic depths for the ref and alt alleles in the order listed</b>
+								<p>
+									The depth of coverage of each VCF allele in this sample.
+								</p>
+								<b>DP: Read Depth (only filtered reads used for calling)</b>
+								<b>GQ: Genotype Quality</b>
+								<p>
+									Conditional genotype quality, encoded as a phred quality -10log_10p(genotype call is wrong, conditioned on the site's being variant) (Float)
+								</p>
+								<b>PL: Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification</b>
+								<p>
+									The phred-scaled genotype likelihoods rounded to the closest integer (and otherwise defined precisely as the GL field) (Integers)
+								</p>
+							</div>
+							<div class="tab-pane" id="fields">
+								{{ form.fields }}
+							</div>
+						</div>
+					</div>
+					<input id="newwindow" type="checkbox" name="newwindow" value="newwindow"/>
+					Open result in a new window
+					<br>
+					<input type="button" value="Submit" onclick="formSubmit()" />
+
+					<img id="loading_img" style="display:none;" src="{{ STATIC_URL }}img/ajax-loader.gif"><img>
+				</form>
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'filter_analysis' %}">Reset Filter</a>
+	{% if query_string %} 
+		| <a href="{% url 'create_config' %}?{{query_string}}">Save Config</a>
+		| <a href="{% url 'create_filter' %}?{{query_string}}">Save Analysis</a> 
+	{% endif %}
+	<br>
+	<br>
+	
+	<!-- <div class="accordion-group">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree"> Variants </a>
+	</div>
+	<div id="collapseThree" class="accordion-body collapse" style="height: 0px; ">
+	<div class="accordion-inner">
+
+	</div>
+	</div>
+	</div> -->
+</div>

@@ -1,0 +1,54 @@
+# mysite_nginx.conf
+# the upstream component nginx needs to connect to
+upstream django {
+    # server unix:///path/to/your/mysite/mysite.sock; # for a file socket
+    server 127.0.0.1:8001 fail_timeout=0; # for a web port socket (we'll use this first)
+}
+
+# configuration of the server
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+    
+    
+    error_log  /var/log/nginx/mendelmd_error.log;
+    access_log /var/log/nginx/mendelmd_access.log;
+
+    root /lgc/mendelmd_master/mendelmd_source;
+    index index.html index.htm;
+    keepalive_timeout 700;
+
+
+    # the domain name it will serve for
+    server_name mendel.medicina.ufmg.br;# substitute your machine's IP address or FQDN
+    charset     utf-8;
+
+    # max upload size
+    client_max_body_size 40096M;   # adjust to taste
+
+    # Django media
+    #location /media  {
+    #    alias /lgc/mendelmd_master/mendelmd_source/media;  # your Django project's media files - amend as required
+    #}
+
+    location /static {
+        alias /lgc/mendelmd_master/mendelmd_source/static; # your Django project's static files - amend as required
+    }
+
+    # Finally, send all non-media requests to the Django server.
+    #location / {
+    #    uwsgi_pass  django;
+    #	uwsgi_read_timeout 1200;
+        #include     /lgc/mendelmd_master/mendelmd_source/mendelmd/wsgi.py; # the uwsgi_params file you installed
+    #}
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://django;
+    }
+
+    #location / {
+        #try_files $uri $uri/ =404;
+    #}
+}

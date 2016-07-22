@@ -1,0 +1,20 @@
+{% extends "full_base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "View Disease" %}{% endblock %}
+
+{% block content %}
+    <h1>{{ disease.name }}</h1>
+	
+	<h2>{% trans "Gene" %}</h2>
+	
+	{% for gene in disease.gene_set.all %}
+	<li>Names: {{ gene.names }} </li>
+	{% endfor %}
+    
+    <h2>{% trans "Individual Variants" %}</h2>
+    {% include  "variants.html" %}
+    
+{% endblock %}

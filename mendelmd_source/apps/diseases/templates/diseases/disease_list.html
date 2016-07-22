@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% load pagination_tags %}
+
+{% block title %}{% trans "Diseases" %}{% endblock %}
+
+{% block content %}
+
+<h1>{% trans "Diseases" %}</h1>
+
+<form class="well form-search" action="." method="get">
+    <input type="text" class="input-medium search-query" name="name" value="{{ request.GET.name }}">
+    <button type="submit" class="btn">Search</button>
+</form>
+
+{% if diseases %}
+	{% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="/mendelmd/diseases?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="/mendelmd/diseases?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+    {{ page_obj.paginator.count }} Diseases
+    
+    <form action="." method="post">{% csrf_token %}
+	<input type="submit" value="Use selected genes for Filter Analysis" />
+	<table id="disease" class="table table-striped table-bordered table-condensed">
+	<tr>
+		<th style="width: 3%">#<input type="checkbox" id="select_all"></th>
+		<th>Name</th>
+		<th>Genes</th>
+	</tr>
+	{% for disease in diseases %}
+	<tr>
+		<td><input type="checkbox" name="diseases" class="diseases" id="option{{disease.id}}" value="{{disease.id}}" /></td>
+		<td><a href="{% url 'disease_view' disease.id %}">{{ disease.name }}</a></td>
+		<td>{{ disease.gene_names }}</td>
+	</tr>
+	{% endfor %}
+	</table>
+	{% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="/mendelmd/diseases?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="/mendelmd/diseases?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+    <input type="submit" value="Use selected genes for Filter Analysis" />
+	</form>
+
+    
+{% else %}
+    <p>No diseases found!!! :(</p>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_script %} 
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".diseases:checkbox").attr('checked', this.checked);
+});
+</script>
+{% endblock %}

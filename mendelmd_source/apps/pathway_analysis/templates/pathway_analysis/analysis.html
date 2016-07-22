@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load django_select2_tags %}
+{% load i18n %}
+{#% load sorting_tags %#}
+{% load pagination_tags %}
+{% load filter_extras %}
+
+{% block title %}{% trans "Filter Analysis" %}{% endblock %}
+
+{% block extra_css %}
+<script type="text/javascript">
+  function formSubmit() {
+    newwindow = document.getElementById("newwindow");
+    if(newwindow.checked == true)
+      document.getElementById("filterform").target = "_blank";
+    document.getElementById("filterform").submit();
+    //document.getElementById('loading_img').style.display = "block";
+    $('#loading_img').show();
+    $('#loading_img2').show();
+  }
+</script>
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+<link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
+<link href="{% static "css/style.css" %}" rel="stylesheet">
+<script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
+  {% import_django_select2_css %}
+  {% import_django_select2_js %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onClick="return false;">
+          + Filter Options <img id="loading_img2" style="display:none;" src="{{ STATIC_URL }}img/ajax-loader.gif">
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse {% if not pathways %}in{% endif %} ">
+      <div class="panel-body">
+        {% include "filter_analysis/filter_form_pathanalysis.html" %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="panel-group" id="accordion2">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" onClick="return false;">
+          + Genes {% if summary.genes %}{{summary.genes|length}}{% endif %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse {% if pathways %}in{% endif %} ">
+      <div class="panel-body">
+        Genes:
+    <br>
+    {% if summary.n_genes < 500 %}
+      {% for gene in summary.genes %} 
+        <a href="?{{ query_string }}&gene_list={{ gene }}" target="_blank">{{ gene }}</a>,
+      {% endfor %}
+    {% else %}
+        <li>Your list of genes is bigger than 500. Please, try to increase the parameters.</li>
+    {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="panel-group" id="accordion3">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion3" href="#collapseThree" onClick="return false;">
+          + Genes associated with diseases {% if genes_omim %}{{genes_omim|length}}{% endif %}
+          </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+        {% include "tabs/genes.html" %}   
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{%if summary.n_variants %} <h4>Summary</h4>
+  <p>
+    Number of Variants: {{ summary.n_variants }}
+    <br>
+    Number of Genes: {{ summary.n_genes }}
+    <br>
+  </p>
+{% endif %}
+
+  <!-- Export to: <a href="?{{ query_string }}&export=csv">CSV</a> <a href="?{{ query_string }}&export=txt">TXT</a> -->
+
+{% for pathway in pathways %}
+    
+    
+
+<div class="panel-group" id="accordionpath{{pathway.id}}">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordionpath{{pathway.id}}" href="#collapse{{pathway.id}}">
+              {{pathway.name}} Variants: {{pathway.variants|length}}
+          </a>
+          </h4>
+        </div>
+        <div id="collapse{{pathway.id}}" class="panel-collapse collapse">
+          <div class="panel-body">
+            <a href="http://www.genome.jp/kegg/pathway/map/map{{pathway.kegg}}.html" target="_blank">View in Kegg</a>
+                {% with pathway.variants as variants %}
+                    {% include "variants.html" %}
+                {% endwith %}
+        </div>
+        </div>
+    </div>
+   
+</div>
+
+ {% endfor %}
+
+<script type="text/javascript">
+  var selectmenu = document.getElementById("preconfig")
+  selectmenu.onchange = function() {//run some code when "onchange" event fires
+    var chosenoption = this.options[this.selectedIndex]//this refers to "selectmenu"
+    if(chosenoption.value == "1") {
+      oFormObject = document.forms['filterform'];
+      oFormObject.elements["genomes1000"].value = '0.01';
+      oFormObject.elements["dbsnp_frequency"].value = '0.01';
+      oFormObject.elements["variationserver_frequency"].value = '0.01';
+      oFormObject.elements["sift"].value = '0 - 0.05';
+      //change select option
+      oFormObject.elements["impact"][1].selected = true;
+      oFormObject.elements["impact"][3].selected = true;
+      //.value = new Array('MODERATE', 'HIGH');
+
+      oFormObject.elements["polyphen_option"].value = '>';
+      oFormObject.elements["polyphen"].value = '0.85';
+      oFormObject.elements["dbsnp_option"].value = '>';
+      oFormObject.elements["dbsnp_build"].value = '130';
+
+    }
+  }
+</script>
+{% endblock %}
+
+
+{% block javascript %}
+      
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<!-- Your stuff: Third-party javascript libraries go here -->
+<script src="{{ STATIC_URL }}js/tooltip.js"></script>
+<script src="{{ STATIC_URL }}js/popover.js"></script>
+
+{% for pathway in pathways %}
+
+  {% for variant in pathway.variants %}
+  <script>
+    $(function() {
+      $('#variant{{ variant.id }}').popover({
+        placement : 'left',
+        html:true
+      })
+    })
+  </script>
+  {% endfor %}
+
+{% endfor %}
+
+
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
+
+      <!-- place project specific Javascript in this file -->
+      <script src="{% static 'js/project.js' %}"></script>
+{% endblock javascript %}

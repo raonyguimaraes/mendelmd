@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<form id="as" class="form-horizontal" action="." method="post">{% csrf_token %}
+<img style="float:right;" src="{{ STATIC_URL }}img/snpeff_faq.png" alt="Hi!" />
+<div class="span9">
+<p>Step {{ step }} of {{ step_count }}</p>
+
+<table class="table table-nonfluid table-striped table-bordered">
+	<tr>
+		<td>
+			{{ form.mutation_type.errors }}
+			{{ form.mutation_type.label }}:<br>{{ form.mutation_type }}
+		</td>
+		<td>
+			{{ form.chr.errors }}
+			{{ form.chr.label }}:<br>{{ form.chr }}
+		</td>
+		<td>
+			{{ form.pos.errors }}
+			{{ form.pos.label }}:<br>{{ form.pos }}
+		</td>
+	</tr>
+	<tr>
+		<th>Variant Effect</th>
+		<th>Functional Class</th>
+		<th>Impact</th>
+	</tr>
+	<tr>
+		<td>
+			{{ form.variant_type }}
+		</td>
+		<td>
+			{{ form.func_class }}
+		</td>
+		<td>
+		{{ form.impact }}			
+		</td>
+	</tr>
+	<tr>
+		<td>
+			{{ form.dbsnp_option.label }}:
+			<br>
+			{{ form.dbsnp_option }}
+			{{ form.dbsnp_build }}
+		</td>
+		<td>
+			{{ form.read_depth_option.errors }}
+			{{ form.read_depth_option.label }}:
+			<br>
+			{{ form.read_depth_option }}
+			{{ form.read_depth.errors }}{{ form.read_depth }}								
+		</td>
+		<td>
+			{{ form.variants_per_gene_option.errors }}
+			{{ form.variants_per_gene_option.label }}:
+			<br>
+			{{ form.variants_per_gene_option }}
+			{{ form.variants_per_gene.errors }}{{ form.variants_per_gene }}
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			{{ form.genes_in_common.errors }}
+			{{ form.genes_in_common }}
+			{{ form.genes_in_common.label }}
+			<br>
+			{{ form.dbsnp.errors }}
+			{{ form.dbsnp }}
+			{{ form.dbsnp.label }}
+			<br>
+			{{ form.cln.errors }}
+			{{ form.cln }}
+			{{ form.cln.label }}
+			<br>
+			{{ form.exclude_segdup.errors }}
+			{{ form.exclude_segdup }}
+			{{ form.exclude_segdup.label }}
+
+		</td>
+		
+	</tr>
+
+</table>
+
+<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+{{ previous_fields|safe }}
+<input class="btn btn-primary btn-large" type="submit" value="Next">
+</form>
+</div>
+{% endblock %}
+
+
+
+
+{% block extra_script %} 
+
+<script type="text/javascript">
+
+oFormObject = document.getElementById('as')
+oFormObject.elements["1-impact"][0].selected = true;
+oFormObject.elements["1-impact"][2].selected = true;
+
+</script>
+
+
+{% endblock %}

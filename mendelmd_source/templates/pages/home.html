@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+	
+{% block content %}
+    <div class="row">
+        <div class="col-md-5">
+           <div class="hero-unit well">
+            <div class="span12">
+            <h1>Welcome to Mendel,MD!</h1>
+            <p>This is an online tool that can help you identify disease causing variants using exome sequencing data from patients with mendelian disorders. </p>
+
+          <p><a href="http://www.bootstraptor.com" class="btn btn-primary btn-large">Learn more »</a></p>
+          </div>
+         </div>
+        </div>
+        <div class="col-md-5">
+        	 <img src="{{ STATIC_URL }}img/lgc2-1024x724.jpeg">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+        
+          <h2>Filter Analysis</h2>
+        
+          <p>With this tool you can quickly identify candidate variants of causing mendelian disorders in your affected individuals. By excluding variants according to different criterias such as low frequency in databases (1000genomes, dbSNP138 and Exome Sequencing Project) and scores of patogenicity (SIFT, POLYPHEN, CADD) you can quickly reduce the number of variants from your initial list.</p>
+        
+          <p><a class="btn btn-default" href="{% url 'filter_analysis' %}" role="button">Run this analysis »</a></p>
+        </div>
+        <div class="col-md-6">
+
+          <h2>Family Analysis</h2>
+        
+          <p>With this tool you can search for mendelian variants, de novo variants and compound heterozygous variants by using the exome data from a famillies (Ex. trios, quartets and with more individuals). This helps you to reduce a lot the number of candidate variants when investigating mendelian disorders.
+          </p>
+          <p><a class="btn btn-default" href="{% url 'family_analysis' %}" role="button">Run this analysis »</a></p>
+       </div>
+
+      </div>
+  	
+{% endblock content %}

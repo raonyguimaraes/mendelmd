@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Analysis" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Analysis" %}</h1>
+	<form action="." method="post" enctype="multipart/form-data">
+		   
+		   {% csrf_token %}
+		    {{ form.as_p }}
+		    
+		    <input type="submit" value="Save" />
+	</form>    
+{% endblock %}

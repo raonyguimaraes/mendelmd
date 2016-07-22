@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Delete Analsyis" %}{% endblock %}
+
+{% block content %}
+<h1>Are you sure you want to delete this {{ object }}?</h1>
+<h2>This action cannot be undone</h2>
+<form action="." method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

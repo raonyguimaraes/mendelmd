@@ -1,0 +1,119 @@
+<h3>FREQUENCIES</h3>
+<table class="table table-nonfluid table-striped table-bordered">
+    <tr>
+        <td>1000 GENOMES FREQUENCY</td>
+        <td>
+
+            {{ form.genomes1000.errors }}{{ form.genomes1000 }}
+
+            <!-- Slider -->
+            <div id="g1000-slider-range"></div>
+            <br>
+            <!--end slider-->
+            {{form.genomes1000_exclude}}{{form.genomes1000_exclude.label}}
+
+        </td>
+        <td>DBSNP FREQUENCY</td>
+        <td>
+
+            {{ form.dbsnp_frequency.errors }}{{ form.dbsnp_frequency }}
+            <br>
+            <!-- Slider -->
+            <div id="dbsnp-slider-range"></div>
+            <br>
+            <!--end slider-->
+
+            {{form.dbsnp_exclude}}{{form.dbsnp_exclude.label}}
+        </td>
+        <td>ESP6500 FREQUENCY</td>
+        <td>
+            {{ form.esp_frequency.errors }}{{ form.esp_frequency }}
+            <br>
+            <!-- Slider -->
+            <div id="esp-slider-range"></div>
+            <br>
+            <!--end slider-->
+            {{form.esp_exclude}}{{form.esp_exclude.label}}
+
+        </td>
+
+    </tr>    
+</table>
+<h3>SCORES</h3>
+<table class="table table-nonfluid table-striped table-bordered">
+    
+    <tr>
+        <td>SIFT SCORE</td>
+        <td>
+            {{ form.sift.errors }}
+            {{ form.sift }}
+            <br>
+
+
+            <!-- Slider -->
+            <div id="sift-slider-range"></div>
+            <br>
+            <!--end slider-->
+            {{ form.sift_exclude.errors }}
+            {{ form.sift_exclude }}{{ form.sift_exclude.label }}
+
+        </td>
+        <td>POLYPHEN2 SCORE</td>
+        <td>
+
+            {{ form.polyphen.errors }}{{ form.polyphen }}
+            <br>
+            <!-- Slider -->
+            <div id="pp2-slider-range"></div>
+            <br>
+            <!--end slider-->
+
+            {{ form.polyphen_exclude }}{{ form.polyphen_exclude.label }}
+
+        </td>
+    </tr>
+
+    <tr>
+        <td>CADD</td>
+        <td>
+
+            {{ form.cadd.errors }}{{ form.cadd }}
+            
+            <br>
+            <div id="cadd-slider-range"></div>
+            <br>
+
+            {{ form.cadd_exclude }}{{ form.cadd_exclude.label }}
+
+        </td>
+    </tr>
+<!--
+    <tr>
+        <td>RF SCORE</td>
+        <td>
+            {{ form.rf_score.errors }}
+            {{ form.rf_score }}
+            <br>
+
+
+            <div id="rf-slider-range"></div>
+            <br>
+            {{ form.rf_exclude.errors }}
+            {{ form.rf_exclude }}{{ form.rf_exclude.label }}
+
+        </td>
+        <td>ADA SCORE</td>
+        <td>
+
+            {{ form.ada_score.errors }}{{ form.ada_score }}
+            <br>
+            <div id="ada-slider-range"></div>
+            <br>
+
+            {{ form.ada_exclude }}{{ form.ada_exclude.label }}
+
+        </td>
+    </tr>
+-->
+
+</table>

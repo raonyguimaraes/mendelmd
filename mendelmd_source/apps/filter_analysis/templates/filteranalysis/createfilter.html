@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Create Filter" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Save Config/Analysis" %}</h1>
+	<form action="." method="post" enctype="multipart/form-data">
+		   
+		   {% csrf_token %}
+		    {{ form.as_p }}
+		    
+		    <input type="submit" value="Save" />
+	</form>    
+{% endblock %}

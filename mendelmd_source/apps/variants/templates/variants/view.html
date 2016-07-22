@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>View Variant {{ variant.id }} </h1>
+<div class="container">
+    <div id="content">
+        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+            <li class="active"><a href="#red" data-toggle="tab">Variant</a></li>
+            <li><a href="#orange" data-toggle="tab">INFO</a></li>
+            <li><a href="#yellow" data-toggle="tab">SNPEFF</a></li>
+            <li><a href="#green" data-toggle="tab">VEP</a></li>
+            
+        </ul>
+        <div id="my-tab-content" class="tab-content">
+            <div class="tab-pane active" id="red">                
+                <table class="table table-bordered table-striped">
+                    <tr><th>individual</th><td>{{ variant.individual.id }} - {{ variant.individual }}</td></tr>
+                    <tr><th>index</th><td>{{ variant.index }}</td></tr>
+                    <tr><th>chr</th><td>{{ variant.chr }}</td></tr>
+                    <tr><th>pos</th><td>{{ variant.pos }}</td></tr>
+                    <tr><th>variant_id</th><td>{{ variant.variant_id }}</td></tr>
+                    <tr><th>ref</th><td>{{ variant.ref }}</td></tr>
+                    <tr><th>alt</th><td>{{ variant.alt }}</td></tr>
+                    <tr><th>qual</th><td>{{ variant.qual }}</td></tr>
+                    <tr><th>filter</th><td>{{ variant.filter }}</td></tr>
+                    <tr><th>format</th><td>{{ variant.format }}</td></tr>
+                    <tr><th>genotype_col</th><td>{{ variant.genotype_col }}</td></tr>
+                    <tr><th>genotype</th><td>{{ variant.genotype }}</td></tr>
+                    <tr><th>read_depth</th><td>{{ variant.read_depth }}</td></tr>
+                    <tr><th>gene</th><td>{{ variant.gene }}</td></tr>
+                    <tr><th>mutation_type</th><td>{{ variant.mutation_type }}</td></tr>
+                    <tr><th>vartype</th><td>{{ variant.vartype }}</td></tr>
+                    <tr><th>genomes1k_maf</th><td>{{ variant.genomes1k_maf }}</td></tr>
+                    <tr><th>dbsnp_maf</th><td>{{ variant.dbsnp_maf }}</td></tr>
+                    <tr><th>esp_maf</th><td>{{ variant.esp_maf }}</td></tr>
+                    <tr><th>dbsnp_build</th><td>{{ variant.dbsnp_build }}</td></tr>
+                    <tr><th>sift</th><td>{{ variant.sift }}</td></tr>
+                    <tr><th>sift_pred</th><td>{{ variant.sift_pred }}</td></tr>
+                    <tr><th>polyphen2</th><td>{{ variant.polyphen2 }}</td></tr>
+                    <tr><th>polyphen2_pred</th><td>{{ variant.polyphen2_pred }}</td></tr>
+                    <tr><th>condel</th><td>{{ variant.condel }}</td></tr>
+                    <tr><th>condel_pred</th><td>{{ variant.condel_pred }}</td></tr>
+                    <tr><th>dann</th><td>{{ variant.dann }}</td></tr>
+                    <tr><th>cadd</th><td>{{ variant.cadd }}</td></tr>
+                    <tr><th>is_at_omim</th><td>{{ variant.is_at_omim }}</td></tr>
+                    <tr><th>is_at_hgmd</th><td>{{ variant.is_at_hgmd }}</td></tr>
+                    <tr><th>hgmd_entries</th><td>{{ variant.hgmd_entries }}</td></tr>
+                </table>
+
+            </div>
+            <div class="tab-pane" id="orange">
+                <h1>INFO</h1>
+                
+                <table class="table table-bordered table-striped table-condensed">    
+                    {% for key, value in variant.info.items %}
+                    <tr>
+                        <th>{{key}}</th><td>{{value}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="tab-pane" id="yellow">
+                <h1>snpEff</h1>
+                
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <td>effect</td><td>{{ variant.snpeff_effect }}</td>
+                    </tr>
+                    <tr>
+                        <td>impact</td><td>{{ variant.snpeff_impact }}</td>
+                    </tr>
+                    <tr>
+                        <td>functional_class</td><td>{{ variant.snpeff_func_class }}</td>
+                    </tr>
+                    <tr>
+                        <td>codon_change</td><td>{{ variant.snpeff_codon_change }}</td>
+                    </tr>
+                    <tr>
+                        <td>aa_change</td><td>{{ variant.snpeff_aa_change }}</td>
+                    </tr>
+                    <tr>
+                        <td>aa_len</td><td>{{ variant.snpeff_aa_len }}</td>
+                    </tr>
+                    <tr>
+                        <td>gene_name</td><td>{{ variant.snpeff_gene_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>biotype</td><td>{{ variant.snpeff_biotype }}</td>
+                    </tr>
+                    <tr>
+                        <td>gene_coding</td><td>{{ variant.snpeff_gene_coding }}</td>
+                    </tr>
+                    <tr>
+                        <td>transcript_id</td><td>{{ variant.snpeff_transcript_id }}</td>
+                    </tr>
+                    <tr>
+                        <td>exon_rank</td><td>{{ variant.snpeff_exon_rank }}</td>
+                    </tr>
+                    <tr>
+                        <td>genotype_number</td><td>{{ variant.snpeff_genotype_number }}</td>
+                    </tr>
+                    <tr>
+
+                    </table>
+                    
+                </div>
+                <div class="tab-pane" id="green">
+                <h1>VEP</h1>
+                
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <td>allele</td><td>{{variant.vep_allele}}</td>
+                    </tr>
+                    <tr>
+                        <td>gene</td><td>{{variant.vep_gene}}</td>
+                    </tr>
+                    <tr>
+                        <td>feature</td><td>{{variant.vep_feature}}</td>
+                    </tr>
+                    <tr>
+                        <td>feature_type</td><td>{{variant.vep_feature_type}}</td>
+                    </tr>
+                    <tr>
+                        <td>consequence</td><td>{{variant.vep_consequence}}</td>
+                    </tr>
+                    <tr>
+                        <td>cdna_position</td><td>{{variant.vep_cdna_position}}</td>
+                    </tr>
+                    <tr>
+                        <td>cds_position</td><td>{{variant.vep_cds_position}}</td>
+                    </tr>
+                    <tr>
+                        <td>protein_position</td><td>{{variant.vep_protein_position}}</td>
+                    </tr>
+                    <tr>
+                        <td>amino_acids</td><td>{{variant.vep_amino_acids}}</td>
+                    </tr>
+                    <tr>
+                        <td>codons</td><td>{{variant.vep_codons}}</td>
+                    </tr>
+                    <tr>
+                        <td>existing_variation</td><td>{{variant.vep_existing_variation}}</td>
+                    </tr>
+                    <tr>
+                        <td>distance</td><td>{{variant.vep_distance}}</td>
+                    </tr>
+                    <tr>
+                        <td>strand</td><td>{{variant.vep_strand}}</td>
+                    </tr>
+                    <tr>
+                        <td>symbol</td><td>{{variant.vep_symbol}}</td>
+                    </tr>
+                    <tr>
+                        <td>symbol_source</td><td>{{variant.vep_symbol_source}}</td>
+                    </tr>
+                    <tr>
+                        <td>sift</td><td>{{variant.vep_sift}}</td>
+                    </tr>
+                    <tr>
+                        <td>polyphen</td><td>{{variant.vep_polyphen}}</td>
+                    </tr>
+                    <tr>
+                        <td>condel</td><td>{{variant.vep_condel}}</td>
+                    </tr>
+                    
+
+
+                    </table>
+                    
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    {% endblock content %}
+
