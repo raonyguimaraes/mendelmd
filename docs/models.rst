@@ -2,8 +2,8 @@ Models
 ======
 
 
-Individuals
-***********
+Dashboard
+*********
 
 On this section you can see a grid with all the individuals uploaded to the 
 system.
@@ -16,7 +16,5 @@ We download the file from their
 
 Genes
 *****
-We used a dataset download from HGNC Database.
 
-Pathways
-********
+

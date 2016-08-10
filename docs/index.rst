@@ -11,12 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   userguide
-   adminguide
-..     installation
-..     annotation
-..     models
-..     filter_analysis
+   installation
+   annotation
+   filter_analysis
 
 
 

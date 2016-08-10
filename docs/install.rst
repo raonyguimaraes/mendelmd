@@ -57,9 +57,7 @@ pip install -r requirements.stable.txt
 
 python manage.py migrate auth
 python manage.py migrate
-python manage.py populate
 python manage.py runserver
-
 
 And now you should have Mendel,MD running on address http://127.0.0.1:8000/
 

@@ -13,7 +13,6 @@ Contents:
 
    installation
    annotation
-   models
    filter_analysis
 
 
