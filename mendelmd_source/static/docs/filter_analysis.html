@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Filter Analysis &mdash;  0.1 documentation</title>
+    <title>Filter Analysis &mdash;  0.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,27 +23,27 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title=" 0.1 documentation" href="index.html" />
-    <link rel="prev" title="Models" href="models.html" /> 
+    <link rel="top" title=" 0.2 documentation" href="index.html" />
+    <link rel="prev" title="Pynnotator" href="annotation.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="models.html" title="Models"
+          <a href="annotation.html" title="Pynnotator"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html"> 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="filter-analysis">
 <h1>Filter Analysis<a class="headerlink" href="#filter-analysis" title="Permalink to this headline">¶</a></h1>
@@ -55,11 +55,7 @@
 </div>
 <div class="section" id="family-analysis">
 <h2>Family Analysis<a class="headerlink" href="#family-analysis" title="Permalink to this headline">¶</a></h2>
-<p>This method was created to allow the analysis of exomes from families. When
-usually</p>
-</div>
-<div class="section" id="pathway-analysis">
-<h2>Pathway Analysis<a class="headerlink" href="#pathway-analysis" title="Permalink to this headline">¶</a></h2>
+<p>This method was created to allow the analysis of exomes from families.</p>
 <div class="section" id="formats">
 <h3>Formats<a class="headerlink" href="#formats" title="Permalink to this headline">¶</a></h3>
 <p>In order to fully understand this filtering process it&#8217;s usually required that you have some knowledge about some different formats, tools and scores of predictions and conservation.</p>
@@ -68,16 +64,6 @@ usually</p>
 <li>VCF</li>
 </ul>
 <p><a class="reference external" href="http://1000genomes.org/wiki/Analysis/Variant">http://1000genomes.org/wiki/Analysis/Variant</a> Call Format/vcf-variant-call-format-version-41</p>
-<ul class="simple">
-<li>Annovar</li>
-</ul>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/">http://www.openbioinformatics.org/annovar/</a></p>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_download.html">http://www.openbioinformatics.org/annovar/annovar_download.html</a></p>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_startup.html">http://www.openbioinformatics.org/annovar/annovar_startup.html</a></p>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_db.html">http://www.openbioinformatics.org/annovar/annovar_db.html</a></p>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_gene.html">http://www.openbioinformatics.org/annovar/annovar_gene.html</a></p>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_region.html">http://www.openbioinformatics.org/annovar/annovar_region.html</a></p>
-<p><a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_filter.html">http://www.openbioinformatics.org/annovar/annovar_filter.html</a></p>
 <ul class="simple">
 <li>SnpEff</li>
 </ul>
@@ -126,6 +112,13 @@ This option let you choose variants in certain regions of a chromossome based in
 <p>With this option you can select variants based on the FILTER column of your VCF.</p>
 <p>Ex. PASS, LowQual, repeat, SnpCluster
 Usage: You can select variants that are only PASS in you VCF file(s)</p>
+<ul class="simple">
+<li>dbSNP Build</li>
+</ul>
+<p>With this option you can choose only variants after a certain build of last version of dbSNP
+Ex. &gt;= 130 (will get only variants after dbsnp 130)</p>
+<p>NOTE: dbSNP 129 is generally regarded as the last &#8220;clean&#8221; dbSNP without &#8220;contamination&#8221; from 1000 Genomes Project and other large-scale next-generation sequencing projects. Many published papers utilize dbSNP129 only.
+Source: <a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_filter.html#dbsnp">http://www.openbioinformatics.org/annovar/annovar_filter.html#dbsnp</a></p>
 <ul class="simple">
 <li>Read Depth</li>
 </ul>
@@ -430,16 +423,22 @@ Codons
 Existing_variation
 DISTANCE
 CELL_TYPE</p>
-<p>SIFT</p>
+</div>
+</div>
+<div class="section" id="sift">
+<h2>SIFT<a class="headerlink" href="#sift" title="Permalink to this headline">¶</a></h2>
 <p>SIFT predicts whether an amino acid substitution is likely to affect protein function based on sequence homology and the physico-chemical similarity between the alternate amino acids. The data we provide for each amino acid substitution is a score and a qualitative prediction (either &#8216;tolerated&#8217; or &#8216;deleterious&#8217;). The score is the normalized probability that the amino acid change is tolerated so scores nearer 0 are more likely to be deleterious. The qualitative prediction is derived from this score such that substitutions with a score &lt; 0.05 are called &#8216;deleterious&#8217; and all others are called &#8216;tolerated&#8217;.</p>
 <p>We ran SIFT version 5.0.2 following the instructions from the authors and used SIFT to choose homologous proteins rather than supplying them ourselves. We used all protein sequences available from UniRef90 (release 2012_11) as the protein database.</p>
-<p>PolyPhen</p>
+</div>
+<div class="section" id="polyphen-2">
+<h2>PolyPhen-2<a class="headerlink" href="#polyphen-2" title="Permalink to this headline">¶</a></h2>
 <p>PolyPhen-2 predicts the effect of an amino acid substitution on the structure and function of a protein using sequence homology, Pfam annotations, 3D structures from PDB where available, and a number of other databases and tools (including DSSP, ncoils etc.). As with SIFT, for each amino acid substitution where we have been able to calculate a prediction, we provide both a qualitative prediction (one of &#8216;probably damaging&#8217;, &#8216;possibly damaging&#8217;, &#8216;benign&#8217; or &#8216;unknown&#8217;) and a score. The PolyPhen score represents the probability that a substitution is damaging, so values nearer 1 are more confidently predicted to be deleterious (note that this the opposite to SIFT). The qualitative prediction is based on the False Positive Rate of the classifier model used to make the predictions.</p>
 <p>We ran PolyPhen-2 version 2.2.2 (available here) and again we followed all instructions from the authors, and used the UniProtKB UniRef100 (release 2011_12) non-redundant protein set as the protein database, which was downloaded, along with PDB structures, and annotations from Pfam and DSSP(snapshot 03-Jan-2012) in February 2012. When computing the predictions we store results for the classifier models trained on the HumDiv and HumVar datasets. Both result sets are available through the variation API which defaults to HumVar if no selection is made. (Please refer to the PolyPhen website or publications for more details of the classification system).</p>
-<p>Condel</p>
+</div>
+<div class="section" id="condel">
+<h2>Condel<a class="headerlink" href="#condel" title="Permalink to this headline">¶</a></h2>
 <p>Condel is a general method for calculating a consensus prediction from the output of tools designed to predict the effect of an amino acid substitution. It does so by calculating a weighted average score (WAS) of the scores of each component method. The Condel authors provided us with a version specialised for finding a consensus between SIFT and PolyPhen and we integrated this into a Variation Effect Predictor (VEP) plugin. Tests run by the authors on the HumVar dataset (a test set curated by the PolyPhen team), show that Condel can improve both the sensitivity and specificity of predictions compared to either SIFT or PolyPhen used alone (please contact the authors for details). The Condel score, along with a qualitative prediction (one of &#8216;neutral&#8217; or &#8216;deleterious&#8217;), are available in the VEP plugin. The Condel score is the consensus probability that a substitution is deleterious, so values nearer 1 are predicted with greater confidence to affect protein function.</p>
 <p>Sources: <a class="reference external" href="http://www.ensembl.org/info/genome/variation/predicted_data.html#consequences">http://www.ensembl.org/info/genome/variation/predicted_data.html#consequences</a></p>
-</div>
 </div>
 </div>
 
@@ -447,14 +446,13 @@ CELL_TYPE</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Filter Analysis</a><ul>
 <li><a class="reference internal" href="#one-click">One Click</a></li>
-<li><a class="reference internal" href="#family-analysis">Family Analysis</a></li>
-<li><a class="reference internal" href="#pathway-analysis">Pathway Analysis</a><ul>
+<li><a class="reference internal" href="#family-analysis">Family Analysis</a><ul>
 <li><a class="reference internal" href="#formats">Formats</a></li>
 <li><a class="reference internal" href="#quick-start">Quick Start</a></li>
 </ul>
@@ -491,50 +489,52 @@ CELL_TYPE</p>
 <li><a class="reference internal" href="#vep-options">VEP Options</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#sift">SIFT</a></li>
+<li><a class="reference internal" href="#polyphen-2">PolyPhen-2</a></li>
+<li><a class="reference internal" href="#condel">Condel</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="models.html"
-                        title="previous chapter">Models</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/filter_analysis.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <p class="topless"><a href="annotation.html"
+                        title="previous chapter">Pynnotator</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/filter_analysis.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="models.html" title="Models"
+          <a href="annotation.html" title="Pynnotator"
              >previous</a> |</li>
-        <li><a href="index.html"> 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2013, ChangeMyName.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Raony Guimarães.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
     </div>
   </body>
 </html>

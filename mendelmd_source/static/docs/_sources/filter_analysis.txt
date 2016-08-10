@@ -3,9 +3,6 @@ Filter Analysis
 
 With this form we offer different options for filtering your variants based on the fields provided by different databases and tools such as Annovar, Snpeff, VEP, dbSNP, 1000Genomes, Exome Sequencing Project and some others.
 
-
-
-
 One Click
 *********
 
@@ -17,11 +14,7 @@ We do this by defining  the attributes according to the table describe above:
 Family Analysis
 ***************
 
-This method was created to allow the analysis of exomes from families. When 
-usually 
-
-Pathway Analysis
-****************
+This method was created to allow the analysis of exomes from families. 
 
 
 *******
@@ -36,22 +29,6 @@ Please before you start filtering your variants using Mendel,MD it's recommended
 
 http://1000genomes.org/wiki/Analysis/Variant Call Format/vcf-variant-call-format-version-41
 
-* Annovar
-
-http://www.openbioinformatics.org/annovar/
-
-http://www.openbioinformatics.org/annovar/annovar_download.html
-
-http://www.openbioinformatics.org/annovar/annovar_startup.html
-
-http://www.openbioinformatics.org/annovar/annovar_db.html
-
-http://www.openbioinformatics.org/annovar/annovar_gene.html
-
-http://www.openbioinformatics.org/annovar/annovar_region.html
-
-http://www.openbioinformatics.org/annovar/annovar_filter.html
-
 * SnpEff
 
 http://snpeff.sourceforge.net/SnpEff_manual.html
@@ -64,7 +41,6 @@ http://www.ensembl.org/info/docs/tools/vep/vep_formats.html#output
 Quick Start
 ***********
 
-
 The method of filtering variants is based on different criterias that are grouped by tabs. 
 
 We have 5 main tabs that offer you filtering options: Individuals, VCF, Annovar, SnpEff and VEP.
@@ -73,7 +49,6 @@ Each one of this tabs have different options that enables you to filter variants
 
 Individuals Options
 *******************
-
 
 On this section you have two columns "Select Variants From" and "Exclude Variants From". The first column enables you to include individuals that you uploaded, snps from dbsnp138 and genes symbols from refseq that you want to see in your results. The second column is where you can choose also individuals, snps and genes that you want to exclude from your results.
 
@@ -109,12 +84,12 @@ Ex. PASS, LowQual, repeat, SnpCluster
 Usage: You can select variants that are only PASS in you VCF file(s)
 
 
-.. - dbSNP Build (not working yet)
-.. With this option you can choose only variants after a certain build of last version of dbSNP
-.. Ex. >= 130 (will get only variants after dbsnp 130)
+- dbSNP Build 
+With this option you can choose only variants after a certain build of last version of dbSNP
+Ex. >= 130 (will get only variants after dbsnp 130)
 
-.. NOTE: dbSNP 129 is generally regarded as the last "clean" dbSNP without "contamination" from 1000 Genomes Project and other large-scale next-generation sequencing projects. Many published papers utilize dbSNP129 only.
-.. Source: http://www.openbioinformatics.org/annovar/annovar_filter.html#dbsnp 
+NOTE: dbSNP 129 is generally regarded as the last "clean" dbSNP without "contamination" from 1000 Genomes Project and other large-scale next-generation sequencing projects. Many published papers utilize dbSNP129 only.
+Source: http://www.openbioinformatics.org/annovar/annovar_filter.html#dbsnp 
 
 - Read Depth
 This option should be choosen based on the mean coverage of the individuals (exomes, genomes) that you selected under the previous section "Individuals"
@@ -495,18 +470,21 @@ DISTANCE
 CELL_TYPE	
 
 SIFT
+****
 
 SIFT predicts whether an amino acid substitution is likely to affect protein function based on sequence homology and the physico-chemical similarity between the alternate amino acids. The data we provide for each amino acid substitution is a score and a qualitative prediction (either 'tolerated' or 'deleterious'). The score is the normalized probability that the amino acid change is tolerated so scores nearer 0 are more likely to be deleterious. The qualitative prediction is derived from this score such that substitutions with a score < 0.05 are called 'deleterious' and all others are called 'tolerated'.
 
 We ran SIFT version 5.0.2 following the instructions from the authors and used SIFT to choose homologous proteins rather than supplying them ourselves. We used all protein sequences available from UniRef90 (release 2012_11) as the protein database.
 
-PolyPhen
+PolyPhen-2
+**********
 
 PolyPhen-2 predicts the effect of an amino acid substitution on the structure and function of a protein using sequence homology, Pfam annotations, 3D structures from PDB where available, and a number of other databases and tools (including DSSP, ncoils etc.). As with SIFT, for each amino acid substitution where we have been able to calculate a prediction, we provide both a qualitative prediction (one of 'probably damaging', 'possibly damaging', 'benign' or 'unknown') and a score. The PolyPhen score represents the probability that a substitution is damaging, so values nearer 1 are more confidently predicted to be deleterious (note that this the opposite to SIFT). The qualitative prediction is based on the False Positive Rate of the classifier model used to make the predictions.
 
 We ran PolyPhen-2 version 2.2.2 (available here) and again we followed all instructions from the authors, and used the UniProtKB UniRef100 (release 2011_12) non-redundant protein set as the protein database, which was downloaded, along with PDB structures, and annotations from Pfam and DSSP(snapshot 03-Jan-2012) in February 2012. When computing the predictions we store results for the classifier models trained on the HumDiv and HumVar datasets. Both result sets are available through the variation API which defaults to HumVar if no selection is made. (Please refer to the PolyPhen website or publications for more details of the classification system).
 
 Condel
+******
 
 Condel is a general method for calculating a consensus prediction from the output of tools designed to predict the effect of an amino acid substitution. It does so by calculating a weighted average score (WAS) of the scores of each component method. The Condel authors provided us with a version specialised for finding a consensus between SIFT and PolyPhen and we integrated this into a Variation Effect Predictor (VEP) plugin. Tests run by the authors on the HumVar dataset (a test set curated by the PolyPhen team), show that Condel can improve both the sensitivity and specificity of predictions compared to either SIFT or PolyPhen used alone (please contact the authors for details). The Condel score, along with a qualitative prediction (one of 'neutral' or 'deleterious'), are available in the VEP plugin. The Condel score is the consensus probability that a substitution is deleterious, so values nearer 1 are predicted with greater confidence to affect protein function.
 
