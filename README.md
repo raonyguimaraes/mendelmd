@@ -27,7 +27,7 @@ Installation on Ubuntu 16.04 LTS (tested)
 =========================================
 
     git clone https://github.com/raonyguimaraes/mendelmd.git
-    cd mendelmd_master/mendelmd_source
+    cd mendelmd/mendelmd_source
     mkvirtualenv -p /usr/bin/python3 mendelmd
 
 
