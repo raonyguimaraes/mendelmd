@@ -63,6 +63,8 @@ Installing Mendel,MD
     #ignore the following error: django.db.utils.ProgrammingError: relation "django_site" does not exist
 
     python manage.py migrate
+    python manage.py populate
+    python manage.py createsuperuser
     python manage.py runserver
 
 And now you should have Mendel,MD running on address http://127.0.0.1:8000/
