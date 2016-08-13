@@ -43,14 +43,14 @@ This will take a long time since it will download around 26GB of data. Go grab a
 Installing PostgreSQL Database
 ==============================
 
-sudo apt-get install libpq-dev postgresql
-sudo su
-su postgres
-psql template1
-CREATE USER mendelmd WITH PASSWORD 'mendelmd';
-CREATE DATABASE mendelmd;
-GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
-\q
+    sudo apt-get install libpq-dev postgresql
+    sudo su
+    su postgres
+    psql template1
+    CREATE USER mendelmd WITH PASSWORD 'mendelmd';
+    CREATE DATABASE mendelmd;
+    GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
+    \q
 
 
 Installing Mendel,MD
