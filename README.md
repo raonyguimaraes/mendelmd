@@ -40,12 +40,28 @@ Installing the Pynnotator
 
 This will take a long time since it will download around 26GB of data. Go grab a coffee and read a paper.
 
+Installing PostgreSQL Database
+==============================
+
+sudo apt-get install libpq-dev postgresql
+sudo su
+su postgres
+psql template1
+CREATE USER mendelmd WITH PASSWORD 'mendelmd';
+CREATE DATABASE mendelmd;
+GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
+\q
+
+
 Installing Mendel,MD
 ====================
 
     pip install -r requirements.stable.txt
 
     python manage.py migrate auth
+    
+    #ignore the following error: django.db.utils.ProgrammingError: relation "django_site" does not exist
+
     python manage.py migrate
     python manage.py runserver
 
