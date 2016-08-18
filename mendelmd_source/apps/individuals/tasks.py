@@ -42,9 +42,12 @@ def AnnotateVariants(individual_id):
     #chdir into folder
     # print 'individual.vcf_file.name'
     # print individual.vcf_file.name
-
-    path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username.lower(), individual.id)
-
+    if individual.user:
+        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username.lower(), individual.id)
+        email = individual.user.email
+    else:
+        path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
+        email = 'raonyguimaraes@gmail.com'
     orig_path = os.getcwd()
     #change to path for the individual folder
     os.chdir(path)
@@ -103,8 +106,6 @@ def AnnotateVariants(individual_id):
 
     if os.path.exists(annotation_final_file):
 
-        
-
         individual.status = 'annotated'
         #send email
         message = """The file %s was annotated with success!\n
@@ -112,7 +113,7 @@ It took %s to execute. \n
 Now we need to insert this data to the database.
                 """ % (individual.name, elapsed)
         send_mail('[Mendel,MD] Annotation Completed!', message, 'mendelmd1@gmail.com',
-                  ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)
+                  ['raonyguimaraes@gmail.com', email], fail_silently=False)
         #delete ann folder
         command = 'rm -rf ann_*'
         # os.system(command)

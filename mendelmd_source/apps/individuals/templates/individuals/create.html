@@ -3,10 +3,7 @@
 {% load upload_tags %}
 {% load django_select2_tags %}
 
-{% block css %} 
-
-    <!-- Bootstrap styles -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+{% block extra_css %}
     <!-- Generic page styles -->
 
     <!-- blueimp Gallery styles -->
@@ -21,7 +18,9 @@
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
+
 {% endblock %}
+
 
 {% block content %}
     <div class="page-header">
@@ -29,15 +28,12 @@
         <h2>Here you can upload your VCF files to the system. <br>
         We support the following formats: VCF, VCF.GZ, VCF.ZIP and VCF.RAR</h2>
         <p>Every VCF File should take between 20 and 40 minutes to be annotated and inserted to the database. <br>
-        You will receive an e-mail as soon this process finishes with the link to start analysing your individuals.</p> You can take this time to read our <a href="{#% url 'docs' %#}" target="_blank">Documentation</a> about how to filter your variants.
+        You will receive an e-mail as soon this process finishes with the link to start analysing your individuals.</p> You can take this time to read our <a href="{% url 'docs' %}" target="_blank">Documentation</a> about how to filter your variants.
     </div>
 
     <form id="fileupload" method="post" action="." enctype="multipart/form-data">{% csrf_token %}
         <input id="id_name" type="hidden" name="name" value=" " />
         <input id="id_description" type="hidden" name="description" value=" " />
-        <div class="row">
-        <p>Shared with Groups: {{form.shared_with_groups}}</p>
-        </div>
         
         <div class="row fileupload-buttonbar">
             <div class="col-lg-7">

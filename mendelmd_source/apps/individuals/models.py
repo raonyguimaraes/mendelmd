@@ -18,10 +18,13 @@ class UserGroup(models.Model):
 
 class Individual(models.Model):
     def get_upload_path(self, filename):
-        string = "%s/genomes/%s/%s/%s" % (settings.BASE_DIR, slugify(self.user.username), self.id, filename)#.replace(' ', '_')
-        print('string',string)
+        if self.user != None:
+            string = "%s/genomes/%s/%s/%s" % (settings.BASE_DIR, self.user.username, self.id, filename)#.replace(' ', '_')
+        else:
+            string = "%s/genomes/public/%s/%s" % (settings.BASE_DIR, self.id, filename)#.replace(' ', '_')
+            print('string',string)
         return string 
-    user = models.ForeignKey(User, editable=False)
+    user = models.ForeignKey(User, editable=False, null=True)
 
     shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
     shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)

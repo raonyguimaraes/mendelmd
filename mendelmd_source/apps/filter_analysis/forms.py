@@ -187,8 +187,18 @@ class FilterAnalysisForm(forms.Form):
     genelists = forms.ModelMultipleChoiceField(queryset=GeneList.objects.all().order_by('name'), required=False, label="SAVED GENE LIST")
     exclude_genelists = forms.ModelMultipleChoiceField(queryset=GeneList.objects.all().order_by('name'), required=False, label="EXCLUDE SAVED GENE LIST")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         super(FilterAnalysisForm, self).__init__(*args, **kwargs)
+
+        if user.is_authenticated:
+            print('user None', user)
+            self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
+        else:
+            print('user', user)
+            self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+            
         # self.fields['sift'].widget.attrs['readonly'] = True
         # self.fields['polyphen'].widget.attrs['readonly'] = True
         # self.fields['genomes1000'].widget.attrs['readonly'] = True
@@ -198,16 +208,7 @@ class FilterAnalysisForm(forms.Form):
 
 #trio analysis
 class FamilyAnalysisForm(FilterAnalysisForm):
-    # chr = forms.CharField(max_length=50, required=False)
-    # pos = forms.CharField(max_length=50, required=False)
     
-    # snp_list = forms.CharField(widget=forms.Textarea, required=False)
-    # exclude_snp_list = forms.CharField(widget=forms.Textarea, required=False)
-    
-    #INDIVIDUAL_CHOICES = [(x.id, x.name) for x in Individual.objects.filter().order_by('id')]
-    #INDIVIDUAL_CHOICES_AND_EMPTY = [('','')] + INDIVIDUAL_CHOICES
-    #individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
-
     mother = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
     father = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
     children = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
@@ -223,75 +224,23 @@ class FamilyAnalysisForm(FilterAnalysisForm):
 
                )
     inheritance_option = forms.ChoiceField(choices=INHERITANCE_CHOICES, required=False)
-    # remove_not_in_parents = forms.BooleanField(required=False, label="Remove variants not seeing in at least one of parents", initial=True) 
-    # remove_in_both_parents = forms.BooleanField(required=False, label="Remove variants seeing in both parents")
-#     individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
-#     exclude_individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
     
+    def __init__(self, user=None, *args, **kwargs):
+        
+        super(FamilyAnalysisForm, self).__init__(*args, **kwargs)
 
-#     groups = forms.ModelMultipleChoiceField(queryset=Group.objects.all().order_by('id'), required=False)
-#     exclude_groups = forms.ModelMultipleChoiceField(queryset=Group.objects.all().order_by('id'), required=False)
-    
-#     CHOICES = (('', ''),
-#                ('homozygous', 'Homozygous  (Ex. 1/1, 2/1, 1/2)'),
-#                ('heterozygous', 'Heterozygous  (Ex. 0/1, 0/2, 1/0, 2/0)'),
-#                )
-#     mutation_type = forms.ChoiceField(required=False, choices=CHOICES, label="Mutation Type")
-#     gene_list = forms.CharField(widget=forms.Textarea, required=False)
-#     exclude_gene_list = forms.CharField(widget=forms.Textarea, required=False)
-# #    genegroups = forms.ChoiceField(required=False, choices=GENE_GROUPS, label="Gene Groups")
-#     genegroups = forms.ModelChoiceField(queryset=GeneGroup.objects.all(), empty_label="-------------", required=False)
-    
-#     genes_in_common = forms.BooleanField(required=False, label="Show only variants present in genes from all the individuals selected")
-#     cln = forms.BooleanField(required=False, label="Variant is clinical")
-    
-#     variant_type = forms.MultipleChoiceField(choices=[(x[0], x[0].replace('_', ' ')) for x in Variant.objects.values_list('snp_eff').distinct().order_by('snp_eff')], required=False)
-    
-#     CHOICES = [(x[0], x[0]) for x in Variant.objects.values_list('snp_eff_functional_class').distinct().exclude(snp_eff_functional_class='').order_by('snp_eff_functional_class')]
-#     func_class = forms.MultipleChoiceField(choices=CHOICES, required=False)
-    
-#     impact = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('impact').distinct()], required=False)
-    
-#     filter = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('filter').distinct().order_by('filter')], required=False)
-
-#     dbsnp = forms.BooleanField(required=False, label="Only variants not present in DbSNP")
-    
-#     #100genomes freqeuncy
-#     CHOICES = (('<', '<= '),
-#                ('>', '>= '),
-#                ('=', '='),)
-#     genomes1000_option = forms.ChoiceField(required=False, choices=CHOICES, label="1000genomes Frequency")
-#     genomes1000 = forms.CharField(max_length=50, required=False, label="1000genomes Frequency")
-    
-#     #DBSNP Frequency
-#     dbsnp_freq_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP Frequency")
-#     dbsnp_frequency = forms.CharField(max_length=50, required=False, label="")
-    
-#     #Variation Server Frequency
-#     variationserver_option = forms.ChoiceField(required=False, choices=CHOICES, label="ESP5400 Frequency")
-#     variationserver_frequency = forms.CharField(max_length=50, required=False, label="")
-    
-#     #SIFT
-#     sift_option = forms.ChoiceField(required=False, choices=CHOICES, label="Sift Option")
-#     sift = forms.CharField(max_length=50, required=False, label="Sift Frequency")
-#     sift_exclude = forms.BooleanField(required=False, label="Exclude variants without sift score")
-    
-#     #POLYPHEN
-#     polyphen_option = forms.ChoiceField(required=False, choices=CHOICES, label="Polyphen2 Option")
-#     polyphen = forms.CharField(max_length=50, required=False, label="Polyphen2 Frequency")
-#     polyphen_exclude = forms.BooleanField(required=False, label="Exclude variants without polyphen score")
-    
-#     dbsnp_option = forms.ChoiceField(required=False, choices=CHOICES, label="dbSNP Build")
-#     dbsnp_build = forms.CharField(max_length=50, required=False, label="DbsNP Build")
-    
-#     read_depth_option = forms.ChoiceField(required=False, choices=CHOICES, label="Read Depth")
-#     read_depth = forms.CharField(max_length=50, required=False, label="")
-    
-#     variants_per_gene_option = forms.ChoiceField(required=False, choices=CHOICES, label="Variants per Gene")
-#     variants_per_gene = forms.CharField(max_length=50, required=False, label="")
-    
-    def __init__(self, *args, **kwargs):
-        super(FamilyAnalysisForm, self).__init__(*args, **kwargs)     
+        if user.is_authenticated:
+            print('user None', user)
+            self.fields['mother'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['children'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
+        else:
+            print('user', user)
+            self.fields['mother'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['children'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
 
 INDIVIDUALS = [(x.id, x.name) for x in Individual.objects.all().order_by('id')]
 #forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'))

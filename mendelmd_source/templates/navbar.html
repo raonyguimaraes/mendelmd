@@ -11,15 +11,15 @@
           <a class="navbar-brand" href="{% url 'index' %}">
           <img src="{{ STATIC_URL }}img/Gregor_Mendel_small.png" style="height:100%;">Mendel,MD</a>
         </div>
-        
-          {% if user.is_authenticated %}
 
-          <div class="navbar-collapse collapse">
+        <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-left">
             <li><a href="{% url 'docs' %}" target="_blank">Docs</a></li>
+            <li><a href="{% url 'individual_create' %}">Upload a VCF</a></li>
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
 
             <li class="dropdown">
-              <a href="{% url 'dashboard' %}" class="dropdown-toggle" data-toggle="dropdown">Dashboard <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'individuals_list' %}">Individuals</a></li>
                 <li><a href="{% url 'diseases_list' %}">Diseases</a></li>
@@ -27,8 +27,6 @@
 
               </ul>
             </li>
-
-            
 
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools<span class="caret"></span></a>
@@ -41,13 +39,12 @@
             </li>
             
             <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
-
             {% if request.user.is_staff %}
               <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>              
-              {% endif %}
+            {% endif %}
           </ul>
 
-
+          {% if user.is_authenticated %}
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a>
@@ -61,19 +58,7 @@
 
             <!-- <li><a href="#">Help</a></li> -->
           </ul>
-          <form class="navbar-form navbar-right">
-            <!-- <input type="text" class="form-control" placeholder="Search..."> -->
-          </form>
-        </div>
-
           {% else %}
-          <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-left">
-            <li><a href="#">Docs</a></li>
-            <!-- <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li> -->
-          </ul>
           <form class="navbar-form navbar-right" role="form" method="POST" action="{% url 'account_login' %}">  {% csrf_token %}
 
             <div class="form-group">
@@ -85,12 +70,10 @@
             <button type="submit" class="btn btn-success">Sign in</button>
             <!-- <font color="white">or</font> 
             <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a> 
-	    -->           
+      -->           
           </form>
-
-        </div>
-
           {% endif %}
+        </div>
 
 
           

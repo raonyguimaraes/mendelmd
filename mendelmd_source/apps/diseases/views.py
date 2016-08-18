@@ -35,9 +35,9 @@ class DiseaseListView(ListView):
         name = self.request.GET.get('name', '')    
         return Disease.objects.filter(Q(name__icontains=name)|Q(gene_names__icontains=name))
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(DiseaseListView, self).dispatch(*args, **kwargs)
+    # @method_decorator(login_required)
+    # def dispatch(self, *args, **kwargs):
+    #     return super(DiseaseListView, self).dispatch(*args, **kwargs)
     
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

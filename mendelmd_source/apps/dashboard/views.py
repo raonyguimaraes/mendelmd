@@ -11,9 +11,14 @@ from django.conf import settings
 from django.utils.text import slugify
 from individuals.tasks import *
 
-@login_required
 def index(request):
-    individuals = Individual.objects.all().order_by('-id')
+    if request.user.is_staff:
+        individuals = Individual.objects.all().order_by('-id')
+    elif request.user.is_authenticated():
+        individuals = Individual.objects.filter(user=request.user).order_by('-id')
+    else:
+        individuals = Individual.objects.filter(user=None).order_by('-id')
+
     return render(request, 'dashboard/dashboard.html', {'individuals':individuals})
 
 @login_required

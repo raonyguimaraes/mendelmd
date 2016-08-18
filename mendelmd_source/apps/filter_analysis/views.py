@@ -71,7 +71,6 @@ def calculate_summary(step, args, query, exclude):
     return summary
 
 #show all steps from filter analysis 
-@login_required
 def filter_analysis_table(request):
     print('dynamic filter analysis')
     results = {}
@@ -83,7 +82,7 @@ def filter_analysis_table(request):
 
     table_list = []
 
-    form = FilterAnalysisForm(request.GET)
+    form = FilterAnalysisForm(request.user, request.GET)
 
     filter_by_individuals(request, args, query, exclude)
 
@@ -198,7 +197,7 @@ def filter_analysis_table(request):
         {'table':table}, context_instance=RequestContext(request))
 
 
-@login_required
+
 def filter_analysis(request,query, args, exclude):
     '''
     This function receives request and returns a dictionary with the variants
@@ -283,7 +282,6 @@ def get_genes(summary):
     return genes
 
 #This is the most important function
-@login_required
 def index(request):
     query = {}
     exclude = {}
@@ -310,7 +308,7 @@ def index(request):
         #make it GET for explicit urls
         if request.method == 'GET':
 
-            form = FilterAnalysisForm(request.GET)
+            form = FilterAnalysisForm(request.user, request.GET)
 
             if 'sort_by' in request.GET:
                 sort_by = request.GET['sort_by']
@@ -401,7 +399,7 @@ def index(request):
         genes['genes_hgmd'] = []
         genes['genes_omim'] = []
         genes['genes_cgd'] = []
-        form = FilterAnalysisForm()
+        form = FilterAnalysisForm(request.user)
 
     return render_to_response('filter_analysis/index.html', 
         {'variants':variants, 
@@ -417,6 +415,7 @@ def index(request):
 
 
 def filter_family_analysis(request, query, args, exclude):
+
     print('Get family variants')
     father = request.GET.get('father', '')
     mother = request.GET.get('mother', '')
@@ -645,7 +644,6 @@ def fill_parents_variants(request, variants, children_positions, parents_variant
                 variant.mother =  list(parents_variants['mother'][gene][id].keys())[0]    
     # print 'pass'
 #This is the most important function
-@login_required
 def family_analysis(request):
     query = {}
     exclude = {}
@@ -672,7 +670,7 @@ def family_analysis(request):
         #make it GET for explicit urls
         if request.method == 'GET':
 
-            form = FamilyAnalysisForm(request.GET)
+            form = FamilyAnalysisForm(request.user, request.GET)
             # request.GET = request.GET.copy()
 
             if 'sort_by' in request.GET:
@@ -776,7 +774,7 @@ def family_analysis(request):
         genes['genes_hgmd'] = []
         genes['genes_omim'] = []
         genes['genes_cgd'] = []
-        form = FamilyAnalysisForm()
+        form = FamilyAnalysisForm(request.user)
 
     return render_to_response('filter_analysis/family_analysis.html', 
         {'variants':variants, 
@@ -791,7 +789,7 @@ def family_analysis(request):
         'genes_cgd':genes['genes_cgd']}, context_instance=RequestContext(request))
 
 
-@login_required
+
 def old_family_analysis(request):
     query = {}
     exclude = {}
@@ -814,7 +812,7 @@ def old_family_analysis(request):
     if query_string != [''] and query_string != '' :
         if request.method == 'GET':
             request.GET = request.GET.copy()
-            form = FamilyAnalysisForm(request.GET)
+            form = FamilyAnalysisForm(request.user, request.GET)
             
             inheritance_option = request.GET.get('inheritance_option', '')
             remove_not_in_parents = request.GET.get('remove_not_in_parents', '')
@@ -1224,7 +1222,7 @@ def old_family_analysis(request):
                 variants = paginator.page(paginator.num_pages)
             
                          
-            form = FamilyAnalysisForm(request.GET)
+            form = FamilyAnalysisForm(request.user, request.GET)
     
     #first entrance in methods
     else:
@@ -1240,7 +1238,7 @@ def old_family_analysis(request):
         genes['genes_hgmd'] = []
         genes['genes_omim'] = []
         genes['genes_cgd'] = []
-        form = FilterAnalysisForm()            
+        form = FilterAnalysisForm(request.user)            
     #export to csv
     # export = request.GET.get('export', '')
     # if export != '':
@@ -1307,9 +1305,8 @@ def old_family_analysis(request):
 #         if step == 2:
 #             return 'forms/step2.html'
 
-@login_required
 def oneclick(request):
-    form = FilterAnalysisForm()
+    form = FilterAnalysisForm(request.user)
     if request.method == 'GET':
         print('Entrando no GET')
         # print request.META
@@ -1332,8 +1329,7 @@ def oneclick(request):
 
     return render_to_response('filter_analysis/oneclick.html', {'form':form}, context_instance=RequestContext(request))
 
-        
-@login_required
+
 def wizard(request):
     form = FilterWizard([FilterWiZardForm1, FilterWiZardForm2, FilterWiZardForm3])
     if request.method == 'GET':
@@ -1383,7 +1379,7 @@ class FilterConfigDeleteView(DeleteView):
     def get_success_url(self):
         return reverse('filter_analysis')
 
-@login_required
+
 def create(request):
     print('Hello')
     filterstring = request.META['QUERY_STRING']
@@ -1404,7 +1400,6 @@ def create(request):
     return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
 
 
-@login_required
 def family_analysis_create_filter(request):
     print('Hello')
     filterstring = request.META['QUERY_STRING']
@@ -1426,7 +1421,6 @@ def family_analysis_create_filter(request):
     return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
 
 
-@login_required
 def createconfig(request):
     print('Hello Config')
     query_string = request.META['QUERY_STRING']

@@ -26,6 +26,22 @@ submit a download request to get a file named "morbidmap".
 After obtaining this file you need to put it on this folder:
 "mendelmd\_source/data/omim/".
 
+
+Installing PostgreSQL Database
+==============================
+
+::
+
+    sudo apt-get install libpq-dev postgresql
+    sudo su
+    su postgres
+    psql template1
+    CREATE USER mendelmd WITH PASSWORD 'mendelmd';
+    CREATE DATABASE mendelmd;
+    GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
+    \q
+
+
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
 

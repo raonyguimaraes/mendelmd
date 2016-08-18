@@ -23,9 +23,7 @@ from django.db.models import Q
 
 from django.conf import settings
 
-
 import os
-
 import json
 
 def response_mimetype(request):
@@ -42,15 +40,16 @@ class JSONResponse(HttpResponse):
         super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
 
 # Create your views here.
-@login_required
 def create(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
         print('entrou no create!')
         if form.is_valid():
             print('form is valid!')
-
-            individual = Individual.objects.create(user=request.user, status='new')
+            if request.user.is_authenticated():
+                individual = Individual.objects.create(user=request.user, status='new')
+            else:
+                individual = Individual.objects.create(user=None, status='new')
 
             individual.vcf_file= request.FILES.get('file')
             #request.FILES.get('file')
@@ -61,7 +60,7 @@ def create(request):
 
             individual.vcf_file.name = ".".join(new_filename)
 
-            print('filename aqui', filename)
+            print('filename ', filename)
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
 
@@ -70,11 +69,15 @@ def create(request):
             individual.save()
             
             f = individual.vcf_file
+            
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
-            
-            os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, individual.user, individual.id), 0o777)
 
+            if request.user.is_authenticated():
+            
+                os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, individual.user, individual.id), 0o777)
+            else:
+                os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             AnnotateVariants.delay(individual.id)
 
@@ -151,7 +154,7 @@ class IndividualDeleteView(DeleteView):
         #return redirect('individuals_list')
         return redirect('individuals_list')
 
-@login_required
+
 def view(request, individual_id):
     
     individual = get_object_or_404(Individual, pk=individual_id)
@@ -418,7 +421,7 @@ def populate_mongo(request, individual_id):
 
     return redirect('individuals_list')
 
-@login_required
+
 def download(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     
@@ -451,7 +454,7 @@ def download(request, individual_id):
     return response
 
 
-@login_required
+
 def download_annotated(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     
@@ -467,14 +470,10 @@ def download_annotated(request, individual_id):
     
     fullpath = '%s/annotation.final.vcf.zip' % (filepath)
 
-    vcffile = open(fullpath, 'r')
+    vcffile = open(fullpath, 'rb')
 
-    content = vcffile.read()
-
-    vcffile.close() 
-    
-    response = HttpResponse(content, content_type='application/x-zip-compressed')
-    # response['Content-Encoding'] = 'gzip'
+    response = HttpResponse(vcffile, content_type='application/x-zip-compressed')
+    # # response['Content-Encoding'] = 'gzip'
     response['Content-Disposition'] = 'attachment; filename=%s.annotated.mendelmd.vcf.zip' % basename
     response['Content-Length'] = os.path.getsize(fullpath)
     return response
@@ -512,7 +511,7 @@ class GroupDeleteView(DeleteView):
         messages.add_message(request, messages.INFO, "Group deleted with success!")
         return redirect('individuals_list')
 
-@login_required
+
 def comparison(request):
 #    group = get_object_or_404(Group, pk=group_id)
     query = {}

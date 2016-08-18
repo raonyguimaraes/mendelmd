@@ -139,3 +139,8 @@ def clean_individuals():
 def clean_variants():
     local('python manage.py  sqlclear variants | python manage.py dbshell')
     local('python manage.py  migrate')
+
+def docs():
+    with lcd('../docs'):
+        local('make html')
+        local('cp -r _build/html/* ../mendelmd_source/static/docs/')

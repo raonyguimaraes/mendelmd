@@ -144,7 +144,6 @@
                       <th>Modified on</th>
                       <th>Annotation Time</th>
                       <th>Insertion Time</th>
-                      <th>Insertion Time MongoDB</th>
                       <th>Status</th>
                       {% if user.is_staff %}
                       <th>Operations</th>
@@ -162,7 +161,7 @@
                       <td>
                         <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
                       </td>
-			{% if user.is_staff %}
+			               {% if user.is_staff %}
                       <td>
                         <ul>
                           <li>
@@ -176,16 +175,13 @@
                           </li>
                         </ul>
                       </td>
-			{% endif %}
+			               {% endif %}
                       <td>{{ individual.user.username }}</td>
                       <td>{{ individual.n_lines }}</td>
                       <td>{{ individual.creation_date }}</td>
                       <td>{{ individual.modified_date }}</td>
                       <td>{{ individual.annotation_time }}</td>
                       <td>{{ individual.insertion_time }}</td>
-                      <td>{{ individual.insertion_time_mongo }}</td>
-
-
 
                       <td>{{ individual.status }}</td>
                       {% if user.is_staff %}

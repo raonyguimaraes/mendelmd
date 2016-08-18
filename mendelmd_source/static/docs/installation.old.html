@@ -70,7 +70,7 @@
 </div>
 <div class="section" id="installation-of-posgresql-database">
 <h2>1) Installation of PosgreSQL Database<a class="headerlink" href="#installation-of-posgresql-database" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get install tasksel libpq-dev postgresql
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install tasksel libpq-dev postgresql
 sudo tasksel
 </pre></div>
 </div>
@@ -81,7 +81,7 @@ sudo tasksel
 <li>PostgreSQL database</li>
 </ul>
 <p>Now you can create a database called &#8220;mendelmd&#8221; in PostgreSQL with the following commands:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo su
+<div class="highlight-bash"><div class="highlight"><pre>sudo su
 su postgres
 psql template1
 CREATE USER mendelmd WITH PASSWORD <span class="s1">&#39;yourpassword&#39;</span><span class="p">;</span>
@@ -93,37 +93,37 @@ GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd<span class="p">;</span>
 </div>
 <div class="section" id="for-installation-on-ubuntu-12-04-14-04-with-python-2-7">
 <h2>For Installation On Ubuntu 12.04/14.04 with Python 2.7<a class="headerlink" href="#for-installation-on-ubuntu-12-04-14-04-with-python-2-7" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get install python-pip virtualenvwrapper python-dev memcached libmemcached-dev tabix
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install python-pip virtualenvwrapper python-dev memcached libmemcached-dev tabix
 </pre></div>
 </div>
 </div>
 <div class="section" id="installation-of-mendel-md-in-a-virtual-enviroment">
 <h2>Installation of Mendel,MD in a Virtual Enviroment<a class="headerlink" href="#installation-of-mendel-md-in-a-virtual-enviroment" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="c1">#install and create a virtual enviroment</span>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#install and create a virtual enviroment</span>
 sudo pip install virtualenvwrapper
-<span class="nb">source</span> virtualenvwrapper.sh
+<span class="nb">source </span>virtualenvwrapper.sh
 mkvirtualenv mendelmd
 
-<span class="c1">#clone the repository</span>
+<span class="c">#clone the repository</span>
 git clone https://raonyguimaraes@bitbucket.org/raonyguimaraes/mendelmd_master
-<span class="nb">cd</span> mendelmd_master
-<span class="c1">#install numpy first</span>
+<span class="nb">cd </span>mendelmd_master
+<span class="c">#install numpy first</span>
 easy_install numpy
-<span class="c1">#install all the requirements (go to take a cup of coffee)</span>
+<span class="c">#install all the requirements (go to take a cup of coffee)</span>
 pip install -r requirements.txt
-<span class="c1">#create tables in database and migrate</span>
+<span class="c">#create tables in database and migrate</span>
 python manage.py syncdb --migrate
 
-<span class="c1">#create a static folder in your webserver</span>
+<span class="c">#create a static folder in your webserver</span>
 sudo mkdir /var/www/mendelmd_static
 sudo chown www-data:www-data /var/www/mendelmd_static/
 sudo chmod <span class="m">775</span> /var/www/mendelmd_static/
-<span class="c1">#copy media files to /var/www/mendelmd_static/</span>
+<span class="c">#copy media files to /var/www/mendelmd_static/</span>
 python manage.py collectstatic
-<span class="c1">#now you can create the administrator user</span>
+<span class="c">#now you can create the administrator user</span>
 python manage.py createsuperuser
 
-<span class="c1">#and now we can finally start the server</span>
+<span class="c">#and now we can finally start the server</span>
 python manage.py runserver
 </pre></div>
 </div>
@@ -138,7 +138,7 @@ python manage.py runserver
 <h2>Running the Annotator<a class="headerlink" href="#running-the-annotator" title="Permalink to this headline">¶</a></h2>
 <p>Mendel,MD comes with an annotator pipeline that integrates the most common annotators available: SNPEFF, SNPSIFT, VARIANT EFFECT PREDICTOR.
 After uploading your VCF to the system you can run the annotation pipeline with the following command:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python manage.py celeryd
+<div class="highlight-bash"><div class="highlight"><pre>python manage.py celeryd
 </pre></div>
 </div>
 <p>This scheduler should start annotating all you uploaded VCFs. The full annotation pipeline should take around 40 minutes per VCF exome file.</p>
@@ -185,11 +185,14 @@ After uploading your VCF to the system you can run the annotation pipeline with 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -207,7 +210,7 @@ After uploading your VCF to the system you can run the annotation pipeline with 
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Raony Guimarães.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>
