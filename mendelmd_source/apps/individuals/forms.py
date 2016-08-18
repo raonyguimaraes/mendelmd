@@ -29,6 +29,19 @@ class ComparisonForm(forms.Form):
     individual_two = forms.ModelChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
     # individual_two = forms.ChoiceField(choices=[(x.id, x.name) for x in Individual.objects.all()], required=False)
     read_depth = forms.CharField(max_length=50, required=False, label="Read Depth")
+
+    def __init__(self, user=None, *args, **kwargs):
+        
+        super(ComparisonForm, self).__init__(*args, **kwargs)
+
+        if not user.is_authenticated():
+            print('user None', user)
+            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
+            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
+        else:
+            print('user', user)
+            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
+            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
     
 
             

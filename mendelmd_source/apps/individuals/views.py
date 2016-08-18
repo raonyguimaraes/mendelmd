@@ -519,7 +519,7 @@ def comparison(request):
     variants = []
     query_string = request.META['QUERY_STRING']
     if request.method == 'GET':
-        form = ComparisonForm(request.GET, request.FILES)        
+        form = ComparisonForm(request.user, request.GET, request.FILES)        
         if form.is_valid():
             
             individual_one_id = request.GET.get('individual_one', '')
@@ -584,7 +584,7 @@ def comparison(request):
                 print(summary)
             
     else:
-        form = ComparisonForm()
+        form = ComparisonForm(request.user)
         
         
     return render_to_response('individuals/comparison.html', {'form':form, 'summary':summary, 'query_string':query_string}, context_instance=RequestContext(request))
