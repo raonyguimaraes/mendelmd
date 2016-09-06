@@ -25,7 +25,7 @@ After obtaining this file you need to put it on this folder: "mendelmd_source/da
 
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
-    sudo apt install virtualenvwrapper
+    sudo apt-get install gcc git python3-dev zlib1g-dev virtualenvwrapper
     source /etc/bash_completion.d/virtualenvwrapper
     git clone https://github.com/raonyguimaraes/mendelmd.git
     cd mendelmd/mendelmd_source
