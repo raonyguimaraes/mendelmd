@@ -9,42 +9,45 @@
 {% block content %}
 <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="row">
-        <div class="col-md-5">
+
+        <div class="col-md-6">
            <div class="hero-unit well">
             <div class="span12">
             <h1>Welcome to Mendel,MD!</h1>
             <p>This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders. </p>
 
-          <p><a href="{% url 'account_signup' %}" class="btn btn-primary btn-large">Sign Up »</a></p>
+            <p><a href="{% url 'account_signup' %}" class="btn btn-primary btn-large">Sign Up »</a> or <a href="{% url 'individual_create' %}" class="btn btn-primary btn-large">Upload a VCF</a></p>
           </div>
          </div>
         </div>
-        <div class="col-md-3">
-           <a href="http://mendel.medicina.ufmg.br"><img src="{{ STATIC_URL }}img/lgc2-1024x724.jpeg"></a>
-        </div>
-        <div class="col-md-2">
-
-       <iframe src="//player.vimeo.com/video/87679836?portrait=0" width="300" height="225" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-
-
+        <div class="col-md-6">
+           <center><a href="http://mendel.medicina.ufmg.br"><img src="{{ STATIC_URL }}img/lgc2-1024x724.jpeg"></a></center>
         </div>
 
 
       </div>
+      
+</div>
+    
 
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-6">
           <h2>Filter Analysis</h2>
-          <p>With this tool you can quickly identify candidate variants of causing mendelian disorders in your affected individuals. By excluding variants according to different criterias such as low frequency in databases (1000genomes, dbSNP138 and Exome Sequencing Project) and scores of patogenicity (SIFT, POLYPHEN, CADD) you can quickly reduce the number of variants from your initial list. </p>
+          <p>With this tool, you can quickly identify candidate variants of causing mendelian disorders in your affected individuals. By excluding variants according to different criterias such as low frequency in public databases (Ex. 1000genomes, dbSNP138 and Exome Sequencing Project) and scores of patogenicity (Ex. SIFT, POLYPHEN2 and CADD) you can quickly reduce the number of variants from your initial list. </p>
           <p></p>
         </div>
         <div class="col-md-6">
           <h2>Family Analysis</h2>
-          <p>With this tool you can search for mendelian variants, de novo variants and compound heterozygous variants by using the exome data from a famillies (Ex. trios, quartets and with more individuals). This helps you to reduce a lot the number of candidate variants when investigating mendelian disorders. </p>
+          <p>With this tool, you can search for mendelian variants, de novo variants and compound heterozygous variants using the exome data from a famillies (Ex. trios, quartets or more individuals). This helps you to reduce a lot the number of candidate variants when investigating mendelian disorders in Families. </p>
           <p></p>
        </div>
+      </div>
+    </div>
+    <div class="row">
+        <div class="center-block" style="width:900px;">
+          <iframe src="https://player.vimeo.com/video/179956321?byline=0&portrait=0" width="900" height="413" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
       </div>
 
 {% endblock %}

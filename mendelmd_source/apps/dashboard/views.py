@@ -44,8 +44,10 @@ def bulk_action(request):
                 individual = get_object_or_404(Individual, pk=individual_id)
 
                 individual_id = individual.id
-                username = individual.user.username
-
+                if individual.user:
+                    username = individual.user.username
+                else:
+                    username = 'public'
                 #delete files
                 if individual.vcf_file:
                     individual.vcf_file.delete()

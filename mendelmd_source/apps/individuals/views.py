@@ -130,7 +130,11 @@ class IndividualDeleteView(DeleteView):
         """
         self.object = self.get_object()
         individual_id = self.object.id
-        username = self.object.user.username
+
+        if self.object.user:
+            username = individual.user.username
+        else:
+            username = 'public'
         
         #delete files
         if self.object.vcf_file:

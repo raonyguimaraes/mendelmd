@@ -16,7 +16,7 @@ import sys
 
 #site.addsitedir('/projects/mendelmd_master/mendelmd_source')
 
-# sys.path.append('/projects/venv/lib/python3.5/site-packages')
+sys.path.append('/projects/venv/lib/python3.5/site-packages')
 sys.path.append('/projects/mendelmd_master/mendelmd_source')
 
 
