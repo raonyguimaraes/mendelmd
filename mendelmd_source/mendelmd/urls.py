@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import *
 
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -9,11 +9,13 @@ from django.conf import settings
 
 from django.conf.urls.static import static
 
-urlpatterns = patterns('',
+from . import views
+
+urlpatterns = [
     # Examples:
     # url(r'^$', 'mendelmd.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'^$', 'mendelmd.views.index', name='index'),
+    url(r'^$', views.index, name='index'),
 	
 	url(r'^docs/$', TemplateView.as_view(template_name='pages/docs.html'), name="docs"),
 
@@ -37,7 +39,7 @@ urlpatterns = patterns('',
     url(r'^select2/', include('django_select2.urls')),
 
 
-) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # if settings.DEBUG:
 #     import debug_toolbar

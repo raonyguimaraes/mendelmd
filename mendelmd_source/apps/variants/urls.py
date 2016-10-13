@@ -1,11 +1,13 @@
 
-from django.conf.urls import patterns, url
+from django.conf.urls import *
 
 from individuals.models import *
-from variants.views import *
 
-urlpatterns = patterns('variants.views',
+from . import views
 
-    url(r'^view/(?P<variant_id>\d+)/$', 'view', name='variant_view'),
+
+urlpatterns = [
+
+    url(r'^view/(?P<variant_id>\d+)/$', views.view, name='variant_view'),
     
-)
+]

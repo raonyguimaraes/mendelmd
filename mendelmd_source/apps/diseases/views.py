@@ -15,7 +15,9 @@ from variants.models import Variant
 from diseases.models import *
 from genes.models import Gene as Gene2
 from django.db.models import Q
-import urllib.request, urllib.parse, urllib.error
+
+# import urllib.request, urllib.parse, urllib.error
+
 from django.views.generic import ListView
 from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
