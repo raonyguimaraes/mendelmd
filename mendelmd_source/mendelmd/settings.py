@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'mendelmd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-#DATABASES = {
+# DATABASES = {
 #        'default': {
 #            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
 #            'NAME': 'mendelmd',                      # Or path to database file if using sqlite3.
@@ -125,7 +125,7 @@ DATABASES = {
          'HOST': 'db',
          'PORT': 5432,
      }
-}
+ }
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
@@ -145,7 +145,11 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
 # STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+
+STATIC_ROOT = ''
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )

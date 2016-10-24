@@ -2,11 +2,6 @@ version: '2'
 services:
  db:
    image: postgres
-   expose:
-    - "5433"
-   ports:
-    - "5433:5432"
-
  web:
    build: .
    command: bash docker-entrypoint.sh

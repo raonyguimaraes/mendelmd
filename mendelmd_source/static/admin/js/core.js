@@ -204,6 +204,33 @@ String.prototype.pad_left = function(pad_length, pad_string) {
     return new_string;
 }
 
+String.prototype.strptime = function(format) {
+    var split_format = format.split(/[.\-/]/);
+    var date = this.split(/[.\-/]/);
+    var i = 0;
+    while (i < split_format.length) {
+        switch (split_format[i]) {
+            case "%d":
+                var day = date[i];
+                break;
+            case "%m":
+                var month = date[i] - 1;
+                break;
+            case "%Y":
+                var year = date[i];
+                break;
+            case "%y":
+                var year = date[i];
+                break;
+        }
+        ++i;
+    };
+    // Create Date object from UTC since the parsed value is supposed to be in
+    // UTC, not local time. Also, the calendar uses UTC functions for date
+    // extraction.
+    return new Date(Date.UTC(year, month, day));
+}
+
 // ----------------------------------------------------------------------------
 // Get the computed style for and element
 // ----------------------------------------------------------------------------
