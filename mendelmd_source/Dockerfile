@@ -4,6 +4,9 @@ RUN mkdir /code
 WORKDIR /code
 ADD requirements.stable.txt /code/
 RUN apt-get update
-RUN apt-get -y install libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper
+RUN apt-get -y install libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper make zip python3-pip
+RUN pip install cython 
+RUN pip install pynnotator
+RUN pynnotator install
 RUN pip install -r requirements.stable.txt
 ADD . /code/
