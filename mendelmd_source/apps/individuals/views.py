@@ -45,7 +45,9 @@ def create(request):
         form = IndividualForm(request.POST, request.FILES)
         print('entrou no create!')
         if form.is_valid():
+            
             print('form is valid!')
+
             if request.user.is_authenticated():
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
@@ -61,6 +63,7 @@ def create(request):
             individual.vcf_file.name = ".".join(new_filename)
 
             print('filename ', filename)
+
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
 
@@ -79,21 +82,14 @@ def create(request):
             else:
                 os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
-            AnnotateVariants.delay(individual.id)
+            VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
-
 
             response = JSONResponse(data, mimetype=response_mimetype(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
 
-            # print 'returning', response
             return response
-
-            # individual = form.save(commit=False)
-            # individual.user = request.user
-            
-            # return redirect('dashboard')
     else:
         form = IndividualForm()
 

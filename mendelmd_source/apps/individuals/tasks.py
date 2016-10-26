@@ -29,7 +29,45 @@ from collections import OrderedDict
 from mongoengine import *
 
 import json
+import vcf
 
+@task()
+def VerifyVCF(individual_id):
+    print('Verify VCF...')
+    
+    individual = get_object_or_404(Individual, pk=individual_id)
+    print(individual.vcf_file)
+    filename = str(individual.vcf_file.name.split('/')[-1])
+
+    if filename.endswith('.vcf'):
+        command = 'cp %s sample.vcf' % (filename)
+        os.system(command)        
+    if filename.endswith('.gz'):
+        command = 'gunzip -c -d %s > sample.vcf' % (filename)
+        os.system(command)
+    if filename.endswith('.zip'):
+        command = 'unzip -p %s > sample.vcf' % (filename)
+        os.system(command)
+    if filename.endswith('.rar'):
+        command = 'unrar e %s' % (filename)
+        os.system(command)
+        #now change filename to sample.vcf
+        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
+        os.system(command)
+
+    if individual.user:
+        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username.lower(), individual.id)
+    else:
+        path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
+    os.chdir(path)
+
+    vcf_reader = vcf.Reader(open('sample.vcf', 'r'))
+    n_samples = len(vcf_reader.samples)
+    print('n_samples', n_samples)
+
+    #check if VCF is multisample
+    #if so extract individuals and create other individual models
+    #if not send it to be annotated
 
 @task()
 def AnnotateVariants(individual_id):
