@@ -2,6 +2,8 @@ version: '2'
 services:
  db:
    image: postgres
+   volumes:
+     - ./data/postgresql_data:/var/lib/postgresql/data/
  web:
    build: .
    command: bash docker-entrypoint.sh
