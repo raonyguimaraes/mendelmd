@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from celery.task import Task
 from celery.registry import tasks
 from django.db import transaction
-
+from django.core.files import File
 from celery import task
 
 from individuals.models import *
@@ -31,6 +31,13 @@ from mongoengine import *
 import json
 import vcf
 
+from celery.decorators import periodic_task
+from datetime import timedelta
+
+@periodic_task(run_every=timedelta(seconds=30))
+def every_30_seconds():
+    print("Running periodic task!")
+
 @task()
 def VerifyVCF(individual_id):
     print('Verify VCF...')
@@ -43,6 +50,10 @@ def VerifyVCF(individual_id):
         path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username.lower(), individual.id)
     else:
         path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
+
+    new_path = '/'.join(path.split('/')[:-1])
+    print(new_path)
+
 
     os.chdir(path)
 
@@ -67,6 +78,37 @@ def VerifyVCF(individual_id):
     n_samples = len(vcf_reader.samples)
     print('n_samples', n_samples)
 
+    if n_samples > 1:
+        #extract individuals and create new users
+        for sample in vcf_reader.samples:
+            print(sample)
+            command = "bcftools view -c 1 -s %s sample.vcf  > %s.vcf" % (sample, sample)
+            print(command)
+            os.system(command)
+        #now rename original sample
+        first_sample = vcf_reader.samples[0]
+        original_name = individual.name
+        individual.name += ' %s' % (first_sample)
+        individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, first_sample)
+        individual.save()
+        AnnotateVariants.delay(individual.id)
+        #create other samples
+        for sample in vcf_reader.samples[1:]:
+            print(sample)
+            new_individual = Individual.objects.create(user=individual.user, status='new')
+            new_individual.name = original_name + ' %s' % (sample)
+            new_individual.save()
+            output_folder = '../%s' % (new_individual.id)
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+                os.chmod(output_folder, 0o777)
+            command = 'mv %s.vcf %s' % (sample, output_folder)
+            os.system(command)
+            new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, sample)
+            new_individual.save()
+            AnnotateVariants.delay(new_individual.id)
+    else:
+        AnnotateVariants.delay(individual_id)
     #check if VCF is multisample
     #if so extract individuals and create other individual models
     #if not send it to be annotated
