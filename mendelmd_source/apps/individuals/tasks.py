@@ -31,11 +31,9 @@ from mongoengine import *
 import json
 import vcf
 
-from celery.decorators import periodic_task
-from datetime import timedelta
 
-@periodic_task(run_every=timedelta(seconds=30))
-def every_30_seconds():
+@task()
+def clean_individuals():
     print("Running periodic task!")
 
 @task()

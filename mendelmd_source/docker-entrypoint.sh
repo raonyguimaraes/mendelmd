@@ -12,6 +12,7 @@ python3 manage.py migrate
 export C_FORCE_ROOT='true'
 # Start server
 echo "Starting annotator"
+python3 manage.py celery beat &
 python3 manage.py celery worker -c 4 -l debug &
 # Start server
 echo "Starting server"

@@ -255,3 +255,16 @@ except ImportError:
     pass
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
+
+
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    'clean_individuals': {
+        'task': 'individuals.tasks.clean_individuals',
+        'schedule': timedelta(seconds=5),
+        # 'args': (16, 16)
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
