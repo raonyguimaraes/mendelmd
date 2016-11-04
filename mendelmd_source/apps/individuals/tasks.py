@@ -31,10 +31,18 @@ from mongoengine import *
 import json
 import vcf
 
+from datetime import timedelta
 
 @task()
 def clean_individuals():
     print("Running periodic task!")
+    individuals = Individual.objects.filter(user=None)
+    for individual in individuals:
+        time_difference = datetime.datetime.now()-individual.creation_date
+        if time_difference.days > 0:
+            #delete individuals
+            os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
+            individual.delete()
 
 @task()
 def VerifyVCF(individual_id):
@@ -238,7 +246,6 @@ def treat_float_min(float_string):
             if float_value < minimum_value:
                 minimum_value = float_value
     return minimum_value
-
 
 def parse_vcf(line):
 

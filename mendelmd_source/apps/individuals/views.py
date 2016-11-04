@@ -194,7 +194,9 @@ def view(request, individual_id):
     individual.filter_variants = variant_list.values('filter').annotate(Count('filter')).order_by('filter')
     individual.quality = variant_list.aggregate(Avg('qual'), Max('qual'), Min('qual'))
     individual.read_depth = variant_list.aggregate(Avg('read_depth'), Max('read_depth'), Min('read_depth'))
-    #individual.dbsnp_pm = variant_list.values('dbsnp_pm').annotate(total=Count('dbsnp_pm'))
+    
+    individual.clinvar_clnsig = variant_list.values('clinvar_clnsig').annotate(total=Count('clinvar_clnsig'))
+
     individual.chromossome = variant_list.values('chr').annotate(total=Count('chr')).order_by('chr')
     
     # variants_with_snpid = variant_list.values('variant_id').exclude(variant_id=".")

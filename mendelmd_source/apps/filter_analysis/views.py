@@ -253,6 +253,8 @@ def filter_analysis(request,query, args, exclude):
     #IMPACT
     filter_impact(request, query)
     filter_is_at_hgmd(request, query)
+    filter_clnsig(request, query)
+
 
     # filter_individuals(request, query)
 

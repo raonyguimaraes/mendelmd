@@ -262,7 +262,7 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     'clean_individuals': {
         'task': 'individuals.tasks.clean_individuals',
-        'schedule': timedelta(seconds=5),
+        'schedule': timedelta(days=1),
         # 'args': (16, 16)
     },
 }

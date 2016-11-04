@@ -71,10 +71,10 @@
 			<td style="width: 3%">ESP6500</td>
 			<td style="width: 2%">Sift</td>
 			<td style="width: 3%">PP2</td>
-			<td style="width: 3%">VEST</td>
 			<td style="width: 3%">CADD</td>
-			<td style="width: 3%">OMIM</td>
-			<td style="width: 3%">HGMD</td>
+			<td style="width: 3%">DANN</td>
+			<td style="width: 3%">CLN</td>
+			<td style="width: 3%">TRAIT</td>
 			<!-- <td style="width: 3%">RF SCORE</td>
 			<td style="width: 3%">ADA SCORE</td> -->
 
@@ -156,22 +156,10 @@
 			
 			<td>{{ variant.sift|floatformat:2 }}</td>
 			<td>{{ variant.polyphen2|floatformat:2 }}</td>
-			<td>{{ variant.vest|floatformat:2 }}</td>
-			<td>{{ variant.cadd|floatformat:2 }}</td>
-			<td>
-			{% if variant.is_at_omim %}
-				{{ variant.is_at_omim }}
-			{% endif %}
-			</td>
-			<td>
-			{% if variant.is_at_hgmd %}
-				{{ variant.is_at_hgmd }}
-				<br>
-				<a target="_blank" href="http://www.hgmd.cf.ac.uk/ac/gene.php?gene={{ variant.gene }}&accession={{ variant.hgmd_entries }}">{{ variant.hgmd_entries }}</a>
-				
-			{% endif %}
-			
-			</td>
+			<td>{{ variant.CADD_raw|floatformat:2 }}</td>
+			<td>{{ variant.DANN_score|floatformat:2 }}</td>
+			<td>{{ variant.clinvar_clnsig }}</td>
+			<td>{{ variant.clinvar_trait }}</td>
 			<!-- <td>{{ variant.rf_score|floatformat:2 }}</td>
 			<td>{{ variant.ada_score|floatformat:2 }}</td> -->
 
