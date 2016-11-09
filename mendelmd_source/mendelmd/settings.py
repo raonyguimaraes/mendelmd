@@ -105,27 +105,28 @@ WSGI_APPLICATION = 'mendelmd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-       'default': {
-           'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-           'NAME': 'mendelmd',                      # Or path to database file if using sqlite3.
-           # The following settings are not used with sqlite3:
-           'USER': 'mendelmd',
-           'PASSWORD': 'mendelmd',
-          'HOST': 'localhost',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
-          'PORT': '',                      # Set to empty string for default.
-       }
-   }
+#DATABASES = {
+#       'default': {
+#           'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#           'NAME': 'mendelmd',                      # Or path to database file if using sqlite3.
+#           # The following settings are not used with sqlite3:
+#           'USER': 'mendelmd',
+#           'PASSWORD': 'mendelmd',
+#          'HOST': 'localhost',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+#          'PORT': '',                      # Set to empty string for default.
+#       }
+#   }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'HOST': 'db',
-#         'PORT': 5432,
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
