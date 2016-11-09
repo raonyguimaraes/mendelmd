@@ -7,7 +7,7 @@ RUN apt-get update \
 	&& apt-get upgrade -y \
 	&& apt-get install -y \
 	libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper make zip python3-pip sudo \
-	build-essential bcftools \
+	build-essential bcftools software-properties-common \
     ca-certificates \
     gcc \
     git \
