@@ -131,7 +131,7 @@ def AnnotateVariants(individual_id):
     # print 'individual.vcf_file.name'
     # print individual.vcf_file.name
     if individual.user:
-        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username.lower(), individual.id)
+        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username, individual.id)
         email = individual.user.email
     else:
         path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
