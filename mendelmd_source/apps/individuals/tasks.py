@@ -283,7 +283,7 @@ def parse_vcf(line):
 
     variant['genotype'] = variant['genotype_col'][0]
     
-    print('genotype', variant['pos'], variant['genotype_col'], variant['genotype'])
+    # print('genotype', variant['pos'], variant['genotype_col'], variant['genotype'])
 
     if variant['genotype'] != './.':
         #fix because of isaac variant caller, there is no DP
@@ -510,8 +510,13 @@ def parse_vcf(line):
 
     #create individual genotype list
     ind_genotype_list = []
-    ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
-    ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+    #treats genotypes such as .:1,156,32:189:60
+    if len(variant['genotype']) > 1:
+        ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
+        ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+    else:
+        ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
+
     ind_genotype_list = sorted(ind_genotype_list)
 
     variant['index'] = '%s-%s-%s-%s' % (variant['chr'], variant['pos'], ind_genotype_list[0], ind_genotype_list[1])
