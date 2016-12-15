@@ -519,7 +519,7 @@ def parse_vcf(line):
 
     ind_genotype_list = sorted(ind_genotype_list)
 
-    variant['index'] = '%s-%s-%s-%s' % (variant['chr'], variant['pos'], ind_genotype_list[0], ind_genotype_list[1])
+    variant['index'] = '%s-%s-%s' % (variant['chr'], variant['pos'], "-".join(ind_genotype_list))
     variant['pos_index'] = '%s-%s' % (variant['chr'], variant['pos'])
     
     # print index
