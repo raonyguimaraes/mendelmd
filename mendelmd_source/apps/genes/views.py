@@ -395,7 +395,8 @@ def populate(request):
 #    genes = Gene.objects.all()
 #    return render_to_response('genes/list.html', {'genes': genes}, context_instance=RequestContext(request))
 
-    
+
+@login_required
 def view(request, gene_name):
 #    gene = Variant.objects.filter(gene_name=gene_name).annotate(num_individuals=Count('individuals'))
     gene_object = Gene.objects.get(symbol=gene_name)

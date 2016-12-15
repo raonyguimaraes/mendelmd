@@ -10,6 +10,9 @@ admin.autodiscover()
 
 from . import views
 
+from django.contrib.auth.decorators import login_required, permission_required
+
+
 urlpatterns = [
     url(r"^populate/$", views.populate, name="diseases_populate"),
     url(r"^populate_genes/$", views.populate_genes, name="populate_genes"),
@@ -19,7 +22,7 @@ urlpatterns = [
     
     #url(r"^$", 'diseases.views.list', name="diseases_list"),
     
-    url(r'^$', DiseaseListView.as_view(model=Disease), name="diseases_list"),
+    url(r'^$', login_required(DiseaseListView.as_view(model=Disease)), name="diseases_list"),
     
 
     
