@@ -515,7 +515,7 @@ def parse_vcf(line):
         ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
         ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
     else:
-        ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
+        ind_genotype_list.append(genotype_list[variant['genotype'][0]])
 
     ind_genotype_list = sorted(ind_genotype_list)
 
