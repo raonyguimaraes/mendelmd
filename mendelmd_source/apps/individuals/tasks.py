@@ -281,9 +281,9 @@ def parse_vcf(line):
 
     variant['genotype_col'] = variant_line[-1].split(':')
 
-    variant['genotype'] = variant['genotype_col'][0]        
+    variant['genotype'] = variant['genotype_col'][0]
     
-    # print 'genotype', variant['genotype_col'], variant['genotype']
+    print('genotype', variant['pos'], variant['genotype_col'], variant['genotype'])
 
     if variant['genotype'] != './.':
         #fix because of isaac variant caller, there is no DP
