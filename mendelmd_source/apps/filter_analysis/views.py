@@ -1270,7 +1270,7 @@ def old_family_analysis(request):
     #         variant.alt, variant.genotype, variant.genotype_info,
     #         variant.read_depth, variant.snp_eff,
     #         variant.snp_eff_functional_class, variant.gene, variant.impact,
-    #         variant.dbsnp_pm, variant.genomes1k_af, variant.dbsnp_gmaf,
+    #         variant.dbsnp_pm, variant.genomes1k_maf, variant.dbsnp_gmaf,
     #         variant.esp_maf_total, variant.esp_maf, variant.tac,
     #         variant.sift, variant.polyphen, variant.dbsnp_build,
     #         variant.amino_acid_change, variant.cdna_position,
