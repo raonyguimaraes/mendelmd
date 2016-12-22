@@ -15,6 +15,7 @@ Contents:
    annotation
    clinical_cases
    filter_analysis
+   extension
 
 
 
