@@ -57,6 +57,8 @@ Installing PostgreSQL Database
 Installing Mendel,MD
 ====================
 
+    cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
+
     pip install -r requirements.stable.txt
 
     python manage.py migrate auth
