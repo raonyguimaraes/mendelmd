@@ -511,8 +511,15 @@ def parse_vcf(line):
     #create individual genotype list
     ind_genotype_list = []
     if len(variant['genotype']) > 1:
-        ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
-        ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+        if variant['genotype'][0] != '.':
+            ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
+        else:
+            ind_genotype_list.append(genotype_list[0])
+        if variant['genotype'][-1] != '.':
+            ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+        else:
+            ind_genotype_list.append(genotype_list[1])
+
     else:
         ind_genotype_list.append(genotype_list[0])
     ind_genotype_list = sorted(ind_genotype_list)
