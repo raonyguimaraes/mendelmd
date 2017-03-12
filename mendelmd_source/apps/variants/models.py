@@ -53,7 +53,6 @@ class Variant(models.Model):
 
     cadd = models.FloatField(null=True, blank=True)
 
-    cadd = models.FloatField(null=True, blank=True)
     rf_score = models.FloatField(null=True, blank=True)
     ada_score = models.FloatField(null=True, blank=True)
 

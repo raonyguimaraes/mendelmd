@@ -40,27 +40,7 @@
 
       <div class="container-fluid">
         <div class="row">
-          <!-- <div class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
-              <li class="active"><a href="#">Overview</a></li>
-              <li><a href="{% url 'individuals_list' %}">Individuals</a></li>              
-              <li><a href="#">Groups</a></li>
-              <li><a href="{% url 'diseases_list' %}">Diseases</a></li>
-              <li><a href="{% url 'genes_list' %}">Genes</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-              <li><a href="">Nav item</a></li>
-              <li><a href="">Nav item again</a></li>
-              <li><a href="">One more nav</a></li>
-              <li><a href="">Another nav item</a></li>
-              <li><a href="">More navigation</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-              <li><a href="">Nav item again</a></li>
-              <li><a href="">One more nav</a></li>
-              <li><a href="">Another nav item</a></li>
-            </ul>
-          </div> -->
+          
           <div class="main"> <!-- col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2  -->
             <h1 class="page-header">Dashboard</h1>
 
@@ -75,42 +55,6 @@
 
             <a href="{% url 'individual_create' %}"><button type="button" class="btn btn-lg btn-primary">Upload VCF File</button></a>
             <br><br>
-
-            <!-- <div class="row">
-              <ul class="nav nav-justified">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Downloads</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-              </ul>
-            </div>
-            <br>
- -->
-<!-- 
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Individuals</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Groups</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Cases</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-          </div> -->
           
           <form action="{% url 'bulk_action' %}" method="post">
             {% csrf_token %}
@@ -136,8 +80,8 @@
                       <th>ID</th>
                       <th style="width: 10px;">Name</th>
                       {% if user.is_staff %}
-		      <th>Options</th>
-		      {% endif %}
+            		      <th>Options</th>
+            		      {% endif %}
                       <th>Uploaded By</th>
                       <th>Nº Lines</th>
                       <th>Created on</th>
@@ -168,9 +112,6 @@
                             <a href="{% url 'individual_edit' individual.id %}">Edit</a>
                           </li>
                           <li>
-                            <a href="{% url 'individual_browse' individual.id %}">Browse</a>
-                          </li>
-                          <li>
                           <a href="{% url 'individual_delete' individual.id %}">Delete</a>
                           </li>
                         </ul>
@@ -186,17 +127,12 @@
                       <td>{{ individual.status }}</td>
                       {% if user.is_staff %}
                       <td>
-
                         <a href="{% url 'individual_annotate' individual.id %}">
-                          <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate Individual</i></button>
+                          <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
                         </a>
                         <a href="{% url 'individual_populate' individual.id %}">
-                          <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate Individual</i></button>
+                          <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i></button>
                         </a>
-                        <a href="{% url 'individual_populate_mongo' individual.id %}">
-                          <button type="button" class="btn btn-primary"><i class="icon-align-center">Populate to MongoDB</i></button>
-                        </a>
-                        
                     </td>
                     {% endif %}
                   </tr>

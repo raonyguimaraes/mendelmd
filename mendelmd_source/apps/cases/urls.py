@@ -1,17 +1,20 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import *
 from django.views.generic import TemplateView
 
 from cases.views import CaseDeleteView
 
+from . import views
 
-urlpatterns = patterns('cases.views',
-    url(r'^$', 'cases_list', name='cases_list'),
-    url(r'^create/$', 'create_case', name='create_case'),
+
+urlpatterns = [
+
+    url(r'^$', views.cases_list, name='cases_list'),
+    url(r'^create/$', views.create_case, name='create_case'),
     url(r'^delete/(?P<pk>\d+)$', CaseDeleteView.as_view(), {}, 'delete_case'),
-    url(r'^edit/(?P<case_id>\d+)/$', 'edit', name='edit_case'),
-    url(r'^view/(?P<case_id>\d+)/$', 'view_case', name='view_case'),
-    url(r'^view/(?P<case_id>\d+)/$', 'view_case', name='view_case'),
-    url(r'^analyze/(?P<case_id>\d+)/(?P<analysis>\w+)/(?P<inheritance>\w+)/$', 'analysis', name='analyze_case'),
+    url(r'^edit/(?P<case_id>\d+)/$', views.edit, name='edit_case'),
+    url(r'^view/(?P<case_id>\d+)/$', views.view_case, name='view_case'),
+    url(r'^view/(?P<case_id>\d+)/$', views.view_case, name='view_case'),
+    url(r'^analyze/(?P<case_id>\d+)/(?P<analysis>\w+)/(?P<inheritance>\w+)/$', views.analysis, name='analyze_case'),
     
 
     # url(r'^new/$', IndividualCreateView.as_view(), {}, 'individual-new'),
@@ -44,7 +47,5 @@ urlpatterns = patterns('cases.views',
     # url(r'^delete_group/(?P<pk>\d+)$', GroupDeleteView.as_view(), {}, 'group_delete'),
     # #url(r'^delete_group/(?P<group_id>\d+)/$', 'delete_group', name='delete_group'),
     # url(r'^comparison/$', 'comparison', name='comparison'),
-    # url(r'^export_comparison/$', 'export_comparison', name='export_comparison'),
-    
-    
-)
+    # url(r'^export_comparison/$', 'export_comparison', name='export_comparison'),   
+]

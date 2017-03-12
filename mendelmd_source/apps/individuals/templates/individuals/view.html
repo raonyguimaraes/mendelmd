@@ -29,7 +29,7 @@
       <p>
       	Name: {{ individual.name }}<br>
 		Variants: {{ individual.n_variants }}<br>
-		Novel Variants: <a href="{% url 'individual_browse' individual.id %}?ID=.">{{ individual.novel_variants }}</a> (Not in latest DbSNP Build)
+		Novel Variants: <a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&snp_list=.">{{ individual.novel_variants }}</a> (Not in latest DbSNP Build)
     <ul>
 	<li><a href={% url 'individual_download' individual.id %}>Download Original VCF File</a></li>
 	<li><a href={% url 'individual_download_annotated' individual.id %}>Download Annotated VCF File</a></li>
@@ -53,9 +53,9 @@
 				{% for item in individual.summary %}
 				<tr>
 				<td> {{ item.type }}</td>
-				<td><a href="{% url 'individual_browse' individual.id %}">{{ item.total }}</a></td>
+				<td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}">{{ item.total }}</a></td>
 					{% for value in item.discrete %}
-						<td><a href="{% url 'individual_browse' individual.id %}?genotype={{ value.genotype }}">{{ value.total }} {{ value.genotype }}</a></td>
+						<td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&genotype={{ value.genotype }}">{{ value.total }} {{ value.genotype }}</a></td>
 					{% endfor %}
 				</tr>			
 				{% endfor %}
@@ -73,7 +73,7 @@
 		</tr>
 		{% for item in individual.snp_eff %}
 			<tr>
-			<td>{{ item.snpeff_effect }}</td><td><a href="{% url 'individual_browse' individual.id %}?effect={{ item.snpeff_effect }}">{{ item.snpeff_effect__count }}</a></td>
+			<td>{{ item.snpeff_effect }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&effect={{ item.snpeff_effect|urlencode }}">{{ item.snpeff_effect__count }}</a></td>
 			</tr>
 		{% endfor %}
 	</table>
@@ -88,7 +88,7 @@
 		</tr>
 		{% for item in individual.functional_class %}
 		    <tr>
-		    <td>{{ item.snpeff_func_class }}</td><td><a href="{% url 'individual_browse' individual.id %}?func_class={{ item.snpeff_func_class }}">{{ item.snpeff_func_class__count }}</a></td>
+		    <td>{{ item.snpeff_func_class }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&func_class={{ item.snpeff_func_class|urlencode }}">{{ item.snpeff_func_class__count }}</a></td>
 		    </tr>
 		{% endfor %}
 	</table>
@@ -103,7 +103,7 @@
 		</tr>    
 		{% for item in individual.impact_variants %}
 		<tr>
-		<td>{{ item.snpeff_impact }}</td><td><a href="{% url 'individual_browse' individual.id %}?impact={{ item.snpeff_impact }}">{{ item.snpeff_impact__count }}</a></td>
+		<td>{{ item.snpeff_impact }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&impact={{ item.snpeff_impact }}">{{ item.snpeff_impact__count }}</a></td>
 		</tr>
 		{% endfor %}
 	</table>
@@ -118,7 +118,7 @@
 		</tr>    
 		{% for item in individual.filter_variants %}
 		<tr>
-		<td>{{ item.filter }}</td><td><a href="{% url 'individual_browse' individual.id %}?filter={{ item.filter }}">{{ item.filter__count }}</a></td>
+		<td>{{ item.filter }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&filter={{ item.filter }}">{{ item.filter__count }}</a></td>
 		</tr>
 		{% endfor %}
 	</table>
@@ -169,9 +169,9 @@
 		    <th>Type</th>
 		    <th>Total Variants</th>
 		</tr>
-		{% for item in individual.dbsnp_pm %}
+		{% for item in individual.clinvar_clnsig %}
 		<tr>
-		<td>{{ item.dbsnp_pm }}</td><td><a href="{% url 'individual_browse' individual.id %}?cln={{ item.dbsnp_pm }}">{{ item.total }}</a></td>
+		<td>{{ item.clinvar_clnsig }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&clnsig={{ item.clinvar_clnsig }}">{{ item.total }}</a></td>
 		</tr>
 		{% endfor %}
 		
@@ -187,7 +187,7 @@
 		</tr>
 		{% for item in individual.chromossome %}
 		<tr>
-		<td>{{ item.chr }}</td><td><a href="{% url 'individual_browse' individual.id %}?chr={{ item.chr }}">{{ item.total }}</a></td>
+		<td>{{ item.chr }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&chr={{ item.chr }}">{{ item.total }}</a></td>
 		</tr>
 		{% endfor %}
     </table>
@@ -276,38 +276,5 @@
         $('.nav').tabs()
     })
 </script>
-    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	<h2>{% trans "Variants" %}</h2>
-	<div class="pagination">
-	    <span class="step-links">
-	        {% if variants.has_previous %}
-	            <a href="?page={{ variants.previous_page_number }}">previous</a>
-	        {% endif %}
-	
-	        <span class="current">
-	            Page {{ variants.number }} of {{ variants.paginator.num_pages }}.
-	        </span>
-	
-	        {% if variants.has_next %}
-	            <a href="?page={{ variants.next_page_number }}">next</a>
-	        {% endif %}
-	    </span>
-	</div>
-	
-	{% include "full_variants.html" %}
-	
-	
-	
-    
 
 {% endblock %}

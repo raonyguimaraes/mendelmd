@@ -62,15 +62,13 @@ def filter_individuals_variants(request, query, args, exclude):
 
 def filter_variants_per_gene(request, query, args, exclude):
     # OPTION variants per gene
-    variants_per_gene = request.GET.get('variants_per_gene')
+    variants_per_gene = request.GET.get('variants_per_gene', '')
     
-
     print('variants per gene')
     print(variants_per_gene)
     if variants_per_gene != '':
         
         variants_per_gene = int(variants_per_gene)
-#                print 'Variants per gene'
         variants_per_gene_option = request.GET.get('variants_per_gene_option', '')
         
         print('Debugging')
@@ -205,6 +203,14 @@ def filter_gene_list(request, query, args):
         args.append(~Q(gene__in=safe_gene_list))
     
 def filter_mutation_type(request, args):
+
+    genotype = request.GET.get('genotype', '')
+
+    if genotype != '':
+        print('genotype', genotype)
+        args.append(Q(genotype=genotype))
+
+
     mutation_type = request.GET.get('mutation_type', '')
     if mutation_type == 'homozygous':
         # genotypes = ['0/0', './.', '0/1', '1/0', '0/2', '2/0']
@@ -500,10 +506,12 @@ def filter_by_cadd(request, args):
         cadd = cadd.split(' - ')
         cadd_min = float(cadd[0]) 
         cadd_max = float(cadd[1])
+        # print('CADD', cadd_min, cadd_max)
         if cadd_flag:
-            args.append(Q(cadd__lte=cadd_max) & Q(cadd__gte=cadd_min))
+            args.append(Q(CADD_raw__lte=cadd_max) & Q(CADD_raw__gte=cadd_min))
         else:
-            args.append((Q(cadd__lte=cadd_max) & Q(cadd__gte=cadd_min)) | Q(cadd__isnull=True))            
+            args.append((Q(CADD_raw__lte=cadd_max) & Q(CADD_raw__gte=cadd_min)) | Q(CADD_raw__isnull=True))
+                   
 def filter_by_rf_score(request, args):
     rf_score = request.GET.get('rf_score', '')
     if rf_score != '':
@@ -827,6 +835,12 @@ def filter_is_at_hgmd(request, query):
     hgmd = request.GET.get('is_at_hgmd', '')
     if hgmd == 'on':
         query['is_at_hgmd'] = True
+
+def filter_clnsig(request, query):     
+    # hgmd = request.GET.getlist('is_at_hgmd')
+    clnsig = request.GET.get('clnsig', '')
+    if clnsig != '':
+        query['clinvar_clnsig'] = clnsig
 
 
 

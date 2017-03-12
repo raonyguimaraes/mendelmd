@@ -23,7 +23,7 @@ OMIM Data
 You need to register an account at OMIM: http://omim.org/downloads and
 submit a download request to get a file named "morbidmap".
 
-After obtaining this file you need to put it on this folder:
+After obtaining this file you need to put it inside this folder:
 "mendelmd\_source/data/omim/".
 
 

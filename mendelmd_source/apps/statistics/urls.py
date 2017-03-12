@@ -1,10 +1,11 @@
 from django.conf import settings
-from django.conf.urls import patterns, url
+from django.conf.urls import *
 
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns("",
-    url(r"^$", 'statistics.views.index', name="statistics_index"),
-    
-    )
+from . import views
+
+urlpatterns = [
+    url(r"^$", views.index, name="statistics_index"),    
+]

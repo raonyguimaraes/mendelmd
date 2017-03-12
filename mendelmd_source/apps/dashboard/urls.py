@@ -1,8 +1,7 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import *
 
-urlpatterns = patterns('dashboard.views',
-    url(r'^$', 'index', name='dashboard'),
-    url(r'^bulk_action$', 'bulk_action', name='bulk_action'),
-
-    
-)
+from . import views
+urlpatterns = [
+    url(r'^$', views.index, name='dashboard'),
+    url(r'^bulk_action$', views.bulk_action, name='bulk_action'),   
+]

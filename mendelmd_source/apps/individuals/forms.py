@@ -55,10 +55,19 @@ class BrowserForm(forms.Form):
     
     gene = forms.CharField(max_length=50, required=False)
     gene_list = forms.CharField(widget=forms.Textarea, required=False)
+
+    CHOICES = [(x, x.replace('_', ' ')) for x in ['CDS', 'CHROMOSOME_LARGE DELETION', 'CODON_CHANGE', 'CODON_INSERTION', 'CODON_CHANGE_PLUS CODON_INSERTION', 'CODON_DELETION', 'CODON_CHANGE_PLUS CODON_DELETION', 'DOWNSTREAM', 'EXON', 'EXON_DELETED', 'FRAME_SHIFT', 'GENE', 'INTERGENIC', 'INTERGENIC_CONSERVED', 'INTRAGENIC', 'INTRON', 'INTRON_CONSERVED', 'MICRO_RNA', 'NON_SYNONYMOUS_CODING', 'NON_SYNONYMOUS_START', 'NON_SYNONYMOUS_STOP', 'RARE_AMINO_ACID', 'SPLICE_SITE_ACCEPTOR', 'SPLICE_SITE_DONOR', 'SPLICE_SITE_REGION', 'SPLICE_SITE_BRANCH', 'SPLICE_SITE_BRANCH_U12', 'STOP_LOST', 'START_GAINED', 'START_LOST', 'STOP_GAINED', 'SYNONYMOUS_CODING', 'SYNONYMOUS_START', 'SYNONYMOUS_STOP', 'TRANSCRIPT', 'REGULATION', 'UPSTREAM', 'UTR_3_PRIME', 'UTR_3_DELETED', 'UTR_5_PRIME', 'UTR_5_DELETED']]
     
-    snp_eff = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_effect').distinct()], required=False)
-    CHOICES = [(x[0], x[0]) for x in Variant.objects.values_list('snpeff_func_class').distinct()]
+    snp_eff = forms.MultipleChoiceField(choices=CHOICES, required=False)
+
+    # CHOICES = [(x[0], x[0]) for x in Variant.objects.values_list('snpeff_func_class').distinct()]
+
+    CHOICES = [(x, x.replace('_', ' ')) for x in ['NONE', 'SILENT', 'MISSENSE', 'NONSENSE']]
+
     func_class = forms.MultipleChoiceField(choices=CHOICES, required=False)
     
-    impact = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_impact').distinct()], required=False)
+    CHOICES = [(x, x.replace('_', ' ')) for x in ['HIGH', 'MODERATE', 'MODIFIER', 'LOW']]
+
+    impact = forms.MultipleChoiceField(choices=CHOICES, required=False)
+    
     cln = forms.BooleanField(required=False)

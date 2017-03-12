@@ -417,7 +417,7 @@ Export to: <a href="?{{ query_string }}&export=csv">CSV</a><a href="?{{ query_st
 			<th style="width: 5%">{% anchor snp_eff "Mutation Type"" %}</th>
 			<th style="width: 3%">{% anchor snp_eff_functional_class "Protein Impact" %}</th>
 			<th style="width: 3%">{% anchor impact "SnpEff Class" %}</th>
-			<th style="width: 3%">{% anchor genomes1k_af "1kgenomes" %}</th>
+			<th style="width: 3%">{% anchor genomes1k_maf "1kgenomes" %}</th>
 			<th style="width: 3%">{% anchor dbsnp_gmaf "dbSNP137" %}</th>
 			<th style="width: 3%">{% anchor ann_esp_maf "ESP6500" %}</th>
 			<th style="width: 2%">{% anchor sift Sift %}</th>
@@ -464,8 +464,8 @@ Export to: <a href="?{{ query_string }}&export=csv">CSV</a><a href="?{{ query_st
 
 			</td> -->
 			<td>{{ variant.impact }}</td>
-			<td> {% if variant.genomes1k_af != None %}
-			{{ variant.genomes1k_af }}
+			<td> {% if variant.genomes1k_maf != None %}
+			{{ variant.genomes1k_maf }}
 			{% endif %} </td>
 			<td>{{ variant.gmaf_dbsnp135|floatformat:5|intcomma }}</td>
 			<td>{{ variant.ann_esp_maf|floatformat:5|intcomma }}</td>

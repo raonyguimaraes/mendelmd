@@ -13,7 +13,7 @@
 
     {% block css %}
 
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     
     <!-- Bootstrap core CSS -->
     <link href="{% static "bootstrap-3.2.0-dist/css/bootstrap.css" %}" rel="stylesheet">
@@ -51,7 +51,7 @@
 
     <br><br><br>
 
-    <div class="container">
+    <div class="container-fluid" style="margin: 0 50px;">
 
       <div class="row">
       {% if messages %}
@@ -65,9 +65,8 @@
         {% block content %}
         {% endblock %}
       </div>
-
       <hr>
-
+      
       <footer>
         <p>&copy; 2016 - Developed by <a href="http://mendel.medicina.ufmg.br">Laboratory of Clinical Genomics</a> - <a href="https://github.com/raonyguimaraes/mendelmd">Source Code</a> and <a href="https://github.com/raonyguimaraes/mendelmd/issues">Issues</a></p>
       </footer>

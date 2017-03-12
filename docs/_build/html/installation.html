@@ -73,35 +73,35 @@ and Genome) with Mendelian Disorders.</p>
 <h1>OMIM Data<a class="headerlink" href="#omim-data" title="Permalink to this headline">¶</a></h1>
 <p>You need to register an account at OMIM: <a class="reference external" href="http://omim.org/downloads">http://omim.org/downloads</a> and
 submit a download request to get a file named &#8220;morbidmap&#8221;.</p>
-<p>After obtaining this file you need to put it on this folder:
+<p>After obtaining this file you need to put it inside this folder:
 &#8220;mendelmd_source/data/omim/&#8221;.</p>
 </div>
 <div class="section" id="installing-postgresql-database">
 <h1>Installing PostgreSQL Database<a class="headerlink" href="#installing-postgresql-database" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install libpq-dev postgresql
-sudo su
-su postgres
-psql template1
-CREATE USER mendelmd WITH PASSWORD &#39;mendelmd&#39;;
-CREATE DATABASE mendelmd;
-GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
-\q
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">postgresql</span>
+<span class="n">sudo</span> <span class="n">su</span>
+<span class="n">su</span> <span class="n">postgres</span>
+<span class="n">psql</span> <span class="n">template1</span>
+<span class="n">CREATE</span> <span class="n">USER</span> <span class="n">mendelmd</span> <span class="n">WITH</span> <span class="n">PASSWORD</span> <span class="s1">&#39;mendelmd&#39;</span><span class="p">;</span>
+<span class="n">CREATE</span> <span class="n">DATABASE</span> <span class="n">mendelmd</span><span class="p">;</span>
+<span class="n">GRANT</span> <span class="n">ALL</span> <span class="n">PRIVILEGES</span> <span class="n">ON</span> <span class="n">DATABASE</span> <span class="n">mendelmd</span> <span class="n">to</span> <span class="n">mendelmd</span><span class="p">;</span>
+\<span class="n">q</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="installation-on-ubuntu-16-04-lts-tested">
 <h1>Installation on Ubuntu 16.04 LTS (tested)<a class="headerlink" href="#installation-on-ubuntu-16-04-lts-tested" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/raonyguimaraes/mendelmd.git
-cd mendelmd_master/mendelmd_source
-mkvirtualenv -p /usr/bin/python3 mendelmd
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">raonyguimaraes</span><span class="o">/</span><span class="n">mendelmd</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">mendelmd_master</span><span class="o">/</span><span class="n">mendelmd_source</span>
+<span class="n">mkvirtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">python3</span> <span class="n">mendelmd</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="installing-the-pynnotator">
 <h1>Installing the Pynnotator<a class="headerlink" href="#installing-the-pynnotator" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>pip install cython
-pip install pynnotator
-pynnotator install
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">cython</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">pynnotator</span>
+<span class="n">pynnotator</span> <span class="n">install</span>
 </pre></div>
 </div>
 <p>This will take a long time since it will download around 26GB of data.
@@ -109,11 +109,11 @@ Go grab a coffee and read a paper.</p>
 </div>
 <div class="section" id="installing-mendel-md">
 <h1>Installing Mendel,MD<a class="headerlink" href="#installing-mendel-md" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>pip install -r requirements.stable.txt
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">stable</span><span class="o">.</span><span class="n">txt</span>
 
-python manage.py migrate auth
-python manage.py migrate
-python manage.py runserver
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span> <span class="n">auth</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runserver</span>
 </pre></div>
 </div>
 <p>And now you should have Mendel,MD running on address
@@ -121,13 +121,13 @@ python manage.py runserver
 </div>
 <div class="section" id="creating-a-superuser">
 <h1>Creating a superuser<a class="headerlink" href="#creating-a-superuser" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py createsuperuser
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="importing-data">
 <h1>Importing Data<a class="headerlink" href="#importing-data" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py populate
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">populate</span>
 </pre></div>
 </div>
 </div>
@@ -136,7 +136,7 @@ python manage.py runserver
 </div>
 <div class="section" id="start-the-annotation">
 <h1>Start the annotation<a class="headerlink" href="#start-the-annotation" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py celery worker
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">celery</span> <span class="n">worker</span>
 </pre></div>
 </div>
 </div>
@@ -179,14 +179,11 @@ python manage.py runserver
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -210,7 +207,7 @@ python manage.py runserver
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Raony Guimarães.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
     </div>
   </body>
 </html>

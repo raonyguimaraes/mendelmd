@@ -4,6 +4,7 @@ from individuals.models import *
 from variants.models import *
 
 from diseases.models import Disease, HGMDPhenotype
+
 from filter_analysis.models import * 
 from genes.models import *
 
@@ -20,6 +21,7 @@ def validate_fail_always(value):
 class MultiOmimChoices(AutoModelSelect2MultipleField):
     queryset = Disease.objects
     search_fields = ['name__icontains', ]
+
 class MultiHgmdChoices(AutoModelSelect2MultipleField):
     queryset = HGMDPhenotype.objects
     search_fields = ['name__icontains', ]
@@ -87,13 +89,13 @@ class FilterAnalysisForm(forms.Form):
     
 
     #denormalize, should be a simple select or even in python :)
-    # CHOICES = [(x, x.replace('_', ' ')) for x in ['CDS', 'CHROMOSOME_LARGE DELETION', 'CODON_CHANGE', 'CODON_INSERTION', 'CODON_CHANGE_PLUS CODON_INSERTION', 'CODON_DELETION', 'CODON_CHANGE_PLUS CODON_DELETION', 'DOWNSTREAM', 'EXON', 'EXON_DELETED', 'FRAME_SHIFT', 'GENE', 'INTERGENIC', 'INTERGENIC_CONSERVED', 'INTRAGENIC', 'INTRON', 'INTRON_CONSERVED', 'MICRO_RNA', 'NON_SYNONYMOUS_CODING', 'NON_SYNONYMOUS_START', 'NON_SYNONYMOUS_STOP', 'RARE_AMINO_ACID', 'SPLICE_SITE_ACCEPTOR', 'SPLICE_SITE_DONOR', 'SPLICE_SITE_REGION', 'SPLICE_SITE_BRANCH', 'SPLICE_SITE_BRANCH_U12', 'STOP_LOST', 'START_GAINED', 'START_LOST', 'STOP_GAINED', 'SYNONYMOUS_CODING', 'SYNONYMOUS_START', 'SYNONYMOUS_STOP', 'TRANSCRIPT', 'REGULATION', 'UPSTREAM', 'UTR_3_PRIME', 'UTR_3_DELETED', 'UTR_5_PRIME', 'UTR_5_DELETED']]
+    CHOICES = [(x, x.replace('_', ' ')) for x in ['CDS', 'CHROMOSOME_LARGE DELETION', 'CODON_CHANGE', 'CODON_INSERTION', 'CODON_CHANGE_PLUS CODON_INSERTION', 'CODON_DELETION', 'CODON_CHANGE_PLUS CODON_DELETION', 'DOWNSTREAM', 'EXON', 'EXON_DELETED', 'FRAME_SHIFT', 'GENE', 'INTERGENIC', 'INTERGENIC_CONSERVED', 'INTRAGENIC', 'INTRON', 'INTRON_CONSERVED', 'MICRO_RNA', 'NON_SYNONYMOUS_CODING', 'NON_SYNONYMOUS_START', 'NON_SYNONYMOUS_STOP', 'RARE_AMINO_ACID', 'SPLICE_SITE_ACCEPTOR', 'SPLICE_SITE_DONOR', 'SPLICE_SITE_REGION', 'SPLICE_SITE_BRANCH', 'SPLICE_SITE_BRANCH_U12', 'STOP_LOST', 'START_GAINED', 'START_LOST', 'STOP_GAINED', 'SYNONYMOUS_CODING', 'SYNONYMOUS_START', 'SYNONYMOUS_STOP', 'TRANSCRIPT', 'REGULATION', 'UPSTREAM', 'UTR_3_PRIME', 'UTR_3_DELETED', 'UTR_5_PRIME', 'UTR_5_DELETED']]
 
     # use SnpeffAnnotation
     # (x[0], x[0].replace('_', ' ')) for x in Variant.objects.values_list('snpeff_effect').distinct().order_by('snpeff_effect')
 
-    # effect = forms.MultipleChoiceField(choices=CHOICES, required=False)
-    effect = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_effect').distinct().order_by('snpeff_effect')], required=False)
+    effect = forms.MultipleChoiceField(choices=CHOICES, required=False)
+    # effect = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_effect').distinct().order_by('snpeff_effect')], required=False)
     
     CHOICES = [(x, x.replace('_', ' ')) for x in ['NONE', 'SILENT', 'MISSENSE', 'NONSENSE']]
 
@@ -107,8 +109,14 @@ class FilterAnalysisForm(forms.Form):
     #[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_impact').distinct().order_by('snpeff_impact')]
 
     impact = forms.MultipleChoiceField(choices=CHOICES, required=False)
-    
-    filter = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('filter').distinct().order_by('filter')], required=False)
+
+    CHOICES = (
+               ('.', '.'),
+               ('PASS', 'PASS'),
+               )
+    filter = forms.MultipleChoiceField(choices=CHOICES, required=False)
+
+    # filter = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('filter').distinct().order_by('filter')], required=False)
     
     dbsnp = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN LATEST DBSNP BUILD")
     
@@ -169,14 +177,24 @@ class FilterAnalysisForm(forms.Form):
     variants_per_gene = forms.CharField(max_length=50, required=False, label="")
     
     #diseases
-    diseases = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Disease.objects.values_list('name').distinct()], required=False)
+    # diseases = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Disease.objects.values_list('name').distinct()], required=False)
     
     fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
     
     # conditions = forms.ModelMultipleChoiceField(queryset=CGDCondition.objects.filter().order_by('name'), required=False)
     
     # omim = forms.ModelMultipleChoiceField(queryset=Disease.objects.filter().order_by('name'), required=False)
+    
     omim = MultiOmimChoices()
+
+    # omim = forms.ChoiceField(
+    #     widget=ModelSelect2Widget(
+    #         model=Disease,
+    #         search_fields=['name__icontains']
+    #     )
+    # )
+
+
     cgd = MultiCgdChoices()
     hgmd = MultiHgmdChoices()
 
@@ -254,11 +272,12 @@ class FamilyAnalysisForm(forms.Form):
     # (x[0], x[0].replace('_', ' ')) for x in Variant.objects.values_list('snpeff_effect').distinct().order_by('snpeff_effect')
 
     # effect = forms.MultipleChoiceField(choices=CHOICES, required=False)
-    effect = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_effect').distinct().order_by('snpeff_effect')], required=False)
-    
-    CHOICES = [(x, x.replace('_', ' ')) for x in ['NONE', 'SILENT', 'MISSENSE', 'NONSENSE']]
+    # effect = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_effect').distinct().order_by('snpeff_effect')], required=False)
+    CHOICES = [(x, x.replace('_', ' ')) for x in ['CDS', 'CHROMOSOME_LARGE DELETION', 'CODON_CHANGE', 'CODON_INSERTION', 'CODON_CHANGE_PLUS CODON_INSERTION', 'CODON_DELETION', 'CODON_CHANGE_PLUS CODON_DELETION', 'DOWNSTREAM', 'EXON', 'EXON_DELETED', 'FRAME_SHIFT', 'GENE', 'INTERGENIC', 'INTERGENIC_CONSERVED', 'INTRAGENIC', 'INTRON', 'INTRON_CONSERVED', 'MICRO_RNA', 'NON_SYNONYMOUS_CODING', 'NON_SYNONYMOUS_START', 'NON_SYNONYMOUS_STOP', 'RARE_AMINO_ACID', 'SPLICE_SITE_ACCEPTOR', 'SPLICE_SITE_DONOR', 'SPLICE_SITE_REGION', 'SPLICE_SITE_BRANCH', 'SPLICE_SITE_BRANCH_U12', 'STOP_LOST', 'START_GAINED', 'START_LOST', 'STOP_GAINED', 'SYNONYMOUS_CODING', 'SYNONYMOUS_START', 'SYNONYMOUS_STOP', 'TRANSCRIPT', 'REGULATION', 'UPSTREAM', 'UTR_3_PRIME', 'UTR_3_DELETED', 'UTR_5_PRIME', 'UTR_5_DELETED']]
 
-    #[(x[0], x[0]) for x in Variant.objects.values_list('snpeff_functional_class').distinct().exclude(snpeff_functional_class='').order_by('snpeff_functional_class')]
+    effect = forms.MultipleChoiceField(choices=CHOICES, required=False)
+
+    CHOICES = [(x, x.replace('_', ' ')) for x in ['NONE', 'SILENT', 'MISSENSE', 'NONSENSE']]
 
     func_class = forms.MultipleChoiceField(choices=CHOICES, required=False)
     
@@ -269,8 +288,13 @@ class FamilyAnalysisForm(forms.Form):
 
     impact = forms.MultipleChoiceField(choices=CHOICES, required=False)
     
-    filter = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('filter').distinct().order_by('filter')], required=False)
-    
+    # filter = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Variant.objects.values_list('filter').distinct().order_by('filter')], required=False)
+    CHOICES = (
+               ('.', '.'),
+               ('PASS', 'PASS'),
+               )
+    filter = forms.MultipleChoiceField(choices=CHOICES, required=False)
+
     dbsnp = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN LATEST DBSNP BUILD")
     
     #100genomes freqeuncy
@@ -330,7 +354,7 @@ class FamilyAnalysisForm(forms.Form):
     variants_per_gene = forms.CharField(max_length=50, required=False, label="")
     
     #diseases
-    diseases = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Disease.objects.values_list('name').distinct()], required=False)
+    # diseases = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Disease.objects.values_list('name').distinct()], required=False)
     
     fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
     
@@ -383,6 +407,7 @@ class FamilyAnalysisForm(forms.Form):
 
 
 INDIVIDUALS = [(x.id, x.name) for x in Individual.objects.all().order_by('id')]
+
 #forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'))
 class FilterWiZardForm1(forms.Form):
     individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)#choices=INDIVIDUALS, 
