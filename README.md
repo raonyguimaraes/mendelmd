@@ -1,6 +1,7 @@
 # Mendel,MD
 An online tool for annotating, filtering and diagnosing Humans (Exome and Genome) with Mendelian Disorders.
 
+Try our test server on https://mendelmd.org
 
 Requirements
 ============
