@@ -290,10 +290,9 @@ def parse_vcf(line):
         if 'DP' in variant['format']:
             value = variant['genotype_col'][variant['format'].index('DP')]
             if value.isdigit():
-
                 variant['read_depth'] = int(value)
             else:
-                print('not an integer', value, variant['pos'])
+                # print('not an integer', value, variant['pos'])
                 variant['read_depth'] = 0
         else:
             variant['read_depth'] = 0
