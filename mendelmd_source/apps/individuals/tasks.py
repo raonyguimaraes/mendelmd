@@ -289,7 +289,7 @@ def parse_vcf(line):
         #fix because of isaac variant caller, there is no DP
         if 'DP' in variant['format']:
             value = variant['genotype_col'][variant['format'].index('DP')]
-            if value.isdigit()
+            if value.isdigit():
 
                 variant['read_depth'] = int(value)
             else:
