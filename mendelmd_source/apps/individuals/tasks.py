@@ -288,7 +288,13 @@ def parse_vcf(line):
     if variant['genotype'] != './.':
         #fix because of isaac variant caller, there is no DP
         if 'DP' in variant['format']:
-            variant['read_depth'] = int(variant['genotype_col'][variant['format'].index('DP')])
+            value = variant['genotype_col'][variant['format'].index('DP')]
+            if value.isdigit()
+
+                variant['read_depth'] = int(value)
+            else:
+                print('not an integer', value, variant['pos'])
+                variant['read_depth'] = 0
         else:
             variant['read_depth'] = 0
     else:
