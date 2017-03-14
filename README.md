@@ -35,7 +35,7 @@ Installation on Ubuntu 16.04 LTS using docker (tested)
     sudo apt update
     sudo apt-get install -y docker-engine
     sudo usermod -aG docker $(whoami)
-    You will need to log out of the Droplet and back in as the same user to enable this change.
+    #You will need to log out of the Droplet and back in as the same user to enable this change.
     docker run hello-world
     #install docker-compose
     sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
