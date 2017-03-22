@@ -78,7 +78,7 @@ def create(request):
 
             if request.user.is_authenticated():
             
-                os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, individual.user, individual.id), 0o777)
+                os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
             else:
                 os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
