@@ -13,6 +13,7 @@ Contents:
 
    installation
    annotation
+   clinical_cases
    filter_analysis
 
 
