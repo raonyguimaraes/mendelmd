@@ -117,3 +117,96 @@ Start the annotation
 ::
 
     python manage.py celery worker
+
+Installation on RedHat/CentOS 7
+===============================
+
+https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-apache-and-mod_wsgi-on-centos-7
+https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-centos-7
+
+
+sudo yum update
+sudo yum upgrade
+
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum -y install epel-release-latest-7.noarch.rpm
+
+sudo yum -y install python-pip httpd mod_wsgi git postgresql-devel gcc htop zlib-devel vim
+sudo yum install httpd-devel
+sudo systemctl start httpd
+sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+sudo yum install -y python35u python35u-pip
+sudo yum -y install python35u-devel
+sudo pip3.5 install virtualenv
+virtualenv mendelmdenv
+source mendelmdenv/bin/activate
+git clone https://github.com/raonyguimaraes/mendelmd
+cd mendelmd/mendelmd_source/
+pip install -r requirements.stable.txt 
+
+vim mendelmd/local_settings.py
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mendelprod',
+        'USER': 'root',
+        'PASSWORD': 'changeme',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+cd data/omim
+
+wget https://data.omim.org/downloads/changeme/morbidmap.txt
+
+
+python manage.py migrate auth
+
+#ignore the following error: django.db.utils.ProgrammingError: relation "django_site" does not exist
+
+python manage.py migrate
+python manage.py populate
+python manage.py createsuperuser
+python manage.py runserver
+
+
+sudo nano /etc/httpd/conf.d/django.conf
+
+
+Alias /static /home/ec2-user/mendelmd/static
+<Directory /home/ec2-user/mendelmd/static>
+    Require all granted
+</Directory>
+
+<Directory /home/ec2-user/mendelmd/biocloud>
+    <Files wsgi.py>
+        Require all granted
+    </Files>
+</Directory>
+
+WSGIDaemonProcess mendelmd python-path=/home/ec2-user/mendelmd:/home/ec2-user/mendelmdenv/lib/python3.5/site-packages
+WSGIProcessGroup mendelmd
+WSGIScriptAlias / /home/ec2-user/mendelmd/mendelmd/wsgi.py
+
+sudo usermod -a -G ec2-user apache
+chmod 710 /home/ec2-user
+sudo chown :apache ~/mendelmd
+sudo systemctl restart httpd
+sudo systemctl enable httpd
+
+Install modwsgi for python 3
+
+https://github.com/GrahamDumpleton/mod_wsgi.git
+
+#as root
+
+wget https://github.com/GrahamDumpleton/mod_wsgi/archive/4.5.15.zip
+unzip 4.5.15.zip
+cd ./mod_wsgi-4.5.15
+./configure --with-python=/bin/python3.5
+make
+make install
+
+sudo service httpd restart
