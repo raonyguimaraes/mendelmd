@@ -215,16 +215,9 @@ class FilterAnalysisForm(forms.Form):
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
         else:
             print('user', user)
-            if user.is_superuser():
-                
-                self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False, label='INDIVIDUALS')
-                self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False, label='INDIVIDUALS')
-            
-            else:
-
-                self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
-                self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
-            
+            self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+            self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+        
         # self.fields['sift'].widget.attrs['readonly'] = True
         # self.fields['polyphen'].widget.attrs['readonly'] = True
         # self.fields['genomes1000'].widget.attrs['readonly'] = True
