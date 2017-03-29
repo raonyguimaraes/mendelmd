@@ -21,6 +21,9 @@ sudo chown ec2-user .
 git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/mendelmd_source/
 docker-compose build
+docker-compose up -d
+docker-compose down
+
 sudo bash -c 'cat << EOF > /etc/systemd/system/mendelmd.service
 [Unit]
 Description=Mendelmd

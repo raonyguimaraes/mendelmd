@@ -25,3 +25,7 @@ RUN pip3 install pynnotator
 RUN pynnotator install
 RUN pip3 install -r requirements.stable.txt
 ADD . /code/
+RUN python3 manage.py migrate auth
+RUN python3 manage.py migrate
+RUN python3 manage.py populate
+RUN python3 manage.py collectstatic --noinput

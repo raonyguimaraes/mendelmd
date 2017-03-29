@@ -118,6 +118,23 @@ Start the annotation
 
     python manage.py celery worker
 
+Installation on RedHat7/CentOS 7 using Docker
+=============================================
+
+sudo yum update
+sudo yum upgrade
+
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum -y install epel-release-latest-7.noarch.rpm git
+
+sudo mkdir /projects
+cd /projects
+sudo chown ec2-user .
+git clone https://github.com/raonyguimaraes/mendelmd
+cd mendelmd/scripts/
+bash deployment_centos7_redhat7.sh
+
+
 Installation on RedHat/CentOS 7
 ===============================
 
@@ -138,11 +155,14 @@ sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 sudo yum install -y python35u python35u-pip
 sudo yum -y install python35u-devel
 sudo pip3.5 install virtualenv
+sudo mkdir /projects
+cd /projects
+sudo chown ec2-user .
 virtualenv mendelmdenv
 source mendelmdenv/bin/activate
 git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/mendelmd_source/
-pip install -r requirements.stable.txt 
+pip install -r requirements.stable.txt
 
 vim mendelmd/local_settings.py
 
