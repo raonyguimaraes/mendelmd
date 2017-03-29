@@ -10,6 +10,8 @@ if [ ! -f data/omim/loaded.txt ]; then
     touch data/omim/loaded.txt
 fi
 
+cp config/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
+
 # Apply database migrations
 echo "Apply database migrations"#
 python3 manage.py migrate auth
