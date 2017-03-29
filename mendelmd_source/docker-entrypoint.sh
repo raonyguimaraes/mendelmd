@@ -5,9 +5,9 @@ echo "Collect static files"
 python3 manage.py collectstatic --noinput
 
 #hack to load the genes and diseases only once
-if [ ! -f /tmp/loaded.txt ]; then
+if [ ! -f data/omim/loaded.txt ]; then
     python3 manage.py populate
-    touch /tmp/loaded.txt
+    touch data/omim/loaded.txt
 fi
 
 # Apply database migrations
