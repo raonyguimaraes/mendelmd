@@ -25,6 +25,7 @@ Running Mendel,MD using Docker Compose
 Requirements
 ============
 
+* At least 60GB of disk space
 * Python 3.4+
 * Perl 5.8+
 * Java 1.8
