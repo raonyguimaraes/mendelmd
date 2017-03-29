@@ -1,4 +1,4 @@
-# Mendel,MD
+# Mendel,MD a user-friendly online program for clinical exome and genome analysis
 
 An online tool for annotating, filtering and analysing both genomes and exomes to help with the diagnosis of patients with Mendelian Disorders.
 
