@@ -4,8 +4,7 @@ sudo yum upgrade
 wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y install epel-release-latest-7.noarch.rpm
 
-sudo yum -y install python-pip httpd mod_wsgi git postgresql-devel gcc htop zlib-devel vim screen
-sudo yum install httpd-devel
+sudo yum -y install python-pip httpd mod_wsgi git postgresql-devel gcc htop zlib-devel vim screen httpd-devel
 
 wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker $(whoami)
@@ -20,6 +19,7 @@ cd /projects
 sudo chown ec2-user .
 git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/mendelmd_source/
+cp /tmp/morbidmap.txt data/omim/
 docker-compose build
 docker-compose up -d
 docker-compose down
