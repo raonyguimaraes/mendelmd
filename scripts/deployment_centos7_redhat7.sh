@@ -51,5 +51,7 @@ sudo /usr/sbin/setsebool -P httpd_can_network_connect 1
 
 sudo systemctl enable mendelmd
 sudo systemctl start mendelmd
+sudo systemctl restart mendelmd
+
 sudo systemctl enable httpd
 sudo systemctl restart httpd
