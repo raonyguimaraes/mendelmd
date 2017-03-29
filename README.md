@@ -1,6 +1,6 @@
 # Mendel,MD a user-friendly online program for clinical exome and genome analysis
 
-An online tool for annotating, filtering and analysing both genomes and exomes to help with the diagnosis of patients with Mendelian Disorders.
+This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
 
 https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 
@@ -16,7 +16,7 @@ After obtaining this file you will need to put it on the folder: "mendelmd_sourc
 
 Running Mendel,MD using Docker Compose
 ======================================
-    
+
     git clone https://github.com/raonyguimaraes/mendelmd/
     cd mendelmd/mendelmd_source/
     wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
