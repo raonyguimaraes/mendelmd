@@ -16,9 +16,10 @@ After obtaining this file you will need to put it on the folder: "mendelmd_sourc
 
 Running Mendel,MD using Docker Compose
 ======================================
-
+    
     git clone https://github.com/raonyguimaraes/mendelmd/
     cd mendelmd/mendelmd_source/
+    wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
     docker-compose up
 
 
