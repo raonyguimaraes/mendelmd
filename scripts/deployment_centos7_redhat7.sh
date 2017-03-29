@@ -14,6 +14,7 @@ sudo yum install -y epel-release
 sudo yum install -y python-pip
 sudo yum upgrade -y python*
 sudo pip install docker-compose --force --upgrade
+
 sudo mkdir /projects
 cd /projects
 sudo chown ec2-user .
@@ -21,8 +22,8 @@ git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/mendelmd_source/
 cp /tmp/morbidmap.txt data/omim/
 docker-compose build
-docker-compose up -d
-docker-compose down
+# docker-compose up -d
+# docker-compose down
 
 sudo bash -c 'cat << EOF > /etc/systemd/system/mendelmd.service
 [Unit]
