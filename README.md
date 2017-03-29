@@ -2,7 +2,25 @@
 
 An online tool for annotating, filtering and analysing both genomes and exomes to help with the diagnosis of patients with Mendelian Disorders.
 
+https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
+
 Try our new test server on https://mendelmd.org
+
+OMIM Data
+=========
+
+You need to register at OMIM: http://omim.org/downloads and submit a download request to get a file named "morbidmap.txt".
+
+After obtaining this file you will need to put it on the folder: "mendelmd_source/data/omim/".
+
+
+Running Mendel,MD using Docker Compose
+======================================
+
+    git clone https://github.com/raonyguimaraes/mendelmd/
+    cd mendelmd/mendelmd_source/
+    docker-compose up
+
 
 Requirements
 ============
@@ -16,21 +34,6 @@ OR
 
 * Docker
 * Docker Compose
-
-OMIM Data
-=========
-
-You need to register at OMIM: http://omim.org/downloads and submit a download request to get a file named "morbidmap.txt".
-
-After obtaining this file you will need to put it on the folder: "mendelmd_source/data/omim/".
-
-Running Mendel,MD using Docker Compose
-======================================
-
-    git clone https://github.com/raonyguimaraes/mendelmd/
-    cd mendelmd/mendelmd_source/
-    docker-compose up
-
 
 Installation of docker and docker-compose on Ubuntu 16.04 LTS
 =============================================================
