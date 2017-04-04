@@ -62,7 +62,7 @@ Installing PostgreSQL Database
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
 
-    sudo apt-get install gcc git python3-dev zlib1g-dev virtualenvwrapper zlibc zlib1g zlib1g-dev
+    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev
     source /etc/bash_completion.d/virtualenvwrapper
     git clone https://github.com/raonyguimaraes/mendelmd.git
     cd mendelmd/mendelmd_source
@@ -90,6 +90,7 @@ Installing Mendel,MD
 
     python manage.py migrate auth
     python manage.py migrate
+    python manage.py populate
     python manage.py runserver
 
 And now you should have Mendel,MD running on address
