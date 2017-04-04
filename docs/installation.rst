@@ -50,14 +50,9 @@ Installing PostgreSQL Database
 ::
 
     sudo apt-get install libpq-dev postgresql
-    sudo su
-    su postgres
-    psql template1
-    CREATE USER mendelmd WITH PASSWORD 'mendelmd';
-    CREATE DATABASE mendelmd;
-    GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
-    \q
-
+    sudo -i -u postgres
+    createuser --interactive
+    createdb mendelmd
 
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
