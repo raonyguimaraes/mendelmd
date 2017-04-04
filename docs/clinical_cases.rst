@@ -84,7 +84,7 @@ This variant has a sift score of 0.00 and a Polyphen2 score of 0.98.
 
 This would be a more difficult case to find the gene, but a list with 148 genes can be manually inspected by a clinician in the search for a good candidate.
 
-Dominant X-linked - Heterozygous
+Dominant X-linked - Hemizygous
 ********************************
 
 1. Click on "1-Click" link at the top menu or go to http://mendel.medicina.ufmg.br/filter_analysis/oneclick/
@@ -99,6 +99,6 @@ Number of Genes at OMIM: 1
 
 There is only one gene "F8" at OMIM. This gene is already known to be associated with "Hemophilia A, 306700 (3)".
 
-This gene has an homozygous variant at X-154250763 with a NON_SYNONYMOUS_CODING effect and a MODERATE impact.
+This gene has an hemyzigous variant at X-154250763 with a NON_SYNONYMOUS_CODING effect and a MODERATE impact.
 
 This variant has a sift score of 0.00 and a Polyphen2 score of 1.00

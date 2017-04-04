@@ -23,6 +23,5 @@ RUN pip3 install -U pip setuptools
 RUN pip3 install cython==0.24.1 
 RUN pip3 install pynnotator
 RUN pynnotator install
-RUN apt-get install -y bcftools
 RUN pip3 install -r requirements.stable.txt
 ADD . /code/

@@ -8,6 +8,8 @@ from django.utils.text import slugify
 
 from django.conf import settings
 
+from django.template.defaultfilters import slugify
+
 # Subclass AbstractUser
 class UserGroup(models.Model):
     name = models.CharField(max_length=600)
@@ -19,7 +21,7 @@ class UserGroup(models.Model):
 class Individual(models.Model):
     def get_upload_path(self, filename):
         if self.user != None:
-            string = "%s/genomes/%s/%s/%s" % (settings.BASE_DIR, self.user.username, self.id, filename)#.replace(' ', '_')
+            string = "%s/genomes/%s/%s/%s" % (settings.BASE_DIR, slugify(self.user.username), self.id, filename)#.replace(' ', '_')
         else:
             string = "%s/genomes/public/%s/%s" % (settings.BASE_DIR, self.id, filename)#.replace(' ', '_')
             print('string',string)

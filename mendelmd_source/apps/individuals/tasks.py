@@ -32,6 +32,8 @@ import json
 import vcf
 
 from datetime import timedelta
+from django.template.defaultfilters import slugify
+
 
 @task()
 def clean_individuals():
@@ -53,7 +55,7 @@ def VerifyVCF(individual_id):
     filename = str(individual.vcf_file.name.split('/')[-1])
 
     if individual.user:
-        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, individual.user.username.lower(), individual.id)
+        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, slugify(individual.user.username), individual.id)
     else:
         path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
 
@@ -288,7 +290,12 @@ def parse_vcf(line):
     if variant['genotype'] != './.':
         #fix because of isaac variant caller, there is no DP
         if 'DP' in variant['format']:
-            variant['read_depth'] = int(variant['genotype_col'][variant['format'].index('DP')])
+            value = variant['genotype_col'][variant['format'].index('DP')]
+            if value.isdigit():
+                variant['read_depth'] = int(value)
+            else:
+                # print('not an integer', value, variant['pos'])
+                variant['read_depth'] = 0
         else:
             variant['read_depth'] = 0
     else:
@@ -511,8 +518,15 @@ def parse_vcf(line):
     #create individual genotype list
     ind_genotype_list = []
     if len(variant['genotype']) > 1:
-        ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
-        ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+        if variant['genotype'][0] != '.':
+            ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
+        else:
+            ind_genotype_list.append(genotype_list[0])
+        if variant['genotype'][-1] != '.':
+            ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+        else:
+            ind_genotype_list.append(genotype_list[1])
+
     else:
         ind_genotype_list.append(genotype_list[0])
     ind_genotype_list = sorted(ind_genotype_list)

@@ -1,6 +1,7 @@
 # Mendel,MD
 An online tool for annotating, filtering and diagnosing Humans (Exome and Genome) with Mendelian Disorders.
 
+Try our test server on https://mendelmd.org
 
 Requirements
 ============
@@ -22,6 +23,27 @@ OMIM Data
 You need to register an account at OMIM: http://omim.org/downloads and submit a download request to get a file named "morbidmap".
 
 After obtaining this file you need to put it on this folder: "mendelmd_source/data/omim/".
+
+Installation on Ubuntu 16.04 LTS using docker (tested)
+======================================================
+
+    #install docker
+    sudo apt-get update
+    sudo apt-get install software-properties-common apt-transport-https
+    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+    sudo apt update
+    sudo apt-get install -y docker-engine
+    sudo usermod -aG docker $(whoami)
+    #You will need to log out of the Droplet and back in as the same user to enable this change.
+    docker run hello-world
+    #install docker-compose
+    sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
+    sudo chmod +x /usr/local/bin/docker-compose
+    #finally git clone and run
+    git clone https://github.com/raonyguimaraes/mendelmd/
+    cd mendelmd/mendelmd_source/
+    docker-compose up
 
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
@@ -56,6 +78,8 @@ Installing PostgreSQL Database
 
 Installing Mendel,MD
 ====================
+
+    cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
 
     pip install -r requirements.stable.txt
 
