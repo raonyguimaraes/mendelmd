@@ -53,6 +53,7 @@ Installing PostgreSQL Database
     sudo -i -u postgres
     createuser --interactive
     createdb mendelmd
+    cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
 
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
