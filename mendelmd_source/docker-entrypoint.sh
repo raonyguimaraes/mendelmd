@@ -4,6 +4,14 @@
 echo "Collect static files"
 python3 manage.py collectstatic --noinput
 
+#hack to load the genes and diseases only once
+if [ ! -f data/omim/loaded.txt ]; then
+    python3 manage.py populate
+    touch data/omim/loaded.txt
+    cp config/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
+fi
+
+
 # Apply database migrations
 echo "Apply database migrations"#
 python3 manage.py migrate auth

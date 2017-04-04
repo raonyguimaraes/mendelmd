@@ -27,3 +27,4 @@ annotator/data/
 annotator/tests/
 mendelmd_source/data/postgresql_data/*
 .idea/*
+morbidmap.txt

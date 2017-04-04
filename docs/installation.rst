@@ -117,3 +117,15 @@ Start the annotation
 ::
 
     python manage.py celery worker
+
+
+
+Deployment on RedHat/CentOS 7
+===============================
+
+https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-apache-and-mod_wsgi-on-centos-7
+
+    sudo yum -y install wget
+    wget https://data.omim.org/downloads/ADDYOURKEY/morbidmap.txt -O /tmp/morbidmap.txt
+    wget https://raw.github.com/raonyguimaraes/mendelmd/master/scripts/deployment_centos7_redhat7.sh
+    bash deployment_centos7_redhat7.sh
