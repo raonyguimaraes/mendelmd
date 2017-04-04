@@ -6,7 +6,7 @@ ADD requirements.stable.txt /code/
 RUN apt-get update \
 	&& apt-get upgrade -y \
 	&& apt-get install -y \
-	libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper make zip python3-pip sudo \
+	libcgi-session-perl libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper make zip python3-pip sudo \
 	build-essential bcftools software-properties-common \
     ca-certificates \
     gcc \
