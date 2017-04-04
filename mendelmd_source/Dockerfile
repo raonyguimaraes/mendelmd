@@ -7,7 +7,7 @@ RUN apt-get update \
 	&& apt-get upgrade -y \
 	&& apt-get install -y \
 	libcgi-session-perl libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper make zip python3-pip sudo \
-	build-essential bcftools software-properties-common \
+	build-essential bcftools software-properties-common libterm-readline-gnu-perl \
     ca-certificates \
     gcc \
     git \
