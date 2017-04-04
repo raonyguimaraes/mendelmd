@@ -3,7 +3,7 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
 ADD requirements.stable.txt /code/
-RUN apt-get update \
+RUN apt-get update
 RUN	apt-get install -y libterm-readline-gnu-perl
 #RUN	apt-get upgrade -y
 RUN	apt-get install -y \
