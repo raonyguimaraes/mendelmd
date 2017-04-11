@@ -60,12 +60,14 @@ Installation on Ubuntu 16.04 LTS (tested)
 
 ::
 
-    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev
-    source /etc/bash_completion.d/virtualenvwrapper
+    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv
+    
+    python3 -m venv mendelmdenv
+    source mendelmdenv/bin/activate
+    
     git clone https://github.com/raonyguimaraes/mendelmd.git
     cd mendelmd/mendelmd_source
-    mkvirtualenv -p /usr/bin/python3 mendelmd
-    virtualenv -p /usr/bin/python3 mendelmdenv
+    
 
 Installing the Pynnotator
 =========================
@@ -128,4 +130,4 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
     sudo yum -y install wget
     wget https://data.omim.org/downloads/ADDYOURKEY/morbidmap.txt -O /tmp/morbidmap.txt
     wget https://raw.github.com/raonyguimaraes/mendelmd/master/scripts/deployment_centos7_redhat7.sh
-    bash deployment_centos7_redhat7.sh
+    bash deployment_centos7_redhat7.sh    
