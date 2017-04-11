@@ -8,8 +8,8 @@ SOAPpy
 Sphinx
 Fabric
 pysam
-celery
-django-celery
-#mongoengine
 pynnotator
-django-kombu
+celery
+django-celery-results
+django-celery-beat
+pyvcf

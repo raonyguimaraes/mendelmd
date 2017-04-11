@@ -18,19 +18,19 @@ def validate_fail_always(value):
     raise ValidationError('%s not valid. Infact nothing is valid!' % value)
 
 
-class MultiOmimChoices(AutoModelSelect2MultipleField):
-    queryset = Disease.objects
-    search_fields = ['name__icontains', ]
+# class MultiOmimChoices(AutoModelSelect2MultipleField):
+#     queryset = Disease.objects
+#     search_fields = ['name__icontains', ]
 
-class MultiHgmdChoices(AutoModelSelect2MultipleField):
-    queryset = HGMDPhenotype.objects
-    search_fields = ['name__icontains', ]
-class MultiCgdChoices(AutoModelSelect2MultipleField):
-    queryset = CGDCondition.objects
-    search_fields = ['name__icontains', ]
-class MultiCgdManifestationChoices(AutoModelSelect2MultipleField):
-    queryset = Manifestation.objects
-    search_fields = ['name__icontains', ]
+# class MultiHgmdChoices(AutoModelSelect2MultipleField):
+#     queryset = HGMDPhenotype.objects
+#     search_fields = ['name__icontains', ]
+# class MultiCgdChoices(AutoModelSelect2MultipleField):
+#     queryset = CGDCondition.objects
+#     search_fields = ['name__icontains', ]
+# class MultiCgdManifestationChoices(AutoModelSelect2MultipleField):
+#     queryset = Manifestation.objects
+#     search_fields = ['name__icontains', ]
 
 
 
@@ -185,7 +185,7 @@ class FilterAnalysisForm(forms.Form):
     
     # omim = forms.ModelMultipleChoiceField(queryset=Disease.objects.filter().order_by('name'), required=False)
     
-    omim = MultiOmimChoices()
+    # omim = MultiOmimChoices()
 
     # omim = forms.ChoiceField(
     #     widget=ModelSelect2Widget(
@@ -195,10 +195,10 @@ class FilterAnalysisForm(forms.Form):
     # )
 
 
-    cgd = MultiCgdChoices()
-    hgmd = MultiHgmdChoices()
+    # cgd = MultiCgdChoices()
+    # hgmd = MultiHgmdChoices()
 
-    cgdmanifestation = MultiCgdManifestationChoices()
+    # cgdmanifestation = MultiCgdManifestationChoices()
     
     # hgmd = forms.ModelMultipleChoiceField(queryset=HGMDPhenotype.objects.filter().order_by('name'), required=False)
 
@@ -361,11 +361,11 @@ class FamilyAnalysisForm(forms.Form):
     # conditions = forms.ModelMultipleChoiceField(queryset=CGDCondition.objects.filter().order_by('name'), required=False)
     
     # omim = forms.ModelMultipleChoiceField(queryset=Disease.objects.filter().order_by('name'), required=False)
-    omim = MultiOmimChoices()
-    cgd = MultiCgdChoices()
-    hgmd = MultiHgmdChoices()
+    # omim = MultiOmimChoices()
+    # cgd = MultiCgdChoices()
+    # hgmd = MultiHgmdChoices()
 
-    cgdmanifestation = MultiCgdManifestationChoices()
+    # cgdmanifestation = MultiCgdManifestationChoices()
     
     # hgmd = forms.ModelMultipleChoiceField(queryset=HGMDPhenotype.objects.filter().order_by('name'), required=False)
 
@@ -406,15 +406,17 @@ class FamilyAnalysisForm(forms.Form):
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
 
 
-INDIVIDUALS = [(x.id, x.name) for x in Individual.objects.all().order_by('id')]
+# INDIVIDUALS = [(x.id, x.name) for x in Individual.objects.all().order_by('id')]
+INDIVIDUALS = []
 
 #forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'))
 class FilterWiZardForm1(forms.Form):
     individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)#choices=INDIVIDUALS, 
     exclude_individuals = forms.MultipleChoiceField(choices=INDIVIDUALS, required=False)
     
-    groups = forms.MultipleChoiceField(choices=[(x.id, x.name) for x in Group.objects.all().order_by('id')], required=False)
-    exclude_groups = forms.MultipleChoiceField(choices=[(x.id, x.name) for x in Group.objects.all().order_by('id')], required=False)
+    # groups = forms.MultipleChoiceField(choices=[(x.id, x.name) for x in Group.objects.all().order_by('id')], required=False)
+    
+    # exclude_groups = forms.MultipleChoiceField(choices=[(x.id, x.name) for x in Group.objects.all().order_by('id')], required=False)
     
     snp_list = forms.CharField(widget=forms.Textarea, required=False)
     exclude_snp_list = forms.CharField(widget=forms.Textarea, required=False)

@@ -26,19 +26,17 @@ sys.path.append(APPS_DIR)
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*efl#$$!@93)8397wwf8hy3873&ad8h7d2w-yus5mzcx&@'
+SECRET_KEY = '*efl#$$!@93)8397wwf8hy387"&^%3&ad8h7d2w-yus5mzcx&@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,12 +51,12 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'crispy_forms',
-    'djcelery',
     'django_select2',
-    'kombu.transport.django',
-    # 'debug_toolbar',
-
-
+    
+    'celery',
+    'django_celery_results',
+    'django_celery_beat',
+    
     #private apps
     'dashboard',
     'individuals',
@@ -72,29 +70,18 @@ INSTALLED_APPS = (
     'statistics',
     'databases',
 
-)
+]
 
-# MIDDLEWARE_CLASSES = (
-#     'django.contrib.sessions.middleware.SessionMiddleware',
-#     'django.middleware.common.CommonMiddleware',
-#     'django.middleware.csrf.CsrfViewMiddleware',
-#     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-#     'django.contrib.messages.middleware.MessageMiddleware',
-#     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#     'debug_toolbar.middleware.DebugToolbarMiddleware',
-# )
-
-
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+]
+
 
 
 ROOT_URLCONF = 'mendelmd.urls'
@@ -102,29 +89,13 @@ ROOT_URLCONF = 'mendelmd.urls'
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
-#DATABASES = {
-#       'default': {
-#           'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-#           'NAME': 'mendelmd',                      # Or path to database file if using sqlite3.
-#           # The following settings are not used with sqlite3:
-#           'USER': 'mendelmd',
-#           'PASSWORD': 'mendelmd',
-#          'HOST': 'localhost',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
-#          'PORT': '',                      # Set to empty string for default.
-#       }
-#   }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'mendelmd.sqlite3'),
     }
 }
+
 
 
 # Internationalization
@@ -151,9 +122,9 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/var/www/static/'
 
-STATICFILES_DIRS = (
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-)
+]
 
 # TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
@@ -178,7 +149,7 @@ TEMPLATES = [
             # insert your TEMPLATE_DIRS here
             os.path.join(BASE_DIR, "templates"),
         ],
-        # 'APP_DIRS': True,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
@@ -191,28 +162,19 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader'
-            ]
+            
         },
     },
 ]
 
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
-
-    )
+]
 
 SITE_ID = 1
 
@@ -224,26 +186,29 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #this prevents crash when loading filter_analysis forms.py
 # DEBUG_TOOLBAR_PATCH_SETTINGS = True
-INTERNAL_IPS = ('127.0.0.1')
+INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
 #django celery
-import djcelery
-djcelery.setup_loader()
-BROKER_URL = 'django://'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ('individuals.tasks', )
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
+
+# import djcelery
+# djcelery.setup_loader()
+# BROKER_URL = 'django://'
+# CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+# CELERY_IMPORTS = ('individuals.tasks', )
 
 
-# from __future__ import absolute_import
-# CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
-# CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-CELERY_REDIRECT_STDOUTS = "true"
-CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
+# # from __future__ import absolute_import
+# # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
+# # CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+# CELERY_REDIRECT_STDOUTS = "true"
+# CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
 
 
-if "celery" in sys.argv:
-    DEBUG = False
+# if "celery" in sys.argv:
+#     DEBUG = False
 
 
 
@@ -260,12 +225,12 @@ FILE_UPLOAD_PERMISSIONS = 0o0777
 
 from datetime import timedelta
 
-CELERYBEAT_SCHEDULE = {
-    'clean_individuals': {
-        'task': 'individuals.tasks.clean_individuals',
-        'schedule': timedelta(days=1),
-        # 'args': (16, 16)
-    },
-}
+# CELERYBEAT_SCHEDULE = {
+#     'clean_individuals': {
+#         'task': 'individuals.tasks.clean_individuals',
+#         'schedule': timedelta(days=1),
+#         # 'args': (16, 16)
+#     },
+# }
 
-CELERY_TIMEZONE = 'UTC'
+# CELERY_TIMEZONE = 'UTC'

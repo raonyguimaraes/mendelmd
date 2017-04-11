@@ -26,7 +26,6 @@ import pickle
 
 from collections import OrderedDict
 
-from mongoengine import *
 
 import json
 import vcf
