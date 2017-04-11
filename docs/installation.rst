@@ -58,6 +58,7 @@ Installing PostgreSQL Database
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
 
+::
     sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev
     source /etc/bash_completion.d/virtualenvwrapper
     git clone https://github.com/raonyguimaraes/mendelmd.git
