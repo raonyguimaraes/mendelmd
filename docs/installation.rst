@@ -50,23 +50,24 @@ Installing PostgreSQL Database
 ::
 
     sudo apt-get install libpq-dev postgresql
-    sudo su
-    su postgres
-    psql template1
-    CREATE USER mendelmd WITH PASSWORD 'mendelmd';
-    CREATE DATABASE mendelmd;
-    GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
-    \q
-
+    sudo -i -u postgres
+    createuser --interactive
+    createdb mendelmd
+    cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
 
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
 
 ::
 
+    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv
+    
+    python3 -m venv mendelmdenv
+    source mendelmdenv/bin/activate
+    
     git clone https://github.com/raonyguimaraes/mendelmd.git
-    cd mendelmd_master/mendelmd_source
-    mkvirtualenv -p /usr/bin/python3 mendelmd
+    cd mendelmd/mendelmd_source
+    
 
 Installing the Pynnotator
 =========================
@@ -89,6 +90,7 @@ Installing Mendel,MD
 
     python manage.py migrate auth
     python manage.py migrate
+    python manage.py populate
     python manage.py runserver
 
 And now you should have Mendel,MD running on address
@@ -128,4 +130,4 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
     sudo yum -y install wget
     wget https://data.omim.org/downloads/ADDYOURKEY/morbidmap.txt -O /tmp/morbidmap.txt
     wget https://raw.github.com/raonyguimaraes/mendelmd/master/scripts/deployment_centos7_redhat7.sh
-    bash deployment_centos7_redhat7.sh
+    bash deployment_centos7_redhat7.sh    

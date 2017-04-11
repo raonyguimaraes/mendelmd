@@ -116,7 +116,6 @@ WSGI_APPLICATION = 'mendelmd.wsgi.application'
 #          'PORT': '',                      # Set to empty string for default.
 #       }
 #   }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -126,6 +125,7 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

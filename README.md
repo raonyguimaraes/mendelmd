@@ -5,6 +5,7 @@ This is an online tool created to help doctors and scientists to identify diseas
 https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 
 Try our new test server on https://mendelmd.org
+Or use our original server on https://mendel.medicina.ufmg.br
 
 OMIM Data
 =========
