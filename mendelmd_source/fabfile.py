@@ -5,13 +5,12 @@ env.user  = 'raony'
 env.hosts = ['mendel']
 
 def install():
-    local('pip install cython')
-    local('pip install pynnotator')
-    local('ln -sf ~/dev/pynnotator_env/data ~/.virtualenvs/mendelmd/lib/python3.5/site-packages/pynnotator/')
-    local('pynnotator install')
-    local('pip install -r requirements.stable.txt')
-    local('python manage.py migrate auth')#bug with version 1.8
-    local('python manage.py migrate')
+    # local('pip install cython')
+    # local('pip install pynnotator')
+    local('pip install -r requirements.txt')
+    # local('pynnotator install')
+    # local('python manage.py migrate auth')#bug with version 1.8
+    # local('python manage.py migrate')
 
 
 
@@ -19,7 +18,11 @@ def backup_users():
     local('python manage.py dumpdata -v 2 --format=json auth account > fixtures/users.json')
     local('python manage.py dumpdata -v 2 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
+def reset_migrations():
 
+    models = ['individuals', 'variants', 'diseases', 'genes']
+    for model in models:
+        local('rm -rf %s/migrations' % (model))
 
 def resetdb():
     # local('rm db.sqlite3')

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load upload_tags %}
-{% load django_select2_tags %}
 
 {% block extra_css %}
     <!-- Generic page styles -->
@@ -13,8 +12,6 @@
     <!-- CSS adjustments for browsers with JavaScript disabled -->
     <noscript><link rel="stylesheet" href="{{ STATIC_URL }}jquery-fileupload/css/jquery.fileupload-ui-noscript.css"></noscript>
     <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
-    {% import_django_select2_css %}
-    {% import_django_select2_js %}
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -71,8 +68,6 @@ All data entered Mendel,MD in a public mode (without username and password) will
         </span>
         </a>
     </form>
-
-{% upload_js %}
 
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="{{ STATIC_URL }}jquery-fileupload/js/vendor/jquery.ui.widget.js"></script>

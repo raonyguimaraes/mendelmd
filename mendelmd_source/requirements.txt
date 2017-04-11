@@ -6,7 +6,7 @@ django-crispy-forms
 django_select2
 SOAPpy
 Sphinx
-Fabric
+Fabric3
 pysam
 pynnotator
 celery

@@ -1329,7 +1329,7 @@ def oneclick(request):
             # return HttpResponseRedirect('/filter_analysis/?%s' % (filterstring))
             return redirect(reverse('filter_analysis')+'?'+filterstring)
 
-    return render_to_response('filter_analysis/oneclick.html', {'form':form}, context_instance=RequestContext(request))
+    return render_to_response('filter_analysis/oneclick.html', {'form':form})
 
 
 def wizard(request):

@@ -219,7 +219,7 @@ def view(request, individual_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         variants = paginator.page(paginator.num_pages)
     #'fields':fields
-    return render_to_response('individuals/view.html', {'individual': individual, 'variants':variants}, context_instance=RequestContext(request))
+    return render_to_response('individuals/view.html', {'individual': individual, 'variants':variants})
 
 @login_required    
 def browse(request, individual_id):
@@ -395,7 +395,7 @@ def list(request):
 #    individuals = Individual.objects.annotate(number_of_variants=Count('variant'))
     
     
-    return render_to_response('individuals/list.html', {'individuals': individuals, 'groups':groups, 'ind_featured':ind_featured}, context_instance=RequestContext(request))
+    return render_to_response('individuals/list.html', {'individuals': individuals, 'groups':groups, 'ind_featured':ind_featured})
 
 
 @login_required
