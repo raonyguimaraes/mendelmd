@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
-{% load django_select2_tags %}
 {% load i18n %}
 {#% load sorting_tags %#}
 {% load pagination_tags %}
@@ -24,9 +23,11 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
 <link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
 <link href="{% static "css/style.css" %}" rel="stylesheet">
+
 <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
-	{% import_django_select2_css %}
-	{% import_django_select2_js %}
+
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet" />
+
 
 {% endblock %}
 
@@ -97,12 +98,11 @@ oFormObject.elements["genomes1000"].value = '0 - 0.01';
 oFormObject.elements["dbsnp_frequency"].value = '0 - 0.01';
 oFormObject.elements["esp_frequency"].value = '0 - 0.01';
 
-
-
 </script>
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
 <!-- Your stuff: Third-party javascript libraries go here -->
 <script src="{{ STATIC_URL }}js/tooltip.js"></script>
 <script src="{{ STATIC_URL }}js/popover.js"></script>
@@ -110,6 +110,16 @@ oFormObject.elements["esp_frequency"].value = '0 - 0.01';
 <script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
 
-      <!-- place project specific Javascript in this file -->
-      <script src="{% static 'js/project.js' %}"></script>
+<!-- place project specific Javascript in this file -->
+<script src="{% static 'js/project.js' %}"></script>
+
+
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
+
+
+
 {% endblock javascript %}

@@ -10,17 +10,27 @@ from genes.models import *
 
 from django.forms import ModelForm
 
-from django_select2 import *
+# from django_select2 import *
 
 from django.core.exceptions import ValidationError
+
+from django_select2.forms import (HeavySelect2MultipleWidget, HeavySelect2Widget, ModelSelect2MultipleWidget, ModelSelect2TagWidget, ModelSelect2Widget, Select2MultipleWidget, Select2Widget)
 
 def validate_fail_always(value):
     raise ValidationError('%s not valid. Infact nothing is valid!' % value)
 
 
-# class MultiOmimChoices(AutoModelSelect2MultipleField):
-#     queryset = Disease.objects
+# class MultiOmimChoices(ModelSelect2MultipleWidget):
+#     queryset = Disease
 #     search_fields = ['name__icontains', ]
+
+class MultiOmimChoices(ModelSelect2Widget):
+    model = Disease
+    search_fields = [
+        'name__icontains'
+    ]
+    def label_from_instance(self, obj):
+        return force_text(obj.title).upper()
 
 # class MultiHgmdChoices(AutoModelSelect2MultipleField):
 #     queryset = HGMDPhenotype.objects
@@ -58,7 +68,18 @@ class FilterAnalysisForm(forms.Form):
     exclude_snp_list = forms.CharField(widget=forms.Textarea, required=False, label='EXCLUDE SNP LIST')
     
     #individuals = forms.MultipleChoiceField(choices=[(x.id, x.name) for x in Individual.objects.filter().order_by('id')], required=False)
-    individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False, label='INDIVIDUALS')
+
+    # NUMBER_CHOICES = ['1', '2', '3', '4']
+    # number = forms.ChoiceField(widget=Select2Widget, choices=NUMBER_CHOICES, required=False)
+
+
+    individuals = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=Individual.objects.all().order_by('id'),
+        search_fields=['name__icontains'],
+    ), queryset=Individual.objects.all().order_by('id'), required=True)
+
+    # individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False, label='INDIVIDUALS')
+
     exclude_individuals = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False, label='EXCLUDE INDIVIDUALS')
 
     groups = forms.ModelMultipleChoiceField(queryset=Group.objects.all().order_by('id'), required=False, label='GROUPS')
@@ -186,6 +207,11 @@ class FilterAnalysisForm(forms.Form):
     # omim = forms.ModelMultipleChoiceField(queryset=Disease.objects.filter().order_by('name'), required=False)
     
     # omim = MultiOmimChoices()
+
+    # omim = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+    #     queryset=Disease.objects.all(),
+    #     search_fields=['name__icontains'],
+    # ), queryset=Disease.objects.all(), required=True)
 
     # omim = forms.ChoiceField(
     #     widget=ModelSelect2Widget(

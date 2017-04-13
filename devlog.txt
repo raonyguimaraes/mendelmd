@@ -91,5 +91,15 @@ Declouple VCF and Annotation Fields (test performance)
 - Add tests
 - Add pip-8 compatible
 - Add flags on README.md
-- Add Panda Support
+- Add Pandas Support
 
+
+Fixed Select2 Templates
+Fix OMIM Searhc boxes
+
+Improve Template
+Clean Up Templates
+
+Fix Docker-compose
+
+- Add tooltip.js and topover.js

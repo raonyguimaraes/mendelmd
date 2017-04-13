@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
-from celery.task import Task
-from celery.registry import tasks
+# Create your tasks here
+from __future__ import absolute_import, unicode_literals
+from celery import shared_task
+
+# from celery.task import Task
+# from celery.registry import tasks
 from django.db import transaction
 from django.core.files import File
-from celery import task
+# from celery import task
 
 from individuals.models import *
 
@@ -34,7 +37,7 @@ from datetime import timedelta
 from django.template.defaultfilters import slugify
 
 
-@task()
+@shared_task()
 def clean_individuals():
     print("Running periodic task!")
     individuals = Individual.objects.filter(user=None)
@@ -45,7 +48,7 @@ def clean_individuals():
             os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
             individual.delete()
 
-@task()
+@shared_task()
 def VerifyVCF(individual_id):
     print('Verify VCF...')
     
@@ -120,7 +123,7 @@ def VerifyVCF(individual_id):
     #if so extract individuals and create other individual models
     #if not send it to be annotated
 
-@task()
+@shared_task()
 def AnnotateVariants(individual_id):
 
     print('Annotation Started!!!')
@@ -537,7 +540,7 @@ def parse_vcf(line):
     # print(variant)
     return variant
     
-@task()
+@shared_task()
 def PopulateVariants(individual_id):
     # print os.getcwd()
 
@@ -812,7 +815,7 @@ def PopulateVariants(individual_id):
 
     # Find_Medical_Conditions_and_Medicines.delay(individual.id)
 
-@task()
+@shared_task()
 def PopulateControls(controlgroup_id):
     # print os.getcwd()
     print('PopulateControls', controlgroup_id)
@@ -1036,7 +1039,7 @@ def PopulateControls(controlgroup_id):
     # Find_Medical_Conditions_and_Medicines.delay(individual.id)
 
 
-@task()
+@shared_task()
 def PopulateMongoVariants(individual_id):
     connect('mendelmd')
 
@@ -1215,90 +1218,90 @@ def PopulateMongoVariants(individual_id):
 
 
         
-class Find_Medical_Conditions_and_Medicines(Task):
-    def run(self, individual_id, **kwargs):
+# class Find_Medical_Conditions_and_Medicines(Task):
+#     def run(self, individual_id, **kwargs):
 
-        individual = get_object_or_404(Individual, pk=individual_id)      
+#         individual = get_object_or_404(Individual, pk=individual_id)      
 
-        #this is for matching by rd.id only
-        individual_variants = Variant.objects.filter(individual=individual).values_list('variant_id', flat=True).exclude(variant_id="0")
+#         #this is for matching by rd.id only
+#         individual_variants = Variant.objects.filter(individual=individual).values_list('variant_id', flat=True).exclude(variant_id="0")
         
-        #cleaning all records
+#         #cleaning all records
         
-        IndividualMedicalConditionVariant.objects.filter(individual_variant__individual=individual).delete()
-        IndividualMedicalCondition.objects.filter(individual=individual).delete()
-        IndividualMedicineVariant.objects.filter(individual_variant__individual=individual).delete()
-        IndividualMedicine.objects.filter(individual=individual).delete()
-        IndividualHGMDMutation.objects.filter(individual=individual).delete()
+#         IndividualMedicalConditionVariant.objects.filter(individual_variant__individual=individual).delete()
+#         IndividualMedicalCondition.objects.filter(individual=individual).delete()
+#         IndividualMedicineVariant.objects.filter(individual_variant__individual=individual).delete()
+#         IndividualMedicine.objects.filter(individual=individual).delete()
+#         IndividualHGMDMutation.objects.filter(individual=individual).delete()
         
         
-        # Medical Conditions   
-        medical_conditions = MedicalCondition.objects.all()
+#         # Medical Conditions   
+#         medical_conditions = MedicalCondition.objects.all()
         
-        for medical_condition in medical_conditions:
+#         for medical_condition in medical_conditions:
 
-            created = True
-            for snp in  medical_condition.snps.all():
-                if snp.name.lower() in individual_variants:
-                    if created:
-                        individual_medical_condition = IndividualMedicalCondition(
-                                individual=individual,
-                                medical_condition=medical_condition)
-                        individual_medical_condition.save()
-                        created = False
-                    #hack to allow duplicated names for variants, instead of get
-                    variants = Variant.objects.filter(individual=individual, variant_id=snp.name.lower())
-                    for variant in variants:
-                        medical_condition_variant = IndividualMedicalConditionVariant(
-                                                                                  individual_variant=variant,
-                                                                                  snp=snp
-                                                                                  )
-                        medical_condition_variant.save()
-                        individual_medical_condition.variants.add(medical_condition_variant)
-                        individual_medical_condition.save()
+#             created = True
+#             for snp in  medical_condition.snps.all():
+#                 if snp.name.lower() in individual_variants:
+#                     if created:
+#                         individual_medical_condition = IndividualMedicalCondition(
+#                                 individual=individual,
+#                                 medical_condition=medical_condition)
+#                         individual_medical_condition.save()
+#                         created = False
+#                     #hack to allow duplicated names for variants, instead of get
+#                     variants = Variant.objects.filter(individual=individual, variant_id=snp.name.lower())
+#                     for variant in variants:
+#                         medical_condition_variant = IndividualMedicalConditionVariant(
+#                                                                                   individual_variant=variant,
+#                                                                                   snp=snp
+#                                                                                   )
+#                         medical_condition_variant.save()
+#                         individual_medical_condition.variants.add(medical_condition_variant)
+#                         individual_medical_condition.save()
         
-        #Medicines
-        medicines = Medicine.objects.all()
+#         #Medicines
+#         medicines = Medicine.objects.all()
     
-        for medicine in medicines:
-            created = True
-            for snp in  medicine.snps.all():
-                if snp.name.lower() in individual_variants:
-                    #go inside only once if it's not created
-                    if created:
-                        individual_medicine = IndividualMedicine(
-                                individual=individual,
-                                medicine=medicine)
-                        individual_medicine.save()
-                        created = False
-                    variants = Variant.objects.filter(individual=individual, variant_id=snp.name.lower())
-                    for variant in variants:
-                        medicine_variant = IndividualMedicineVariant(individual_variant=variant,
-                                                                     snp=snp)
-                        medicine_variant.save()
-                        individual_medicine.variants.add(medicine_variant)
-                        individual_medicine.save()
+#         for medicine in medicines:
+#             created = True
+#             for snp in  medicine.snps.all():
+#                 if snp.name.lower() in individual_variants:
+#                     #go inside only once if it's not created
+#                     if created:
+#                         individual_medicine = IndividualMedicine(
+#                                 individual=individual,
+#                                 medicine=medicine)
+#                         individual_medicine.save()
+#                         created = False
+#                     variants = Variant.objects.filter(individual=individual, variant_id=snp.name.lower())
+#                     for variant in variants:
+#                         medicine_variant = IndividualMedicineVariant(individual_variant=variant,
+#                                                                      snp=snp)
+#                         medicine_variant.save()
+#                         individual_medicine.variants.add(medicine_variant)
+#                         individual_medicine.save()
 
-        ind_variants = Variant.objects.filter(individual=individual, genotype='1/1')
-        hgmd_mutations = HGMDMutation.objects.filter(dm_mutation=True)
-        ind_variations_dict = {}
-        for variant in ind_variants:
-            coordinate = '%s: %s' % (variant.chromossome, variant.pos)
-            ind_variations_dict[coordinate] = variant
+#         ind_variants = Variant.objects.filter(individual=individual, genotype='1/1')
+#         hgmd_mutations = HGMDMutation.objects.filter(dm_mutation=True)
+#         ind_variations_dict = {}
+#         for variant in ind_variants:
+#             coordinate = '%s: %s' % (variant.chromossome, variant.pos)
+#             ind_variations_dict[coordinate] = variant
 
-        for hgmd_mutation in hgmd_mutations:
-            if hgmd_mutation.coordinate != None:
-                if hgmd_mutation.coordinate in ind_variations_dict:
-                    # print 'add mutation'
-                    ind_hgmd_mutation = IndividualHGMDMutation()
-                    ind_hgmd_mutation.individual = individual
-                    ind_hgmd_mutation.individual_variant = ind_variations_dict[hgmd_mutation.coordinate]
-                    ind_hgmd_mutation.hgmdmutation = hgmd_mutation
-                    ind_hgmd_mutation.save()
+#         for hgmd_mutation in hgmd_mutations:
+#             if hgmd_mutation.coordinate != None:
+#                 if hgmd_mutation.coordinate in ind_variations_dict:
+#                     # print 'add mutation'
+#                     ind_hgmd_mutation = IndividualHGMDMutation()
+#                     ind_hgmd_mutation.individual = individual
+#                     ind_hgmd_mutation.individual_variant = ind_variations_dict[hgmd_mutation.coordinate]
+#                     ind_hgmd_mutation.hgmdmutation = hgmd_mutation
+#                     ind_hgmd_mutation.save()
         
-        print('Finished finding Medicines and Diseases!!!')
+#         print('Finished finding Medicines and Diseases!!!')
 
-tasks.register(PopulateVariants)
-tasks.register(AnnotateVariants)
-tasks.register(Find_Medical_Conditions_and_Medicines)
-tasks.register(PopulateControls)
+# tasks.register(PopulateVariants)
+# tasks.register(AnnotateVariants)
+# # tasks.register(Find_Medical_Conditions_and_Medicines)
+# tasks.register(PopulateControls)

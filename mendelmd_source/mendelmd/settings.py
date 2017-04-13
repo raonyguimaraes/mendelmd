@@ -53,11 +53,14 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
     
+    'djcelery',
     'celery',
-    'django_celery_results',
-    'django_celery_beat',
+    'kombu.transport.django',
+    # 'django_celery_results',
+    # 'django_celery_beat',
     
     #private apps
+    
     'dashboard',
     'individuals',
     'variants',
@@ -69,6 +72,7 @@ INSTALLED_APPS = [
     'pathway_analysis',
     'statistics',
     'databases',
+
 
 ]
 
@@ -190,14 +194,23 @@ INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
 #django celery
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_BACKEND = 'django-cache'
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_BACKEND = 'django-cache'
 
-# import djcelery
-# djcelery.setup_loader()
-# BROKER_URL = 'django://'
-# CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-# CELERY_IMPORTS = ('individuals.tasks', )
+
+
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_RESULT_BACKEND = 'db+sqlite:///mendelmd.sqlite3'
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_BROKER_URL = 'django://'
+
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'django://'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+CELERY_IMPORTS = ('individuals.tasks', )
 
 
 # # from __future__ import absolute_import
@@ -207,8 +220,8 @@ CELERY_RESULT_BACKEND = 'django-cache'
 # CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
 
 
-# if "celery" in sys.argv:
-#     DEBUG = False
+if "celery" in sys.argv:
+    DEBUG = False
 
 
 

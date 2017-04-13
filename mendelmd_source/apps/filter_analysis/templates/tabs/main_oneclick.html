@@ -18,31 +18,35 @@
     $(document).ready(function() { 
         $("#id_individuals").select2(
         { 
-            width: 'off',
             placeholder: "SELECT YOUR CASES",
-            allowClear: true,
+        }
+        ); });
+    $(document).ready(function() { 
+        $("#id_omim").select2(
+        { 
+            placeholder: "SELECT YOUR CASES",
         }
         ); });
     $(document).ready(function() { $("#id_exclude_individuals").select2(
-        { width: 'off',
+        { 
         placeholder: "SELECT YOUR CONTROLS", }
         ); });
     $(document).ready(function() { $("#id_groups").select2(
-        { width: 'off',
+        { 
         placeholder: "SELECT YOUR GROUPS", }
         ); });
     $(document).ready(function() { $("#id_exclude_groups").select2(
-        { width: 'off',
+        { 
         placeholder: "SELECT YOUR GROUPS", }
         ); });
     
     $(document).ready(function() { $("#id_genelists").select2(
-        { width: 'off',
+        {
         placeholder: "SELECT YOUR GENE LISTS", }
         ); });
 
     $(document).ready(function() { $("#id_exclude_genelists").select2(
-        { width: 'off',
+        { 
         placeholder: "SELECT YOUR GENE LISTS", }
         ); });
 

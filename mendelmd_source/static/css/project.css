@@ -37,8 +37,8 @@
 #filter_form input, #filter_form textarea, #id_1-dbsnp_build, #id_1-read_depth, #id_1-variants_per_gene, #id_1-chr, #id_1-pos{
   width:80px;
 }
-#id_individuals, #id_exclude_individuals, #id_func_class, #id_impact, #id_inheritance_model{
-/*  width:110px;*/
+#id_individuals, #id_exclude_individuals, #id_func_class, #id_impact, #id_inheritance_model, #id_groups, #id_genelists, #id_exclude_groups, #id_exclude_genelists{
+  width:240px;
 }
 #id_variant_type {
   width:270px;

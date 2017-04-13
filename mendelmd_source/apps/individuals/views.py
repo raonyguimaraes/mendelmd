@@ -92,6 +92,9 @@ def create(request):
             response['Content-Disposition'] = 'inline; filename=files.json'
 
             return response
+        else:
+            print(form.errors)
+
     else:
         form = IndividualForm()
 

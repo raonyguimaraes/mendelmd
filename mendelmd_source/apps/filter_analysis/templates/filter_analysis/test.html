@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block extra_header %}
+
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet" />
+
+{% endblock %}
+
+
+{% block content %}
+
+<form method="post" action="">
+  
+<select class="js-example-basic-single" multiple="multiple" >
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+    <option value="4">Four</option>
+</select>
+
+  <input type="submit" value="Submit Form"/>
+</form>
+
+{% endblock %}
+
+{% block extra_script %}
+
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $(".js-example-basic-single").select2();
+});
+</script>
+
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
+
+
+{% endblock %}

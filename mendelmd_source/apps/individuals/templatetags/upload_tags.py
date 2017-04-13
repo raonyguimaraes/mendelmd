@@ -1,14 +1,18 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 @register.simple_tag
 def upload_js():
-    return """
+    return mark_safe("""
 <!-- The template to display files available for upload -->
 <script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
         <td>
             <p class="name">{%=file.name%}</p>
             {% if (file.error) { %}
@@ -43,6 +47,13 @@ def upload_js():
 {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-download fade">
         <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
             <p class="name">
                 <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
             </p>
@@ -53,16 +64,18 @@ def upload_js():
         <td>
             <span class="size">{%=o.formatFileSize(file.size)%}</span>
         </td>
-         <td>
-            <span class="label label-success">Success!</span>
-            <br>
-            <span class="label label-primary">We are now annotating this file.<br>Soon you will receive an e-mail about the results.</span>
-            
+        <td>
+            <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                <i class="glyphicon glyphicon-trash"></i>
+                <span>{%=locale.fileupload.destroy%}</span>
+            </button>
+            <input type="checkbox" name="delete" value="1" class="toggle">
         </td>
     </tr>
 {% } %}
 </script>
-"""
+""")
+
 
 
 

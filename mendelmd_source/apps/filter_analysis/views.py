@@ -32,11 +32,18 @@ from diseases.models import Gene as GeneDisease
 
 import json
 
+from django.shortcuts import render
+
 # import django_tables2 as tables
 # from django_tables2 import RequestConfig
 
 #a method to integrate all different filters
 #should return an object with all the results
+
+def test(request):
+    form = FilterAnalysisForm(request.user)
+
+    return render(request, 'filter_analysis/test.html', {'form':form});
 
 def calculate_summary(step, args, query, exclude):
 
@@ -403,7 +410,7 @@ def index(request):
         genes['genes_cgd'] = []
         form = FilterAnalysisForm(request.user)
 
-    return render_to_response('filter_analysis/index.html', 
+    return render(request, 'filter_analysis/index.html', 
         {'variants':variants, 
         'form':form, 
         'summary':summary,
@@ -413,7 +420,7 @@ def index(request):
         'genes':genes['genes'], 
         'genes_hgmd':genes['genes_hgmd'],
         'genes_omim':genes['genes_omim'],
-        'genes_cgd':genes['genes_cgd']}, context_instance=RequestContext(request))
+        'genes_cgd':genes['genes_cgd']})
 
 
 def filter_family_analysis(request, query, args, exclude):
@@ -1329,7 +1336,8 @@ def oneclick(request):
             # return HttpResponseRedirect('/filter_analysis/?%s' % (filterstring))
             return redirect(reverse('filter_analysis')+'?'+filterstring)
 
-    return render_to_response('filter_analysis/oneclick.html', {'form':form})
+    # return render_to_response('filter_analysis/oneclick.html', {'form':form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/oneclick.html', {'form':form});
 
 
 def wizard(request):

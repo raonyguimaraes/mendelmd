@@ -12,18 +12,23 @@ def install():
     # local('python manage.py migrate auth')#bug with version 1.8
     # local('python manage.py migrate')
 
-
-
 def backup_users():
     local('python manage.py dumpdata -v 2 --format=json auth account > fixtures/users.json')
     local('python manage.py dumpdata -v 2 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
+
 def reset_migrations():
 
     models = ['individuals', 'variants', 'diseases', 'genes']
     for model in models:
         local('rm -rf %s/migrations' % (model))
 
+    for model in models:
+        local('python manage.py makemigrations %s' % (model))
+
+    local('python manage.py migrate')
+    
+    
 def resetdb():
     # local('rm db.sqlite3')
     local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')

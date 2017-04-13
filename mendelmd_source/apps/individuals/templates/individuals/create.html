@@ -14,12 +14,13 @@
     <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-
+    
 
 {% endblock %}
 
 
 {% block content %}
+
     <div class="page-header">
         <h1>Add VCFs</h1>
         <h2>Here you can upload your VCF files to the system. <br>
@@ -35,7 +36,10 @@ All data entered Mendel,MD in a public mode (without username and password) will
     </div>
 
     <form id="fileupload" method="post" action="." enctype="multipart/form-data">{% csrf_token %}
-        <input id="id_name" type="hidden" name="name" value=" " />
+        
+        
+        <input name="name" id="id_name" type="hidden" value="1">
+
         <input id="id_description" type="hidden" name="description" value=" " />
         
         <div class="row fileupload-buttonbar">
@@ -68,6 +72,8 @@ All data entered Mendel,MD in a public mode (without username and password) will
         </span>
         </a>
     </form>
+
+{% upload_js %}
 
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="{{ STATIC_URL }}jquery-fileupload/js/vendor/jquery.ui.widget.js"></script>
