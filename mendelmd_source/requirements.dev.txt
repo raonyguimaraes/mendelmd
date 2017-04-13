@@ -6,12 +6,6 @@ billiard
 celery
 Cython
 Django
-django
-django
-django
-django
-django
-Django
 docutils
 ecdsa
 Fabric3

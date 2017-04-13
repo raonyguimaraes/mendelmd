@@ -48,7 +48,10 @@ Installation of docker and docker-compose on Ubuntu 16.04 LTS
     sudo apt update
     sudo apt-get install -y docker-engine
     sudo usermod -aG docker $(whoami)
-    #You will need to log out of the machine and log in back again as the same user to enable this change.
+
+
+You will need to log out of the machine and log in back again as the same user to enable this change.
+
 
     sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
     sudo chmod +x /usr/local/bin/docker-compose

@@ -106,3 +106,7 @@ Fix Docker-compose
 - Disable button while uploading
 - Prevent errors while creating username with spaces
 - Add openid
+
+Upgrade Templates for bootstrap v4
+
+Fix Static Files
