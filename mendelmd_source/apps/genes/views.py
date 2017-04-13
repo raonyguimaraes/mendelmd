@@ -33,7 +33,7 @@ from django.utils.decorators import method_decorator
 from django.http import Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
-
+from django.shortcuts import render
 
 
 def genesetcreate(request):
@@ -71,8 +71,8 @@ def genesetcreate(request):
             
             return redirect(reverse('genes_list'))
 
-    context = RequestContext(request, {'form': form})
-    return render_to_response('genes/genelist_create.html', context)
+    # context = RequestContext(request, )
+    return render(request, 'genes/genelist_create.html', {'form': form})
 
 
 

@@ -110,3 +110,8 @@ Fix Docker-compose
 Upgrade Templates for bootstrap v4
 
 Fix Static Files
+Reformat all code!
+Delete Template!
+
+Fix e-mails.
+Fix all render_to_response!

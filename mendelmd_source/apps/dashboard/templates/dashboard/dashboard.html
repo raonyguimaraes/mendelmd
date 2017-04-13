@@ -1,161 +1,109 @@
-{% load staticfiles i18n %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <link rel="icon" href="{{ STATIC_URL }}/img/favicon.ico">
-
-  <title>Mendel,MD</title>
-
-  <!-- Bootstrap core CSS -->
-  <link href="{% static "bootstrap-3.2.0/dist/css/bootstrap.css" %}" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
-  <link href="{% static "bootstrap-3.2.0/docs/examples/dashboard/dashboard.css" %}" rel="stylesheet">
-
-  <link href="{% static "css/project.css" %}" rel="stylesheet">
-
-  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-  <!--[if lt IE 9]><script src={% static "bootstrap-3.2.0/docs/assets/js/ie8-responsive-file-warning.js" %}"></script><![endif]-->
-  <script src="{% static "bootstrap-3.2.0/docs/assets/js/ie-emulation-modes-warning.js" %}"></script>
-
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <script src="{% static "bootstrap-3.2.0/docs/assets/js/ie10-viewport-bug-workaround.js" %}"></script>
-
-  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
-    </head>
-
-    <body>
-
-      {% include "navbar.html" %}
+{% extends "base.html" %}
 
 
-      <div class="container-fluid">
-        <div class="row">
-          
-          <div class="main"> <!-- col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2  -->
-            <h1 class="page-header">Dashboard</h1>
+{% block content %}
+<h1 class="page-header">Dashboard</h1>
 
 
-            <div class="row">
-              {% if messages %}
-              {% for message in messages %}
-              <div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
-              {% endfor %}
-              {% endif %}
-            </div>
+<div class="row">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}" {% endif %}>{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+</div>
 
-            <a href="{% url 'individual_create' %}"><button type="button" class="btn btn-lg btn-primary">Upload VCF File</button></a>
-            <br><br>
-          
-          <form action="{% url 'bulk_action' %}" method="post">
-            {% csrf_token %}
-            {% if user.is_staff %}
-            <select name="selectionField">
-              <option value="Show" >Show on Grid</option>
-              <option value="Hide" >Hide on Grid</option>
-              <option value="Delete" >Delete</option>
-              <option value="Populate" >Populate</option>
-              <option value="Annotate" >Annotate</option>
-            </select>
-            <input type="submit" value="Submit" />
-            {% endif %}
+<a href="{% url 'individual_create' %}">
+    <button type="button" class="btn btn-lg btn-primary">Upload VCF File</button>
+</a>
+<br><br>
 
-            <h2 class="sub-header">Individuals</h2>
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th style="width: 3%">
-                      #
-                      <input type="checkbox" id="select_all"></th>
-                      <th>ID</th>
-                      <th style="width: 10px;">Name</th>
-                      {% if user.is_staff %}
-            		      <th>Options</th>
-            		      {% endif %}
-                      <th>Uploaded By</th>
-                      <th>Nº Lines</th>
-                      <th>Created on</th>
-                      <th>Modified on</th>
-                      <th>Annotation Time</th>
-                      <th>Insertion Time</th>
-                      <th>Status</th>
-                      {% if user.is_staff %}
-                      <th>Operations</th>
-                      {% endif %}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for individual in individuals %}
-                    <tr>
-                      <td>
-                        <input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}" value="{{individual.id}}" />
-                      </td>
-                      <td>{{ individual.id }}</td>
+<form action="{% url 'bulk_action' %}" method="post">
+    {% csrf_token %}
+    {% if user.is_staff %}
+    <select name="selectionField">
+        <option value="Show">Show on Grid</option>
+        <option value="Hide">Hide on Grid</option>
+        <option value="Delete">Delete</option>
+        <option value="Populate">Populate</option>
+        <option value="Annotate">Annotate</option>
+    </select>
+    <input type="submit" value="Submit"/>
+    {% endif %}
 
-                      <td>
-                        <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
-                      </td>
-			               {% if user.is_staff %}
-                      <td>
-                        <ul>
-                          <li>
+    <h2 class="sub-header">Individuals</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 3%">
+                    #
+                    <input type="checkbox" id="select_all"></th>
+                <th>ID</th>
+                <th style="width: 10px;">Name</th>
+                {% if user.is_staff %}
+                <th>Options</th>
+                {% endif %}
+                <th>Uploaded By</th>
+                <th>Nº Lines</th>
+                <th>Created on</th>
+                <th>Modified on</th>
+                <th>Annotation Time</th>
+                <th>Insertion Time</th>
+                <th>Status</th>
+                {% if user.is_staff %}
+                <th>Operations</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for individual in individuals %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}"
+                           value="{{individual.id}}"/>
+                </td>
+                <td>{{ individual.id }}</td>
+
+                <td>
+                    <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
+                </td>
+                {% if user.is_staff %}
+                <td>
+                    <ul>
+                        <li>
                             <a href="{% url 'individual_edit' individual.id %}">Edit</a>
-                          </li>
-                          <li>
-                          <a href="{% url 'individual_delete' individual.id %}">Delete</a>
-                          </li>
-                        </ul>
-                      </td>
-			               {% endif %}
-                      <td>{{ individual.user.username }}</td>
-                      <td>{{ individual.n_lines }}</td>
-                      <td>{{ individual.creation_date }}</td>
-                      <td>{{ individual.modified_date }}</td>
-                      <td>{{ individual.annotation_time }}</td>
-                      <td>{{ individual.insertion_time }}</td>
+                        </li>
+                        <li>
+                            <a href="{% url 'individual_delete' individual.id %}">Delete</a>
+                        </li>
+                    </ul>
+                </td>
+                {% endif %}
+                <td>{{ individual.user.username }}</td>
+                <td>{{ individual.n_lines }}</td>
+                <td>{{ individual.creation_date }}</td>
+                <td>{{ individual.modified_date }}</td>
+                <td>{{ individual.annotation_time }}</td>
+                <td>{{ individual.insertion_time }}</td>
 
-                      <td>{{ individual.status }}</td>
-                      {% if user.is_staff %}
-                      <td>
-                        <a href="{% url 'individual_annotate' individual.id %}">
-                          <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
-                        </a>
-                        <a href="{% url 'individual_populate' individual.id %}">
-                          <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i></button>
-                        </a>
-                    </td>
-                    {% endif %}
-                  </tr>
-                  {% endfor %}
+                <td>{{ individual.status }}</td>
+                {% if user.is_staff %}
+                <td>
+                    <a href="{% url 'individual_annotate' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
+                    </a>
+                    <a href="{% url 'individual_populate' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i>
+                        </button>
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
 
-                </tbody>
-              </table>
-            </form>
+            </tbody>
+        </table>
+</form>
 
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="{% static "bootstrap-3.2.0/dist/js/bootstrap.min.js" %}"></script>
-    <script type="text/javascript" >
-      $("#select_all").change(function() {
-        $(".individuals:checkbox").attr('checked', this.checked);
-      });
-    </script>
-  </body>
-  </html>
+{% endblock %}

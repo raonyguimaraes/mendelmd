@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% load staticfiles %}
-{% load django_select2_tags %}
 {% load i18n %}
 {#% load sorting_tags %#}
 {% load pagination_tags %}
@@ -25,8 +24,6 @@
 <link type="text/css" href="{{ STATIC_URL }}jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.9.0.custom.css" rel="stylesheet" />
 <link href="{% static "css/style.css" %}" rel="stylesheet">
 <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
-	{% import_django_select2_css %}
-	{% import_django_select2_js %}
 
 {% endblock %}
 

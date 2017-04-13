@@ -56,6 +56,16 @@
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+.navbar-inverse .navbar-brand {
+    color: #fff;
+}
+.navbar-inverse .navbar-nav > li > a {
+    color: #62d938;
+}
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: #fff;
+}
+
 .nav-justified > li > a {
   padding-top: 15px;
   padding-bottom: 15px;
