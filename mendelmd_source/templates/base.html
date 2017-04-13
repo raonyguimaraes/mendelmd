@@ -28,14 +28,16 @@
     {% block css %}
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    
-    <!-- Bootstrap core CSS -->
-    <link href="{% static "bootstrap-3.2.0-dist/css/bootstrap.min.css" %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
 
+    <link href="{% static "bootstrap-3.2.0-dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "select2/css/select2.min.css" %}" type="text/css" media="screen" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static "jquery-ui-1.12.1/jquery-ui.min.css" %}">
 
+    <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+    <script src="{% static "jquery-ui-1.12.1/jquery-ui.min.js" %}"></script>
 
 
     {% endblock %}
@@ -87,9 +89,14 @@
 {% block javascript %}
  <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ STATIC_URL }}/js/jquery-3.2.1.min.js"></script>
+
+    <script type="text/javascript" src="{% static "select2/js/select2.min.js" %}"></script>
+
     <script src="{{ STATIC_URL }}bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="{% static "js/project.js" %}"></script>
+
+
     {% block extra_script %} {% endblock %}
 
 

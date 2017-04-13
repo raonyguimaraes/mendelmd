@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% load staticfiles %}
+{% load static %}
 
 {% block css %}
 
-<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet" />
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link href="{% static "bootstrap-3.2.0-dist/css/bootstrap.min.css" %}" rel="stylesheet">
+<link href="{% static "select2/css/select2.min.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link rel="stylesheet" href="{% static "jquery-ui-1.12.1/jquery-ui.min.css" %}">
 
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+<script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+<script src="{% static "jquery-ui-1.12.1/jquery-ui.min.js" %}"></script>
 
 {% endblock %}
 
@@ -68,8 +68,7 @@ $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
 </script>
 
 
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-<script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
+<script type="text/javascript" src="{% static "select2/js/select2.min.js" %}"></script>
 
 
 {% endblock %}
