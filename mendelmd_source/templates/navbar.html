@@ -37,11 +37,11 @@
                 <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
               </ul>
             </li>
-            
+
             <li><a href="{% url 'docs' %}" target="_blank">Docs</a></li>
             {% if request.user.is_staff %}
-              <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>  
-              <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>              
+              <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
+              <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
             {% endif %}
           </ul>
 
@@ -69,15 +69,15 @@
               <input type="password" name="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
-            <!-- <font color="white">or</font> 
-            <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a> 
-      -->           
+            <!-- <font color="white">or</font>
+            <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a>
+      -->
           </form>
           {% endif %}
         </div>
 
 
-          
-          
+
+
       </div>
     </div>
