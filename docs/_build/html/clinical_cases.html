@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Clinical Cases &mdash;  0.2 documentation</title>
+    <title>Clinical Cases &#8212;  0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,13 +17,15 @@
         VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title=" 0.2 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Filter Analysis" href="filter_analysis.html" />
     <link rel="prev" title="Pynnotator" href="annotation.html" /> 
   </head>
@@ -40,7 +42,7 @@
         <li class="right" >
           <a href="annotation.html" title="Pynnotator"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -118,8 +120,8 @@ Number of Genes at OMIM: 148</p>
 <p>This variant has a sift score of 0.00 and a Polyphen2 score of 0.98.</p>
 <p>This would be a more difficult case to find the gene, but a list with 148 genes can be manually inspected by a clinician in the search for a good candidate.</p>
 </div>
-<div class="section" id="dominant-x-linked-heterozygous">
-<h2>Dominant X-linked - Heterozygous<a class="headerlink" href="#dominant-x-linked-heterozygous" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dominant-x-linked-hemizygous">
+<h2>Dominant X-linked - Hemizygous<a class="headerlink" href="#dominant-x-linked-hemizygous" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li>Click on &#8220;1-Click&#8221; link at the top menu or go to <a class="reference external" href="http://mendel.medicina.ufmg.br/filter_analysis/oneclick/">http://mendel.medicina.ufmg.br/filter_analysis/oneclick/</a></li>
 <li>Add individual &#8216;NA12878 xlinked&#8217; to section SELECT VARIANTS FROM - INDIVIDUALS</li>
@@ -131,7 +133,7 @@ Number of Variants: 2
 Number of Genes: 2
 Number of Genes at OMIM: 1</p>
 <p>There is only one gene &#8220;F8&#8221; at OMIM. This gene is already known to be associated with &#8220;Hemophilia A, 306700 (3)&#8221;.</p>
-<p>This gene has an homozygous variant at X-154250763 with a NON_SYNONYMOUS_CODING effect and a MODERATE impact.</p>
+<p>This gene has an hemyzigous variant at X-154250763 with a NON_SYNONYMOUS_CODING effect and a MODERATE impact.</p>
 <p>This variant has a sift score of 0.00 and a Polyphen2 score of 1.00</p>
 </div>
 </div>
@@ -149,7 +151,7 @@ Number of Genes at OMIM: 1</p>
 <li><a class="reference internal" href="#autosomal-recessive-homozygous">Autosomal Recessive - Homozygous</a></li>
 <li><a class="reference internal" href="#autosomal-recessive-compound-heterozygous">Autosomal Recessive - Compound Heterozygous</a></li>
 <li><a class="reference internal" href="#autosomal-dominant-heterozygous">Autosomal Dominant - Heterozygous</a></li>
-<li><a class="reference internal" href="#dominant-x-linked-heterozygous">Dominant X-linked - Heterozygous</a></li>
+<li><a class="reference internal" href="#dominant-x-linked-hemizygous">Dominant X-linked - Hemizygous</a></li>
 </ul>
 </li>
 </ul>
@@ -163,21 +165,18 @@ Number of Genes at OMIM: 1</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/clinical_cases.txt"
+      <li><a href="_sources/clinical_cases.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -196,12 +195,12 @@ Number of Genes at OMIM: 1</p>
         <li class="right" >
           <a href="annotation.html" title="Pynnotator"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Raony Guimarães.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &#169; Copyright 2016, Raony Guimarães.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
     </div>
   </body>
 </html>

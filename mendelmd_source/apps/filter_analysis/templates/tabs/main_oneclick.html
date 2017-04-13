@@ -20,15 +20,11 @@
         { 
             placeholder: "SELECT YOUR CASES",
             closeOnSelect: false,
+            allowClear: true,
         }
         ); });
     
-    $(document).ready(function() { 
-        $("#id_omim").select2(
-        { 
-            placeholder: "SELECT YOUR CASES",
-        }
-        ); });
+    
     $(document).ready(function() { $("#id_exclude_individuals").select2(
         { 
         placeholder: "SELECT YOUR CONTROLS",

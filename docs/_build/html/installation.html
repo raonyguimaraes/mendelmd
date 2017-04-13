@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Mendel,MD &mdash;  0.2 documentation</title>
+    <title>Mendel,MD &#8212;  0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,13 +17,15 @@
         VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title=" 0.2 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Pynnotator" href="annotation.html" />
     <link rel="prev" title="Welcome to Mendel,MD’s documentation!" href="index.html" /> 
   </head>
@@ -40,7 +42,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to Mendel,MD’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -76,32 +78,45 @@ submit a download request to get a file named &#8220;morbidmap&#8221;.</p>
 <p>After obtaining this file you need to put it inside this folder:
 &#8220;mendelmd_source/data/omim/&#8221;.</p>
 </div>
+<div class="section" id="docker">
+<h1>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h1>
+<p>Now it&#8217;s possible to install and run Mendel,MD with a single command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span>
+</pre></div>
+</div>
+<p>This command will create a container, download all the required tools and datasets and run the webserver.</p>
+<p>This should take a few hours to complete for the first time.</p>
+</div>
+<div class="section" id="manual-installation">
+<h1>Manual Installation<a class="headerlink" href="#manual-installation" title="Permalink to this headline">¶</a></h1>
+</div>
 <div class="section" id="installing-postgresql-database">
 <h1>Installing PostgreSQL Database<a class="headerlink" href="#installing-postgresql-database" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install libpq-dev postgresql
-sudo su
-su postgres
-psql template1
-CREATE USER mendelmd WITH PASSWORD &#39;mendelmd&#39;;
-CREATE DATABASE mendelmd;
-GRANT ALL PRIVILEGES ON DATABASE mendelmd to mendelmd;
-\q
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">postgresql</span>
+<span class="n">sudo</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">u</span> <span class="n">postgres</span>
+<span class="n">createuser</span> <span class="o">--</span><span class="n">interactive</span>
+<span class="n">createdb</span> <span class="n">mendelmd</span>
+<span class="n">cp</span> <span class="n">mendelmd</span><span class="o">/</span><span class="n">local_settings</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">py</span> <span class="n">mendelmd</span><span class="o">/</span><span class="n">local_settings</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="installation-on-ubuntu-16-04-lts-tested">
 <h1>Installation on Ubuntu 16.04 LTS (tested)<a class="headerlink" href="#installation-on-ubuntu-16-04-lts-tested" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/raonyguimaraes/mendelmd.git
-cd mendelmd_master/mendelmd_source
-mkvirtualenv -p /usr/bin/python3 mendelmd
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">gcc</span> <span class="n">git</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">virtualenvwrapper</span> <span class="nb">zip</span> <span class="n">zlibc</span> <span class="n">zlib1g</span> <span class="n">zlib1g</span><span class="o">-</span><span class="n">dev</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">libssl</span><span class="o">-</span><span class="n">dev</span> <span class="n">libffi</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">python3</span><span class="o">-</span><span class="n">venv</span>
+
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">mendelmdenv</span>
+<span class="n">source</span> <span class="n">mendelmdenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">raonyguimaraes</span><span class="o">/</span><span class="n">mendelmd</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">mendelmd</span><span class="o">/</span><span class="n">mendelmd_source</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="installing-the-pynnotator">
 <h1>Installing the Pynnotator<a class="headerlink" href="#installing-the-pynnotator" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>pip install cython
-pip install pynnotator
-pynnotator install
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">cython</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">pynnotator</span>
+<span class="n">pynnotator</span> <span class="n">install</span>
 </pre></div>
 </div>
 <p>This will take a long time since it will download around 26GB of data.
@@ -109,11 +124,12 @@ Go grab a coffee and read a paper.</p>
 </div>
 <div class="section" id="installing-mendel-md">
 <h1>Installing Mendel,MD<a class="headerlink" href="#installing-mendel-md" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>pip install -r requirements.stable.txt
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">stable</span><span class="o">.</span><span class="n">txt</span>
 
-python manage.py migrate auth
-python manage.py migrate
-python manage.py runserver
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span> <span class="n">auth</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">migrate</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">populate</span>
+<span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">runserver</span>
 </pre></div>
 </div>
 <p>And now you should have Mendel,MD running on address
@@ -121,13 +137,13 @@ python manage.py runserver
 </div>
 <div class="section" id="creating-a-superuser">
 <h1>Creating a superuser<a class="headerlink" href="#creating-a-superuser" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py createsuperuser
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">createsuperuser</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="importing-data">
 <h1>Importing Data<a class="headerlink" href="#importing-data" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py populate
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">populate</span>
 </pre></div>
 </div>
 </div>
@@ -136,7 +152,17 @@ python manage.py runserver
 </div>
 <div class="section" id="start-the-annotation">
 <h1>Start the annotation<a class="headerlink" href="#start-the-annotation" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py celery worker
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">celery</span> <span class="n">worker</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="deployment-on-redhat-centos-7">
+<h1>Deployment on RedHat/CentOS 7<a class="headerlink" href="#deployment-on-redhat-centos-7" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-apache-and-mod_wsgi-on-centos-7">https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-apache-and-mod_wsgi-on-centos-7</a></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">yum</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="n">wget</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">data</span><span class="o">.</span><span class="n">omim</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">downloads</span><span class="o">/</span><span class="n">ADDYOURKEY</span><span class="o">/</span><span class="n">morbidmap</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">morbidmap</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">raw</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">raonyguimaraes</span><span class="o">/</span><span class="n">mendelmd</span><span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">deployment_centos7_redhat7</span><span class="o">.</span><span class="n">sh</span>
+<span class="n">bash</span> <span class="n">deployment_centos7_redhat7</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
 </div>
@@ -153,6 +179,8 @@ python manage.py runserver
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#other-libraries-needed">Other Libraries Needed</a></li>
 <li><a class="reference internal" href="#omim-data">OMIM Data</a></li>
+<li><a class="reference internal" href="#docker">Docker</a></li>
+<li><a class="reference internal" href="#manual-installation">Manual Installation</a></li>
 <li><a class="reference internal" href="#installing-postgresql-database">Installing PostgreSQL Database</a></li>
 <li><a class="reference internal" href="#installation-on-ubuntu-16-04-lts-tested">Installation on Ubuntu 16.04 LTS (tested)</a></li>
 <li><a class="reference internal" href="#installing-the-pynnotator">Installing the Pynnotator</a></li>
@@ -161,6 +189,7 @@ python manage.py runserver
 <li><a class="reference internal" href="#importing-data">Importing Data</a></li>
 <li><a class="reference internal" href="#upload-your-vcfs-using-the-web-interface">Upload your VCFs using the web interface</a></li>
 <li><a class="reference internal" href="#start-the-annotation">Start the annotation</a></li>
+<li><a class="reference internal" href="#deployment-on-redhat-centos-7">Deployment on RedHat/CentOS 7</a></li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -172,21 +201,18 @@ python manage.py runserver
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/installation.txt"
+      <li><a href="_sources/installation.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -205,12 +231,12 @@ python manage.py runserver
         <li class="right" >
           <a href="index.html" title="Welcome to Mendel,MD’s documentation!"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html"> 0.2 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Raony Guimarães.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &#169; Copyright 2016, Raony Guimarães.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
     </div>
   </body>
 </html>

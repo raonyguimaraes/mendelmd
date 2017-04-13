@@ -133,7 +133,7 @@ class IndividualDeleteView(DeleteView):
         individual_id = self.object.id
 
         if self.object.user:
-            username = individual.user.username
+            username = self.object.user.username
         else:
             username = 'public'
         
@@ -495,7 +495,7 @@ def create_group(request):
             return redirect('individuals_list')
     else:
         form = GroupForm()
-    return render_to_response('groups/create_group.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'groups/create_group.html', {'form': form})
 
 @login_required
 def view_group(request, group_id):

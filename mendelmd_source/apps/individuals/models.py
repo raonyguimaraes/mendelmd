@@ -45,7 +45,6 @@ class Individual(models.Model):
 
     annotation_time = models.CharField(max_length=200, null=True, blank=True)
     insertion_time = models.CharField(max_length=200, null=True, blank=True)
-    insertion_time_mongo = models.CharField(max_length=200, null=True, blank=True)
 
     
     def __str__(self):
