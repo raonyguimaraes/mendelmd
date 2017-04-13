@@ -2,9 +2,14 @@
 
 {% load staticfiles %}
 
-{% block extra_header %}
+{% block css %}
 
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 
 {% endblock %}
 
@@ -20,19 +25,46 @@
     <option value="4">Four</option>
 </select>
 
+
+<p>
+  <label for="amount">Price range:</label>
+  <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+
+<div id="slider-range"></div>
+
+
+
   <input type="submit" value="Submit Form"/>
 </form>
 
 {% endblock %}
 
-{% block extra_script %}
+{% block javascript %}
 
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
   $(".js-example-basic-single").select2();
 });
+</script>
+
+
+<script>
+$(document).ready(function() {
+
+  $( "#slider-range" ).slider({
+  range: true,
+  min: 0,
+  max: 500,
+  values: [ 75, 300 ],
+  slide: function( event, ui ) {
+    $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+  }
+});
+$( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+  " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+} );
 </script>
 
 
