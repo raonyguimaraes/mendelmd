@@ -623,7 +623,7 @@ Export to: <a href="?{{ query_string }}&export=csv">CSV</a><a href="?{{ query_st
 {% endblock javascript %}
 
 
-{% block extra_script %} <script src="{% static "bootstrap/js/bootstrap-tooltip.js" %}"></script>
+{% block extra_js %} <script src="{% static "bootstrap/js/bootstrap-tooltip.js" %}"></script>
 <script src="{% static "bootstrap/js/bootstrap-popover.js" %}"></script>
 {% for variant in variants.object_list %}
 <script>

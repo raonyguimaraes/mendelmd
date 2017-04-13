@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 {#% load sorting_tags %#}
 {% load pagination_tags %}
@@ -9,25 +9,8 @@
 {% block title %}{% trans "Filter Analysis" %}{% endblock %}
 
 {% block extra_css %}
-<script type="text/javascript">
-	function formSubmit() {
-		newwindow = document.getElementById("newwindow");
-		if(newwindow.checked == true)
-			document.getElementById("filterform").target = "_blank";
-		document.getElementById("filterform").submit();
-		//document.getElementById('loading_img').style.display = "block";
-		$('#loading_img').show();
-		$('#loading_img2').show();
-	}
-</script>
 
-
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<script src="{{ STATIC_URL }}/js/jquery-3.2.1.min.js"></script>
-
-<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" type="text/css" media="screen" rel="stylesheet" />
-
+<script src="{{ STATIC_URL }}/js/filter_analysis.js"></script>
 
 {% endblock %}
 
@@ -54,71 +37,8 @@
 {% endblock %}
 
 
-{% block javascript %}
+{% block extra_js %}
 
-<script>
-function recessive(){
-oFormObject = document.forms['filterform'];
-oFormObject.elements["mutation_type"][1].selected = true;
-}
-function dominant(){
-oFormObject = document.forms['filterform'];
-oFormObject.elements["mutation_type"][2].selected = true;
-}
-function x_linked_recessive(){
-oFormObject = document.forms['filterform'];
-oFormObject.elements["chr"].value = 'X';
-oFormObject.elements["mutation_type"][1].selected = true;
-}
-function x_linked_dominant(){
-oFormObject = document.forms['filterform'];
-oFormObject.elements["chr"].value = 'X';
-oFormObject.elements["mutation_type"][2].selected = true;
-}
-function compound_heterozygous(){
-oFormObject = document.forms['filterform'];
-oFormObject.elements["mutation_type"][2].selected = true;
-oFormObject.elements["variants_per_gene_option"][1].selected = true;
-oFormObject.elements["variants_per_gene"].value = '2';
-}
-
-oFormObject = document.forms['filterform'];
-
-oFormObject.elements["genes_in_common"].checked = true;
-// oFormObject.elements["exclude_varisnp"].checked = true;
-
-// oFormObject.elements["exclude_segdup"].checked = true;
-oFormObject.elements["read_depth_option"][1].selected = true;
-oFormObject.elements["read_depth"].value = '10';
-
-oFormObject.elements["impact"][1].selected = true;
-oFormObject.elements["impact"][0].selected = true;
-oFormObject.elements["dbsnp_option"].value = '>';
-oFormObject.elements["dbsnp_build"].value = '130';
-oFormObject.elements["genomes1000"].value = '0 - 0.01';
-oFormObject.elements["dbsnp_frequency"].value = '0 - 0.01';
-oFormObject.elements["esp_frequency"].value = '0 - 0.01';
-
-</script>
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-
-<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
-
-<!-- place project specific Javascript in this file -->
-<script src="{% static 'js/project.js' %}"></script>
-
-
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 <script type="text/javascript" src="/static/django_select2/django_select2.js"></script>
 
-<script type="text/javascript">
-
-
-
-{% endblock javascript %}
+{% endblock %}
