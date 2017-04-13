@@ -19,8 +19,10 @@
         $("#id_individuals").select2(
         { 
             placeholder: "SELECT YOUR CASES",
+            closeOnSelect: false,
         }
         ); });
+    
     $(document).ready(function() { 
         $("#id_omim").select2(
         { 
@@ -29,7 +31,9 @@
         ); });
     $(document).ready(function() { $("#id_exclude_individuals").select2(
         { 
-        placeholder: "SELECT YOUR CONTROLS", }
+        placeholder: "SELECT YOUR CONTROLS",
+        closeOnSelect: false,
+        }
         ); });
     $(document).ready(function() { $("#id_groups").select2(
         { 

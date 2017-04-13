@@ -30,7 +30,7 @@ class MultiOmimChoices(ModelSelect2Widget):
         'name__icontains'
     ]
     def label_from_instance(self, obj):
-        return force_text(obj.title).upper()
+        return force_text(obj.name).upper()
 
 # class MultiHgmdChoices(AutoModelSelect2MultipleField):
 #     queryset = HGMDPhenotype.objects
@@ -208,23 +208,21 @@ class FilterAnalysisForm(forms.Form):
     
     # omim = MultiOmimChoices()
 
-    # omim = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
-    #     queryset=Disease.objects.all(),
-    #     search_fields=['name__icontains'],
-    # ), queryset=Disease.objects.all(), required=True)
+    omim = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=Disease.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=Disease.objects.all(), required=True)
 
-    # omim = forms.ChoiceField(
-    #     widget=ModelSelect2Widget(
-    #         model=Disease,
-    #         search_fields=['name__icontains']
-    #     )
-    # )
-
-
-    # cgd = MultiCgdChoices()
+    cgd = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=CGDCondition.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=CGDCondition.objects.all(), required=True)
     # hgmd = MultiHgmdChoices()
 
-    # cgdmanifestation = MultiCgdManifestationChoices()
+    cgdmanifestation = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=Manifestation.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=Manifestation.objects.all(), required=True)
     
     # hgmd = forms.ModelMultipleChoiceField(queryset=HGMDPhenotype.objects.filter().order_by('name'), required=False)
 
@@ -384,14 +382,22 @@ class FamilyAnalysisForm(forms.Form):
     
     fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
     
-    # conditions = forms.ModelMultipleChoiceField(queryset=CGDCondition.objects.filter().order_by('name'), required=False)
-    
-    # omim = forms.ModelMultipleChoiceField(queryset=Disease.objects.filter().order_by('name'), required=False)
-    # omim = MultiOmimChoices()
-    # cgd = MultiCgdChoices()
+    omim = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=Disease.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=Disease.objects.all(), required=True)
+
+    cgd = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=CGDCondition.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=CGDCondition.objects.all(), required=True)
     # hgmd = MultiHgmdChoices()
 
-    # cgdmanifestation = MultiCgdManifestationChoices()
+    cgdmanifestation = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
+        queryset=Manifestation.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=Manifestation.objects.all(), required=True)
+    
     
     # hgmd = forms.ModelMultipleChoiceField(queryset=HGMDPhenotype.objects.filter().order_by('name'), required=False)
 

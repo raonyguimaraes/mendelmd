@@ -103,3 +103,6 @@ Clean Up Templates
 Fix Docker-compose
 
 - Add tooltip.js and topover.js
+- Disable button while uploading
+- Prevent errors while creating username with spaces
+- Add openid
