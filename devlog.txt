@@ -115,3 +115,11 @@ Delete Template!
 
 Fix e-mails.
 Fix all render_to_response!
+
+Generated new dataset
+
+tar -czvf pynnotator.data.0.4.tar.gz data/
+tar -czvf pynnotator.libs.0.4.tar.gz libs/
+
+Try to store data on google cloud. Make alternative on ScaleWay.
+gsutil cp pynnotator.data.0.4.tar.gz gs://mendelmd/

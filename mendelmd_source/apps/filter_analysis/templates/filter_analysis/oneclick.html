@@ -4,6 +4,7 @@
 {% load i18n %}
 {#% load sorting_tags %#}
 {% load pagination_tags %}
+
 {% load filter_extras %}
 
 {% block title %}{% trans "Filter Analysis" %}{% endblock %}
@@ -11,6 +12,7 @@
 {% block extra_css %}
 
 <script src="{{ STATIC_URL }}/js/filter_analysis.js"></script>
+<script src="{{ STATIC_URL }}/js/one_click.js"></script>
 
 {% endblock %}
 
