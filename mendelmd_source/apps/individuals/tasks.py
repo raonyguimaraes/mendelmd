@@ -600,7 +600,7 @@ def PopulateVariants(individual_id):
 
                 #now parse
                 variant = parse_vcf(line)
-
+                #print(variant)
                 #variant_dict['individual_id'] = individual.id
                 # print 'index', variant
                 # variant.snpeff.add(snpeff)
