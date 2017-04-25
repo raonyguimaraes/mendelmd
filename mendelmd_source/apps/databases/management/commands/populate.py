@@ -236,7 +236,7 @@ class Command(BaseCommand):
         print('Populate Diseases from OMIM!')
         populate_diseases()
         #populate diseases from OMIM
-        print('Populate Disease from CGD!')
+        print('Populate Diseases from CGD!')
         populate_CGD()
         #populate dieases from CGD
         #populate dieases from CGD

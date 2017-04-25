@@ -52,6 +52,7 @@ Installing PostgreSQL Database
     sudo apt-get install libpq-dev postgresql
     sudo -i -u postgres
     createuser --interactive
+    exit
     createdb mendelmd
     cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
 
@@ -60,7 +61,7 @@ Installation on Ubuntu 16.04 LTS (tested)
 
 ::
 
-    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv
+    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv libcurl4-openssl-dev
     
     python3 -m venv mendelmdenv
     source mendelmdenv/bin/activate
@@ -69,16 +70,17 @@ Installation on Ubuntu 16.04 LTS (tested)
     cd mendelmd/mendelmd_source
     
 
-Installing the Pynnotator
-=========================
+Installing Pynnotator
+=====================
 
 ::
 
-    pip install cython
+    pip install wheel cython
+    pip install pysam
     pip install pynnotator
     pynnotator install
 
-This will take a long time since it will download around 26GB of data.
+This will take a long time since it will download around 32GB of data.
 Go grab a coffee and read a paper.
 
 Installing Mendel,MD
@@ -86,32 +88,20 @@ Installing Mendel,MD
 
 ::
 
-    pip install -r requirements.stable.txt
+    pip install -r requirements.txt
 
     python manage.py migrate auth
     python manage.py migrate
     python manage.py populate
+
+    #create yourself a super user
+    python manage.py createsuperuser
+
     python manage.py runserver
 
 And now you should have Mendel,MD running on address
 http://127.0.0.1:8000/
 
-Creating a superuser
-====================
-
-::
-
-    python manage.py createsuperuser
-
-Importing Data
-==============
-
-::
-
-    python manage.py populate
-
-Upload your VCFs using the web interface
-========================================
 
 Start the annotation
 ====================
@@ -121,6 +111,25 @@ Start the annotation
     python manage.py celery worker
 
 
+
+Creating a superuser
+====================
+
+::
+
+    python manage.py createsuperuser
+
+Importing Genes and Diseases Data
+=================================
+
+::
+
+    python manage.py populate
+
+Upload your VCFs using the web interface
+========================================
+
+At the dashboard click on the "Upload VCF" button.
 
 Deployment on RedHat/CentOS 7
 ===============================
