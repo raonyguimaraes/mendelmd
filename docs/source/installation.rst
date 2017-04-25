@@ -1,8 +1,7 @@
 Mendel,MD
 =========
 
-An online tool for annotating, filtering and diagnosing Humans (Exome
-and Genome) with Mendelian Disorders.
+An online tool for organizing, annotating, filtering and diagnosing patients with Mendelian Disorders using Exome and Genome sequencing data.
 
 Requirements
 ============
@@ -106,9 +105,12 @@ http://127.0.0.1:8000/
 Start the annotation
 ====================
 
+In another tab start the annotation process.
+
 ::
 
-    python manage.py celery worker
+    source mendelmdenv/bin/activate
+    celery -A mendelmd worker -l info
 
 
 

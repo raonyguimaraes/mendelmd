@@ -41,6 +41,7 @@ class Variant(models.Model):
     
     #VEP
     sift = models.FloatField(null=True, blank=True)
+    sift_pred = models.TextField(null=True, blank=True)
 
     polyphen2 = models.FloatField(null=True, blank=True)
     polyphen2_pred = models.TextField(null=True, blank=True)

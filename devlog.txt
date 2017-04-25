@@ -126,3 +126,13 @@ gsutil cp pynnotator.data.0.4.tar.gz gs://mendelmd/
 
 Finished updating pynnotator!!!
 
+
+Not Found: /upload/view/
+[25/Apr/2017 07:02:07] "GET /upload/view/ HTTP/1.1" 404 3548
+[25/Apr/2017 07:02:07] "GET /static/jquery-fileupload/img/loading.gif HTTP/1.1" 200 3897
+entrou no create!
+form is valid!
+filename  ['NA12878', 'recessive', 'vcf', 'gz']
+
+
+celery -A mendelmd worker -l info
