@@ -4,15 +4,6 @@
 {% block content %}
 <h1 class="page-header">Dashboard</h1>
 
-
-<div class="row">
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert {% if message.tags %}alert-{{ message.tags }}" {% endif %}>{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-</div>
-
 <a href="{% url 'individual_create' %}">
     <button type="button" class="btn btn-lg btn-primary">Upload VCF File</button>
 </a>

@@ -594,4 +594,4 @@ def comparison(request):
         form = ComparisonForm(request.user)
         
         
-    return render_to_response('individuals/comparison.html', {'form':form, 'summary':summary, 'query_string':query_string}, context_instance=RequestContext(request))
+    return render(request, 'individuals/comparison.html', {'form':form, 'summary':summary, 'query_string':query_string})

@@ -3,10 +3,7 @@
 
 {% load staticfiles %}
 
-{% load django_select2_tags %}
-
 {% load i18n %}
-{% load sorting_tags %}
 {% load pagination_tags %}
 {% load filter_extras %}
 
@@ -41,8 +38,6 @@
 
 
 <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
-	{% import_django_select2_css %}
-	{% import_django_select2_js %}
 
 {% endblock %}
 
@@ -76,15 +71,10 @@
     <div id="collapseTwo" class="panel-collapse collapse">
       <div class="panel-body">
 			Genes:
-				<br>
-				
-					{% for gene in summary.genes %} 
-					<a href="?{{ query_string }}&gene_list={{ gene }}" target="_blank">{{ gene }}</a>,
-					
-					{% endfor %}
-				
-
-				
+			<br>
+			{% for gene in summary.genes %} 
+			<a href="?{{ query_string }}&gene_list={{ gene }}" target="_blank">{{ gene }}</a>,			
+			{% endfor %}
 
       </div>
     </div>

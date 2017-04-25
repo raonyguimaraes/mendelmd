@@ -410,7 +410,10 @@ def index(request):
         genes['genes_cgd'] = []
         form = FilterAnalysisForm(request.user)
 
-    return render(request, 'filter_analysis/index.html', 
+
+
+    # print(summary)
+    return render(request, 'filteranalysis/index.html', 
         {'variants':variants, 
         'form':form, 
         'summary':summary,

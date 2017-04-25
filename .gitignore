@@ -31,3 +31,4 @@ morbidmap.txt
 celerybeat.pid
 loaded.txt
 mendelmd_source/mendelmdenv/*
+migrations/
