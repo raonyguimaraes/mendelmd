@@ -24,6 +24,16 @@ Running Mendel,MD using Docker Compose
     docker-compose up
 
 
+
+Running Mendel,MD using Docker Compose
+======================================
+
+    git clone https://github.com/raonyguimaraes/mendelmd/
+    cd mendelmd/mendelmd_source/
+    wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
+    docker-compose up
+
+
 Requirements
 ============
 

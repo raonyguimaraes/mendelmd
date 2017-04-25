@@ -36,7 +36,7 @@ Now it's possible to install and run Mendel,MD with a single command:
 
     docker-compose up
 
-This command will create a container, download all the required tools and datasets and run the webserver.
+This command will create a container, download all the required tools, datasets and run the webserver.
 
 This should take a few hours to complete for the first time.
 
