@@ -810,7 +810,7 @@ def family_analysis(request):
         genes['genes_cgd'] = []
         form = FamilyAnalysisForm(request.user)
 
-    return render_to_response('filter_analysis/family_analysis.html', 
+    return render(request,'filter_analysis/family_analysis.html',
         {'variants':variants, 
         'form':form, 
         'summary':summary,
@@ -820,7 +820,7 @@ def family_analysis(request):
         'genes':genes['genes'], 
         'genes_hgmd':genes['genes_hgmd'],
         'genes_omim':genes['genes_omim'],
-        'genes_cgd':genes['genes_cgd']}, context_instance=RequestContext(request))
+        'genes_cgd':genes['genes_cgd']})
 
 
 
