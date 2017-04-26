@@ -8,14 +8,15 @@ RUN	apt-get install -y apt-utils
 RUN	apt-get install -y libterm-readline-gnu-perl
 #RUN	apt-get upgrade -y
 RUN	apt-get install -y \
-	libcgi-session-perl libcurl4-gnutls-dev gcc git python3-dev zlib1g-dev virtualenvwrapper make zip python3-pip sudo \
-	build-essential bcftools software-properties-common python3-setuptools vcftools tabix zlib1g-dev libpq-dev \
-	build-essential zlib1g-dev liblocal-lib-perl cpanminus curl unzip wget ca-certificates gcc git libpq-dev make \
-    pkg-config python3 python3-dev python3-pip \
+	bcftools build-essential ca-certificates cpanminus curl gcc git htop libbz2-dev libcgi-session-perl \
+	libcurl4-openssl-dev libffi-dev liblocal-lib-perl liblzma-dev libpq-dev libssl-dev libxml2-dev make \
+	pkg-config python-dev python-lxml python3 python3-dev python3-pip python3-setuptools python3-venv \
+	python3-wheel software-properties-common sudo tabix unzip vcftools virtualenvwrapper wget zip zlib1g \
+	zlib1g-dev zlibc
     && apt-get autoremove -y \
 	&& apt-get clean
-RUN pip3 install -U pip setuptools
-RUN pip3 install cython==0.24.1 
+RUN pip3 install -U pip
+RUN pip3 install setuptools wheel
 RUN pip3 install pynnotator
 RUN pynnotator install
 RUN pip3 install -r requirements.txt

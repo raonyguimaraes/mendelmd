@@ -1,8 +1,8 @@
 sudo apt update
 
-sudo apt install -y apache2 build-essential gcc git apache2-bin libbz2-dev libffi-dev libssl-dev \
-libxml2-dev make python-dev python-lxml python3 python3-dev python3-venv python3-wheel sudo virtualenvwrapper zip zlib1g \
-zlib1g-dev zlibc liblzma-dev libcurl4-openssl-dev htop
+sudo apt install -y apache2 apache2-bin build-essential gcc git htop libbz2-dev libcurl4-openssl-dev libffi-dev \
+liblzma-dev libssl-dev libxml2-dev make python-dev python-lxml python3 python3-dev python3-venv python3-wheel \
+sudo virtualenvwrapper zip zlib1g zlib1g-dev zlibc
 
 
 sudo chown $USER .
