@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
-ADD requirements.stable.txt /code/
+ADD requirements.txt /code/
 RUN apt-get update
 RUN	apt-get install -y apt-utils
 RUN	apt-get install -y libterm-readline-gnu-perl
