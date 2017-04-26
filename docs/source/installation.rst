@@ -74,8 +74,7 @@ Installing Pynnotator
 
 ::
 
-    pip install wheel cython
-    pip install pysam
+    pip install wheel
     pip install pynnotator
     pynnotator install
 
@@ -89,7 +88,6 @@ Installing Mendel,MD
 
     pip install -r requirements.txt
 
-    python manage.py migrate auth
     python manage.py migrate
     python manage.py populate
 
@@ -110,7 +108,7 @@ In another tab start the annotation process.
 ::
 
     source mendelmdenv/bin/activate
-    celery -A mendelmd worker -l info
+    celery -A mendelmd worker -l info -c 1
 
 
 

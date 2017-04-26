@@ -57,9 +57,9 @@ class Variant(models.Model):
     ada_score = models.FloatField(null=True, blank=True)
 
     #hi_index
-    # hi_index_str = models.TextField(null=True, blank=True)
-    # hi_index = models.FloatField(null=True, blank=True)
-    # hi_index_perc = models.FloatField(null=True, blank=True)
+    hi_index_str = models.TextField(null=True, blank=True)
+    hi_index = models.FloatField(null=True, blank=True)
+    hi_index_perc = models.FloatField(null=True, blank=True)
 
     #OMIM
     is_at_omim = models.BooleanField(default=False)
@@ -200,6 +200,10 @@ class Variant(models.Model):
     clinvar_clnsig = models.TextField(null=True, blank=True)
     clinvar_trait = models.TextField(null=True, blank=True)
     clinvar_golden_stars = models.TextField(null=True, blank=True)
+    mcap_score = models.FloatField(null=True, blank=True)
+    mcap_rankscore = models.FloatField(null=True, blank=True)
+    mcap_pred = models.TextField(null=True, blank=True)
+    revel_score = models.TextField(null=True, blank=True)
 
 
     def get_fields(self):
