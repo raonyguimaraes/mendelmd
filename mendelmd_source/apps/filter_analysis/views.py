@@ -232,7 +232,8 @@ def filter_analysis(request,query, args, exclude):
     '''
     This function receives request and returns a dictionary with the variants
     '''
-    print('filter analysis')
+    # print('filter analysis')
+
     #CHR
     filter_chr(request, query)
     #pos
@@ -285,9 +286,7 @@ def filter_analysis(request,query, args, exclude):
     filter_is_at_hgmd(request, query)
     filter_clnsig(request, query)
 
-
     # filter_individuals(request, query)
-
     
     # filter_by_individuals(request, *query, *args, *exclude)
 
@@ -371,7 +370,7 @@ def index(request):
                 filter_genes_in_common(request, query, args, exclude)
                 filter_positions_in_common(request, query, args, exclude)
             
-            print('exclude keys', list(exclude.keys()))
+            # print('exclude keys', list(exclude.keys()))
             #last call to the DATABASE Finally!!!!!! 
             variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
             

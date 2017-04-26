@@ -18,6 +18,10 @@ RUN pip3 install -U pip
 RUN pip3 install setuptools wheel
 RUN pip3 install pynnotator
 RUN pynnotator install
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 ADD requirements.txt /code/
 RUN pip3 install -r requirements.txt
 ADD . /code/
