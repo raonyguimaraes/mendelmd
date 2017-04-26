@@ -8,7 +8,6 @@ python3 manage.py collectstatic --noinput
 if [ ! -f data/omim/loaded.txt ]; then
     python3 manage.py populate
     touch data/omim/loaded.txt
-    cp config/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
 fi
 
 

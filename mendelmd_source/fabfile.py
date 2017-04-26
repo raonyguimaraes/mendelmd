@@ -13,8 +13,9 @@ def install():
     # local('python manage.py migrate')
 
 def backup_users():
-    local('python manage.py dumpdata -v 2 --format=json auth account > fixtures/users.json')
-    local('python manage.py dumpdata -v 2 --format=json individuals.usergroup > fixtures/usergroups.json')
+    local('python3 manage.py dumpdata --indent=4 --format=json auth account > fixtures/users.json')
+    local('python3 manage.py dumpdata --indent=4 --format=json individuals > fixtures/individuals.json')
+    local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
 
 def reset_migrations():
