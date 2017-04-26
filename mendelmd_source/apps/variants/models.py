@@ -113,7 +113,7 @@ class Variant(models.Model):
     #DBNFSP
     SIFT_score = models.TextField(null=True, blank=True)
     SIFT_converted_rankscore = models.TextField(null=True, blank=True)
-    SIFT_pred = models.TextField(null=True, blank=True)
+    # SIFT_pred = models.TextField(null=True, blank=True)
     Uniprot_acc_Polyphen2 = models.TextField(null=True, blank=True)
     Uniprot_id_Polyphen2 = models.TextField(null=True, blank=True)
     Uniprot_aapos_Polyphen2 = models.TextField(null=True, blank=True)
