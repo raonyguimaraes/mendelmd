@@ -43,10 +43,10 @@ class JSONResponse(HttpResponse):
 def create(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
-        print('entrou no create!')
+        # print('entrou no create!')
         if form.is_valid():
             
-            print('form is valid!')
+            # print('form is valid!')
 
             if request.user.is_authenticated():
                 individual = Individual.objects.create(user=request.user, status='new')
@@ -62,7 +62,7 @@ def create(request):
 
             individual.vcf_file.name = ".".join(new_filename)
 
-            print('filename ', filename)
+            # print('filename ', filename)
 
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
