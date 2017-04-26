@@ -21,7 +21,7 @@ Running Mendel,MD using Docker Compose
     git clone https://github.com/raonyguimaraes/mendelmd/
     cd mendelmd/mendelmd_source/
     wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
-    cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
+    cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
     docker-compose up
 
 

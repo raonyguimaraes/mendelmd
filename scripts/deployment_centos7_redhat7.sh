@@ -21,6 +21,7 @@ sudo chown ec2-user .
 git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/mendelmd_source/
 cp /tmp/morbidmap.txt data/omim/
+cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
 docker-compose build
 # docker-compose up -d
 # docker-compose down
