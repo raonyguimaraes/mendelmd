@@ -2,7 +2,6 @@ FROM ubuntu:xenial
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
-ADD requirements.txt /code/
 RUN apt-get update
 RUN	apt-get install -y apt-utils
 RUN	apt-get install -y libterm-readline-gnu-perl
@@ -19,5 +18,6 @@ RUN pip3 install -U pip
 RUN pip3 install setuptools wheel
 RUN pip3 install pynnotator
 RUN pynnotator install
+ADD requirements.txt /code/
 RUN pip3 install -r requirements.txt
 ADD . /code/
