@@ -1,19 +1,15 @@
 {% extends "base.html" %}
 
-
-{% load i18n %}
-
 {% load paginator %}
 
-{% block title %}{% trans "List Individuals" %}{% endblock %}
 
 {% block content %}
 
 <h1>Individuals</h1>
 <div class="row">
     <div class="btn-group" style="float:right;">
-        <a class="btn btn-primary" href="{% url 'individual_create' %}">{% trans "Upload VCF Files" %}</a>
-        <a class="btn btn-primary" href="{% url 'create_group' %}">{% trans "Create a new Group" %}</a>
+        <a class="btn btn-primary" href="{% url 'individual_create' %}">Upload VCF Files</a>
+        <a class="btn btn-primary" href="{% url 'create_group' %}">Create a new Group</a>
     </div>
 </div>
 <br>
@@ -30,7 +26,7 @@
 {% endif %}
 
     {% if groups %}
-<h1>{% trans "Groups" %}</h1>
+<h1>Groups</h1>
 <table class="table table-bordered">
     <thead>
         <tr>

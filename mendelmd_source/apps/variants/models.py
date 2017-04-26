@@ -50,11 +50,7 @@ class Variant(models.Model):
     condel_pred = models.TextField(null=True, blank=True)
 
     dann = models.FloatField(null=True, blank=True)
-
     cadd = models.FloatField(null=True, blank=True)
-
-    rf_score = models.FloatField(null=True, blank=True)
-    ada_score = models.FloatField(null=True, blank=True)
 
     #hi_index
     hi_index_str = models.TextField(null=True, blank=True)

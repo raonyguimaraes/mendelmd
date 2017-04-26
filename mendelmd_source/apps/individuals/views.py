@@ -189,7 +189,7 @@ def view(request, individual_id):
 
     individual.snp_eff = variant_list.values('snpeff_effect').annotate(Count('snpeff_effect')).order_by('snpeff_effect')
     # print 'individual.snp_eff', individual.snp_eff
-    #variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
+    # variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
     #
     individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
     individual.impact_variants = variant_list.values('snpeff_impact').annotate(Count('snpeff_impact')).order_by('snpeff_impact')
@@ -205,7 +205,6 @@ def view(request, individual_id):
     # variants_with_snpid = variant_list.values('variant_id').exclude(variant_id=".")
     #print variants_with_snpid
 
-    #die()
     # fields = Variant._meta.get_all_field_names()
 
     paginator = Paginator(variant_list, 25) # Show 25 contacts per page
@@ -222,9 +221,9 @@ def view(request, individual_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         variants = paginator.page(paginator.num_pages)
     #'fields':fields
-    return render_to_response('individuals/view.html', {'individual': individual, 'variants':variants})
+    return render(request, 'individuals/view.html', {'individual': individual, 'variants':variants})
 
-@login_required    
+@login_required
 def browse(request, individual_id):
 
     query_string = request.META['QUERY_STRING']
@@ -317,7 +316,7 @@ def browse(request, individual_id):
        # If page is out of range (e.g. 9999), deliver last page of results.
        variants = paginator.page(paginator.num_pages)
     
-    return render_to_response('variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string}, context_instance=RequestContext(request))
+    return render(request, 'variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string})
 
 @login_required
 def list(request):
@@ -398,7 +397,7 @@ def list(request):
 #    individuals = Individual.objects.annotate(number_of_variants=Count('variant'))
     
     
-    return render_to_response('individuals/list.html', {'individuals': individuals, 'groups':groups, 'ind_featured':ind_featured})
+    return render(request, 'individuals/list.html', {'individuals': individuals, 'groups':groups, 'ind_featured':ind_featured})
 
 
 @login_required

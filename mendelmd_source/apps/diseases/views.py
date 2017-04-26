@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response,redirect
+from django.shortcuts import redirect, render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 # Imaginary function to handle an uploaded file.
 #from somewhere import handle_uploaded_file
 from django.contrib import messages
@@ -241,7 +241,7 @@ def populate_genes(request):
 @login_required
 def list(request):
     diseases = Disease.objects.all()
-    return render_to_response('diseases/list.html', {'diseases': diseases}, context_instance=RequestContext(request))
+    return render(request, 'diseases/list.html', {'diseases': diseases})
  
 
 @login_required
@@ -262,7 +262,7 @@ def view(request, disease_id):
 #        individual_variants = Variant.objects.find(filter(date__range=["2011-01-01", "2011-01-31"]))
     
     
-    return render_to_response('diseases/view.html', {'disease': disease, 'variants': individuals_variants}, context_instance=RequestContext(request))
+    return render(request, 'diseases/view.html', {'disease': disease, 'variants': individuals_variants})
     
 @staff_member_required
 def populate_hgmd_genes(request):

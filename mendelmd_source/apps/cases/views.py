@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 from django.template import RequestContext
 from .forms import CaseForm
 from cases.models import Case
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 
 from django.views.generic import CreateView, DeleteView
 
@@ -42,11 +42,11 @@ def create_case(request):
             return redirect('cases_list')
     else:
         form = CaseForm()
-    return render_to_response('cases/new.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'cases/new.html', {'form': form})
 @login_required
 def view_case(request, case_id):
     case = get_object_or_404(Case, pk=case_id)
-    return render_to_response('cases/view.html', {'case': case}, context_instance=RequestContext(request))
+    return render(request, 'cases/view.html', {'case': case})
 
 
 class CaseDeleteView(DeleteView):
@@ -92,7 +92,7 @@ def edit(request, case_id):
             return redirect('cases_list')
     else:
         form = CaseForm(instance=case)
-    return render_to_response('cases/edit.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'cases/edit.html', {'form': form})
 
 def analysis(request, case_id, analysis, inheritance):
     
