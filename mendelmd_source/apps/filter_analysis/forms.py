@@ -239,7 +239,7 @@ class FilterAnalysisForm(forms.Form):
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
         else:
             print('user', user)
-            if user.is_superuser():
+            if user.is_superuser:
                 self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter().order_by('id'), required=False, label='INDIVIDUALS')
                 self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter().order_by('id'), required=False, label='INDIVIDUALS')
             else:
