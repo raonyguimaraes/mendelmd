@@ -161,65 +161,70 @@ class IndividualDeleteView(DeleteView):
 
 
 def view(request, individual_id):
-    
+
     individual = get_object_or_404(Individual, pk=individual_id)
-    variant_list = Variant.objects.filter(individual=individual)
-    # snpeff = SnpeffAnnotation.objects.filter(individual=individual)
 
-    individual.n_variants = variant_list.count()
-    individual.novel_variants = variant_list.filter(variant_id = '.').count()
-    
-    individual.summary = []
+    if individual.user == request.user:
+        variant_list = Variant.objects.filter(individual=individual)
+        # snpeff = SnpeffAnnotation.objects.filter(individual=individual)
 
-    #get calculated values from database
-    
-    summary_item = {
-                'type': 'Total SNVs',
-                'total': variant_list.values('genotype').count(),
-                'discrete': variant_list.values('genotype').annotate(total=Count('genotype'))
-                    }
-    individual.summary.append(summary_item)
-    
-    summary_item = {
-                'type': 'Total Gene-associated SNVs',
-                'total': variant_list.values('gene').exclude(gene="").count(),
-                'discrete': variant_list.exclude(gene="").values('genotype').annotate(total=Count('genotype'))
-                    }
-    individual.summary.append(summary_item)
+        individual.n_variants = variant_list.count()
+        individual.novel_variants = variant_list.filter(variant_id = '.').count()
 
-    individual.snp_eff = variant_list.values('snpeff_effect').annotate(Count('snpeff_effect')).order_by('snpeff_effect')
-    # print 'individual.snp_eff', individual.snp_eff
-    # variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
-    #
-    individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
-    individual.impact_variants = variant_list.values('snpeff_impact').annotate(Count('snpeff_impact')).order_by('snpeff_impact')
+        individual.summary = []
 
-    individual.filter_variants = variant_list.values('filter').annotate(Count('filter')).order_by('filter')
-    individual.quality = variant_list.aggregate(Avg('qual'), Max('qual'), Min('qual'))
-    individual.read_depth = variant_list.aggregate(Avg('read_depth'), Max('read_depth'), Min('read_depth'))
-    
-    individual.clinvar_clnsig = variant_list.values('clinvar_clnsig').annotate(total=Count('clinvar_clnsig'))
+        #get calculated values from database
 
-    individual.chromossome = variant_list.values('chr').annotate(total=Count('chr')).order_by('chr')
-    
-    # variants_with_snpid = variant_list.values('variant_id').exclude(variant_id=".")
-    #print variants_with_snpid
+        summary_item = {
+                    'type': 'Total SNVs',
+                    'total': variant_list.values('genotype').count(),
+                    'discrete': variant_list.values('genotype').annotate(total=Count('genotype'))
+                        }
+        individual.summary.append(summary_item)
 
-    # fields = Variant._meta.get_all_field_names()
+        summary_item = {
+                    'type': 'Total Gene-associated SNVs',
+                    'total': variant_list.values('gene').exclude(gene="").count(),
+                    'discrete': variant_list.exclude(gene="").values('genotype').annotate(total=Count('genotype'))
+                        }
+        individual.summary.append(summary_item)
 
-    paginator = Paginator(variant_list, 25) # Show 25 contacts per page
-    try:
-        page = int(request.GET.get('page', '1'))
-    except ValueError:
-        page = 1
-    try:
-        variants = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        variants = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        variants = paginator.page(paginator.num_pages)
+        individual.snp_eff = variant_list.values('snpeff_effect').annotate(Count('snpeff_effect')).order_by('snpeff_effect')
+        # print 'individual.snp_eff', individual.snp_eff
+        # variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
+        #
+        individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
+        individual.impact_variants = variant_list.values('snpeff_impact').annotate(Count('snpeff_impact')).order_by('snpeff_impact')
+
+        individual.filter_variants = variant_list.values('filter').annotate(Count('filter')).order_by('filter')
+        individual.quality = variant_list.aggregate(Avg('qual'), Max('qual'), Min('qual'))
+        individual.read_depth = variant_list.aggregate(Avg('read_depth'), Max('read_depth'), Min('read_depth'))
+
+        individual.clinvar_clnsig = variant_list.values('clinvar_clnsig').annotate(total=Count('clinvar_clnsig'))
+
+        individual.chromossome = variant_list.values('chr').annotate(total=Count('chr')).order_by('chr')
+
+        # variants_with_snpid = variant_list.values('variant_id').exclude(variant_id=".")
+        #print variants_with_snpid
+
+        # fields = Variant._meta.get_all_field_names()
+
+        paginator = Paginator(variant_list, 25) # Show 25 contacts per page
+        try:
+            page = int(request.GET.get('page', '1'))
+        except ValueError:
+            page = 1
+        try:
+            variants = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            variants = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            variants = paginator.page(paginator.num_pages)
+    else:
+        individual = {}
+        variants = {}
     #'fields':fields
     return render(request, 'individuals/view.html', {'individual': individual, 'variants':variants})
 
