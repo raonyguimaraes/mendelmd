@@ -67,16 +67,16 @@
     <div class="tab-pane" id="snp_eff">
     	<p>
     		<table class="table table-nonfluid table-striped table-bordered table-condensed">
-		<tr>
-			<th>Type</th>
-			<th>Total Variants</th>
-		</tr>
-		{% for item in individual.snp_eff %}
-			<tr>
-			<td>{{ item.snpeff_effect }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&effect={{ item.snpeff_effect|urlencode }}">{{ item.snpeff_effect__count }}</a></td>
-			</tr>
-		{% endfor %}
-	</table>
+                <tr>
+                    <th>Type</th>
+                    <th>Total Variants</th>
+                </tr>
+                {% for item in individual.snp_eff %}
+                    <tr>
+                    <td>{{ item.snpeff_effect }}</td><td><a href="{% url 'filter_analysis' %}?individuals={{ individual.id }}&effect={{ item.snpeff_effect|urlencode }}">{{ item.snpeff_effect__count }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
     	</p>
     </div>
     <div class="tab-pane" id="func_class">
@@ -127,20 +127,20 @@
     <div class="tab-pane" id="qual">
     	<p>
     		<table class="table table-nonfluid table-striped table-bordered table-condensed">
-		<tr>
-		    <th>Quality</th>
-		    <th>Value</th>
-		</tr>
-		<tr>
-		<td>Min</td><td>{{ individual.quality.qual__min }}</td>
-		</tr>
-		<tr>
-		<td>Average</td><td>{{ individual.quality.qual__avg }}</td>
-		</tr>
-		<tr>
-		<td>Max</td><td>{{ individual.quality.qual__max }}</td>
-		</tr>
-    </table>
+                <tr>
+                    <th>Quality</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                <td>Min</td><td>{{ individual.quality.qual__min }}</td>
+                </tr>
+                <tr>
+                <td>Average</td><td>{{ individual.quality.qual__avg }}</td>
+                </tr>
+                <tr>
+                <td>Max</td><td>{{ individual.quality.qual__max }}</td>
+                </tr>
+            </table>
     	</p>
     </div>
     <div class="tab-pane" id="read_depth">
@@ -271,5 +271,36 @@
 </div>
 </div><!-- tabblabe -->
 
+<table class="table table-nonfluid table-striped table-bordered table-condensed">
+    <tr>
+        <th>Quality</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+    <td>Min</td><td>{{ individual.quality.qual__min }}</td>
+    </tr>
+    <tr>
+    <td>Average</td><td>{{ individual.quality.qual__avg }}</td>
+    </tr>
+    <tr>
+    <td>Max</td><td>{{ individual.quality.qual__max }}</td>
+    </tr>
+</table>
+
+<table class="table table-nonfluid table-striped table-bordered table-condensed">
+    <tr>
+        <th>Read Depth</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+    <td>Min</td><td>{{ individual.read_depth.read_depth__min }}</td>
+    </tr>
+    <tr>
+    <td>Average</td><td>{{ individual.read_depth.read_depth__avg }}</td>
+    </tr>
+    <tr>
+    <td>Max</td><td>{{ individual.read_depth.read_depth__max }}</td>
+    </tr>
+</table>
 
 {% endblock %}
