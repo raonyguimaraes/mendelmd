@@ -22,7 +22,7 @@ export C_FORCE_ROOT='true'
 # Start server
 echo "Starting annotator"
 celery -A mendelmd beat &
-celery -A mendelmd worker -l info -c 1 &
+celery -A mendelmd worker -l debug -c 1 &
 
 # Start server
 echo "Starting server"
