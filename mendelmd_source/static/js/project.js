@@ -1,3 +1,10 @@
+$(document).ready(function(){
+$("#select_all").change(function(){
+  $(".individuals").prop("checked", $(this).prop("checked"));
+  });
+});
+
+
 $(document).ready(function() {
 
   $( "#slider-range" ).slider({
