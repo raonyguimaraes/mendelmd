@@ -6,16 +6,16 @@
 				<form id='filterform' action="." method="get" enctype="multipart/form-data">
 					<div class="tabbable tabs-left ">
 						<ul class="nav nav-tabs">
-							<li><a href="#main" data-toggle="tab">Main</a></li>
-							<li class="active"><a href="#variants" data-toggle="tab">Variants</a></li>
+							<li class="active"><a href="#main" data-toggle="tab">Main</a></li>
+							<li><a href="#variants" data-toggle="tab">Variants</a></li>
 							<li><a href="#databases" data-toggle="tab">Databases</a></li>
 							
 						</ul>
 						<div class="tab-content">
-							<div class="tab-pane" id="main">
+							<div class="tab-pane active" id="main">
 								{% include "tabs/main_oneclick.html" %}
 							</div>
-							<div class="tab-pane active" id="variants">
+							<div class="tab-pane" id="variants">
 								{% include "tabs/variants.html" %}
 							</div>
 							<div class="tab-pane" id="databases">
