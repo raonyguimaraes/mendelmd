@@ -16,6 +16,8 @@ from django.core.exceptions import ValidationError
 
 from django_select2.forms import (HeavySelect2MultipleWidget, HeavySelect2Widget, ModelSelect2MultipleWidget, ModelSelect2TagWidget, ModelSelect2Widget, Select2MultipleWidget, Select2Widget)
 
+from django.db.models import Q
+
 def validate_fail_always(value):
     raise ValidationError('%s not valid. Infact nothing is valid!' % value)
 
@@ -244,9 +246,9 @@ class FilterAnalysisForm(forms.Form):
                 self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter().order_by('id'), required=False, label='INDIVIDUALS')
             else:
                 self.fields['individuals'] = forms.ModelMultipleChoiceField(
-                    queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+                    queryset=Individual.objects.filter(Q(user=user) | Q(user=None)).order_by('id'), required=False, label='INDIVIDUALS')
                 self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(
-                    queryset=Individual.objects.filter(user=user).order_by('id'), required=False, label='INDIVIDUALS')
+                    queryset=Individual.objects.filter(Q(user=user) | Q(user=None)).order_by('id'), required=False, label='INDIVIDUALS')
         # self.fields['sift'].widget.attrs['readonly'] = True
         # self.fields['polyphen'].widget.attrs['readonly'] = True
         # self.fields['genomes1000'].widget.attrs['readonly'] = True
@@ -430,13 +432,13 @@ class FamilyAnalysisForm(forms.Form):
         super(FamilyAnalysisForm, self).__init__(*args, **kwargs)
 
         if not user.is_authenticated():
-            print('user None', user)
+            # print('user None', user)
             self.fields['mother'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['children'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
         else:
-            print('user', user)
+            # print('user', user)
             self.fields['mother'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
             self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
             self.fields['children'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
