@@ -1,5 +1,8 @@
 #!/bin/bash
 sleep 5
+
+cp ../configs/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
+
 # Collect static files
 echo "Collect static files"
 python3 manage.py collectstatic --noinput
