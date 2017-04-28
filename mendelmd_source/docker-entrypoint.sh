@@ -1,8 +1,12 @@
 #!/bin/bash
-
+sleep 5
 # Collect static files
 echo "Collect static files"
 python3 manage.py collectstatic --noinput
+
+# Apply database migrations
+echo "Apply database migrations"#
+python3 manage.py migrate
 
 #hack to load the genes and diseases only once
 if [ ! -f data/omim/loaded.txt ]; then
@@ -10,10 +14,6 @@ if [ ! -f data/omim/loaded.txt ]; then
     touch data/omim/loaded.txt
 fi
 
-
-# Apply database migrations
-echo "Apply database migrations"#
-python3 manage.py migrate
 
 export C_FORCE_ROOT='true'
 # Start server
