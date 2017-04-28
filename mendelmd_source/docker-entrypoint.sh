@@ -1,7 +1,7 @@
 #!/bin/bash
 sleep 5
 pwd
-cp ../configs/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
+cp configs/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
 
 # Collect static files
 echo "Collect static files"
