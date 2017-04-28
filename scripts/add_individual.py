@@ -55,7 +55,7 @@ command = 'cp %s .' % (filepath)
 os.system(command)
 
 if filename.endswith('.gz'):
-    file = gzip.open('%s' % (filename))
+    file = gzip.GzipFile(fileobj='%s' % (filename))
 else:
     file = open('%s' % (filename))
 
