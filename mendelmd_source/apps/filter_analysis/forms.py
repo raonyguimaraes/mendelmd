@@ -234,7 +234,7 @@ class FilterAnalysisForm(forms.Form):
         super(FilterAnalysisForm, self).__init__(*args, **kwargs)
 
         if not user.is_authenticated():
-            print('user None', user)
+            # print('user None', user)
             self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
         else:
