@@ -6,16 +6,16 @@ import json
 import os
 script_dir = os.getcwd()
 current_dir = os.getcwd().split('/')
-#remove just one path and add mendel,md
-current_dir[-1] = 'mendelmd_source'
-
+#remove just one path and add mendel,md source
+# current_dir[-1] = 'mendelmd_source'
+del current_dir[-1]
 proj_path = "/".join(current_dir)
 # This is so Django knows where to find stuff.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mendelmd.settings")
 sys.path.append(proj_path)
 
 # This is so my local_settings.py gets loaded.
-os.chdir(proj_path)
+# os.chdir(proj_path)
 
 # This is so models get loaded.
 from django.core.wsgi import get_wsgi_application
@@ -35,7 +35,6 @@ args = parser.parse_args()
 
 # print(args)
 
-
 individuals = Individual.objects.all()
 
 user = User.objects.first()
@@ -51,23 +50,21 @@ dirname = os.path.dirname(filepath)
 print(dirname)
 print(filename)
 
-command = 'cp %s .' % (filepath)
+individual.name = str(filename.replace('.vcf', '').replace('.gz', '').replace('.rar', '').replace('.zip', '').replace('._', ' ').replace('.', ' '))
+
+destination_path = "%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id)
+
+#move file to destination path
+os.mkdir(destination_path)
+
+command = 'cp %s %s/' % (filepath, destination_path)
+print(command)
 os.system(command)
 
-if filename.endswith('.gz'):
-    file = gzip.GzipFile(fileobj='%s' % (filename))
-else:
-    file = open('%s' % (filename))
+individual.vcf_file = '%s/%s' % (destination_path, filename)
 
-individual.vcf_file = File(file)
+os.chmod(destination_path, 0o777)
 
-# print(individual.vcf_file.file)
-
-command = 'rm %s' % (filename)
-os.system(command)
-
-individual.name = str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf', '').replace('.gz', '').replace('.rar', '').replace('.zip', '').replace('._', ' ').replace('.', ' ')
 individual.save()
-os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
 
 VerifyVCF.delay(individual.id)
