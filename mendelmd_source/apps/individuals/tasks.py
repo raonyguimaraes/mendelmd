@@ -589,7 +589,7 @@ def PopulateVariants(individual_id):
     # data = open('%s/%s/ann_sample/annotation.final.vcf' % (path, filepath), 'r')
 
     z = zipfile.ZipFile('%s/annotation.final.vcf.zip' % (filepath), 'r')
-    data = z.open('ann_sample/annotation.final.vcf', 'rU')
+    data = z.open('ann_sample/annotation.final.vcf', 'r')
 
     #print 'Populating from file %s.fullannotation.vcf' % (basename)
     
