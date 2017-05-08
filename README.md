@@ -14,18 +14,6 @@ You need to register at OMIM: http://omim.org/downloads and submit a download re
 
 After obtaining this file you will need to put it on the folder: "mendelmd_source/data/omim/".
 
-
-Running Mendel,MD using Docker Compose
-======================================
-
-    git clone https://github.com/raonyguimaraes/mendelmd/
-    cd mendelmd/mendelmd_source/
-    wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
-    cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
-    docker-compose up
-
-
-
 Running Mendel,MD using Docker Compose
 ======================================
 
