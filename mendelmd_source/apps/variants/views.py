@@ -25,4 +25,4 @@ def view(request, variant_id):
     variant.info = new_dict
     print(type(variant.info))
 
-    return render_to_response('variants/view.html', {'variant': variant}, context_instance=RequestContext(request))
+    return render(request, 'variants/view.html', {'variant': variant})

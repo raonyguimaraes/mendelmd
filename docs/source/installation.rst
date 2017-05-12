@@ -60,7 +60,8 @@ Installation on Ubuntu 16.04 LTS (tested)
 
 ::
 
-    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv libcurl4-openssl-dev
+    sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential \
+    libssl-dev libffi-dev python-dev python3-dev python3-venv libcurl4-openssl-dev
     
     python3 -m venv mendelmdenv
     source mendelmdenv/bin/activate
