@@ -79,10 +79,13 @@
 				</table>
 
 				<h3>Genes at Omim</h3>
+				{% for gene in genes_omim %}
+					<a href="?{{ query_string }}&gene_list={{ gene.official_name }}" target="_blank">{{ gene.official_name }}</a>,
+				{% endfor %}
 				<table class="table table-nonfluid table-striped table-bordered table-condensed">
 				{% for gene in genes_omim %}
 					<tr>
-				    <td>{{ gene.official_name}}</td>
+				    <td><a href="?{{ query_string }}&gene_list={{ gene.official_name }}" target="_blank">{{ gene.official_name }}</a></td>
 
 				    <td>
 				    	{% for disease in gene.diseases.all %} 
@@ -94,12 +97,15 @@
 				{% endfor %}
 				</table>
 				<h3>Genes at Clinical Genomics Database</h3>
+				{% for gene in genes_cgd %}
+					<a href="?{{ query_string }}&gene_list={{ gene.GENE }}" target="_blank">{{ gene.GENE }}</a>,
+				{% endfor %}
 				<table  class="table table-nonfluid table-striped table-bordered table-condensed">
 				
 				{% for gene in genes_cgd %}
 					
 					<tr>
-						<td>{{gene.GENE}}</td>
+						<td><a href="?{{ query_string }}&gene_list={{ gene.GENE }}" target="_blank">{{ gene.GENE }}</td>
 						<td> 						
 						{% for phenotype in gene.CONDITIONS.all %} 
 							{{phenotype.name}}<br>
