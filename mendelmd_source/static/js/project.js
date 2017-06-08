@@ -58,16 +58,31 @@ $(function () {
     $( "#cadd-slider-range" ).slider({
             range: true,
             min: 0,
-            max: 20,
+            max: 40,
             step: 0.1,
-            values: [ 0, 20 ],
+            values: [ 0, 40 ],
             slide: function( event, ui ) {  $( "#id_cadd" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
             }
     });
     cadd_value = $("#id_cadd").val();
     if (cadd_value) {
-        value_range =cadd_value.split(" - ");
+        value_range = cadd_value.split(" - ");
         $("#cadd-slider-range").slider('values',[value_range[0], value_range[1]]);
+    }
+    //M-CAP
+    $( "#mcap-slider-range" ).slider({
+            range: true,
+            min: 0,
+            max: 40,
+            step: 0.1,
+            values: [ 0, 40 ],
+            slide: function( event, ui ) {  $( "#id_mcap" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+            }
+    });
+    mcap_value = $("#id_mcap").val();
+    if (mcap_value) {
+        value_range = mcap_value.split(" - ");
+        $("#mcap-slider-range").slider('values',[value_range[0], value_range[1]]);
     }
     //rf score
     $( "#rf-slider-range" ).slider({

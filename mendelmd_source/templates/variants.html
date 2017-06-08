@@ -72,9 +72,10 @@
 			<td style="width: 2%">Sift</td>
 			<td style="width: 3%">PP2</td>
 			<td style="width: 3%">CADD</td>
-			<td style="width: 3%">DANN</td>
-			<td style="width: 3%">CLN</td>
-			<td style="width: 3%">TRAIT</td>
+			<td style="width: 3%">M-CAP</td>
+			<td style="width: 3%">CLINVAR</td>
+			<td style="width: 3%">HI Score</td>
+			<!-- <td style="width: 3%">TRAIT</td> -->
 			<!-- <td style="width: 3%">RF SCORE</td>
 			<td style="width: 3%">ADA SCORE</td> -->
 
@@ -156,10 +157,11 @@
 			
 			<td>{{ variant.sift|floatformat:2 }}</td>
 			<td>{{ variant.polyphen2|floatformat:2 }}</td>
-			<td>{{ variant.CADD_raw|floatformat:2 }}</td>
-			<td>{{ variant.DANN_score|floatformat:2 }}</td>
-			<td>{{ variant.clinvar_clnsig }}</td>
-			<td>{{ variant.clinvar_trait }}</td>
+			<td>{{ variant.cadd|floatformat:2 }}</td>
+			<td>{{ variant.mcap_score|floatformat:2 }} {{ variant.mcap_rankscore }} {{ variant.mcap_pred }} </td>
+			<td> {{ variant.clinvar_rs }} {{ variant.clinvar_clnsig }} {{ variant.clinvar_trait }} {{ variant.clinvar_golden_stars }} </td>
+			<td> {{variant.hi_index_str}}</td>
+			
 			<!-- <td>{{ variant.rf_score|floatformat:2 }}</td>
 			<td>{{ variant.ada_score|floatformat:2 }}</td> -->
 

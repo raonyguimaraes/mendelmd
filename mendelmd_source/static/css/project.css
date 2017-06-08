@@ -166,7 +166,7 @@ ul.nav-tabs{
 a.menu:after, .dropdown-toggle:after {
   content: none;
 }
-#g1000-slider-range, #dbsnp-slider-range, #esp-slider-range, #sift-slider-range, #pp2-slider-range, #mendelmd-slider-range, #hi-slider-range, #cadd-slider-range, #rf-slider-range, #ada-slider-range{
+#g1000-slider-range, #dbsnp-slider-range, #esp-slider-range, #sift-slider-range, #pp2-slider-range, #mendelmd-slider-range, #hi-slider-range, #cadd-slider-range, #mcap-slider-range, #ada-slider-range{
   width:240px;
   margin-top: 20px;
 }

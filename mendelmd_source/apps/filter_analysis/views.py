@@ -150,6 +150,7 @@ def filter_analysis_table(request):
     #POLYPHEN
     filter_by_pp2(request, args)
     filter_by_cadd(request, args)
+    filter_by_mcap(request, args)
     filter_by_rf_score(request, args)
     filter_by_ada_score(request, args)
 
@@ -265,6 +266,7 @@ def filter_analysis(request,query, args, exclude):
     #POLYPHEN
     filter_by_pp2(request, args)
     filter_by_cadd(request, args)
+    filter_by_mcap(request, args)
     filter_by_rf_score(request, args)
     filter_by_ada_score(request, args)
     

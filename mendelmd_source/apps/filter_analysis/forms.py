@@ -179,6 +179,9 @@ class FilterAnalysisForm(forms.Form):
     cadd = forms.CharField(max_length=50, required=False, label="CADD SCORE")
     cadd_exclude = forms.BooleanField(required=False, label="EXCLUDE VARIANTS WITHOUT CADD SCORE")
 
+    mcap = forms.CharField(max_length=50, required=False, label="M-CAP SCORE")
+    mcap_exclude = forms.BooleanField(required=False, label="EXCLUDE VARIANTS WITHOUT M-CAP SCORE")
+
     rf_score = forms.CharField(max_length=50, required=False, label="RF SCORE")
     rf_exclude = forms.BooleanField(required=False, label="EXCLUDE VARIANTS WITHOUT RF SCORE")
 

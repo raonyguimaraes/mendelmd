@@ -501,6 +501,7 @@ def filter_by_cadd(request, args):
         cadd_exclude = request.GET.get('cadd_exclude', '')
         if cadd_exclude == 'on':
             cadd_flag = True
+            # print('CADD Flag on')
         else:
             cadd_flag = False
         cadd = cadd.split(' - ')
@@ -508,9 +509,27 @@ def filter_by_cadd(request, args):
         cadd_max = float(cadd[1])
         # print('CADD', cadd_min, cadd_max)
         if cadd_flag:
-            args.append(Q(CADD_raw__lte=cadd_max) & Q(CADD_raw__gte=cadd_min))
+            args.append(Q(cadd__lte=cadd_max) & Q(cadd__gte=cadd_min))
         else:
-            args.append((Q(CADD_raw__lte=cadd_max) & Q(CADD_raw__gte=cadd_min)) | Q(CADD_raw__isnull=True))
+            args.append((Q(cadd__lte=cadd_max) & Q(cadd__gte=cadd_min)) | Q(cadd__isnull=True))
+
+def filter_by_mcap(request, args):
+    mcap = request.GET.get('mcap', '')
+    if mcap != '':
+        mcap_exclude = request.GET.get('mcap_exclude', '')
+        if mcap_exclude == 'on':
+            mcap_flag = True
+            # print('CADD Flag on')
+        else:
+            mcap_flag = False
+        mcap = mcap.split(' - ')
+        mcap_min = float(mcap[0]) 
+        mcap_max = float(mcap[1])
+        # print('CADD', cadd_min, cadd_max)
+        if mcap_flag:
+            args.append(Q(mcap_score__lte=mcap_max) & Q(mcap_score__gte=mcap_min))
+        else:
+            args.append((Q(mcap_score__lte=mcap_max) & Q(mcap_score__gte=mcap_min)) | Q(mcap_score__isnull=True))
                    
 def filter_by_rf_score(request, args):
     rf_score = request.GET.get('rf_score', '')

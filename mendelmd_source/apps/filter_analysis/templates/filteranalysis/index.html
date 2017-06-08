@@ -26,7 +26,7 @@
         </a>
       </h4>
     </div>
-    <div id="collapseOne" class="panel-collapse collapse {% if not records %}in{% endif %} ">
+    <div id="collapseOne" class="panel-collapse collapse {% if not variants %}in{% endif %}">
       <div class="panel-body">
         {% include "filter_analysis/filter_form_oneclick.html" %}
       </div>
@@ -59,7 +59,7 @@
         </a>
       </h4>
     </div>
-    <div id="collapseThree" class="panel-collapse collapse">
+    <div id="collapseThree" class="panel-collapse collapse {% if variants %}in{% endif %}">
       <div class="panel-body">
        	
 				<table class="table table-nonfluid table-striped table-bordered table-condensed">

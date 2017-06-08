@@ -90,6 +90,8 @@ Installing Mendel,MD
     pip install -r requirements.txt
 
     python manage.py migrate
+
+    wget https://data.omim.org/downloads/ADDYOURKEY/morbidmap.txt -O data/omim/morbidmap.txt
     python manage.py populate
 
     #create yourself a super user
