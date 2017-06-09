@@ -1,6 +1,7 @@
 # Mendel,MD a user-friendly online program for clinical exome and genome analysis
 
 ![Build Status](https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master)
+![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 
 This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
