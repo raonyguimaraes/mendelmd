@@ -1,5 +1,10 @@
 # Mendel,MD a user-friendly online program for clinical exome and genome analysis
 
+.. image:: https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master
+     :target: https://travis-ci.org/raonyguimaraes/mendelmd?branch=master
+     :alt: Build Status
+
+
 This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
 
 Recently added M-CAP scores, filtering for CADD scores and Haploinsufficiency Scores.
