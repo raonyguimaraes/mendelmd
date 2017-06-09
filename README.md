@@ -2,7 +2,7 @@
 
 This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
 
-Recently added M-CAP scores, filtering for CADD and  haploinsufficiency index.
+Recently added M-CAP scores, filtering for CADD scores and Haploinsufficiency Scores.
 
 http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005520
 
