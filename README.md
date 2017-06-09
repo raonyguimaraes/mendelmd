@@ -1,9 +1,9 @@
 # Mendel,MD a user-friendly online program for clinical exome and genome analysis
 
 ![Build Status](https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master)
-![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Read The Docs](https://readthedocs.org/projects/mendelmd/badge/?version=latest)
-![Django](https://www.djangoproject.com/m/img/badges/djangopowered126x54.gif)
+[![BSD License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Read The Docs](https://readthedocs.org/projects/mendelmd/badge/?version=latest)](http://mendelmd.readthedocs.io/en/latest/)
+[![Django](https://www.djangoproject.com/m/img/badges/djangopowered126x54.gif)](https://www.djangoproject.com)
 
 This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
 
