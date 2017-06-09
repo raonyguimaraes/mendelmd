@@ -1,8 +1,5 @@
 # Mendel,MD a user-friendly online program for clinical exome and genome analysis
 
-.. image:: https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master
-     :target: https://travis-ci.org/raonyguimaraes/mendelmd?branch=master
-     :alt: Build Status
 ![Build Status](https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master)
 
 
