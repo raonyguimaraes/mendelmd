@@ -3,6 +3,7 @@
 .. image:: https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master
      :target: https://travis-ci.org/raonyguimaraes/mendelmd?branch=master
      :alt: Build Status
+![Build Status](https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master)
 
 
 This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
