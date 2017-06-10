@@ -73,9 +73,9 @@ $(function () {
     $( "#mcap-slider-range" ).slider({
             range: true,
             min: 0,
-            max: 40,
-            step: 0.1,
-            values: [ 0, 40 ],
+            max: 1,
+            step: 0.005,
+            values: [ 0, 1 ],
             slide: function( event, ui ) {  $( "#id_mcap" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
             }
     });
