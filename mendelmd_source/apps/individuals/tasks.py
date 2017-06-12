@@ -15,7 +15,7 @@ from individuals.models import *
 from variants.models import *
 
 # from mysql_bulk_insert import bulk_insert
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 import os
 import datetime
 from django.core.mail import send_mail

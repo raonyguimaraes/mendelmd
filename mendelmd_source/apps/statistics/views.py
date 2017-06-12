@@ -1,11 +1,9 @@
-from django.shortcuts import render
-
 # Create your views here.
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 # Imaginary function to handle an uploaded file.
 #from somewhere import handle_uploaded_file
 

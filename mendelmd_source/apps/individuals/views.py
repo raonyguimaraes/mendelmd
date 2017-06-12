@@ -504,7 +504,7 @@ def create_group(request):
 @login_required
 def view_group(request, group_id):
     group = get_object_or_404(Group, pk=group_id)
-    return render_to_response('groups/view_group.html', {'group': group}, context_instance=RequestContext(request))
+    return render(request, 'groups/view_group.html', {'group': group})
 
 class GroupDeleteView(DeleteView):
     model = Group

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect, render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.db.models import Count, Sum, Avg, Min, Max
 from django.views.generic import ListView, DetailView
@@ -390,11 +390,6 @@ def populate(request):
     messages.add_message(request, messages.INFO, "Finished filling genes")
     return redirect('/databases/')
 
-#@login_required
-#def list(request):
-#    genes = Gene.objects.all()
-#    return render_to_response('genes/list.html', {'genes': genes}, context_instance=RequestContext(request))
-
 
 @login_required
 def view(request, gene_name):
@@ -466,7 +461,7 @@ def view(request, gene_name):
 #    protein_impact = Variant.objects.filter(gene_name=gene_name).values_list('impact').annotate(total=Count('impact')).order_by('impact')
 #    print gene.count()
     
-    return render_to_response('genes/view.html', {'gene_object':gene_object,
+    return render(request, 'genes/view.html', {'gene_object':gene_object,
                                                   'variants_by_individuals': variants_by_individuals,
                                                   'variants_summary':variants_summary,
                                                   'dna_variation':dna_variation, 
@@ -477,7 +472,7 @@ def view(request, gene_name):
                                                   'individuals_functional_class':individuals_functional_class,
                                                   'impact':impact,
                                                   'impact_classes':impact_classes,
-                                                  'individuals_impact':individuals_impact}, context_instance=RequestContext(request))
+                                                  'individuals_impact':individuals_impact})
 
 
 
@@ -495,7 +490,7 @@ def creategroup(request):
             return HttpResponseRedirect('/filteranalysis/')
     else:
         form = GeneGroupForm()
-    return render_to_response('genes/creategenegroup.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'genes/creategenegroup.html', {'form': form})
 
     
 @login_required
@@ -510,7 +505,7 @@ def geneontology(request, go_id=''):
     go_ids = ['GO:0003674', 'GO:0005575', 'GO:0008150']
     goterms = GoTerm.objects.filter(goid__in = go_ids).order_by('name')
     
-    return render_to_response('genes/geneontology.html', {'goterms':goterms}, context_instance=RequestContext(request))
+    return render(request, 'genes/geneontology.html', {'goterms':goterms})
 
     
 def get_all_children(goterm):
@@ -568,8 +563,7 @@ def geneontology_view(request, go_id=''):
     print(len(genes))  
     
     
-    return render_to_response('genes/geneontology_view.html', {'goterm':goterm, 'children':children, 'parents':parents, 'genes':genes}, context_instance=RequestContext(request))
-
+    return render(request, 'genes/geneontology_view.html', {'goterm':goterm, 'children':children, 'parents':parents, 'genes':genes})
 
 
 @staff_member_required

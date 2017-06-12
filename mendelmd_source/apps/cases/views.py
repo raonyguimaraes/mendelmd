@@ -21,7 +21,6 @@ from django.core.urlresolvers import reverse
 def cases_list(request):
     print('Hello')
     cases = Case.objects.all().order_by('id')
-    # return render_to_response('cases/list.html', {'cases': cases}, context_instance=RequestContext(request))
 
     # latest_cases_list = Question.objects.all().order_by('-pub_date')[:5]
     context = {'cases': cases}

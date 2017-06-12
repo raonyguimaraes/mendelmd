@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -349,7 +349,7 @@ def family_analysis(request):
         genes_cgd = []
         
         form = FilterAnalysisForm()                    
-    return render_to_response('filter_analysis/index.html', 
+    return render(request, 'filter_analysis/index.html', 
         {'variants':variants, 
         'form':form, 
         'summary':summary, 
@@ -359,7 +359,7 @@ def family_analysis(request):
         'genes':genes, 
         'genes_hgmd':genes_hgmd,
         'genes_omim':genes_omim,
-        'genes_cgd':genes_cgd}, context_instance=RequestContext(request))
+        'genes_cgd':genes_cgd})
 
 
 
@@ -883,7 +883,7 @@ def oldfamily_analysis(request):
     diseases = serializers.serialize("json", diseases)
 
         
-    return render_to_response('filter_analysis/family_analysis.html', {'variants':variants, 'form':form, 'summary':summary, 'query_string':query_string, 'diseases':diseases, 'filteranalysis':filteranalysis, 'filterconfigs':filterconfigs}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/family_analysis.html', {'variants':variants, 'form':form, 'summary':summary, 'query_string':query_string, 'diseases':diseases, 'filteranalysis':filteranalysis, 'filterconfigs':filterconfigs})
 
     
 
@@ -919,7 +919,7 @@ def oneclick(request):
             # return HttpResponseRedirect('/filter_analysis/?%s' % (filterstring))
             return redirect(reverse('filter_analysis')+'?'+filterstring)
 
-    return render_to_response('filter_analysis/oneclick.html', {'form':form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/oneclick.html', {'form':form})
 
         
 @login_required
@@ -990,7 +990,7 @@ def create(request):
     else:
         form = Filter(initial={'filterstring': filterstring})
         
-    return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/createfilter.html', {'form': form})
 
 
 @login_required
@@ -1012,7 +1012,7 @@ def family_analysis_create_filter(request):
     else:
         form = FamilyFilter(initial={'filterstring': filterstring})
         
-    return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/createfilter.html', {'form': form})
 
 
 @login_required
@@ -1039,6 +1039,4 @@ def createconfig(request):
     else:
         form = Filter(initial={'filterstring': filterstring})
         
-    return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
-
-
+    return render(request, 'filter_analysis/createfilter.html', {'form': form})

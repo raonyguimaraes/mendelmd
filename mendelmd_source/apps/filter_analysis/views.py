@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -224,8 +224,8 @@ def filter_analysis_table(request):
 
     table = table_list
 
-    return render_to_response('filter_analysis/table.html', 
-        {'table':table}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/table.html', 
+        {'table':table})
 
 
 
@@ -894,7 +894,7 @@ def create(request):
     else:
         form = Filter(initial={'filterstring': filterstring})
         
-    return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/createfilter.html', {'form': form})
 
 
 def family_analysis_create_filter(request):
@@ -915,7 +915,7 @@ def family_analysis_create_filter(request):
     else:
         form = FamilyFilter(initial={'filterstring': filterstring})
         
-    return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/createfilter.html', {'form': form})
 
 
 def createconfig(request):
@@ -941,6 +941,6 @@ def createconfig(request):
     else:
         form = Filter(initial={'filterstring': filterstring})
         
-    return render_to_response('filter_analysis/createfilter.html', {'form': form}, context_instance=RequestContext(request))
+    return render(request, 'filter_analysis/createfilter.html', {'form': form})
 
 
