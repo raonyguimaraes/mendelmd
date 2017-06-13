@@ -23,6 +23,22 @@ You need to register at OMIM: http://omim.org/downloads and submit a download re
 
 After obtaining this file you will need to put it in the folder: "mendelmd_source/data/omim/".
 
+
+Installation of docker and docker-compose on Ubuntu 16.04 LTS
+=============================================================
+
+    sudo apt-get update
+    sudo apt-get install software-properties-common apt-transport-https
+    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+    sudo apt update
+    sudo apt-get install -y docker-engine
+    sudo usermod -aG docker $(whoami)
+    exec sudo su ${USER}
+    sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
+    sudo chmod +x /usr/local/bin/docker-compose
+
+
 Running Mendel,MD using Docker Compose
 ======================================
 
@@ -31,6 +47,9 @@ Running Mendel,MD using Docker Compose
     wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
     docker-compose up
 
+Also see how to install it locally without docker-compose here: 
+
+http://mendelmd.readthedocs.io/en/latest/installation.html#manual-installation
 
 Requirements
 ============
@@ -46,16 +65,3 @@ OR
 * Docker
 * Docker Compose
 
-Installation of docker and docker-compose on Ubuntu 16.04 LTS
-=============================================================
-
-    sudo apt-get update
-    sudo apt-get install software-properties-common apt-transport-https
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
-    sudo apt update
-    sudo apt-get install -y docker-engine
-    sudo usermod -aG docker $(whoami)
-    exec sudo su ${USER}
-    sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
-    sudo chmod +x /usr/local/bin/docker-compose
