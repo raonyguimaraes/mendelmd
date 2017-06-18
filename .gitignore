@@ -30,5 +30,7 @@ mendelmd_source/data/postgresql_data/*
 morbidmap.txt
 celerybeat.pid
 loaded.txt
+fixtures/
+mendelmd_source/mendelmdenv/
 mendelmdenv/*
 ann_sample
