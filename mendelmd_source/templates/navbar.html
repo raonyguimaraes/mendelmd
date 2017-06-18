@@ -40,6 +40,20 @@
             </li>
 
             <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
+            <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
+            <li><a class="github-button" href="https://github.com/raonyguimaraes/mendelmd" data-show-count="true" aria-label="Star raonyguimaraes/mendelmd on GitHub">Star</a></li>
+            <li><a class="github-button" href="https://github.com/raonyguimaraes/mendelmd/fork" data-show-count="true" aria-label="Fork raonyguimaraes/mendelmd on GitHub">Fork</a></li>
+
+<li><a class="twitter-share-button"
+  	href="https://twitter.com/share"
+  	data-size="large"
+	  data-text="Mendel,MD: A user-friendly open-source web tool for the diagnosis of patients with Mendelian disorders "
+	  data-url="https://mendelmd.org"
+	  data-hashtags="mendelmd"
+	  data-related="twitterapi,twitter">
+	Tweet
+	</a></li>
+
             {% if request.user.is_staff %}
               <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
               <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
