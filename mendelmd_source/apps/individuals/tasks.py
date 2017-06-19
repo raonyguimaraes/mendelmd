@@ -800,12 +800,12 @@ def PopulateVariants(individual_id):
 
     message = """The individual %s was inserted to the database with success!
             Now you can check the variants on the link: \n
-            http://mendel.medicina.ufmg.br/individuals/view/%s
+            http://mendelmd.org/individuals/view/%s
 
                 """ % (individual.name, individual.id)
     
-    # send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
-    #          ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)        
+    send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
+              ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)        
     print('Individual %s Populated!' % (individual.id))
     os.system('echo "Individual %s Populated! %s"' % (individual.name, individual.insertion_time))
 
