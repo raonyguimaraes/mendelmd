@@ -1,6 +1,7 @@
 from django.conf.urls import *
 
 from individuals.views import IndividualDeleteView, GroupDeleteView
+from django.contrib.admin.views.decorators import staff_member_required
 
 from . import views
 
@@ -9,7 +10,7 @@ urlpatterns = [
     url(r'^edit/(?P<individual_id>[0-9]+)/$', views.edit, name='individual_edit'),
     url(r'^view/(?P<individual_id>\d+)/$', views.view, name='individual_view'),
     url(r'^browse/(?P<individual_id>\d+)/$', views.browse, name='individual_browse'),
-    url(r'^delete/(?P<pk>\d+)$', IndividualDeleteView.as_view(), {}, 'individual_delete'),
+    url(r'^delete/(?P<pk>\d+)$', staff_member_required(IndividualDeleteView.as_view()), {}, 'individual_delete'),
     url(r'^annotate/(?P<individual_id>\d+)/$', views.annotate, name='individual_annotate'),
     url(r'^populate/(?P<individual_id>\d+)/$', views.populate, name='individual_populate'),
 	url(r'^populate_mongo/(?P<individual_id>\d+)/$', views.populate_mongo, name='individual_populate_mongo'),
