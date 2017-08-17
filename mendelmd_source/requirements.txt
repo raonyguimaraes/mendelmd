@@ -12,3 +12,4 @@ pyvcf
 celery<4.0
 django-celery>=3.1.15
 django-appconf
+gunicorn
