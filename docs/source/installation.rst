@@ -6,10 +6,9 @@ An online tool for organizing, annotating, filtering and diagnosing patients wit
 Requirements
 ============
 
--  Python 3.4+
--  Perl 5.8+
--  Java 1.8
--  Ubuntu LTS 16.04
+-  Python 2.7 or 3.6+
+-  Perl 5+
+-  Java 1.7+
 
 Other Libraries Needed
 ======================
@@ -19,12 +18,11 @@ Other Libraries Needed
 OMIM Data
 =========
 
-You need to register an account at OMIM: http://omim.org/downloads and
+You will need to register an account in OMIM: http://omim.org/downloads and
 submit a download request to get a file named "morbidmap".
 
 After obtaining this file you need to put it inside this folder:
 "mendelmd\_source/data/omim/".
-
 
 Docker
 ======
@@ -41,7 +39,6 @@ This should take a few hours to complete for the first time.
 
 Manual Installation
 ===================
-
 
 Installing PostgreSQL Database
 ==============================
