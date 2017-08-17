@@ -29,6 +29,7 @@ import pickle
 
 from collections import OrderedDict
 
+
 import json
 import vcf
 
@@ -807,7 +808,7 @@ def PopulateVariants(individual_id):
             http://mendelmd.org/individuals/view/%s
                 """ % (individual.name, individual.id)
 
-    if individual.user.email:
+    if individual.user:
         send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
               ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)
     else:

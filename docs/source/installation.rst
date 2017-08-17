@@ -59,13 +59,13 @@ Installation on Ubuntu 16.04 LTS (tested)
 
     sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential \
     libssl-dev libffi-dev python-dev python3-dev python3-venv libcurl4-openssl-dev
-    
+
     python3 -m venv mendelmdenv
     source mendelmdenv/bin/activate
-    
+
     git clone https://github.com/raonyguimaraes/mendelmd.git
     cd mendelmd/mendelmd_source
-    
+
 
 Installing Pynnotator
 =====================
@@ -142,4 +142,54 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
     wget https://data.omim.org/downloads/ADDYOURKEY/morbidmap.txt -O /tmp/morbidmap.txt
     wget https://raw.github.com/raonyguimaraes/mendelmd/master/scripts/deployment_centos7_redhat7.sh
     bash deployment_centos7_redhat7.sh
+
+Uhuu Deployed using:
+https://github.com/celery/celery/blob/3.1/extra/generic-init.d/celeryd
+and
+
+cd /etc/default/
+root@ip-172-31-90-232:/etc/default# cat celeryd
+# Names of nodes to start
+#   most people will only start one node:
+CELERYD_NODES="worker1"
+#   but you can also start multiple and configure settings
+#   for each in CELERYD_OPTS
+#CELERYD_NODES="worker1 worker2 worker3"
+#   alternatively, you can specify the number of nodes to start:
+#CELERYD_NODES=10
+
+# Absolute or relative path to the 'celery' command:
+CELERY_BIN="/projects/mendelmdenv/bin/celery"
+#CELERY_BIN="/virtualenvs/def/bin/celery"
+
+# App instance to use
+# comment out this line if you don't use an app
+CELERY_APP="mendelmd"
+# or fully qualified:
+#CELERY_APP="proj.tasks:app"
+
+# Where to chdir at start.
+CELERYD_CHDIR="/projects/mendelmd/mendelmd_source"
+
+# Extra command-line arguments to the worker
+CELERYD_OPTS="--time-limit=300 --concurrency=2 -Q annotation,insertion"
+# Configure node-specific settings by appending node name to arguments:
+#CELERYD_OPTS="--time-limit=300 -c 8 -c:worker2 4 -c:worker3 2 -Ofair:worker1"
+
+# Set logging level to DEBUG
+#CELERYD_LOG_LEVEL="DEBUG"
+
+# %n will be replaced with the first part of the nodename.
+CELERYD_LOG_FILE="/var/log/celery/%n%I.log"
+CELERYD_PID_FILE="/var/run/celery/%n.pid"
+
+# Workers should run as an unprivileged user.
+#   You need to create this user manually (or you can choose
+#   a user/group combination that already exists (e.g., nobody).
+CELERYD_USER="ubuntu"
+CELERYD_GROUP="www-data"
+
+# If enabled pid and log directories will be created if missing,
+# and owned by the userid/group configured.
+CELERY_CREATE_DIRS=1
 

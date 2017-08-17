@@ -21,10 +21,16 @@
             <p>This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders. </p>
 
             <p><a href="{% url 'account_signup' %}" class="btn btn-primary btn-large">Sign Up »</a> or <a href="{% url 'individual_create' %}" class="btn btn-primary btn-large">Upload a VCF</a></p>
+
+            <li><a class="github-button" href="https://github.com/raonyguimaraes/mendelmd/fork" data-show-count="true" aria-label="Fork raonyguimaraes/mendelmd on GitHub">Fork</a></li>
+
           </div>
          </div>
         </div>
         <div class="col-md-6">
+
+           <iframe src="https://player.vimeo.com/video/229202767" width="640" height="317" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
            <center><a href="http://mendel.medicina.ufmg.br"><img src="{{ STATIC_URL }}img/lgc2-1024x724.jpeg"></a></center>
         </div>
 
@@ -44,9 +50,5 @@
        </div>
       </div>
     </div>
-    <div class="row">
-        <div class="center-block" style="width:900px;">
-          <iframe src="https://player.vimeo.com/video/179956321?byline=0&portrait=0" width="900" height="413" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-      </div>
 
 {% endblock %}
