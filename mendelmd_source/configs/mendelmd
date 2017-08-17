@@ -1,0 +1,13 @@
+server {
+    listen 80;
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /projects/mendelmd/mendelmd_source;
+    }
+
+    location / {
+        include proxy_params;
+        client_max_body_size 100G;
+        proxy_pass http://unix:/projects/mendelmd/mendelmd_source/mendelmd.sock;
+    }
+}

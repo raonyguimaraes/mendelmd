@@ -1,49 +1,44 @@
-# Edit the options in this file to match your projects environment.
-# See http://ask.github.com/celery/cookbook/daemonizing.html for the complete
-# documentation on the options.
+# Names of nodes to start
+#   most people will only start one node:
+CELERYD_NODES="worker1"
+#   but you can also start multiple and configure settings
+#   for each in CELERYD_OPTS
+#CELERYD_NODES="worker1 worker2 worker3"
+#   alternatively, you can specify the number of nodes to start:
+#CELERYD_NODES=10
 
-# WARNING: This script is only designed to run the worker(s) for a single
-# project. If you need to start workers for multiple projects you should
-# consider using supervisor.
-# Examples can be found in /usr/share/doc/python-celery/supervisord/
+# Absolute or relative path to the 'celery' command:
+CELERY_BIN="source /projects/mendelmdenv/bin/activate && /projects/mendelmdenv/bin/celery"
+#CELERY_BIN="/virtualenvs/def/bin/celery"
 
-# Change this to true when done to enable the init.d script.
-# Default: false
-ENABLED="true"
-
-# Name of nodes to start
-# here we have a single node
-CELERYD_NODES="w1"
-# or we could have three nodes:
-#CELERYD_NODES="w1 w2 w3"
+# App instance to use
+# comment out this line if you don't use an app
+CELERY_APP="mendelmd"
+# or fully qualified:
+#CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/lgc/mendelmd_master/mendelmd_source/"
+CELERYD_CHDIR="/projects/mendelmd/mendelmd_source"
 
-CELERYD="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryd"
+# Extra command-line arguments to the worker
+CELERYD_OPTS="--time-limit=300 --concurrency=2 -Q annotation,insertion"
+# Configure node-specific settings by appending node name to arguments:
+#CELERYD_OPTS="--time-limit=300 -c 8 -c:worker2 4 -c:worker3 2 -Ofair:worker1"
 
-# Python interpreter from environment.
-ENV_PYTHON="/home/raony/.virtualenvs/mendelmd/bin/python"
+# Set logging level to DEBUG
+#CELERYD_LOG_LEVEL="DEBUG"
 
-# How to call "manage.py celeryd_multi"
-CELERYD_MULTI="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryd_multi"
-
-# How to call "manage.py celeryctl"
-CELERYCTL="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryctl"
-
-# Extra arguments to celeryd
-CELERYD_OPTS="--time-limit=72000 --concurrency=4"
-
-
-# Name of the celery config module.
-CELERY_CONFIG_MODULE="celeryconfig"
-
-# %n will be replaced with the nodename.
-CELERYD_LOG_FILE="/var/log/celery/%n.log"
+# %n will be replaced with the first part of the nodename.
+CELERYD_LOG_FILE="/var/log/celery/%n%I.log"
+CELERYD_PID_FILE="/var/run/celery/%n.pid"
 
 # Workers should run as an unprivileged user.
-CELERYD_USER="celery"
-CELERYD_GROUP="celery"
+#   You need to create this user manually (or you can choose
+#   a user/group combination that already exists (e.g., nobody).
+CELERYD_USER="ubuntu"
+CELERYD_GROUP="www-data"
 
-export DJANGO_SETTINGS_MODULE="mendelmd.settings"
-
+# If enabled pid and log directories will be created if missing,
+# and owned by the userid/group configured.
+CELERY_CREATE_DIRS=1
+echo $PATH
