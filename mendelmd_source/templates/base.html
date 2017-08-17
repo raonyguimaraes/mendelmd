@@ -25,6 +25,11 @@
     <link rel="icon" href="{{ STATIC_URL }}/img/favicon.ico">
 
     <title>Mendel,MD - Cloud Based Genome Analysis</title>
+    <meta property="og:url"           content="https://mendelmd.org" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="Mendel,MD - Cloud Based Genome Analysis" />
+    <meta property="og:description"   content="Mendel,MD an online tool for diagnosing patients with Mendelian Disorders" />
+    <meta property="og:image"         content="https://mendelmd.org/static/img/Gregor_Mendel_small.png" />
 
     {% block css %}
 
@@ -32,6 +37,7 @@
 
     <!-- Custom styles for this template -->
 
+    
     <link href="{% static "bootstrap-3.2.0-dist/css/bootstrap.min.css" %}" rel="stylesheet">
     <link href="{% static "select2/css/select2.min.css" %}" type="text/css" media="screen" rel="stylesheet" />
     <link rel="stylesheet" href="{% static "jquery-ui-1.12.1/jquery-ui.min.css" %}">
@@ -54,6 +60,15 @@
   </head>
 
   <body>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10&appId=116617345618747";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
     {% include "navbar.html" %}
 
