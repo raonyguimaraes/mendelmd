@@ -58,7 +58,7 @@ Requirements
 * Python 3.4+
 * Perl 5.8+
 * Java 1.8
-* Ubuntu LTS 16.04
+* Ubuntu LTS 16.04/CentOS 7 or Red Hat 7
 
 OR
 
