@@ -7,7 +7,7 @@ import os
 script_dir = os.getcwd()
 current_dir = os.getcwd().split('/')
 #remove just one path and add mendel,md source
-# current_dir[-1] = 'mendelmd_source'
+
 del current_dir[-1]
 proj_path = "/".join(current_dir)
 # This is so Django knows where to find stuff.

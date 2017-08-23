@@ -9,7 +9,7 @@ cd /projects
 sudo chown $USER .
 
 git clone https://github.com/raonyguimaraes/mendelmd
-cd mendelmd/mendelmd_source/
+cd mendelmd/
 
 #set up database
 sudo apt-get install -y libpq-dev postgresql
@@ -35,13 +35,13 @@ server {
     listen 80;
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        root /projects/mendelmd/mendelmd_source;
+        root /projects/mendelmd/;
     }
 
     location / {
         include proxy_params;
         client_max_body_size 100G;
-        proxy_pass http://unix:/projects/mendelmd/mendelmd_source/mendelmd.sock;
+        proxy_pass http://unix:/projects/mendelmd/mendelmd.sock;
     }
 }
 EOF'
@@ -54,8 +54,8 @@ After=network.target
 [Service]
 User=raony
 Group=www-data
-WorkingDirectory=/projects/mendelmd/mendelmd_source
-ExecStart=/projects/mendelmd/mendelmd_source/mendelmdenv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd_source/mendelmd.sock mendelmd.wsgi:application
+WorkingDirectory=/projects/mendelmd/
+ExecStart=/projects/mendelmd/mendelmdenv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd.sock mendelmd.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

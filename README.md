@@ -21,7 +21,7 @@ OMIM Data
 
 You need to register at OMIM: http://omim.org/downloads and submit a download request to get a file named "morbidmap.txt".
 
-After obtaining this file you will need to put it in the folder: "mendelmd_source/data/omim/".
+After obtaining this file you will need to put it in the folder: "data/omim/".
 
 
 Installation of docker and docker-compose on Ubuntu 16.04 LTS
@@ -43,7 +43,7 @@ Running Mendel,MD using Docker Compose
 ======================================
 
     git clone https://github.com/raonyguimaraes/mendelmd/
-    cd mendelmd/mendelmd_source/
+    cd mendelmd/
     wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
     docker-compose up
 

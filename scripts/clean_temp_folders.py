@@ -1,4 +1,4 @@
-genomes_path = '../mendelmd_source/genomes'
+genomes_path = '../genomes'
 
 #walk in path getting the name fo the folder
 import os

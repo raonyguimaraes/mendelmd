@@ -22,7 +22,7 @@ You will need to register an account in OMIM: http://omim.org/downloads and
 submit a download request to get a file named "morbidmap".
 
 After obtaining this file you need to put it inside this folder:
-"mendelmd\_source/data/omim/".
+"data/omim/".
 
 Docker
 ======
@@ -64,7 +64,7 @@ Installation on Ubuntu 16.04 LTS (tested)
     source mendelmdenv/bin/activate
 
     git clone https://github.com/raonyguimaraes/mendelmd.git
-    cd mendelmd/mendelmd_source
+    cd mendelmd/
 
 
 Installing Pynnotator
@@ -143,12 +143,12 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
     wget https://raw.github.com/raonyguimaraes/mendelmd/master/scripts/deployment_centos7_redhat7.sh
     bash deployment_centos7_redhat7.sh
 
-Uhuu Deployed using:
-https://github.com/celery/celery/blob/3.1/extra/generic-init.d/celeryd
-and
 
-cd /etc/default/
-root@ip-172-31-90-232:/etc/default# cat celeryd
+Celery in Production
+====================
+https://github.com/celery/celery/blob/3.1/extra/generic-init.d/celeryd
+
+# cat celeryd
 # Names of nodes to start
 #   most people will only start one node:
 CELERYD_NODES="worker1"
@@ -169,7 +169,7 @@ CELERY_APP="mendelmd"
 #CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/projects/mendelmd/mendelmd_source"
+CELERYD_CHDIR="/projects/mendelmd/"
 
 # Extra command-line arguments to the worker
 CELERYD_OPTS="--time-limit=300 --concurrency=2 -Q annotation,insertion"

@@ -150,4 +150,4 @@ def clean_variants():
 def docs():
     with lcd('../docs'):
         local('make html')
-        local('cp -r _build/html/* ../mendelmd_source/static/docs/')
+        local('cp -r _build/html/* ../static/docs/')

@@ -18,7 +18,7 @@ CELERY_APP="mendelmd"
 #CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/projects/mendelmd/mendelmd_source"
+CELERYD_CHDIR="/projects/mendelmd/"
 
 # Extra command-line arguments to the worker
 CELERYD_OPTS="--time-limit=300 --concurrency=2 -Q annotation,insertion"

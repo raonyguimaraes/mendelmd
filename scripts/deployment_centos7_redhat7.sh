@@ -19,7 +19,7 @@ sudo mkdir /projects
 cd /projects
 sudo chown ec2-user .
 git clone https://github.com/raonyguimaraes/mendelmd
-cd mendelmd/mendelmd_source/
+cd mendelmd/
 cp /tmp/morbidmap.txt data/omim/
 cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
 docker-compose build
@@ -32,7 +32,7 @@ Description=Mendelmd
 After=network.target docker.service
 [Service]
 Type=simple
-WorkingDirectory=/projects/mendelmd/mendelmd_source
+WorkingDirectory=/projects/mendelmd
 ExecStart=/usr/bin/docker-compose -f docker-compose.yml up
 ExecStop=/usr/bin/docker-compose -f docker-compose.yml down
 Restart=always
