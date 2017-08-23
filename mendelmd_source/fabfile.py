@@ -1,4 +1,4 @@
-from fabric.api import * 
+from fabric.api import *
 from fabric.api import run
 #comment
 env.user  = 'raony'
@@ -20,16 +20,14 @@ def backup_users():
 
 def reset_migrations():
 
-    models = ['individuals', 'variants', 'diseases', 'genes']
+    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes']
     for model in models:
-        local('rm -rf %s/migrations' % (model))
-
+        local('rm -rf apps/%s/migrations' % (model))
     for model in models:
         local('python manage.py makemigrations %s' % (model))
 
     local('python manage.py migrate')
-    
-    
+
 def resetdb():
     # local('rm db.sqlite3')
     local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')
@@ -39,28 +37,28 @@ def resetdb():
     # local('python manage.py loaddata fixtures/usergroups.json')
     #load genes, diseases, pathways
 
-    
+
     # local('python manage.py createsuperuser')
     #local('python manage.py runserver mendel.medicina.ufmg.br:8001')
-    
+
 
 def make_doc():
     with lcd('../docs'):
         local('make html')
         local('cp -rf _build/html/* /var/www/mendelmd_static/docs/')
-    
+
 #def backup():
 #    run(' mysqldump -u root -p mendelmd14 | gzip > db_backup/mendelmd151012.sql.gz ')
 def create_sample_data():
     #backup all users
 #    with cd('/projects/www/mendelmd14'):
-#        
+#
 #        run('mysqldump -u root -p mendelmd14 auth_user account_account profiles_profile | gzip > db_backup/users.sql.gz')
 #        #get sample from individuals
 #        run('mysqldump -u root -p --where="individual_id < 16" mendelmd14 individuals_variant | gzip > db_backup/individual_variants_sample.sql.gz')
 #        run('mysqldump -u root -p --where="id < 16" mendelmd14 individuals_individual | gzip > db_backup/individuals_sample.sql.gz')
-    
-    
+
+
     get('/projects/www/mendelmd14/db_backup/users.sql.gz', '/home/raony/sites/mendelmd14/db_backup/')
     get('/projects/www/mendelmd14/db_backup/individual_variants_sample.sql.gz', '/home/raony/sites/mendelmd14/db_backup/')
     get('/projects/www/mendelmd14/db_backup/individuals_sample.sql.gz', '/home/raony/sites/mendelmd14/db_backup/')
@@ -77,18 +75,18 @@ def make_sample_data():
 def load_sample_data():
     local('psql -U raony -d mendelmd < db_sample/mendelmd210313_sample.sql')
     local('psql -U raony -d mendelmd -f db_sample/restore_db.sql')
-    
+
 
 def loaddata():
     #Load user and sample from individuals
     local('gunzip < db_backup/users.sql.gz | mysql -u root -p mendelmd')
     local('gunzip < db_backup/individual_variants_sample.sql.gz | mysql -u root -p mendelmd ')
     local('gunzip < db_backup/individuals_sample.sql.gz | mysql -u root -p mendelmd ')
-    
-    
+
+
 #    run(' gunzip < db_backup/mendelmd151012.sql.gz | mysql -u root -p mendelmd14 ')
 #    local("""python manage.py loaddata db_backup/all_without_individuals.json.gz""")
-    
+
 def local_reset():
 	#delete database
 
@@ -109,21 +107,21 @@ def local_reset():
     #ready to go!
 
     #backup db?
-    #python manage.py dumpdata -v 2 --format=json users auth account > user_data.json      
-#  
+    #python manage.py dumpdata -v 2 --format=json users auth account > user_data.json
+#
 #    local('python manage.py flush --noinput')
-    
+
     #local('python manage.py syncdb --noinput')
 #    local('python manage.py runserver')
-    
+
 def requirements():
     local('pip install -r requirements.txt')
     #local('python filetransfers/setup.py install')
     #local('python wikitools-1.1.1/setup.py install')
     #local('easy_install fisher')
-    
-    
-    
+
+
+
 def backup_diseases():
     local('python manage.py dumpdata ')
 def run_local():
@@ -138,7 +136,7 @@ def deploy(message="changes (fabric)"):
 #        run('git reset --hard HEAD')
         run('git pull')
 #        run('source virtualenvwrapper.sh && workon genome_research && python manage.py syncdb --noinput')
-        
+
         run('sudo /etc/init.d/apache2 restart')
 
 def clean_individuals():

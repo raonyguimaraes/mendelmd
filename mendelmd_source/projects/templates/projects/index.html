@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Projects</h1>
+
+<a href="{% url 'projects-create' %}" type="button" class="btn btn-success btn-lg">
+<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create a Project
+</a>
+
+<table class="table">
+<thead>
+<tr>
+    <th>Name</th>
+</tr>
+</thead>
+<tbody>
+{% for project in projects %}
+<tr>
+    <td><a href="{% url 'projects-view' project.id %}">{{project.name}}</a></td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+{% endblock content %}

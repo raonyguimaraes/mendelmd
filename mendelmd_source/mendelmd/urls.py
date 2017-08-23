@@ -16,28 +16,27 @@ urlpatterns = [
     # url(r'^$', 'mendelmd.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
-	
+
 	url(r'^docs/$', TemplateView.as_view(template_name='pages/docs.html'), name="docs"),
 
 
     url(r'^admin/', include(admin.site.urls)),
-	
+
 	url(r'^accounts/', include('allauth.urls')),
-    
-	url(r'^dashboard/', include('apps.dashboard.urls')),
-	url(r'^individuals/', include('apps.individuals.urls')),
-    url(r'^diseases/', include('apps.diseases.urls')),
-    url(r'^genes/', include('apps.genes.urls')),
-    url(r'^variants/', include('apps.variants.urls')),
-    url(r'^cases/', include('apps.cases.urls')),
-    url(r'^filter_analysis/', include('apps.filter_analysis.urls')),
+
+	url(r'^dashboard/', include('dashboard.urls')),
+	url(r'^individuals/', include('individuals.urls')),
+    url(r'^diseases/', include('diseases.urls')),
+    url(r'^genes/', include('genes.urls')),
+    url(r'^variants/', include('variants.urls')),
+    url(r'^cases/', include('cases.urls')),
+    url(r'^filter_analysis/', include('filter_analysis.urls')),
     # url(r'^pathway_analysis/', include('apps.pathway_analysis.urls')),
-    url(r'^statistics/', include('apps.statistics.urls')),
-    url(r'^databases/', include('apps.databases.urls')),
-
-
+    url(r'^statistics/', include('statistics.urls')),
+    url(r'^databases/', include('databases.urls')),
+    url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
-
+    url(r'^files/', include('files.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
