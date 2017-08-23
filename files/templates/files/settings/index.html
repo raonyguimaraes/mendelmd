@@ -15,7 +15,7 @@
 {% for s3_setting in s3_settings %}
 <tr>
     <td>
-        <a href="{% url '' s3_setting.id %}">{{s3_setting.name}}</a>
+        <a href="{% url 'files-settings-view' s3_setting.id %}">{{s3_setting.name}}</a>
     </td>
 </tr>
 {% endfor %}

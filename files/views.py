@@ -20,9 +20,12 @@ def create_s3_credential(request):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            return redirect('files-index')
+            return redirect('files-settings-index')
     context = {'form': form}
-    return render(request, 'files/create-s3-credential.html', context)
+    return render(request, 'files/settings/create-s3-credential.html', context)
 
 def settings_view(request, settings_id):
     print('Hello')
+
+def import_files():
+    print('Hello World')
