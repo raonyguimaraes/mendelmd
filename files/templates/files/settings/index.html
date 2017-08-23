@@ -9,6 +9,7 @@
 <thead>
 <tr>
     <th>Name</th>
+    <th>Options</th>
 </tr>
 </thead>
 <tbody>
@@ -17,6 +18,7 @@
     <td>
         <a href="{% url 'files-settings-view' s3_setting.id %}">{{s3_setting.name}}</a>
     </td>
+    <td><a href="{% url 'files-settings-s3-update' s3_setting.id %}">Edit</a></td>
 </tr>
 {% endfor %}
 </tbody>

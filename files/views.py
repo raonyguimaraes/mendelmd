@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.core.management import call_command
 
 from .models import File, S3Credential
 from .forms import S3CredentialForm
@@ -27,5 +30,13 @@ def create_s3_credential(request):
 def settings_view(request, settings_id):
     print('Hello')
 
-def import_files():
+
+class S3CredentialUpdate(UpdateView):
+    model = S3Credential
+    fields = ['name', 'access_key', 'secret_key', 'buckets']
+
+
+def import_files(request):
     print('Hello World')
+    call_command('import_files')
+    return redirect('files-index')

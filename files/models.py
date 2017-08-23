@@ -8,7 +8,8 @@ class File(models.Model):
         string = "%s/upload/%s/%s" % (settings.BASE_DIR, self.id, filename)
         return string
     name = models.TextField(max_length=50)
-    size = models.TextField(null=True, blank=True)
+    size = models.IntegerField(null=True, blank=True)
+    last_modified = models.DateTimeField(null=True, blank=True)
     file_type = models.TextField(null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     local_file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
@@ -18,6 +19,8 @@ class File(models.Model):
     modified_date = models.DateTimeField(null=True, blank=True)
 
 class S3Credential(models.Model):
+    def get_absolute_url(self):
+        return "/files/settings/"
     name = models.CharField(max_length=255)
     access_key = models.CharField(max_length=255)
     secret_key = models.CharField(max_length=255)
