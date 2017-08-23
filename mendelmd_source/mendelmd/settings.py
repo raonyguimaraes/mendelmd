@@ -13,11 +13,11 @@ import sys
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
+# sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 
-APPS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'apps')
+# APPS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'apps')
 
-sys.path.append(APPS_DIR)
+# sys.path.append(APPS_DIR)
 
 # URL_PREFIX = "/mendelmd"
 # FORCE_SCRIPT_NAME = '/mendelmd'
@@ -52,15 +52,15 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'django_select2',
-    
+
     'djcelery',
     'celery',
     'kombu.transport.django',
     # 'django_celery_results',
     # 'django_celery_beat',
-    
+
     #private apps
-    
+
     'dashboard',
     'individuals',
     'variants',
@@ -72,8 +72,8 @@ INSTALLED_APPS = [
     'pathway_analysis',
     'statistics',
     'databases',
-
-
+    'projects',
+    'files',
 ]
 
 MIDDLEWARE = [
@@ -107,8 +107,8 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-#TIME_ZONE = 'UTC'
-TIME_ZONE = 'America/Sao_Paulo'
+TIME_ZONE = 'UTC'
+# TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = False
 
@@ -166,7 +166,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
             ],
-            
+
         },
     },
 ]

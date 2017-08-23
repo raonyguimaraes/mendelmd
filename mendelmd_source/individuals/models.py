@@ -25,7 +25,7 @@ class Individual(models.Model):
         else:
             string = "%s/genomes/public/%s/%s" % (settings.BASE_DIR, self.id, filename)#.replace(' ', '_')
             print('string',string)
-        return string 
+        return string
     user = models.ForeignKey(User, editable=False, null=True)
 
     shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
@@ -46,7 +46,6 @@ class Individual(models.Model):
     annotation_time = models.CharField(max_length=200, null=True, blank=True)
     insertion_time = models.CharField(max_length=200, null=True, blank=True)
 
-    
     def __str__(self):
         return self.name
 
@@ -54,7 +53,7 @@ class Individual(models.Model):
     # def get_absolute_url(self):
     # 	return ('individual-new',)
 
-    
+
     def save(self, *args, **kwargs):
         if not self.creation_date:
             self.creation_date = datetime.now()
@@ -66,8 +65,8 @@ class Individual(models.Model):
 
 class Group(models.Model):
     name = models.CharField(max_length=128)
-    members = models.ManyToManyField(Individual)
-
+    members = models.ManyToManyField(Individual,
+        related_name='group_members')
     def __str__(self):
         return self.name
 
@@ -76,7 +75,7 @@ class Group(models.Model):
 class ControlGroup(models.Model):
     def get_upload_path(self, filename):
         string = "upload/controls/%s/%s" % (self.id, filename)#.replace(' ', '_')
-        return string 
+        return string
     name = models.CharField(max_length=600)
     vcf_file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
 
@@ -85,7 +84,7 @@ class ControlGroup(models.Model):
 
     def save(self, *args, **kwargs):
         #populate
-        #return 
+        #return
         super(ControlGroup, self).save(*args, **kwargs)
         PopulateControls.delay(self.id)
 
