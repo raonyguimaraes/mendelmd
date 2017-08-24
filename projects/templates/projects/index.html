@@ -11,12 +11,14 @@
 <thead>
 <tr>
     <th>Name</th>
+    <th>N Files</th>
 </tr>
 </thead>
 <tbody>
 {% for project in projects %}
 <tr>
     <td><a href="{% url 'projects-view' project.id %}">{{project.name}}</a></td>
+    <td>{{ project.n_files }}</td>
 </tr>
 {% endfor %}
 </tbody>

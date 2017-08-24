@@ -2,9 +2,9 @@
 
 {% block content %}
 
-<h1>Create a Project</h1>
+<h1>Import Files</h1>
 
-<form action="{% url 'projects-create' %}" method="post">
+<form action="{% url 'projects-import-files' project.id %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" />

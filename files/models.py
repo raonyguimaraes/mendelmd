@@ -25,3 +25,5 @@ class S3Credential(models.Model):
     access_key = models.CharField(max_length=255)
     secret_key = models.CharField(max_length=255)
     buckets = models.TextField(null=True, blank=True)
+    exclude_paths= models.TextField(null=True, blank=True)
+    exclude_files = models.TextField(null=True, blank=True)

@@ -12,6 +12,10 @@ def index(request):
     context = {'files':files}
     return render(request, 'files/index.html', context)
 
+def view(request, file_id):
+    print('Hello')
+
+
 #crud for s3 settings
 def settings_index(request):
     s3_settings = S3Credential.objects.all()

@@ -10,6 +10,7 @@
 <thead>
 <tr>
     <th>Name</th>
+    <th>Extension</th>
     <th>Options</th>
 </tr>
 </thead>
@@ -19,6 +20,8 @@
     <td>
         <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
     </td>
+    <td>{{ file.file_type }}</td>
+
 </tr>
 {% endfor %}
 </tbody>

@@ -4,7 +4,38 @@
 <h1>{{project.name}}</h1>
 
 <a href="">Upload Files</a>
-<a href="">Import Files</a>
+<a href="{% url 'projects-import-files' project.id %}">Import Files</a>
+
+<h2>Files</h2>
+
+<table class="table">
+<thead>
+<tr>
+    <th>Name</th>
+    <th>
+        Extension
+        <select>
+            <option value="all">ALL</option>
+            <option value="fastq">FASTQ</option>
+            <option value="bam">BAM</option>
+            <option value="vcf">VCF</option>
+        </select>
+    </th>
+    <th>Options</th>
+</tr>
+</thead>
+<tbody>
+{% for file in project.files.all %}
+<tr>
+    <td>
+        <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
+    </td>
+    <td>{{ file.file_type }}</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
 
 {% endblock content %}
 

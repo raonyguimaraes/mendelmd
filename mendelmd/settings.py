@@ -92,7 +92,6 @@ ROOT_URLCONF = 'mendelmd.urls'
 
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -114,7 +113,7 @@ USE_I18N = False
 
 USE_L10N = False
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

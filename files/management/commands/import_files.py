@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from files.models import File, S3Credential
 import boto3
+import os
 from django.conf import settings
 
 class Command(BaseCommand):
@@ -8,6 +9,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print('Hello World Import Files')
+        # self.download_files()
+        self.import_files()
+
+    def download_files(self):
+        print('Download Files')
         file_list = open('%s/data/files/all_files.txt' % (settings.BASE_DIR), 'w')
         s3credentials = S3Credential.objects.all()
         for s3credential in s3credentials:
@@ -24,10 +30,57 @@ class Command(BaseCommand):
                     if key.size != 0:
                         file = [str(key.last_modified), str(key.size), bucket.name, key.key]
                         file_list.writelines('%s\n' % ('\t'.join(file)))
-                        # file = File(
-                        #     name=key.key,
-                        #     size=int(key.size),
-                        #     last_modified=str(key.last_modified),
-                        # )
-                        # file.save()
         self.stdout.write(self.style.SUCCESS('Successfully downloaded files!'))
+    def import_files(self):
+        print('Import Files')
+        file_list = open('%s/data/files/all_files.txt' % (settings.BASE_DIR))
+        file_types = {}
+        files = {}
+        exclude_paths = []
+        s3credentials = S3Credential.objects.all()
+        for s3credential in s3credentials:
+            # print()
+            # print(s3credential.exclude_paths.splitlines())
+            for item in s3credential.exclude_paths.splitlines():
+                exclude_paths.append(item)
+
+        n_files = 0
+        for line in file_list:
+            row = line.strip().split('\t')
+            file = {
+                'date': row[0],
+                'size': row[1],
+                'bucket': row[2],
+                'location': row[3],
+            }
+            if not file['location'].startswith(tuple(exclude_paths)):
+                full_path = 's3://' + file['bucket'] + '/' + file['location']
+                n_files += 1
+                file_name, file_extension = os.path.splitext(file['location'])
+                if file_extension == '.gz':
+                    file_name, file_extension = os.path.splitext(file_name)
+                file['extension'] = file_extension
+                if file_extension not in file_types:
+                    file_types[file_extension] = []
+                file_types[file_extension].append(full_path)
+                files[full_path] = file
+        #
+        # print(n_files)
+        print('Summary')
+        print('Number of files: {}'.format(n_files))
+        print('Number of file types: {}'.format(len(file_types)))
+        extensions = ['.fastq', '.bam', '.vcf']
+        for extension in extensions:
+            for file in file_types[extension]:
+                # print(file)
+                file_name, file_extension = os.path.splitext(file)
+                if file_extension == '.gz':
+                    file_name, file_extension = os.path.splitext(file_name)
+                file_obj = File(
+                    name=file_name,
+                    size=files[file]['size'],
+                    last_modified=str(files[file]['date']),
+                    file_type=file_extension,
+                    location=file,
+                )
+                file_obj.save()
