@@ -211,11 +211,11 @@ BROKER_URL = 'django://'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERY_IMPORTS = ('individuals.tasks', )
 
-CELERY_ROUTES = {
-    'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
-    'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-    'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
-}
+#CELERY_ROUTES = {
+#    'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
+#    'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
+#    'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
+#}
 
 # # from __future__ import absolute_import
 # # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
