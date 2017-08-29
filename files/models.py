@@ -8,7 +8,7 @@ class File(models.Model):
         string = "%s/upload/%s/%s" % (settings.BASE_DIR, self.id, filename)
         return string
     name = models.TextField(max_length=50)
-    size = models.IntegerField(null=True, blank=True)
+    size = models.BigIntegerField(null=True, blank=True)
     last_modified = models.DateTimeField(null=True, blank=True)
     file_type = models.TextField(null=True, blank=True)
     location = models.TextField(null=True, blank=True)

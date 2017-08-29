@@ -12,7 +12,7 @@ class Command(BaseCommand):
         print('Hello World Import Files')
         start_time = time.time()
 
-        self.download_files()
+        #self.download_files()
         self.import_files()
         elapsed_time = time.time() - start_time
         print('Importing Files Took {}'.format(elapsed_time))
@@ -94,6 +94,7 @@ class Command(BaseCommand):
                     file_type=file_extension.replace('.', ''),
                     location=file,
                 )
+                #print(file_obj,files[file])
                 file_objs.append(file_obj)
-                # file_obj.save()
+                #file_obj.save()
         File.objects.bulk_create(file_objs)
