@@ -3,15 +3,19 @@ from files.models import File, S3Credential
 import boto3
 import os
 from django.conf import settings
+import time
 
 class Command(BaseCommand):
     help = 'Import Files'
 
     def handle(self, *args, **options):
         print('Hello World Import Files')
-        # self.download_files()
-        self.import_files()
+        start_time = time.time()
 
+        self.download_files()
+        self.import_files()
+        elapsed_time = time.time() - start_time
+        print('Importing Files Took {}'.format(elapsed_time))
     def download_files(self):
         print('Download Files')
         file_list = open('%s/data/files/all_files.txt' % (settings.BASE_DIR), 'w')
@@ -31,8 +35,10 @@ class Command(BaseCommand):
                         file = [str(key.last_modified), str(key.size), bucket.name, key.key]
                         file_list.writelines('%s\n' % ('\t'.join(file)))
         self.stdout.write(self.style.SUCCESS('Successfully downloaded files!'))
+
     def import_files(self):
         print('Import Files')
+        File.objects.all().delete()
         file_list = open('%s/data/files/all_files.txt' % (settings.BASE_DIR))
         file_types = {}
         files = {}
@@ -70,17 +76,24 @@ class Command(BaseCommand):
         print('Number of files: {}'.format(n_files))
         print('Number of file types: {}'.format(len(file_types)))
         extensions = ['.fastq', '.bam', '.vcf']
+        file_objs = []
         for extension in extensions:
             for file in file_types[extension]:
                 # print(file)
+
+
                 file_name, file_extension = os.path.splitext(file)
                 if file_extension == '.gz':
                     file_name, file_extension = os.path.splitext(file_name)
+                basename = os.path.basename(file_name)
+
                 file_obj = File(
-                    name=file_name,
+                    name=basename,
                     size=files[file]['size'],
                     last_modified=str(files[file]['date']),
-                    file_type=file_extension,
+                    file_type=file_extension.replace('.', ''),
                     location=file,
                 )
-                file_obj.save()
+                file_objs.append(file_obj)
+                # file_obj.save()
+        File.objects.bulk_create(file_objs)

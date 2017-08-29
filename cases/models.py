@@ -1,6 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
-from individuals.models import Individual, Group
+from django.contrib.auth.models import User, Group
+from individuals.models import Individual
+from individuals.models import Group as IndividualGroup
 
 import os
 from datetime import datetime
@@ -18,21 +19,22 @@ class Case(models.Model):
                                       default='new')
     user = models.ForeignKey(User, editable=False)
 
-    shared_with = models.ManyToManyField(User, related_name='shared_with', blank=True)
+    shared_with_users = models.ManyToManyField(User, related_name='shared_with', blank=True)
+    shared_with_groups= models.ManyToManyField(Group, related_name='shared_with', blank=True)
 
     # individual = models.ForeignKey(Individual)
     name = models.CharField(max_length=600, blank=True)
-    description = models.CharField(max_length=600, blank=True)
+    description = models.TextField(blank=True, null=True)
     # individuals = models.ManyToManyField(Individual)
    
-    mother = models.ForeignKey(Individual, blank=True, related_name='mother')
-    father = models.ForeignKey(Individual, blank=True, related_name='father')
+    mother = models.ForeignKey(Individual, blank=True, related_name='mother', null=True)
+    father = models.ForeignKey(Individual, blank=True, related_name='father', null=True)
 
-    children = models.ManyToManyField(Individual, blank=True, related_name='children')
+    children = models.ManyToManyField(Individual, blank=True, related_name='children', null=True)
 
-    cases = models.ManyToManyField(Individual, blank=True, related_name='cases')
+    cases = models.ManyToManyField(Individual, blank=True, related_name='cases', null=True)
 
-    case_groups = models.ManyToManyField(Group, blank=True, related_name='case_groups', verbose_name="Groups of Cases")
+    case_groups = models.ManyToManyField(Group, blank=True, related_name='case_groups', verbose_name="Groups of Cases", null=True)
 
     controls = models.ManyToManyField(Individual, blank=True, related_name='controls', verbose_name="Controls")
 
