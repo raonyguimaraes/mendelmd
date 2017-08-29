@@ -30,11 +30,11 @@ class Case(models.Model):
     mother = models.ForeignKey(Individual, blank=True, related_name='mother', null=True)
     father = models.ForeignKey(Individual, blank=True, related_name='father', null=True)
 
-    children = models.ManyToManyField(Individual, blank=True, related_name='children', null=True)
+    children = models.ManyToManyField(Individual, blank=True, related_name='children')
 
-    cases = models.ManyToManyField(Individual, blank=True, related_name='cases', null=True)
+    cases = models.ManyToManyField(Individual, blank=True, related_name='cases')
 
-    case_groups = models.ManyToManyField(Group, blank=True, related_name='case_groups', verbose_name="Groups of Cases", null=True)
+    case_groups = models.ManyToManyField(Group, blank=True, related_name='case_groups', verbose_name="Groups of Cases")
 
     controls = models.ManyToManyField(Individual, blank=True, related_name='controls', verbose_name="Controls")
 
