@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import include, url
 
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -6,7 +6,6 @@ from django.views.generic import TemplateView
 admin.autodiscover()
 
 from django.conf import settings
-
 from django.conf.urls.static import static
 
 from . import views
@@ -37,6 +36,7 @@ urlpatterns = [
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^files/', include('files.urls')),
+    # url(r'^apps/', include(myurls))
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
+    'apps',
 ]
 
 MIDDLEWARE = [
