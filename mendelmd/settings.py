@@ -53,11 +53,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
 
-    'djcelery',
+    # 'djcelery',
     'celery',
-    'kombu.transport.django',
-    # 'django_celery_results',
-    # 'django_celery_beat',
+    # 'kombu.transport.django',
+    # 'djkombu',
+    'django_celery_results',
+    'django_celery_beat',
 
     #private apps
 
@@ -74,7 +75,7 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
-    'apps',
+    'app',
 ]
 
 MIDDLEWARE = [
@@ -193,12 +194,14 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
-#django celery
-# CELERY_RESULT_BACKEND = 'django-db'
+#django celery settings
+# CELERY_BROKER_TRANSPORT = "djkombu.transport.DatabaseTransport"
+# CELERY_RESULT_BACKEND = "db+sqlite:///mendelmd.sqlite3"
+# CELERY_BROKER_URL = 'db+sqlite:///mendelmd.sqlite3'
+# CELERY_RESULT_BACKEND = 'db+sqlite:///mendelmd.sqlite3db'
 # CELERY_RESULT_BACKEND = 'django-cache'
-
-
-
+# CELERY_BROKER_TRANSPORT = "sqlakombu.transport.Transport"
+# BROKER_HOST = "sqlite:///mendelmd.sqlite3"
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
 # CELERY_ACCEPT_CONTENT = ['json']
@@ -206,17 +209,17 @@ INTERNAL_IPS = ['127.0.0.1']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_BROKER_URL = 'django://'
 
-import djcelery
-djcelery.setup_loader()
-BROKER_URL = 'django://'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ('individuals.tasks', )
-
-CELERY_ROUTES = {
-    'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
-    'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-    'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
-}
+# import djcelery
+# djcelery.setup_loader()
+# BROKER_URL = 'django://'
+# CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+# CELERY_IMPORTS = ('individuals.tasks', )
+#
+# CELERY_ROUTES = {
+#     'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
+#     'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
+#     'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
+# }
 
 # # from __future__ import absolute_import
 # # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
