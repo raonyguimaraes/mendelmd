@@ -151,3 +151,6 @@ def docs():
     with lcd('../docs'):
         local('make html')
         local('cp -r _build/html/* ../static/docs/')
+
+def worker():
+    local('celery -A mendelmd worker -B -l info')

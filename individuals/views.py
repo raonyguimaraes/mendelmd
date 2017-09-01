@@ -27,6 +27,8 @@ import os
 import json
 import gzip
 
+from tasks.models import Task
+
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
@@ -407,8 +409,15 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    AnnotateVariants.delay(individual.id)
+    # AnnotateVariants.delay(individual.id)
     individual.save()
+
+    task = Task(user=request.user)
+    task.name = 'Annotate Individual %s' % (individual.name)
+    task.status= 'new'
+    task.save()
+    task.individuals.add(individual)
+
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
 
@@ -419,16 +428,6 @@ def populate(request, individual_id):
     messages.add_message(request, messages.INFO, "Your individual is being populated.")
 
     return redirect('dashboard')
-
-
-@login_required
-def populate_mongo(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
-    PopulateMongoVariants.delay(individual.id)
-    messages.add_message(request, messages.INFO, "Your individual is being inserted at MongoDB.")
-
-    return redirect('individuals_list')
-
 
 def download(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)

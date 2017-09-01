@@ -15,14 +15,9 @@ urlpatterns = [
     # url(r'^$', 'mendelmd.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
-
 	url(r'^docs/$', TemplateView.as_view(template_name='pages/docs.html'), name="docs"),
-
-
     url(r'^admin/', include(admin.site.urls)),
-
 	url(r'^accounts/', include('allauth.urls')),
-
 	url(r'^dashboard/', include('dashboard.urls')),
 	url(r'^individuals/', include('individuals.urls')),
     url(r'^diseases/', include('diseases.urls')),
@@ -36,7 +31,9 @@ urlpatterns = [
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^files/', include('files.urls')),
-    # url(r'^apps/', include(myurls))
+    url(r'^tasks/', include('tasks.urls')),
+    url(r'^workers/', include('workers.urls')),
+                  # url(r'^apps/', include(myurls))
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

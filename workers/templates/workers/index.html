@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>Workers</h1>
+
+    navbar
+
+<table class="table">
+<thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>IP</th>
+        <th>Created</th>
+        <th>Modified</th>
+        <th>Started</th>
+        <th>Finished</th>
+        <th>Execution Time</th>
+        <th>Options</th>
+    </tr>
+</thead>
+<tbody>
+{% for worker in workers%}
+<tr>
+    <td>#</td>
+    <td>{{ worker.name }}</td>
+    <td>{{ worker.type }}</td>
+    <td>{{ worker.ip}}</td>
+    <td>{{ worker.creation_date }}</td>
+    <td>{{ worker.modified_date }}</td>
+    <td>{{ worker.started }}</td>
+    <td>{{ worker.finished }}</td>
+    <td>{{ worker.execution_time }}</td>
+    <td>
+        <a href="{% url 'task_run' worker.id %}">Run</a>
+        <a href="{% url 'task_edit' worker.id %}">Edit</a>
+        <a href="{% url 'task_delete' worker.id %}">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock content %}
