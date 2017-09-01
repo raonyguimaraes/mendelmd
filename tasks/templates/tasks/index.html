@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>Tasks</h1>
+
+    navbar
+
+<table class="table">
+<thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Individuals</th>
+        <th>Created</th>
+        <th>Modified</th>
+        <th>Started</th>
+        <th>Finished</th>
+        <th>Execution Time</th>
+        <th>Options</th>
+    </tr>
+</thead>
+<tbody>
+{% for task in tasks %}
+<tr>
+    <td>#</td>
+    <td>{{ task.name }}</td>
+    <td>{{ task.status }}</td>
+    <td>{{ task.individuals.all }}</td>
+    <td>{{ task.creation_date }}</td>
+    <td>{{ task.modified_date }}</td>
+    <td>{{ task.started }}</td>
+    <td>{{ task.finished }}</td>
+    <td>{{ task.execution_time }}</td>
+    <td>
+        <a href="{% url 'task_run' task.id %}">Run</a>
+        <a href="{% url 'task_edit' task.id %}">Edit</a>
+        <a href="{% url 'task_delete' task.id %}">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock content %}
