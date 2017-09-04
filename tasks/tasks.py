@@ -27,3 +27,8 @@ def check_queue():
     if n_tasks < n_workers:
         print('Terminate Workers')
         terminate_workers()
+
+@app.task
+def annotate_vcf(task_id):
+    task = Task.objects.get(pk=task_id)
+    print('Annotate VCF', task)
