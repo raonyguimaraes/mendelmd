@@ -5,13 +5,14 @@
 
 <h1>Workers</h1>
 
-    navbar
+<a href="{% url 'worker-launch' %}">Launch Worker</a>
 
 <table class="table">
 <thead>
     <tr>
         <th>#</th>
         <th>Name</th>
+        <th>Status</th>
         <th>Type</th>
         <th>IP</th>
         <th>Created</th>
@@ -27,6 +28,7 @@
 <tr>
     <td>#</td>
     <td>{{ worker.name }}</td>
+    <td>{{ worker.status }}</td>
     <td>{{ worker.type }}</td>
     <td>{{ worker.ip}}</td>
     <td>{{ worker.creation_date }}</td>
@@ -35,9 +37,9 @@
     <td>{{ worker.finished }}</td>
     <td>{{ worker.execution_time }}</td>
     <td>
-        <a href="{% url 'task_run' worker.id %}">Run</a>
-        <a href="{% url 'task_edit' worker.id %}">Edit</a>
-        <a href="{% url 'task_delete' worker.id %}">Delete</a>
+        <a class='btn btn-primary' href="{% url 'worker-install' worker.id %}">Install</a>
+        <a class='btn btn-primary' href="{% url 'worker-terminate' worker.id %}">Terminate</a>
+        <a class='btn btn-primary' href="{% url 'worker-delete' worker.id %}">Delete</a>
     </td>
 </tr>
 {% endfor %}
