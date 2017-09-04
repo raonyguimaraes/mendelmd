@@ -153,4 +153,4 @@ def docs():
         local('cp -r _build/html/* ../static/docs/')
 
 def worker():
-    local('celery -A mendelmd worker -B -l info')
+    local('celery -A mendelmd worker -l info')#-B

@@ -409,14 +409,16 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    # AnnotateVariants.delay(individual.id)
+    AnnotateVariants.delay(individual.id)
     individual.save()
 
     task = Task(user=request.user)
     task.name = 'Annotate Individual %s' % (individual.name)
     task.status= 'new'
+    task.type = 'annotation'
     task.save()
     task.individuals.add(individual)
+    #delay annotation task
 
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
