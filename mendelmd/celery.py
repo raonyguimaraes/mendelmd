@@ -14,6 +14,7 @@ app = Celery('mendelmd')
 #   should have a `CELERY_` prefix.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
+
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
@@ -24,6 +25,8 @@ app.conf.beat_schedule = {
     },
 }
 app.conf.timezone = 'UTC'
+
+# app.conf.task_routes = {'workers.tasks.install_worker': {'queue': 'master'}}
 
 # @app.on_after_configure.connect
 # def setup_periodic_tasks(sender, **kwargs):

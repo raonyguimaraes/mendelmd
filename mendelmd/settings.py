@@ -190,6 +190,20 @@ INTERNAL_IPS = ['127.0.0.1']
 
 CELERY_RESULT_BACKEND = 'django-db'
 
+
+# celery queues setup
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+
+
+
+CELERY_ROUTES = {
+    'workers.tasks.install_worker': {'queue': 'master'},
+    # 'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
+    # 'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
+}
+
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
