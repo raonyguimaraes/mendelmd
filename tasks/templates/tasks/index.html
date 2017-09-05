@@ -11,8 +11,11 @@
 <thead>
     <tr>
         <th>#</th>
+        <th>ID</th>
         <th>Name</th>
         <th>Status</th>
+        <th>Retries</th>
+        <th>Machine</th>
         <th>Individuals</th>
         <th>Created</th>
         <th>Modified</th>
@@ -26,8 +29,11 @@
 {% for task in tasks %}
 <tr>
     <td>#</td>
+    <td>{{ task.id }}</td>
     <td>{{ task.name }}</td>
     <td>{{ task.status }}</td>
+    <td>{{ task.retry }}</td>
+    <td>{{ task.machine }}</td>
     <td>
         {% for individual in task.individuals.all %}
             {{ individual }}{% if not forloop.last %}, {% endif %}
@@ -40,6 +46,8 @@
     <td>{{ task.execution_time }}</td>
     <td>
         <a class='btn btn-primary' href="{% url 'task_run' task.id %}">Run</a>
+        <a class='btn btn-primary' href="{% url 'task_annotate' task.id %}">Annotate</a>
+        <a class='btn btn-primary' href="{% url 'task_insert' task.id %}">Insert</a>
         <a class='btn btn-primary' href="{% url 'task_edit' task.id %}">Edit</a>
         <a class='btn btn-primary' href="{% url 'task_delete' task.id %}">Delete</a>
     </td>

@@ -396,8 +396,6 @@ def list(request):
        # If page is out of range (e.g. 9999), deliver last page of results.
        individuals = paginator.page(paginator.num_pages)
 
-
-
     groups = Group.objects.all()
 #    individuals = Individual.objects.annotate(number_of_variants=Count('variant'))
 

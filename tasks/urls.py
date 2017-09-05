@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='task-index'),
     url(r'^run/(?P<task_id>[0-9]+)/$', views.run, name='task_run'),
+    url(r'^annotate/(?P<task_id>[0-9]+)/$', views.annotate, name='task_annotate'),
+    url(r'^insert/(?P<task_id>[0-9]+)/$', views.insert, name='task_insert'),
     url(r'^edit/(?P<task_id>[0-9]+)/$', views.edit, name='task_edit'),
     url(r'^delete/(?P<pk>\d+)/$', views.TaskDelete.as_view(),
         name='task_delete'),
@@ -22,5 +24,5 @@ urlpatterns = [
     # url(r'^view_group/(?P<group_id>\d+)/$', views.view_group, name='view_group'),
     # url(r'^delete_group/(?P<pk>\d+)$', GroupDeleteView.as_view(), {}, 'group_delete'),
     # url(r'^comparison/$', views.comparison, name='comparison'),
-    
+
 ]

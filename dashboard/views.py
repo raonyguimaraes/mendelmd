@@ -11,6 +11,9 @@ from django.conf import settings
 from django.utils.text import slugify
 from individuals.tasks import *
 
+from tasks.models import Task
+from tasks.tasks import annotate_vcf
+
 def index(request):
     if request.user.is_staff:
         individuals = Individual.objects.all().order_by('-id')
@@ -25,10 +28,10 @@ def index(request):
 def bulk_action(request):
     if request.method == 'POST':
         individuals = request.POST.getlist('individuals')
-        print(individuals) 
+        print(individuals)
         individuals = list(reversed([int(x) for x in individuals]))
         print(individuals)
-        
+
         if request.POST['selectionField'] == "Show":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
@@ -64,17 +67,24 @@ def bulk_action(request):
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
                 PopulateVariants.delay(individual.id)
-            
+
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
                 individual.status = 'new'
                 individual.n_lines = 0
                 individual.save()
-                AnnotateVariants.delay(individual.id)
+                task = Task(user=request.user)
+                task.name = 'Annotate Individual %s' % (individual.name)
+                task.status= 'new'
+                task.type = 'annotation'
+                task.save()
+                task.individuals.add(individual)
+                annotate_vcf.delay(task.id)
+                # AnnotateVariants.delay(individual.id)
         if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
                 Find_Medical_Conditions_and_Medicines.delay(individual.id)
-    
+
     return redirect('dashboard')

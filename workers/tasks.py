@@ -11,7 +11,7 @@ from scripts.worker import IWorker
 
 from subprocess import run
 
-@app.task
+@app.task(queue="master")
 def launch_workers(n_workers):
     for i in range(0, n_workers):
         print('Launch ', i)
@@ -24,26 +24,26 @@ def launch_workers(n_workers):
         worker.status = 'new'
         worker.save()
 
-@app.task
+@app.task(queue="master")
 def terminate_workers():
     idle_workers = Worker.objects.filter(status='idle')
     for worker in idle_workers:
         print('Terminate Worker')
         # Terminate_Worker()
 
-@app.task
+@app.task(queue="master")
 def terminate_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
+    command = 'aws ec2 terminate-instances --instance-ids %s' % (worker.worker_id)
+    run(command, shell=True)
     print('Terminate Worker', worker.id)
 
-@app.task
+@app.task(queue="master")
 def install_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
     print('Install Worker', worker.id)
     #copy install script to worker
-
     params = "-o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null'"
-
     command = "scp %s scripts/install_worker_ubuntu.sh ubuntu@%s:~/" % (params, worker.ip)
     run(command, shell=True)
 

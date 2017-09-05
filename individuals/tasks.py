@@ -556,17 +556,11 @@ def PopulateVariants(individual_id):
 
     print('Populating %s %s' % (individual.id, filename))
     os.system('echo "Populating Individual %s"' % (individual.name))
-    # print filepath
-    # print filename
-    #print basename
-    #gzip. and .gz
-    # data = open('%s/%s/ann_sample/annotation.final.vcf' % (path, filepath), 'r')
 
     z = zipfile.ZipFile('%s/annotation.final.vcf.zip' % (filepath), 'r')
     data = z.open('ann_sample/annotation.final.vcf', 'r')
 
     #print 'Populating from file %s.fullannotation.vcf' % (basename)
-
 
     start = datetime.datetime.now()
 
