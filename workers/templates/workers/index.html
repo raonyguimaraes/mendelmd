@@ -11,6 +11,7 @@
 <thead>
     <tr>
         <th>#</th>
+        <th>ID</th>
         <th>Name</th>
         <th>Status</th>
         <th>Type</th>
@@ -27,6 +28,7 @@
 {% for worker in workers%}
 <tr>
     <td>#</td>
+    <td>{{ worker.id }}</td>
     <td>{{ worker.name }}</td>
     <td>{{ worker.status }}</td>
     <td>{{ worker.type }}</td>

@@ -47,7 +47,7 @@ def annotate_vcf(task_id):
 
     start = datetime.datetime.now()
 
-    task = Task.objects.get(pk=task_id)
+    task = Task.objects.get(id=task_id)
     task.machine = socket.gethostbyname(socket.gethostname())
     task.status = 'running'
     task.started = start
@@ -56,7 +56,6 @@ def annotate_vcf(task_id):
     print('Annotate VCF', task.id)
     individual = task.individuals.all()[0]
     print(individual.location)
-
 
     path, vcf = os.path.split(individual.location)
 
@@ -106,7 +105,7 @@ def annotate_vcf(task_id):
         individual.annotation_time = elapsed
         individual.save()
         task.status = 'annotated'
-        task.execution_time = elapsed
+        # task.execution_time = elapsed
         task.save()
 
         task_location = '/tmp/tasks/%s/' % (task.id)

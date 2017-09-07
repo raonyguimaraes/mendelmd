@@ -37,6 +37,8 @@ def terminate_worker(worker_id):
     command = 'aws ec2 terminate-instances --instance-ids %s' % (worker.worker_id)
     run(command, shell=True)
     print('Terminate Worker', worker.id)
+    worker.status = 'terminated'
+    worker.save()
 
 @app.task(queue="master")
 def install_worker(worker_id):
@@ -45,9 +47,10 @@ def install_worker(worker_id):
     #copy install script to worker
     params = "-o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null'"
     command = "scp %s scripts/install_worker_ubuntu.sh ubuntu@%s:~/" % (params, worker.ip)
+    print(command)
     run(command, shell=True)
 
-    command = """nohup bash install_worker_ubuntu.sh 2>&1 & sleep 1"""
+    command = """nohup bash install_worker_ubuntu.sh 2>&1 && sleep 2"""
     command = """ssh %s -t ubuntu@%s '%s'""" % (
         params, worker.ip, command)
     run(command, shell=True)
