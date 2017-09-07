@@ -13,9 +13,10 @@ def index(request):
     tasks = Task.objects.all()
     context = {'tasks':tasks}
     return render(request, 'tasks/index.html', context)
+
 def run(request, task_id):
     print('Hello Run')
-    task=Task.objects.get(pk=task_id)
+    task=Task.objects.get(id=task_id)
     task.status = 'new'
     task.save()
     annotate_vcf.delay(task.id)
@@ -24,7 +25,7 @@ def run(request, task_id):
 
 def annotate(request, task_id):
     print('Hello Annotate')
-    task=Task.objects.get(pk=task_id)
+    task=Task.objects.get(id=task_id)
     annotate_vcf.delay(task.id)
     messages.success(request, 'Task will run soon.')
     return redirect('task-index')
