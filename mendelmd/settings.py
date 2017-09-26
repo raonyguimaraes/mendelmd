@@ -44,12 +44,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
 
-    # 'djcelery',
+    'djcelery',
     'celery',
-    # 'kombu.transport.django',
+    'kombu.transport.django',
     # 'djkombu',
-    'django_celery_results',
-    'django_celery_beat',
+    # 'django_celery_results',
+    # 'django_celery_beat',
 
     #private apps
 
@@ -185,23 +185,31 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
-#django celery settings
-
-CELERY_RESULT_BACKEND = 'django-db'
-
-
-# celery queues setup
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
-CELERY_DEFAULT_ROUTING_KEY = 'default'
-
-
+#old django celery
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'django://'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+CELERY_IMPORTS = ('individuals.tasks', )
 
 CELERY_ROUTES = {
-    'workers.tasks.install_worker': {'queue': 'master'},
-    # 'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-    # 'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
+    'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
+    'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
+    'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
 }
+
+#django celery settings
+
+# CELERY_RESULT_BACKEND = 'django-db'
+# # celery queues setup
+# CELERY_DEFAULT_QUEUE = 'default'
+# CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
+# CELERY_DEFAULT_ROUTING_KEY = 'default'
+# CELERY_ROUTES = {
+#     'workers.tasks.install_worker': {'queue': 'master'},
+#     # 'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
+#     # 'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
+# }
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
