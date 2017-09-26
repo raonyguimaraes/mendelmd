@@ -71,8 +71,8 @@ class GeneCategory(models.Model):
     
     
 class Membership(models.Model):
-    gene = models.ForeignKey(Gene)
-    group = models.ForeignKey(GeneCategory)
+    gene = models.ForeignKey(Gene, on_delete=models.CASCADE)
+    group = models.ForeignKey(GeneCategory, on_delete=models.CASCADE)
     
     
 class GeneGroup(models.Model):
@@ -145,6 +145,6 @@ class CGDEntry(models.Model):
 class GeneList(models.Model):
     name = models.CharField(max_length=255, blank=True)
     genes = models.TextField(blank=True)
-    user = models.ForeignKey(User, editable=False)
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
     def __str__(self):
             return self.name

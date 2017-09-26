@@ -3,7 +3,7 @@ from individuals.models import Individual
 
 class VCF(models.Model):
 
-    individual = models.ForeignKey(Individual)
+    individual = models.ForeignKey(Individual, on_delete=models.CASCADE)
     index = models.TextField(db_index=True)#ex. 1-2387623-G-T
     pos_index = models.TextField(db_index=True)#ex. 1-326754756
 
@@ -25,7 +25,7 @@ class VCF(models.Model):
 
 class Variant(models.Model):
 
-    individual = models.ForeignKey(Individual)
+    individual = models.ForeignKey(Individual, on_delete=models.CASCADE)
 
     index = models.TextField(db_index=True)#ex. 1-2387623-G-T
     pos_index = models.TextField(db_index=True)#ex. 1-326754756

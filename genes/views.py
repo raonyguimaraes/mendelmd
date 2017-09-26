@@ -31,7 +31,7 @@ from django.db import transaction
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.utils.decorators import method_decorator
 from django.http import Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render
 

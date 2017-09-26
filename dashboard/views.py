@@ -17,7 +17,7 @@ from tasks.tasks import annotate_vcf
 def index(request):
     if request.user.is_staff:
         individuals = Individual.objects.all().order_by('-id')
-    elif request.user.is_authenticated():
+    elif request.user.is_authenticated:
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
         individuals = Individual.objects.filter(user=None).order_by('-id')

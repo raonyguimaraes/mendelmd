@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '*efl#$$!@93)8397wwf8hy387"&^%3&ad8h7d2w-yus5mzcx&@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -94,8 +94,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'mendelmd.sqlite3'),
     }
 }
-
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
