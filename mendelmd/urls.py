@@ -1,7 +1,10 @@
 from django.conf.urls import include, url
 
 from django.contrib import admin
+from django.urls import path
+
 from django.views.generic import TemplateView
+
 
 admin.autodiscover()
 
@@ -16,8 +19,8 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
 	url(r'^docs/$', TemplateView.as_view(template_name='pages/docs.html'), name="docs"),
-    url(r'^admin/', include(admin.site.urls)),
-	url(r'^accounts/', include('allauth.urls')),
+    path('admin/', admin.site.urls),
+    url(r'^accounts/', include('allauth.urls')),
 	url(r'^dashboard/', include('dashboard.urls')),
 	url(r'^individuals/', include('individuals.urls')),
     url(r'^diseases/', include('diseases.urls')),
@@ -32,8 +35,7 @@ urlpatterns = [
     url(r'^select2/', include('django_select2.urls')),
     url(r'^files/', include('files.urls')),
     url(r'^tasks/', include('tasks.urls')),
-    url(r'^workers/', include('workers.urls')),
-    
+    url(r'^workers/', include('workers.urls'))
                   # url(r'^apps/', include(myurls))
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

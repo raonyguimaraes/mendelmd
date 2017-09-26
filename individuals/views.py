@@ -52,7 +52,7 @@ def create(request):
 
             # print('form is valid!')
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
                 individual = Individual.objects.create(user=None, status='new')
@@ -80,7 +80,7 @@ def create(request):
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
 
                 os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
             else:

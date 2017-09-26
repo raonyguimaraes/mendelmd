@@ -5,7 +5,7 @@ from individuals.models import Individual
 
 class Task(models.Model):
 
-    user = models.ForeignKey(User, editable=False, null=True)
+    user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
 
     individuals = models.ManyToManyField(Individual)
 
