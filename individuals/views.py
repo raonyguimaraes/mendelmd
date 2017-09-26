@@ -71,26 +71,29 @@ def create(request):
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
 
-            individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+            # print('share with', form.cleaned_data['shared_with_groups'])
+            individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
 
+            # print('save')
             individual.save()
-
+            # print('after save')
             f = individual.vcf_file
 
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
 
             if request.user.is_authenticated:
-
                 os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
             else:
                 os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             # AnnotateVariants.delay(individual.id)
-
+            print('delay')
             VerifyVCF.delay(individual.id)
+            print('before data')
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
+            # print('after data', data)
 
             response = JSONResponse(data, mimetype=response_mimetype(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
