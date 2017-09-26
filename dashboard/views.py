@@ -11,8 +11,8 @@ from django.conf import settings
 from django.utils.text import slugify
 from individuals.tasks import *
 
-from tasks.models import Task
-from tasks.tasks import annotate_vcf
+# from tasks.models import Task
+# from tasks.tasks import annotate_vcf
 
 def index(request):
     if request.user.is_staff:
@@ -80,8 +80,8 @@ def bulk_action(request):
                 task.type = 'annotation'
                 task.save()
                 task.individuals.add(individual)
-                annotate_vcf.delay(task.id)
-                # AnnotateVariants.delay(individual.id)
+                # annotate_vcf.delay(task.id)
+                AnnotateVariants.delay(individual.id)
         if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)

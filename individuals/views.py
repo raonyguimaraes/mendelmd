@@ -27,8 +27,8 @@ import os
 import json
 import gzip
 
-from tasks.models import Task
-from tasks.tasks import annotate_vcf
+# from tasks.models import Task
+# from tasks.tasks import annotate_vcf
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
