@@ -1,6 +1,28 @@
 from django.db import models
 from individuals.models import Individual
 
+class VCF(models.Model):
+
+    individual = models.ForeignKey(Individual)
+    index = models.TextField(db_index=True)#ex. 1-2387623-G-T
+    pos_index = models.TextField(db_index=True)#ex. 1-326754756
+
+    #First save all 9 VCF columns
+    chr = models.TextField(verbose_name="Chr", db_index=True)
+    pos = models.IntegerField(db_index=True)
+    variant_id = models.TextField(verbose_name="ID", db_index=True)
+    ref = models.TextField(null=True, blank=True, db_index=True)
+    alt = models.TextField(null=True, blank=True, db_index=True)
+    qual = models.FloatField(db_index=True)
+    filter = models.TextField(db_index=True)
+    info = models.TextField(null=True, blank=True)
+    format = models.TextField(null=True, blank=True, db_index=True)
+
+    genotype_col = models.TextField(null=True, blank=True, db_index=True)
+    genotype = models.TextField(db_index=True)
+
+
+
 class Variant(models.Model):
 
     individual = models.ForeignKey(Individual)
