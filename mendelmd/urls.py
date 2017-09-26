@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^files/', include('files.urls')),
     url(r'^tasks/', include('tasks.urls')),
     url(r'^workers/', include('workers.urls')),
+    
                   # url(r'^apps/', include(myurls))
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
