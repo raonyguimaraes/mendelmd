@@ -13,6 +13,15 @@ import sys
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+# sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
+
+# APPS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'apps')
+
+# sys.path.append(APPS_DIR)
+
+# URL_PREFIX = "/mendelmd"
+# FORCE_SCRIPT_NAME = '/mendelmd'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -47,7 +56,6 @@ INSTALLED_APPS = [
     'djcelery',
     'celery',
     'kombu.transport.django',
-    # 'djkombu',
     # 'django_celery_results',
     # 'django_celery_beat',
 
@@ -66,10 +74,6 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
-    'app',
-    'tasks',
-    'workers',
-
 ]
 
 MIDDLEWARE = [
@@ -95,19 +99,22 @@ DATABASES = {
     }
 }
 
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
+# TIME_ZONE = 'America/Sao_Paulo'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
-USE_TZ = False
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -185,7 +192,19 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
-#old django celery
+#django celery
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_BACKEND = 'django-cache'
+
+
+
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_RESULT_BACKEND = 'db+sqlite:///mendelmd.sqlite3'
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_BROKER_URL = 'django://'
+
 import djcelery
 djcelery.setup_loader()
 BROKER_URL = 'django://'
@@ -198,22 +217,19 @@ CELERY_ROUTES = {
     'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
 }
 
-#django celery settings
+# # from __future__ import absolute_import
+# # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
+# # CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+# CELERY_REDIRECT_STDOUTS = "true"
+# CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
 
-# CELERY_RESULT_BACKEND = 'django-db'
-# # celery queues setup
-# CELERY_DEFAULT_QUEUE = 'default'
-# CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
-# CELERY_DEFAULT_ROUTING_KEY = 'default'
-# CELERY_ROUTES = {
-#     'workers.tasks.install_worker': {'queue': 'master'},
-#     # 'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-#     # 'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
-# }
 
-# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+if "celery" in sys.argv:
+    DEBUG = False
 
-FILE_UPLOAD_PERMISSIONS = 0o0777
+
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
 
 try:
@@ -221,3 +237,17 @@ try:
 except ImportError:
     pass
 
+FILE_UPLOAD_PERMISSIONS = 0o0777
+
+
+from datetime import timedelta
+
+# CELERYBEAT_SCHEDULE = {
+#     'clean_individuals': {
+#         'task': 'individuals.tasks.clean_individuals',
+#         'schedule': timedelta(days=1),
+#         # 'args': (16, 16)
+#     },
+# }
+
+# CELERY_TIMEZONE = 'UTC'
