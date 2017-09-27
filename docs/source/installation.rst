@@ -35,7 +35,7 @@ Now it's possible to install and run Mendel,MD with a single command:
 
 This command will create a container, download all the required tools, datasets and run the webserver.
 
-This should take a few hours to complete for the first time.
+This could take a few hours to download all the data and complete for the first time.
 
 Manual Installation
 ===================
@@ -126,10 +126,18 @@ Importing Genes and Diseases Data
 
     python manage.py populate
 
+Starting the webserver
+======================
+
+::
+
+    python manage.py runserver
+
+
 Upload your VCFs using the web interface
 ========================================
 
-At the dashboard click on the "Upload VCF" button.
+At the Dashboard click the "Upload VCF" button.
 
 Deployment on RedHat/CentOS 7
 ===============================
@@ -144,8 +152,9 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
     bash deployment_centos7_redhat7.sh
 
 
-Celery in Production
-====================
+Seeting for Celery in Production
+==================================
+
 https://github.com/celery/celery/blob/3.1/extra/generic-init.d/celeryd
 
 # cat celeryd
