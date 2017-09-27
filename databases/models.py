@@ -287,4 +287,6 @@ class dbnsfp(models.Model):
     clinvar_golden_stars = models.TextField(null=True, blank=True) 
     Interpro_domain = models.TextField(null=True, blank=True) 
     GTEx_V6p_gene = models.TextField(null=True, blank=True) 
-    GTEx_V6p_tissue = models.TextField(null=True, blank=True) 
+    GTEx_V6p_tissue = models.TextField(null=True, blank=True)
+
+# def hpo(models.Model):
