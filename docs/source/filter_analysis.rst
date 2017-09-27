@@ -69,7 +69,7 @@ Usage: This is usefull if you want you want to search for recessive and dominant
 
 - Chr 
 
-With this field you can choose to see only variants from a single chromossome.
+With this field you can choose to see only variants from a single chromosome.
 Ex. X, Y, 1, 2 ... 22
 
 -Pos
