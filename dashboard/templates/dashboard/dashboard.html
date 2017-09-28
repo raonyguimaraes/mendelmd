@@ -9,15 +9,29 @@
 </a>
 <br><br>
 
+    <form action="." method="post">
+    {% csrf_token %}
+    <select select name="status">
+      <option value="new">New</option>
+      <option value="running">Running</option>
+      <option value="failed">Failed</option>
+      <option value="annotated">Annotated</option>
+      <option value="populated">Populated</option>
+    </select>
+    <input type="submit" value="Submit"/>
+    </form>
+
+
 <form action="{% url 'bulk_action' %}" method="post">
     {% csrf_token %}
     {% if user.is_staff %}
     <select name="selectionField">
+        <option value="Annotate">Annotate</option>
+        <option value="Populate">Populate</option>
+        <option value="Delete">Delete</option>
         <option value="Show">Show on Grid</option>
         <option value="Hide">Hide on Grid</option>
-        <option value="Delete">Delete</option>
-        <option value="Populate">Populate</option>
-        <option value="Annotate">Annotate</option>
+
     </select>
     <input type="submit" value="Submit"/>
     {% endif %}

@@ -411,16 +411,16 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    # AnnotateVariants.delay(individual.id)
+    AnnotateVariants.delay(individual.id)
 
+    # task = Task(user=request.user)
+    # task.name = 'Annotate Individual %s' % (individual.name)
+    # task.status= 'new'
+    # task.type = 'annotation'
+    # task.save()
+    # task.individuals.add(individual)
+    # annotate_vcf.delay(task.id)
 
-    task = Task(user=request.user)
-    task.name = 'Annotate Individual %s' % (individual.name)
-    task.status= 'new'
-    task.type = 'annotation'
-    task.save()
-    task.individuals.add(individual)
-    annotate_vcf.delay(task.id)
     #delay annotation task
 
     individual.save()
