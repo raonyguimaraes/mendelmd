@@ -1,7 +1,7 @@
 Mendel,MD
 =========
 
-An online tool for organizing, annotating, filtering and diagnosing patients with Mendelian Disorders using Exome and Genome sequencing data.
+Mendel,MD is an online tool for annotating and filtering VCF files to help with the task of diagnosing patients with Mendelian Disorders using exome or genome from NGS sequencing data.
 
 Requirements
 ============
@@ -152,7 +152,7 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
     bash deployment_centos7_redhat7.sh
 
 
-Seeting for Celery in Production
+Settings for Celery in Production
 ==================================
 
 https://github.com/celery/celery/blob/3.1/extra/generic-init.d/celeryd
