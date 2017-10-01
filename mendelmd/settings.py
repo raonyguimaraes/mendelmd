@@ -207,6 +207,7 @@ INTERNAL_IPS = ['127.0.0.1']
 
 import djcelery
 djcelery.setup_loader()
+
 BROKER_URL = 'django://'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERY_IMPORTS = ('individuals.tasks', )
