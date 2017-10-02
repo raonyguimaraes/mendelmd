@@ -54,11 +54,11 @@ INSTALLED_APPS = [
     'django_select2',
     #queue
 
-    'djcelery',
+    # 'djcelery',
     'celery',
-    'kombu.transport.django',
-    # 'django_celery_results',
-    # 'django_celery_beat',
+    # 'kombu.transport.django',
+    'django_celery_results',
+    'django_celery_beat',
 
     #private apps
 
@@ -195,6 +195,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
+#new celery settings
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
+
 #django celery
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_RESULT_BACKEND = 'django-cache'
@@ -208,12 +212,12 @@ INTERNAL_IPS = ['127.0.0.1']
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_BROKER_URL = 'django://'
 
-import djcelery
-djcelery.setup_loader()
+# import djcelery
+# djcelery.setup_loader()
 
-BROKER_URL = 'django://'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ('individuals.tasks')#, 'tasks.tasks'
+# BROKER_URL = 'django://'
+# CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+# CELERY_IMPORTS = ('individuals.tasks')#, 'tasks.tasks'
 
 # CELERY_ROUTES = {
 #     'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
