@@ -6,11 +6,10 @@ from django.urls import reverse_lazy
 from tasks.models import Task
 from tasks.tasks import annotate_vcf, insert_vcf
 
-
 # Create your views here.
 def index(request):
     print('hello world!')
-    tasks = Task.objects.all()
+    tasks = Task.objects.all().order_by('-id')
     context = {'tasks':tasks}
     return render(request, 'tasks/index.html', context)
 

@@ -27,8 +27,8 @@ import os
 import json
 import gzip
 
-# from tasks.models import Task
-# from tasks.tasks import annotate_vcf
+from tasks.models import Task
+from tasks.tasks import annotate_vcf
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
@@ -147,7 +147,6 @@ class IndividualDeleteView(DeleteView):
         #delete files
         if self.object.vcf_file:
             self.object.vcf_file.delete()
-
         # if self.object.strs_file:
         #     self.object.strs_file.delete()
         # if self.object.cnvs_file:
@@ -411,15 +410,17 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    AnnotateVariants.delay(individual.id)
 
-    # task = Task(user=request.user)
-    # task.name = 'Annotate Individual %s' % (individual.name)
-    # task.status= 'new'
-    # task.type = 'annotation'
-    # task.save()
-    # task.individuals.add(individual)
-    # annotate_vcf.delay(task.id)
+    AnnotateVariants.delay(individual.id)
+    
+    task = Task(user=request.user)
+    task.name = 'Annotate Individual %s' % (individual.name)
+    task.status= 'new'
+    task.type = 'annotation'
+    task.save()
+    task.individuals.add(individual)
+    
+    annotate_vcf.delay(task.id)
 
     #delay annotation task
 

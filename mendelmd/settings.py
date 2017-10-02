@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'django_select2',
+    #queue
 
     'djcelery',
     'celery',
@@ -74,6 +75,8 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
+    'tasks',
+    'workers',
 ]
 
 MIDDLEWARE = [
@@ -209,13 +212,13 @@ import djcelery
 djcelery.setup_loader()
 BROKER_URL = 'django://'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ('individuals.tasks', )
+CELERY_IMPORTS = ('individuals.tasks')#, 'tasks.tasks'
 
-CELERY_ROUTES = {
-    'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
-    'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-    'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
-}
+# CELERY_ROUTES = {
+#     'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
+#     'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
+#     'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
+# }
 
 # # from __future__ import absolute_import
 # # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
