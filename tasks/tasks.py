@@ -1,8 +1,14 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
 
-from celery import Celery
-app = Celery('mendelmd')
+# from celery import shared_task
+
+# Create your tasks here
+from __future__ import absolute_import, unicode_literals
+from celery import shared_task
+# from celery import Celery
+# app = Celery('mendelmd')
+
 
 from tasks.models import Task
 from workers.models import Worker
@@ -23,7 +29,7 @@ import datetime
 
 import socket
 
-@app.task
+@shared_task()
 def check_queue():
     #check tasks and launch workers if necessary
     print('Check Queue')
@@ -42,7 +48,7 @@ def check_queue():
         print('Terminate Workers')
         terminate_workers()
 
-@app.task
+@shared_task()
 def annotate_vcf(task_id):
 
     start = datetime.datetime.now()
@@ -119,7 +125,7 @@ def annotate_vcf(task_id):
         task.save()
         annotate_vcf.delay(task.id)
 
-@app.task
+@shared_task()
 def insert_vcf(task_id):
     task = Task.objects.get(pk=task_id)
     individual = task.individuals.all()[0]
