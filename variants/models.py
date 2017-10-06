@@ -2,15 +2,17 @@ from django.db import models
 from individuals.models import Individual
 
 class Variant(models.Model):
-
-    individual = models.ForeignKey(Individual)
-
-    index = models.TextField(db_index=True)#ex. 1-2387623-G-T
-    pos_index = models.TextField(db_index=True)#ex. 1-326754756
-
+    
+    # pos_index = models.TextField(db_index=True)#ex. 1-326754756
     #First save all 9 VCF columns
-    chr = models.TextField(verbose_name="Chr", db_index=True)
+    chr = models.CharField(max_length=2, verbose_name="Chr", db_index=True)
     pos = models.IntegerField(db_index=True)
+    index = models.TextField(null=True, blank=True, db_index=True)#ex   . 1-2387623
+    # individual = models.ManyToManyField(Individual)
+
+
+class VariantAnnotation(models.Model):
+
     variant_id = models.TextField(verbose_name="ID", db_index=True)
     ref = models.TextField(null=True, blank=True, db_index=True)
     alt = models.TextField(null=True, blank=True, db_index=True)
