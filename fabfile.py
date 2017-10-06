@@ -22,11 +22,16 @@ def backup_users():
     local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
 
+def delete_migrations():
+    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'databases']
+    for model in models:
+        local('rm -rf %s/migrations' % (model))
+
 def reset_migrations():
 
     models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'databases']
     for model in models:
-        local('rm -rf apps/%s/migrations' % (model))
+        local('rm -rf %s/migrations' % (model))
     for model in models:
         local('python manage.py makemigrations %s' % (model))
 
