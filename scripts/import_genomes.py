@@ -16,7 +16,6 @@ vcfs = ['HG00096.full.vcf', 'HG00097.full.vcf']
 vcfs = ['ALL.chr21.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf']
 vcfs = ['chr21.sample.vcf']
 
-
 t_genotypes = 0
 new_genotypes = []
 individuals = {}
@@ -37,15 +36,13 @@ class GenomeImporter():
             vcffile = open('../data/genomes/%s' % (vcf))
             #Variant.objects.delete()
             start = time.time()
-            positions = Variant.objects.values_list('index', flat=True)
+            index_list = Variant.objects.values_list('index', flat=True)
             # genotypes = list(Genotype.objects.values_list('genotype', flat=True))
             # allele_list = list(Allele.objects.values_list('allele', flat=True))
-            print(len(positions))
+            print(len(index_list))
             # print(len(alleles))
-            new_alleles = []
-            
-            positions = set(positions)
-
+            index_list = set(index_list)
+            alleles = {}
             variants = []
             for line in vcffile:
                 if line.startswith('#'):
@@ -59,18 +56,30 @@ class GenomeImporter():
                             individual.save()
                             individuals[sample] = individual
                 else:
-                    variant = line.strip().split('\t')            
+                    variant = line.strip().split('\t')
                     index = '%s_%s' % (variant[0], variant[1])
-                    if index not in positions:
+                    if index not in index_list:
                         variant_obj = Variant()
                         variant_obj.chr = variant[0]
                         variant_obj.pos = variant[1]
                         variant_obj.index = index
                         # variant_obj.save()
                         variants.append(variant_obj)
-                        #parse alleles
-                        # ref = variant=[0]
-                        # if ref not in allele_list:
+                    ref = variant[3]
+                    alt = variant[4]
+
+                    if index not in alleles:
+                        alleles[index] = {
+                            'ref':[],
+                            'alt':[],
+                        }
+                    #  = 
+                    #parse alleles
+                    # ref = variant=[0]
+                    if ref not in alleles[index]['ref']:
+                        alleles[index]['ref'].append(ref)
+                    if alt not in alleles[index]['alt']:
+                        alleles[index]['alt'].append(alt)
                         #     allele = Allele()
                         #     allele.allele = ref
                         #     new_alleles.append(allele)
@@ -88,21 +97,56 @@ class GenomeImporter():
                     #     for variant in variants:
                     #         print(variant.chr, variant.pos)
             Variant.objects.bulk_create(variants)
+            print('alleles', len(alleles))
             # Genotype.objects.bulk_create(new_genotypes)
             # genotypes = {}
             # genotype_objs = Genotype.objects.all()
             # for genotype in genotype_objs:
             #     genotypes[genotype.genotype] = genotype
             # print(genotypes)
-            # variants = {}
+            variants = {}
             variants_objs = Variant.objects.all()
+            for variant in variants_objs:
+                variants[variant.index] = variant
+            alleles = Allele.objects.all()
+            allele_dict = {}
+            for obj in alleles:
+                index = obj.variant.index
+                if index not in allele_dict:
+                    allele_dict[index] = [] 
+                allele_dict[obj.variant.index].append(obj.allele) 
+            new_alleles = []
+            for index in alleles:
+                # print(allele)
+                for item in alleles[index]['ref']:
+                    #check if this allele is present
+                    if item not in allele_dict[index]:
+                        allele_obj = Allele()
+                        allele_obj.variant = variant[index]
+                        allele_obj.allele_type = 'REF'
+                        allele_obj.allele = item
+                        new_alleles.append(allele_obj)
+
+                for item in alleles[index]['alt']:
+                    #check if this allele is present
+                    if item not in allele_dict[index]:    
+                        allele_obj = Allele()
+                        allele_obj.variant = variant[index]
+                        allele_obj.allele_type = 'ALT'
+                        allele_obj.allele = item
+                        new_alleles.append(allele_obj)
+            Allele.objects.bulk_create(new_alleles)
+                # allele_obj = Allele()
+                # allele_obj.allele = 
+                # for ite
             # for variant in variants_objs:
-            #     variants[variant.index] = variant
+            # variants[variant.index] = variant
             end = time.time()
             elapsed = end - start
             # print(c_genotypes)
             print('inserting variants and individuals', elapsed)
             start = time.time()
+            
             #now insert the genotypes
             # vcffile.seek(0)
             # for line in vcffile:
