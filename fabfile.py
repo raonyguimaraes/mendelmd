@@ -4,9 +4,13 @@ from fabric.api import run
 env.user  = 'raony'
 env.hosts = ['mendel']
 
+def reset():
+    local('dropdb mendelmd')
+    local('createdb mendelmd')
+    reset_migrations()
+    # local('python manage.py migrate')
+
 def install():
-    # local('pip install cython')
-    # local('pip install pynnotator')
     local('pip install -r requirements.txt')
     # local('pynnotator install')
     # local('python manage.py migrate auth')#bug with version 1.8
@@ -20,7 +24,7 @@ def backup_users():
 
 def reset_migrations():
 
-    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes']
+    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'databases']
     for model in models:
         local('rm -rf apps/%s/migrations' % (model))
     for model in models:
