@@ -10,6 +10,8 @@ from django.conf import settings
 
 from django.template.defaultfilters import slugify
 
+from django.utils import timezone
+
 # Subclass AbstractUser
 class UserGroup(models.Model):
     name = models.CharField(max_length=600)
@@ -56,8 +58,8 @@ class Individual(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.creation_date:
-            self.creation_date = datetime.now()
-        self.modified_date = datetime.now()
+            self.creation_date = timezone.now()
+        self.modified_date = timezone.now()
         return super(Individual, self).save(*args, **kwargs)
 
     # def delete(self, *args, **kwargs):

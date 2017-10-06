@@ -26,7 +26,7 @@ def reset_migrations():
 
     models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'databases']
     for model in models:
-        local('rm -rf apps/%s/migrations' % (model))
+        local('rm -rf %s/migrations' % (model))
     for model in models:
         local('python manage.py makemigrations %s' % (model))
 

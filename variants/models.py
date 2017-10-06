@@ -10,6 +10,31 @@ class Variant(models.Model):
     index = models.TextField(null=True, blank=True, db_index=True)#ex   . 1-2387623
     # individual = models.ManyToManyField(Individual)
 
+class Allele(models.Model):
+    
+    ALLELE_TYPES = (
+        ('REF', 'REF'),
+        ('ALT', 'ALT'),        
+    )
+    
+    variant = models.ForeignKey(Variant)
+    allele = models.CharField(max_length=2, verbose_name="Allele", db_index=True)
+    
+    allele_type = models.CharField(
+        max_length=3,
+        choices=ALLELE_TYPES,
+    )
+    
+    count = models.IntegerField(db_index=True)
+    frequency = models.FloatField(db_index=True)
+
+class Genotype(models.Model):
+    genotype = models.CharField(max_length=200, null=True, blank=True)
+
+class IndividualVariant(models.Model):
+    # individual = models.ForeignKey(Individual)
+    variant = models.ForeignKey(Variant)
+    genotype = models.ForeignKey(Genotype)
 
 class VariantAnnotation(models.Model):
 
