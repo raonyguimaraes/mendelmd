@@ -18,6 +18,7 @@ class Allele(models.Model):
     )
     
     variant = models.ForeignKey(Variant)
+    
     allele = models.CharField(max_length=2, verbose_name="Allele", db_index=True)
     
     allele_type = models.CharField(
