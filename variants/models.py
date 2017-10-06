@@ -7,7 +7,13 @@ class Variant(models.Model):
     #First save all 9 VCF columns
     chr = models.CharField(max_length=2, verbose_name="Chr", db_index=True)
     pos = models.IntegerField(db_index=True)
-    index = models.TextField(null=True, blank=True, db_index=True)#ex   . 1-2387623
+    index = models.CharField(max_length=20, verbose_name="Chr", db_index=True)#ex   . 1_2387623
+    # ref = models.CharField(max_length=2, verbose_name="Chr", db_index=True)
+    # alt = models.CharField(max_length=2, verbose_name="Chr", db_index=True)
+    # qual = models.FloatField(db_index=True)
+    # filter = models.CharField(max_length=2, verbose_name="Chr", db_index=True)
+    # info = models.TextField(null=True, blank=True)
+    # format = models.CharField(max_length=2, verbose_name="Chr", db_index=True)
     # individual = models.ManyToManyField(Individual)
 
 class Allele(models.Model):
@@ -33,9 +39,8 @@ class Genotype(models.Model):
     genotype = models.CharField(max_length=200, null=True, blank=True)
 
 class IndividualVariant(models.Model):
-    # individual = models.ForeignKey(Individual)
+    individual = models.ForeignKey(Individual)
     variant = models.ForeignKey(Variant)
-    genotype = models.ForeignKey(Genotype)
 
 class VariantAnnotation(models.Model):
 

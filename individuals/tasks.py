@@ -31,7 +31,7 @@ from collections import OrderedDict
 
 
 import json
-# import vcf
+import vcf
 from cyvcf2 import VCF
 
 
