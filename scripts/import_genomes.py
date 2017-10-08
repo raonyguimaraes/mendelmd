@@ -29,6 +29,7 @@ class GenomeImporter():
     def __init__(self, *args, **kwargs):
         self.c_genotypes = 0
         self.vcfs = vcfs
+        self.variants = []
 
     # def check_file():
         # command = ''
@@ -39,8 +40,15 @@ class GenomeImporter():
         # self.check_file():
         self.parse_vcf()
 
-    def parse_genotypes(self,genotypes):
-        for genotype in genotypes:
+    def parse_genotypes(self,index, genotypes):
+        print(index)
+        for i, genotype in enumerate(genotypes):
+            # print(genotype),
+            individualvariant = IndividualVariant()
+            # individualvariant.variant = self.variants[index]
+            individualvariant.individual = samples[i]
+            individualvariant.save()
+            # individualvariants.append(individualvariant)
             self.c_genotypes+=1
 
     def parse_vcf(self):
@@ -56,7 +64,7 @@ class GenomeImporter():
             #Variant.objects.delete()
             start = time.time()
             index_list = Variant.objects.values_list('index', flat=True)
-            
+            # self.variants = index_list
             individuals_list = Individual.objects.values_list('name', flat=True)
 
             print('index_list', len(index_list))
@@ -68,6 +76,7 @@ class GenomeImporter():
 
             variants = []
             individuals_insert_list = []
+            new_index_list = []
 
             for line in vcffile:
                 if line.startswith('#'):
@@ -83,11 +92,21 @@ class GenomeImporter():
                             # individual.save()
                             # individuals[sample] = individual
                         print('Individuals', len(individuals_list))
-                        Individual.objects.bulk_create(individuals_insert_list)
+                        individuals = Individual.objects.bulk_create(individuals_insert_list)
+                        individuals = Individual.objects.filter(name__in=individuals_list)
+                        
+                        new_individuals = {}
+                        for individual in individuals:
+                            new_individuals[individual.name] = individual
+                        individuals = new_individuals
 
+
+                        # print('individuals', individuals)
+                        print(len(individuals), 'individuals')
                 else:
                     variant = line.strip().split('\t')
                     index = '%s_%s' % (variant[0], variant[1])
+                    new_index_list.append(index)
                     if index not in index_list:
                         variant_obj = Variant()
                         variant_obj.chr = variant[0]
@@ -100,13 +119,41 @@ class GenomeImporter():
                         # variant_obj.filter = variant[6]
                         # variant_obj.info = variant[7]
                         # variant_obj.format = variant[8]
-                        # self.parse_genotypes(variant[9:])
                         # index
                         # variant_obj.save()
                         variants.append(variant_obj)
+                    # self.parse_genotypes(index,variant[9:])
+            results = Variant.objects.bulk_create(variants)
+            print(results)
+            variants = Variant.objects.filter(index__in=new_index_list)#values_list('index', flat=True)
+            print(len(variants))
+            new_variants = {}
+            for variant in variants:
+                new_variants[variant.index] = variant
+            variants = new_variants 
+            #parse genotypes
+            vcffile.seek(0)
+            individualvariants = []
+            l_genotypes = 0
+            for line in vcffile:
+                if not line.startswith('#'):
+                    variant = line.strip().split('\t')
+                    index = '%s_%s' % (variant[0], variant[1])
+                    for i,genotype in enumerate(variant[9:]):
+                        self.c_genotypes+=1
+                        l_genotypes+=1
+                        if l_genotypes == 5000:
+                            
+                            IndividualVariant.objects.bulk_create(individualvariants)
+                            l_genotypes = 0
+                            individualvariants = []
 
-            Variant.objects.bulk_create(variants)
-
+                        individualvariant = IndividualVariant()
+                        individualvariant.variant = variants[index]
+                        individualvariant.individual = individuals[samples[i]]
+                        individualvariants.append(individualvariant)
+                        # individualvariant.save()
+            IndividualVariant.objects.bulk_create(individualvariants)
     # def parse_alleles():
         # ref = variant[3]
         # alt = variant[4]
@@ -227,11 +274,12 @@ class GenomeImporter():
             #                 # individualgenotype.save()
             #                 # genotypes[samples[i]][index] = i
             # # IndividualVariant.objects.bulk_create(individualgenotypes)
-            
             # print('time for inserting genotypes', elapsed)
+        
         end = time.time()
         elapsed = end - start
-        print(elapsed,self.c_genotypes)
+        print('Run Time {}'.format(elapsed))
+        print(self.c_genotypes)
 
 if __name__ == "__main__":
     
