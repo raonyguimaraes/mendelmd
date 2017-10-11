@@ -12,7 +12,7 @@ class Command(BaseCommand):
         print('Hello World Import Files')
         start_time = time.time()
 
-        self.download_files()
+        #self.download_files()
         self.import_files()
         elapsed_time = time.time() - start_time
         print('Importing Files Took {}'.format(elapsed_time))

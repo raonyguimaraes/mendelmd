@@ -34,7 +34,7 @@ class ComparisonForm(forms.Form):
         
         super(ComparisonForm, self).__init__(*args, **kwargs)
 
-        if not user.is_authenticated:
+        if not user.is_authenticated():
             print('user None', user)
             self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)

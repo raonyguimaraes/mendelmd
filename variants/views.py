@@ -10,17 +10,6 @@ from variants.models import *
 import pickle
 import json
 
-# @login_required
-def index(request):
-    n_variants = Variant.objects.all().count()
-
-    variants = Variant.objects.all()[:10]
-
-    print(n_variants)
-    context = {'n_variants':n_variants,
-    'variants':variants}
-    return render(request, 'variants/index.html', context)
-
 @login_required
 def view(request, variant_id):
     variant = get_object_or_404(Variant, pk=variant_id)

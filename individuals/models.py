@@ -10,8 +10,6 @@ from django.conf import settings
 
 from django.template.defaultfilters import slugify
 
-from django.utils import timezone
-
 # Subclass AbstractUser
 class UserGroup(models.Model):
     name = models.CharField(max_length=600)
@@ -28,7 +26,7 @@ class Individual(models.Model):
             string = "%s/genomes/public/%s/%s" % (settings.BASE_DIR, self.id, filename)#.replace(' ', '_')
             print('string',string)
         return string
-    user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, editable=False, null=True)
 
     shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
     shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
@@ -37,7 +35,6 @@ class Individual(models.Model):
     is_featured = models.BooleanField(default=True)
     is_public = models.BooleanField(default=False)
     vcf_file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
-    location = models.TextField(null=True, blank=True)
     vcf_header = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, blank=True, editable=False)
     n_variants = models.IntegerField(null=True, blank=True, editable=False)
@@ -59,8 +56,8 @@ class Individual(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.creation_date:
-            self.creation_date = timezone.now()
-        self.modified_date = timezone.now()
+            self.creation_date = datetime.now()
+        self.modified_date = datetime.now()
         return super(Individual, self).save(*args, **kwargs)
 
     # def delete(self, *args, **kwargs):
@@ -94,5 +91,5 @@ class ControlGroup(models.Model):
 
 class ControlVariant(models.Model):
 
-    controlgroup = models.ForeignKey(ControlGroup, on_delete=models.CASCADE)
+    controlgroup = models.ForeignKey(ControlGroup)
     index = models.TextField(db_index=True)#ex. 1-2387623-G-T

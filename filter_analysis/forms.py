@@ -59,7 +59,7 @@ class FamilyFilter(ModelForm):
 
 
 #GENE_GROUPS= [(x.id, x.name) for x in GeneGroup.objects.all()]
-# FIELDS = Variant().get_fields()
+FIELDS = Variant().get_fields()
 
 class FilterAnalysisForm(forms.Form):
 #    snp_id = forms.CharField(max_length=50, required=False)
@@ -205,7 +205,7 @@ class FilterAnalysisForm(forms.Form):
     #diseases
     # diseases = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Disease.objects.values_list('name').distinct()], required=False)
     
-    # fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
+    fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
     
     # conditions = forms.ModelMultipleChoiceField(queryset=CGDCondition.objects.filter().order_by('name'), required=False)
     
@@ -238,7 +238,7 @@ class FilterAnalysisForm(forms.Form):
 
         super(FilterAnalysisForm, self).__init__(*args, **kwargs)
 
-        if not user.is_authenticated:
+        if not user.is_authenticated():
             # print('user None', user)
             self.fields['individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False, label='INDIVIDUALS')
@@ -390,7 +390,7 @@ class FamilyAnalysisForm(forms.Form):
     #diseases
     # diseases = forms.MultipleChoiceField(choices=[(x[0], x[0]) for x in Disease.objects.values_list('name').distinct()], required=False)
     
-    # fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
+    fields = forms.MultipleChoiceField(choices=FIELDS, required=False)
     
     omim = forms.ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
         queryset=Disease.objects.all(),
@@ -434,7 +434,7 @@ class FamilyAnalysisForm(forms.Form):
         
         super(FamilyAnalysisForm, self).__init__(*args, **kwargs)
 
-        if not user.is_authenticated:
+        if not user.is_authenticated():
             # print('user None', user)
             self.fields['mother'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
