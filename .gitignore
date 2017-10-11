@@ -35,7 +35,4 @@ mendelmdenv/
 mendelmdenv/*
 ann_sample
 data/files/
-scripts/worker.py
-scripts/install_worker_ubuntu.sh
-celerybeat-schedule
-scripts/test_import_samples.py
+data/genomes/

@@ -16,3 +16,5 @@ django-celery
 django-appconf
 gunicorn
 boto3
+numpy
+cyvcf2
