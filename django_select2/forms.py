@@ -54,7 +54,7 @@ from pickle import PicklingError
 
 from django import forms
 from django.core import signing
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.models import ModelChoiceIterator
 from django.utils.encoding import force_text

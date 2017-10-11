@@ -1,22 +1,20 @@
 Filter Analysis
 ===============
 
-With html forms we offer different options for filtering your variants based on the fields provided by different databases and tools such as DBNSFP, Snpeff, VEP, dbSNP, GnomeAD, 1000Genomes, Exome Sequencing Project and some others projects.
+With this form we offer different options for filtering your variants based on the fields provided by different databases and tools such as Annovar, Snpeff, VEP, dbSNP, 1000Genomes, Exome Sequencing Project and some others.
 
 One Click
 *********
 
-This method was implemented with the idea in mind that the doctors and researchers would always have an idea about the most possible inheritance type of the disease from the family in study. So after selecting beetween Recessive Homozygous, Recessive Heretozygous, Dominant or X-linked the user would get quickly a small list of variants that culd fit the selected inheritance mode.
+This method was implemented with the idea in mind that the doctors/researchers would always have an idea about the most possible inheritance type of the disease from the family in study. So after selecting beetween Recessive Homozygous, Recessive Heretozygous, Dominant or X-linked the use would get quickly a small list of variants that fits the selected inheritance mode.
 
-We do this by defining a few attributes according to the table describe above:
-
-
+We do this by defining  the attributes according to the table describe above:
 
 
 Family Analysis
 ***************
 
-This method was created for the analysis of exomes from families.
+This method was created to allow the analysis of exomes from families. 
 
 
 *******
@@ -71,7 +69,7 @@ Usage: This is usefull if you want you want to search for recessive and dominant
 
 - Chr 
 
-With this field you can choose to see only variants from a single chromosome.
+With this field you can choose to see only variants from a single chromossome.
 Ex. X, Y, 1, 2 ... 22
 
 -Pos

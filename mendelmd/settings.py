@@ -211,10 +211,6 @@ BROKER_URL = 'django://'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERY_IMPORTS = ('individuals.tasks', )
 
-# BROKER_URL = 'django://'
-# CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-# CELERY_IMPORTS = ('individuals.tasks')#, 'tasks.tasks'
-
 # CELERY_ROUTES = {
 #     'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
 #     'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},

@@ -4,13 +4,9 @@ from fabric.api import run
 env.user  = 'raony'
 env.hosts = ['mendel']
 
-def reset():
-    local('dropdb mendelmd')
-    local('createdb mendelmd')
-    reset_migrations()
-    # local('python manage.py migrate')
-
 def install():
+    # local('pip install cython')
+    # local('pip install pynnotator')
     local('pip install -r requirements.txt')
     # local('pynnotator install')
     # local('python manage.py migrate auth')#bug with version 1.8
@@ -22,16 +18,11 @@ def backup_users():
     local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
 
-def delete_migrations():
-    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'databases']
-    for model in models:
-        local('rm -rf %s/migrations' % (model))
-
 def reset_migrations():
 
-    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'databases']
+    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes']
     for model in models:
-        local('rm -rf %s/migrations' % (model))
+        local('rm -rf apps/%s/migrations' % (model))
     for model in models:
         local('python manage.py makemigrations %s' % (model))
 
@@ -160,6 +151,3 @@ def docs():
     with lcd('../docs'):
         local('make html')
         local('cp -r _build/html/* ../static/docs/')
-
-def worker():
-    local('celery -A mendelmd worker -l info')#-B

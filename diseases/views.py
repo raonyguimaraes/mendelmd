@@ -19,7 +19,7 @@ from django.db.models import Q
 # import urllib.request, urllib.parse, urllib.error
 
 from django.views.generic import ListView
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 # from bs4 import BeautifulSoup
 # import bs4

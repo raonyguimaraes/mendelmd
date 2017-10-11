@@ -27,9 +27,6 @@ import os
 import json
 import gzip
 
-from tasks.models import Task
-from tasks.tasks import annotate_vcf
-
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
@@ -49,10 +46,10 @@ def create(request):
         form = IndividualForm(request.POST, request.FILES)
         # print('entrou no create!')
         if form.is_valid():
-
+            
             # print('form is valid!')
 
-            if request.user.is_authenticated:
+            if request.user.is_authenticated():
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
                 individual = Individual.objects.create(user=None, status='new')
@@ -60,7 +57,7 @@ def create(request):
             individual.vcf_file= request.FILES.get('file')
             #request.FILES.get('file')
             filename = individual.vcf_file.name.split('.')
-            new_filename = []
+            new_filename = [] 
             for tag in filename:
                 new_filename.append(slugify(tag))
 
@@ -71,29 +68,26 @@ def create(request):
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
 
-            # print('share with', form.cleaned_data['shared_with_groups'])
-            individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
-
-            # print('save')
+            individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+            
             individual.save()
-            # print('after save')
+            
             f = individual.vcf_file
-
+            
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
 
-            if request.user.is_authenticated:
+            if request.user.is_authenticated():
+
                 os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
             else:
                 os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             # AnnotateVariants.delay(individual.id)
-            print('delay')
+            
             VerifyVCF.delay(individual.id)
-            print('before data')
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
-            # print('after data', data)
 
             response = JSONResponse(data, mimetype=response_mimetype(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
@@ -143,10 +137,11 @@ class IndividualDeleteView(DeleteView):
             username = self.object.user.username
         else:
             username = 'public'
-
+        
         #delete files
         if self.object.vcf_file:
             self.object.vcf_file.delete()
+
         # if self.object.strs_file:
         #     self.object.strs_file.delete()
         # if self.object.cnvs_file:
@@ -154,10 +149,10 @@ class IndividualDeleteView(DeleteView):
         os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, username, individual_id))
 
         self.object.delete()
-
-
-
-
+        
+        
+        
+        
 #        response = JSONResponse(True, {}, response_mimetype(self.request))
 #        response['Content-Disposition'] = 'inline; filename=files.json'
 #        return response
@@ -236,18 +231,18 @@ def browse(request, individual_id):
     query_string = request.META['QUERY_STRING']
     individual = get_object_or_404(Individual, pk=individual_id)
     query = {}
-
+    
 #    DEFAULT_SORT = 'pk'
 #    sort_key = request.GET.get('sort', DEFAULT_SORT)
-    # tags = ['genotype', 'snpeffannotation__effect']#, 'func_class', 'impact', 'cln_omim', 'chr'
+    # tags = ['genotype', 'snpeffannotation__effect']#, 'func_class', 'impact', 'cln_omim', 'chr' 
     # for tag in tags:
     #     criteria = request.GET.get(tag, '')
     #     if criteria:
     #         query[tag] = criteria
 
-
+    
     if request.method == 'GET':
-        form = BrowserForm(request.GET)
+        form = BrowserForm(request.GET)   
         if form.is_valid():
             print('form is valid')
             #chr
@@ -262,7 +257,7 @@ def browse(request, individual_id):
             effect = request.GET.get('effect', '')
             if effect != '':
                 print('effect', effect)
-                query['snpeff_effect'] = effect
+                query['snpeff_effect'] = effect                
             #snp_id
             # snp_id = request.GET.get('snp_id', '')
             # if snp_id != '':
@@ -298,16 +293,16 @@ def browse(request, individual_id):
 
             # for variant in variants:
             #     print variant.entry_set.all()
-
+            
             #     variant.snpeff=
 
-
+    
     else:
-
+        
         form = BrowserForm(request.GET)
         variants = Variant.objects.filter(individual=individual, **query)
-
-
+        
+        
     #Pagination
     paginator = Paginator(variants, 25) # Show 25 contacts per page
     try:
@@ -322,17 +317,17 @@ def browse(request, individual_id):
     except EmptyPage:
        # If page is out of range (e.g. 9999), deliver last page of results.
        variants = paginator.page(paginator.num_pages)
-
+    
     return render(request, 'variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string})
 
 @login_required
 def list(request):
     if request.method == 'POST':
         individuals = request.POST.getlist('individuals')
-        print(individuals)
+        print(individuals) 
         individuals = [int(x) for x in individuals]
         print(individuals)
-
+        
         if request.POST['selectionField'] == "Show":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
@@ -366,7 +361,7 @@ def list(request):
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
                 PopulateVariants.delay(individual.id)
-
+            
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
@@ -375,16 +370,16 @@ def list(request):
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
                 Find_Medical_Conditions_and_Medicines.delay(individual.id)
-
-
+        
+    
     args = []
     # groups = Groups.objects.filter(user=request.user, shared_with_users=).order_by("-id")
     args.append(Q(user=request.user) | Q(shared_with_users=request.user) | Q(shared_with_groups__members=request.user))
     individuals = Individual.objects.filter(*args).order_by("-id")
-
+    
     ind_featured = Individual.objects.filter(is_featured= True).order_by("id")
     paginator = Paginator(individuals, 25) # Show 25 contacts per page
-
+           
     try:
        page = int(request.GET.get('page', '1'))
     except ValueError:
@@ -398,10 +393,12 @@ def list(request):
        # If page is out of range (e.g. 9999), deliver last page of results.
        individuals = paginator.page(paginator.num_pages)
 
+
+
     groups = Group.objects.all()
 #    individuals = Individual.objects.annotate(number_of_variants=Count('variant'))
-
-
+    
+    
     return render(request, 'individuals/list.html', {'individuals': individuals, 'groups':groups, 'ind_featured':ind_featured})
 
 
@@ -410,22 +407,8 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-
     AnnotateVariants.delay(individual.id)
-    
-    task = Task(user=request.user)
-    task.name = 'Annotate Individual %s' % (individual.name)
-    task.status= 'new'
-    task.type = 'annotation'
-    task.save()
-    task.individuals.add(individual)
-    
-    annotate_vcf.delay(task.id)
-
-    #delay annotation task
-
     individual.save()
-
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
 
@@ -437,26 +420,36 @@ def populate(request, individual_id):
 
     return redirect('dashboard')
 
+
+@login_required
+def populate_mongo(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    PopulateMongoVariants.delay(individual.id)
+    messages.add_message(request, messages.INFO, "Your individual is being inserted at MongoDB.")
+
+    return redirect('individuals_list')
+
+
 def download(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
-
+    
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
-
+    
     path = ''
     # os.chmod("%s/genomes/%s/%s" % (settings.MEDIA_ROOT, individual.user, individual.id), 0777)
 
-
+    
     # if filename.endswith('vcf.zip'):
-       # basename = filename.split('.vcf.zip')[0]
+       # basename = filename.split('.vcf.zip')[0]       
     # elif filename.endswith('.zip'):
-       # basename = filename.split('.zip')[0]
+       # basename = filename.split('.zip')[0]       
     # else:
        # basename = filename.split('.vcf')[0]
     #print basename
     #print path
     #print filepath
-
+    
     fullpath = '%s/%s' % (filepath, filename)
     if filename.endswith('.gz'):
         vcffile = gzip.open(fullpath, 'r')
@@ -475,17 +468,17 @@ def download(request, individual_id):
 
 def download_annotated(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
-
+    
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
-
+    
     # path = settings.MEDIA_ROOT
     # if filename.endswith('vcf.zip'):
-       # basename = filename.split('.vcf.zip')[0]
+       # basename = filename.split('.vcf.zip')[0]       
     # else:
-
+    
     basename = filename.split('.vcf')[0]
-
+    
     fullpath = '%s/annotation.final.vcf.zip' % (filepath)
 
     vcffile = open(fullpath, 'rb')
@@ -499,10 +492,10 @@ def download_annotated(request, individual_id):
 @login_required
 def create_group(request):
     if request.method == 'POST':
-        form = GroupForm(request.POST, request.FILES)
+        form = GroupForm(request.POST, request.FILES)        
         if form.is_valid():
             form.save()
-
+            
             return redirect('individuals_list')
     else:
         form = GroupForm()
@@ -522,9 +515,9 @@ class GroupDeleteView(DeleteView):
         that is easy to implement.
         """
         self.object = self.get_object()
-
+        
         #username = self.object.user.username
-
+        
         self.object.delete()
         messages.add_message(request, messages.INFO, "Group deleted with success!")
         return redirect('individuals_list')
@@ -537,72 +530,72 @@ def comparison(request):
     variants = []
     query_string = request.META['QUERY_STRING']
     if request.method == 'GET':
-        form = ComparisonForm(request.user, request.GET, request.FILES)
+        form = ComparisonForm(request.user, request.GET, request.FILES)        
         if form.is_valid():
-
+            
             individual_one_id = request.GET.get('individual_one', '')
             individual_two_id = request.GET.get('individual_two', '')
             read_depth = request.GET.get('read_depth', '')
             if read_depth != '':
                 query['read_depth__gte'] = float(read_depth)
-            if individual_one_id != '' and individual_two_id != '':
+            if individual_one_id != '' and individual_two_id != '': 
                 variants_ind_one = Variant.objects.filter(individual__id=individual_one_id, **query).values('chr', 'pos', 'genotype')
-
+                
                 variants_ind_two = Variant.objects.filter(individual__id=individual_two_id, **query).values('chr', 'pos', 'genotype')
                 print('Got Variants from Both!')
-
+    
                 genotypes_in_common = 0
                 genotypes_not_in_common = 0
                 ind_one = {}
                 ind_two = {}
                 summary['variants_ind_one'] = variants_ind_one.count()
-
+                 
                 for variant in variants_ind_one:
                     id = '%s-%s' % (variant['chr'], variant['pos'])
-                    if id in ind_one:
+                    if id in ind_one:                 
                         ind_one[id].append(variant['genotype'])
                     else:
                         ind_one[id] = []
                         ind_one[id].append(variant['genotype'])
-
+                        
                 summary['variants_ind_two'] = variants_ind_two.count()
                 for variant in variants_ind_two:
                     id = '%s-%s' % (variant['chr'], variant['pos'])
-                    if id in ind_two:
+                    if id in ind_two:                 
                         ind_two[id].append(variant['genotype'])
                     else:
                         ind_two[id] = []
                         ind_two[id].append(variant['genotype'])
-
-
+                    
+                
                 print('Finished creating indexes')
                 for pos in ind_one:
                     if pos in ind_two:
                         for genotype in ind_one[pos]:
-
+                            
                             if genotype in ind_two[pos]:
                                 genotypes_in_common += 1
     #                            variant ={}
     #                            variant['chr'] = item.split('-')[0]
     #                            variant['pos'] = item.split('-')[1]
     #                            variant['genotype'] = ind_two[item]
-
-    #                            variants.append(variant)
+                                
+    #                            variants.append(variant) 
                             else:
                                 genotypes_not_in_common += 1
-
-    #
+                        
+    #                        
                 print('genotypes in common: %s' % genotypes_in_common)
                 summary['genotypes_in_common'] = genotypes_in_common
                 summary['genotypes_not_in_common'] = genotypes_not_in_common
                 summary['total_variants'] = genotypes_in_common + genotypes_not_in_common
-
+                
                 summary['percent_ind_one'] = round((float(genotypes_in_common)/summary['variants_ind_one'])*100, 2)
                 summary['percent_ind_two'] = round((float(genotypes_in_common)/summary['variants_ind_two'])*100, 2)
                 print(summary)
-
+            
     else:
         form = ComparisonForm(request.user)
-
-
+        
+        
     return render(request, 'individuals/comparison.html', {'form':form, 'summary':summary, 'query_string':query_string})
