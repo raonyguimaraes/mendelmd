@@ -32,6 +32,8 @@ from collections import OrderedDict
 
 import json
 import vcf
+from cyvcf2 import VCF
+
 
 from datetime import timedelta
 from django.template.defaultfilters import slugify

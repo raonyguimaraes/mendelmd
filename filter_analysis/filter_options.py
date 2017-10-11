@@ -11,7 +11,7 @@ from django.http import HttpResponse
 import csv
 import pickle
 
-from databases.models import VariSNP
+# from databases.models import VariSNP
 
 
 
@@ -232,27 +232,27 @@ def filter_dbsnp(request, query):
     if dbsnp == 'on':
         query['variant_id'] = "."
 
-def filter_varisnp(request, query, exclude):
+# def filter_varisnp(request, query, exclude):
 
-    exclude_varisnp = request.GET.get('exclude_varisnp', '')
-    if exclude_varisnp == 'on':
+#     exclude_varisnp = request.GET.get('exclude_varisnp', '')
+#     if exclude_varisnp == 'on':
 
-        snp_list = VariSNP.objects.all().values_list('dbsnp_id', flat=True)
+#         snp_list = VariSNP.objects.all().values_list('dbsnp_id', flat=True)
         
-        # safe_snp_list = []
-        # for snp in snp_list:
-        #     safe_snp_list.append(str(snp))
-        # print 'snp_list', len(snp_list), snp_list[:5]
-        # snp_list = list(snp_list)
-        # print 'snp_list depois', len(snp_list), snp_list[:5]
+#         # safe_snp_list = []
+#         # for snp in snp_list:
+#         #     safe_snp_list.append(str(snp))
+#         # print 'snp_list', len(snp_list), snp_list[:5]
+#         # snp_list = list(snp_list)
+#         # print 'snp_list depois', len(snp_list), snp_list[:5]
 
 
-        if 'variant_id__in' in exclude:
-            # print 'varisnp variant_id__in ja existe!'
-            # print snp_list
-            exclude['variant_id__in'].extend(safe_snp_list)
-        else:
-            exclude['variant_id__in'] = safe_snp_list
+#         if 'variant_id__in' in exclude:
+#             # print 'varisnp variant_id__in ja existe!'
+#             # print snp_list
+#             exclude['variant_id__in'].extend(safe_snp_list)
+#         else:
+#             exclude['variant_id__in'] = safe_snp_list
 
 def filter_by_1000g(request, args):
     genomes1000_exclude = request.GET.get('genomes1000_exclude', '')

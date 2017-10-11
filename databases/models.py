@@ -7,6 +7,7 @@ class VariSNP(models.Model):
 
     benchmark database for neutral variations from dbSNP
 
+#     benchmark database for neutral variations from dbSNP
 
     """
     dbsnp_id = models.CharField(max_length=255)

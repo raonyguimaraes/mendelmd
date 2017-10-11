@@ -52,13 +52,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'django_select2',
-    #queue
 
-    # 'djcelery',
+    'djcelery',
     'celery',
-    # 'kombu.transport.django',
-    'django_celery_results',
-    'django_celery_beat',
+    'kombu.transport.django',
+    # 'django_celery_results',
+    # 'django_celery_beat',
 
     #private apps
 
@@ -75,8 +74,6 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
-    'tasks',
-    'workers',
 ]
 
 MIDDLEWARE = [
@@ -195,10 +192,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
-#new celery settings
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_BACKEND = 'django-cache'
-
 #django celery
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_RESULT_BACKEND = 'django-cache'
@@ -212,8 +205,11 @@ CELERY_RESULT_BACKEND = 'django-cache'
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_BROKER_URL = 'django://'
 
-# import djcelery
-# djcelery.setup_loader()
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'django://'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+CELERY_IMPORTS = ('individuals.tasks', )
 
 # BROKER_URL = 'django://'
 # CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
