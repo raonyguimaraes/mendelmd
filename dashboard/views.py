@@ -12,14 +12,27 @@ from django.utils.text import slugify
 from individuals.tasks import *
 
 def index(request):
+    if request.method == 'POST':
+        status = request.POST['status']
+        # print('status', status)
+    else:
+        status = ''
     if request.user.is_staff:
-        individuals = Individual.objects.all().order_by('-id')
+        if status != '':
+            individuals = Individual.objects.filter(status=status).order_by('-id')
+        else:
+            individuals = Individual.objects.all().order_by('-id')
     elif request.user.is_authenticated():
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
         individuals = Individual.objects.filter(user=None).order_by('-id')
 
-    return render(request, 'dashboard/dashboard.html', {'individuals':individuals})
+    n_individuals = individuals.count()
+    context = {
+    'n_individuals': n_individuals,
+    'individuals':individuals
+    }
+    return render(request, 'dashboard/dashboard.html', context)
 
 @login_required
 def bulk_action(request):
