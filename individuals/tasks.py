@@ -62,8 +62,8 @@ def VerifyVCF(individual_id):
         path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
 
     new_path = '/'.join(path.split('/')[:-1])
+    
     print(new_path)
-
 
     os.chdir(path)
 

@@ -8,7 +8,19 @@
     <button type="button" class="btn btn-lg btn-primary">Upload VCF File</button>
 </a>
 <br><br>
-
+{% if user.is_staff %}
+<form action="." method="post">
+{% csrf_token %}
+    {% if user.is_staff %}
+    <select name="status">
+        <option value="new">New</option>
+        <option value="failed">Failed</option>
+        <option value="annotated">Annotated</option>
+        <option value="populated">Populated</option>        
+    </select>
+    <input type="submit" value="Submit"/>
+    {% endif %}
+{% endif %}
 <form action="{% url 'bulk_action' %}" method="post">
     {% csrf_token %}
     {% if user.is_staff %}
@@ -23,6 +35,7 @@
     {% endif %}
 
     <h2 class="sub-header">Individuals</h2>
+    Showing {{ n_individuals }} individuals
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
