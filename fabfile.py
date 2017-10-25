@@ -20,7 +20,7 @@ def backup_users():
 
 def reset_migrations():
 
-    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes']
+    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files']
     for model in models:
         local('rm -rf apps/%s/migrations' % (model))
     for model in models:
