@@ -131,6 +131,10 @@ def AnnotateVariants(individual_id):
 
     individual = get_object_or_404(Individual, pk=individual_id)
 
+    individual.status = 'running'
+    individual.save()
+    
+
     #chdir into folder
     # print 'individual.vcf_file.name'
     # print individual.vcf_file.name

@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Filter Analysis &#8212; Mendel,MD 0.3 documentation</title>
-    
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -35,7 +32,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -56,8 +53,8 @@
 <p>This method was created to allow the analysis of exomes from families.</p>
 <div class="section" id="formats">
 <h3>Formats<a class="headerlink" href="#formats" title="Permalink to this headline">¶</a></h3>
-<p>In order to fully understand this filtering process it&#8217;s usually required that you have some knowledge about some different formats, tools and scores of predictions and conservation.</p>
-<p>Please before you start filtering your variants using Mendel,MD it&#8217;s recommended that you read the following links:</p>
+<p>In order to fully understand this filtering process it’s usually required that you have some knowledge about some different formats, tools and scores of predictions and conservation.</p>
+<p>Please before you start filtering your variants using Mendel,MD it’s recommended that you read the following links:</p>
 <ul class="simple">
 <li>VCF</li>
 </ul>
@@ -81,7 +78,7 @@
 </div>
 <div class="section" id="individuals-options">
 <h2>Individuals Options<a class="headerlink" href="#individuals-options" title="Permalink to this headline">¶</a></h2>
-<p>On this section you have two columns &#8220;Select Variants From&#8221; and &#8220;Exclude Variants From&#8221;. The first column enables you to include individuals that you uploaded, snps from dbsnp138 and genes symbols from refseq that you want to see in your results. The second column is where you can choose also individuals, snps and genes that you want to exclude from your results.</p>
+<p>On this section you have two columns “Select Variants From” and “Exclude Variants From”. The first column enables you to include individuals that you uploaded, snps from dbsnp138 and genes symbols from refseq that you want to see in your results. The second column is where you can choose also individuals, snps and genes that you want to exclude from your results.</p>
 </div>
 <div class="section" id="vcf-options">
 <h2>VCF Options<a class="headerlink" href="#vcf-options" title="Permalink to this headline">¶</a></h2>
@@ -99,7 +96,7 @@
 <li>Chr</li>
 </ul>
 <p>With this field you can choose to see only variants from a single chromossome.
-Ex. X, Y, 1, 2 ... 22</p>
+Ex. X, Y, 1, 2 … 22</p>
 <p>-Pos
 This option let you choose variants in certain regions of a chromossome based in a string.</p>
 <p>Ex. Chr 1: Pos:12345-12360</p>
@@ -115,12 +112,12 @@ Usage: You can select variants that are only PASS in you VCF file(s)</p>
 </ul>
 <p>With this option you can choose only variants after a certain build of last version of dbSNP
 Ex. &gt;= 130 (will get only variants after dbsnp 130)</p>
-<p>NOTE: dbSNP 129 is generally regarded as the last &#8220;clean&#8221; dbSNP without &#8220;contamination&#8221; from 1000 Genomes Project and other large-scale next-generation sequencing projects. Many published papers utilize dbSNP129 only.
+<p>NOTE: dbSNP 129 is generally regarded as the last “clean” dbSNP without “contamination” from 1000 Genomes Project and other large-scale next-generation sequencing projects. Many published papers utilize dbSNP129 only.
 Source: <a class="reference external" href="http://www.openbioinformatics.org/annovar/annovar_filter.html#dbsnp">http://www.openbioinformatics.org/annovar/annovar_filter.html#dbsnp</a></p>
 <ul class="simple">
 <li>Read Depth</li>
 </ul>
-<p>This option should be choosen based on the mean coverage of the individuals (exomes, genomes) that you selected under the previous section &#8220;Individuals&#8221;
+<p>This option should be choosen based on the mean coverage of the individuals (exomes, genomes) that you selected under the previous section “Individuals”
 Ex. &gt;= 30 (This will select only variants with more than 29 reads of coverage and can be used for filtering an exome with 80X of coverage)</p>
 <ul class="simple">
 <li>Qual</li>
@@ -178,7 +175,7 @@ Ex. &lt;= 2 (will show only variants in genes that have less than or equal 2 var
 <div class="section" id="func-refgene">
 <h2>Func refGene<a class="headerlink" href="#func-refgene" title="Permalink to this headline">¶</a></h2>
 <p>With this option you can choose the region of your variant:
-Ex. [&#8216;splicing&#8217;, &#8216;UTR5&#8217;, &#8216;ncRNA_exonic&#8217;, &#8216;intergenic&#8217;, &#8216;intronic&#8217;, &#8216;UTR3&#8217;, &#8216;exonic&#8217;, &#8216;upstream&#8217;, &#8216;ncRNA_intronic&#8217;]</p>
+Ex. [‘splicing’, ‘UTR5’, ‘ncRNA_exonic’, ‘intergenic’, ‘intronic’, ‘UTR3’, ‘exonic’, ‘upstream’, ‘ncRNA_intronic’]</p>
 </div>
 <div class="section" id="gene-refgene">
 <h2>Gene.refGene<a class="headerlink" href="#gene-refgene" title="Permalink to this headline">¶</a></h2>
@@ -191,7 +188,7 @@ Ex. SUCLA2</p>
 <div class="section" id="exonicfunc-refgene">
 <h2>ExonicFunc.refGene<a class="headerlink" href="#exonicfunc-refgene" title="Permalink to this headline">¶</a></h2>
 <p>Description: Exonic variant function (non-synonymous, synonymous, etc)</p>
-<p>Usage:[&#8216;frameshift_insertion&#8217;, &#8216;frameshift_deletion&#8217;, &#8216;frameshift_block_substitution&#8217;, &#8216;stopgain&#8217;, &#8216;stoploss&#8217;, &#8216;nonframeshift_insertion&#8217;, &#8216;nonframeshift_deletion&#8217;, &#8216;nonframeshift_block_substitution&#8217;, &#8216;nonsynonymous_SNV&#8217;, &#8216;synonymous_SNV&#8217;, &#8216;unknown&#8217;]</p>
+<p>Usage:[‘frameshift_insertion’, ‘frameshift_deletion’, ‘frameshift_block_substitution’, ‘stopgain’, ‘stoploss’, ‘nonframeshift_insertion’, ‘nonframeshift_deletion’, ‘nonframeshift_block_substitution’, ‘nonsynonymous_SNV’, ‘synonymous_SNV’, ‘unknown’]</p>
 </div>
 <div class="section" id="aachange-refgene">
 <h2>AAChange.refGene<a class="headerlink" href="#aachange-refgene" title="Permalink to this headline">¶</a></h2>
@@ -201,7 +198,7 @@ Ex. SUCLA2</p>
 <h2>phastConsElements46way<a class="headerlink" href="#phastconselements46way" title="Permalink to this headline">¶</a></h2>
 <p>Description: Conserved elements produced by the phastCons program based on a whole-genome alignment of vertebrates.
 There is no specific recommended cutoff for highly conserved elements.</p>
-<p>PhastCons (which has been used in previous Conservation tracks) is a hidden Markov model-based method that estimates the probability that each nucleotide belongs to a conserved element, based on the multiple alignment. It considers not just each individual alignment column, but also its flanking columns. By contrast, phyloP separately measures conservation at individual columns, ignoring the effects of their neighbors. As a consequence, the phyloP plots have a less smooth appearance than the phastCons plots, with more &#8220;texture&#8221; at individual sites. The two methods have different strengths and weaknesses. PhastCons is sensitive to &#8220;runs&#8221; of conserved sites, and is therefore effective for picking out conserved elements. PhyloP, on the other hand, is more appropriate for evaluating signatures of selection at particular nucleotides or classes of nucleotides (e.g., third codon positions, or first positions of miRNA target sites).</p>
+<p>PhastCons (which has been used in previous Conservation tracks) is a hidden Markov model-based method that estimates the probability that each nucleotide belongs to a conserved element, based on the multiple alignment. It considers not just each individual alignment column, but also its flanking columns. By contrast, phyloP separately measures conservation at individual columns, ignoring the effects of their neighbors. As a consequence, the phyloP plots have a less smooth appearance than the phastCons plots, with more “texture” at individual sites. The two methods have different strengths and weaknesses. PhastCons is sensitive to “runs” of conserved sites, and is therefore effective for picking out conserved elements. PhyloP, on the other hand, is more appropriate for evaluating signatures of selection at particular nucleotides or classes of nucleotides (e.g., third codon positions, or first positions of miRNA target sites).</p>
 <p>Usage: With this option you can select only varinats that are conserved among 46 vertebrate species</p>
 <p>Sources:
 <a class="reference external" href="http://compgen.bscb.cornell.edu/phast/phastCons-HOWTO.html">http://compgen.bscb.cornell.edu/phast/phastCons-HOWTO.html</a>
@@ -240,9 +237,9 @@ SIFT predicts whether an amino acid substitution affects protein function. SIFT 
 <p>Usage:
 Ex.
 &lt;= 0.05</p>
-<p>With this option you can select only variants predicted as &#8220;damaging&#8221; by LJB2_SIFT.
+<p>With this option you can select only variants predicted as “damaging” by LJB2_SIFT.
 You can also exclude all variants that does not have a sift score from your results.
-obs: remember that indels and frameshifts doesn&#8217;t have sift scores.</p>
+obs: remember that indels and frameshifts doesn’t have sift scores.</p>
 <p>Source: <a class="reference external" href="http://sift.jcvi.org/">http://sift.jcvi.org/</a></p>
 <p>Kumar P, Henikoff S, Ng PC. Predicting the effects of coding non-synonymous variants on protein function using the SIFT algorithm. Nat Protoc. 2009;4(7):1073-81. PubMed PDF</p>
 </div>
@@ -259,9 +256,9 @@ obs: remember that indels and frameshifts doesn&#8217;t have sift scores.</p>
 <h2>LJB2_PP2_HDIV_Pred<a class="headerlink" href="#ljb2-pp2-hdiv-pred" title="Permalink to this headline">¶</a></h2>
 <p>Description
 Usage:
-(&#8216;D&#8217;, &#8216;probably damaging&#8217;),
-(&#8216;P&#8217;, &#8216;possibly damaging&#8217;),
-(&#8216;B&#8217;, &#8216;benign&#8217;)</p>
+(‘D’, ‘probably damaging’),
+(‘P’, ‘possibly damaging’),
+(‘B’, ‘benign’)</p>
 </div>
 <div class="section" id="ljb2-polyphen2-hvar">
 <h2>LJB2_PolyPhen2_HVAR<a class="headerlink" href="#ljb2-polyphen2-hvar" title="Permalink to this headline">¶</a></h2>
@@ -271,9 +268,9 @@ Usage:
 <h2>LJB2_PolyPhen2_HVAR_Pred<a class="headerlink" href="#ljb2-polyphen2-hvar-pred" title="Permalink to this headline">¶</a></h2>
 <p>Description
 Usage:
-(&#8216;D&#8217;, &#8216;probably damaging&#8217;),
-(&#8216;P&#8217;, &#8216;possibly damaging&#8217;),
-(&#8216;B&#8217;, &#8216;benign&#8217;)</p>
+(‘D’, ‘probably damaging’),
+(‘P’, ‘possibly damaging’),
+(‘B’, ‘benign’)</p>
 </div>
 <div class="section" id="ljb2-lrt">
 <h2>LJB2_LRT<a class="headerlink" href="#ljb2-lrt" title="Permalink to this headline">¶</a></h2>
@@ -284,9 +281,9 @@ Cooper</p>
 <h2>LJB2_LRT_Pred<a class="headerlink" href="#ljb2-lrt-pred" title="Permalink to this headline">¶</a></h2>
 <p>Description
 Usage:
-(&#8216;D&#8217;, &#8216;probably damaging&#8217;),
-(&#8216;P&#8217;, &#8216;possibly damaging&#8217;),
-(&#8216;B&#8217;, &#8216;benign&#8217;)</p>
+(‘D’, ‘probably damaging’),
+(‘P’, ‘possibly damaging’),
+(‘B’, ‘benign’)</p>
 </div>
 <div class="section" id="ljb2-mutationtaster">
 <h2>LJB2_MutationTaster<a class="headerlink" href="#ljb2-mutationtaster" title="Permalink to this headline">¶</a></h2>
@@ -296,9 +293,9 @@ Usage:
 <h2>LJB2_MutationTaster_Pred<a class="headerlink" href="#ljb2-mutationtaster-pred" title="Permalink to this headline">¶</a></h2>
 <p>Description
 Usage:
-(&#8216;D&#8217;, &#8216;probably damaging&#8217;),
-(&#8216;P&#8217;, &#8216;possibly damaging&#8217;),
-(&#8216;B&#8217;, &#8216;benign&#8217;)</p>
+(‘D’, ‘probably damaging’),
+(‘P’, ‘possibly damaging’),
+(‘B’, ‘benign’)</p>
 </div>
 <div class="section" id="ljb-mutationassessor">
 <h2>LJB_MutationAssessor<a class="headerlink" href="#ljb-mutationassessor" title="Permalink to this headline">¶</a></h2>
@@ -310,9 +307,9 @@ Usage:
 <h2>LJB_MutationAssessor_Pred<a class="headerlink" href="#ljb-mutationassessor-pred" title="Permalink to this headline">¶</a></h2>
 <p>Description
 Usage:
-(&#8216;D&#8217;, &#8216;probably damaging&#8217;),
-(&#8216;P&#8217;, &#8216;possibly damaging&#8217;),
-(&#8216;B&#8217;, &#8216;benign&#8217;)</p>
+(‘D’, ‘probably damaging’),
+(‘P’, ‘possibly damaging’),
+(‘B’, ‘benign’)</p>
 </div>
 <div class="section" id="ljb2-fathmm">
 <h2>LJB2_FATHMM<a class="headerlink" href="#ljb2-fathmm" title="Permalink to this headline">¶</a></h2>
@@ -344,7 +341,7 @@ Usage:
 <div class="section" id="avsift">
 <h2>avsift<a class="headerlink" href="#avsift" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div>func_refgene_options = [&#8216;splicing&#8217;, &#8216;UTR5&#8217;, &#8216;ncRNA_exonic&#8217;, &#8216;intergenic&#8217;, &#8216;intronic&#8217;, &#8216;UTR3&#8217;, &#8216;exonic&#8217;, &#8216;upstream&#8217;, &#8216;ncRNA_intronic&#8217;]</div></blockquote>
+<div>func_refgene_options = [‘splicing’, ‘UTR5’, ‘ncRNA_exonic’, ‘intergenic’, ‘intronic’, ‘UTR3’, ‘exonic’, ‘upstream’, ‘ncRNA_intronic’]</div></blockquote>
 <p>Source:</p>
 <p>dbNSFP: a lightweight database of human nonsynonymous SNPs and their functional predictions.
 Liu X, Jian X, Boerwinkle E.
@@ -428,17 +425,17 @@ CELL_TYPE</p>
 </div>
 <div class="section" id="sift">
 <h2>SIFT<a class="headerlink" href="#sift" title="Permalink to this headline">¶</a></h2>
-<p>SIFT predicts whether an amino acid substitution is likely to affect protein function based on sequence homology and the physico-chemical similarity between the alternate amino acids. The data we provide for each amino acid substitution is a score and a qualitative prediction (either &#8216;tolerated&#8217; or &#8216;deleterious&#8217;). The score is the normalized probability that the amino acid change is tolerated so scores nearer 0 are more likely to be deleterious. The qualitative prediction is derived from this score such that substitutions with a score &lt; 0.05 are called &#8216;deleterious&#8217; and all others are called &#8216;tolerated&#8217;.</p>
+<p>SIFT predicts whether an amino acid substitution is likely to affect protein function based on sequence homology and the physico-chemical similarity between the alternate amino acids. The data we provide for each amino acid substitution is a score and a qualitative prediction (either ‘tolerated’ or ‘deleterious’). The score is the normalized probability that the amino acid change is tolerated so scores nearer 0 are more likely to be deleterious. The qualitative prediction is derived from this score such that substitutions with a score &lt; 0.05 are called ‘deleterious’ and all others are called ‘tolerated’.</p>
 <p>We ran SIFT version 5.0.2 following the instructions from the authors and used SIFT to choose homologous proteins rather than supplying them ourselves. We used all protein sequences available from UniRef90 (release 2012_11) as the protein database.</p>
 </div>
 <div class="section" id="polyphen-2">
 <h2>PolyPhen-2<a class="headerlink" href="#polyphen-2" title="Permalink to this headline">¶</a></h2>
-<p>PolyPhen-2 predicts the effect of an amino acid substitution on the structure and function of a protein using sequence homology, Pfam annotations, 3D structures from PDB where available, and a number of other databases and tools (including DSSP, ncoils etc.). As with SIFT, for each amino acid substitution where we have been able to calculate a prediction, we provide both a qualitative prediction (one of &#8216;probably damaging&#8217;, &#8216;possibly damaging&#8217;, &#8216;benign&#8217; or &#8216;unknown&#8217;) and a score. The PolyPhen score represents the probability that a substitution is damaging, so values nearer 1 are more confidently predicted to be deleterious (note that this the opposite to SIFT). The qualitative prediction is based on the False Positive Rate of the classifier model used to make the predictions.</p>
+<p>PolyPhen-2 predicts the effect of an amino acid substitution on the structure and function of a protein using sequence homology, Pfam annotations, 3D structures from PDB where available, and a number of other databases and tools (including DSSP, ncoils etc.). As with SIFT, for each amino acid substitution where we have been able to calculate a prediction, we provide both a qualitative prediction (one of ‘probably damaging’, ‘possibly damaging’, ‘benign’ or ‘unknown’) and a score. The PolyPhen score represents the probability that a substitution is damaging, so values nearer 1 are more confidently predicted to be deleterious (note that this the opposite to SIFT). The qualitative prediction is based on the False Positive Rate of the classifier model used to make the predictions.</p>
 <p>We ran PolyPhen-2 version 2.2.2 (available here) and again we followed all instructions from the authors, and used the UniProtKB UniRef100 (release 2011_12) non-redundant protein set as the protein database, which was downloaded, along with PDB structures, and annotations from Pfam and DSSP(snapshot 03-Jan-2012) in February 2012. When computing the predictions we store results for the classifier models trained on the HumDiv and HumVar datasets. Both result sets are available through the variation API which defaults to HumVar if no selection is made. (Please refer to the PolyPhen website or publications for more details of the classification system).</p>
 </div>
 <div class="section" id="condel">
 <h2>Condel<a class="headerlink" href="#condel" title="Permalink to this headline">¶</a></h2>
-<p>Condel is a general method for calculating a consensus prediction from the output of tools designed to predict the effect of an amino acid substitution. It does so by calculating a weighted average score (WAS) of the scores of each component method. The Condel authors provided us with a version specialised for finding a consensus between SIFT and PolyPhen and we integrated this into a Variation Effect Predictor (VEP) plugin. Tests run by the authors on the HumVar dataset (a test set curated by the PolyPhen team), show that Condel can improve both the sensitivity and specificity of predictions compared to either SIFT or PolyPhen used alone (please contact the authors for details). The Condel score, along with a qualitative prediction (one of &#8216;neutral&#8217; or &#8216;deleterious&#8217;), are available in the VEP plugin. The Condel score is the consensus probability that a substitution is deleterious, so values nearer 1 are predicted with greater confidence to affect protein function.</p>
+<p>Condel is a general method for calculating a consensus prediction from the output of tools designed to predict the effect of an amino acid substitution. It does so by calculating a weighted average score (WAS) of the scores of each component method. The Condel authors provided us with a version specialised for finding a consensus between SIFT and PolyPhen and we integrated this into a Variation Effect Predictor (VEP) plugin. Tests run by the authors on the HumVar dataset (a test set curated by the PolyPhen team), show that Condel can improve both the sensitivity and specificity of predictions compared to either SIFT or PolyPhen used alone (please contact the authors for details). The Condel score, along with a qualitative prediction (one of ‘neutral’ or ‘deleterious’), are available in the VEP plugin. The Condel score is the consensus probability that a substitution is deleterious, so values nearer 1 are predicted with greater confidence to affect protein function.</p>
 <p>Sources: <a class="reference external" href="http://www.ensembl.org/info/genome/variation/predicted_data.html#consequences">http://www.ensembl.org/info/genome/variation/predicted_data.html#consequences</a></p>
 </div>
 </div>
@@ -533,7 +530,7 @@ CELL_TYPE</p>
       &copy;2017, Raony Guimaraes.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |

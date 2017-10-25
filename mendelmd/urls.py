@@ -17,7 +17,7 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
 
-	url(r'^docs/$', TemplateView.as_view(template_name='pages/docs.html'), name="docs"),
+	url(r'^docs/$', views.docs, name="docs"),
 
 
     url(r'^admin/', include(admin.site.urls)),
