@@ -21,6 +21,8 @@
     <input type="submit" value="Submit"/>
     {% endif %}
 {% endif %}
+</form>
+
 <form action="{% url 'bulk_action' %}" method="post">
     {% csrf_token %}
     {% if user.is_staff %}

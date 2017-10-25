@@ -11,6 +11,8 @@ from django.conf import settings
 from django.utils.text import slugify
 from individuals.tasks import *
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 def index(request):
     if request.method == 'POST':
         status = request.POST['status']
@@ -28,6 +30,21 @@ def index(request):
         individuals = Individual.objects.filter(user=None).order_by('-id')
 
     n_individuals = individuals.count()
+
+    paginator = Paginator(individuals, 25) # Show 25 contacts per page
+
+    page = request.GET.get('page')
+
+    try:
+        individuals = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        individuals = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        individuals = paginator.page(paginator.num_pages)
+
+
     context = {
     'n_individuals': n_individuals,
     'individuals':individuals

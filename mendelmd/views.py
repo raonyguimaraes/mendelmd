@@ -10,3 +10,6 @@ def index(request):
 		return redirect('dashboard')
 
 	return render(request, 'index.html')
+
+def docs(request):
+    return redirect("https://mendelmd.readthedocs.io/")
