@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     'cases',
     'filter_analysis',
     'pathway_analysis',
-    'statistics',
+    # 'statistics',
     'databases',
     'projects',
     'files',
@@ -113,7 +113,7 @@ USE_I18N = False
 
 USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

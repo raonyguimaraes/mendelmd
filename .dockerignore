@@ -1,1 +1,4 @@
 genomes/
+venv/
+scripts/vcf2tsv
+scripts/vcflib

@@ -17,7 +17,7 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
 
-	url(r'^docs/$', TemplateView.as_view(template_name='pages/docs.html'), name="docs"),
+	url(r'^docs/$', views.docs, name="docs"),
 
 
     url(r'^admin/', include(admin.site.urls)),
@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^cases/', include('cases.urls')),
     url(r'^filter_analysis/', include('filter_analysis.urls')),
     # url(r'^pathway_analysis/', include('apps.pathway_analysis.urls')),
-    url(r'^statistics/', include('statistics.urls')),
+    # url(r'^statistics/', include('statistics.urls')),
     url(r'^databases/', include('databases.urls')),
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),

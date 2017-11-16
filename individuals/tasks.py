@@ -26,7 +26,7 @@ from django.conf import settings
 import zipfile
 import gzip
 import pickle
-
+import tarfile
 from collections import OrderedDict
 
 
@@ -62,21 +62,21 @@ def VerifyVCF(individual_id):
         path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
 
     new_path = '/'.join(path.split('/')[:-1])
+    
     print(new_path)
-
 
     os.chdir(path)
 
     if filename.endswith('.vcf'):
         command = 'cp %s sample.vcf' % (filename)
         os.system(command)
-    if filename.endswith('.gz'):
+    elif filename.endswith('vcf.gz'):
         command = 'gunzip -c -d %s > sample.vcf' % (filename)
         os.system(command)
-    if filename.endswith('.zip'):
+    elif filename.endswith('.zip'):
         command = 'unzip -p %s > sample.vcf' % (filename)
         os.system(command)
-    if filename.endswith('.rar'):
+    elif filename.endswith('.rar'):
         command = 'unrar e %s' % (filename)
         os.system(command)
         #now change filename to sample.vcf
@@ -131,6 +131,10 @@ def AnnotateVariants(individual_id):
 
     individual = get_object_or_404(Individual, pk=individual_id)
 
+    individual.status = 'running'
+    individual.save()
+    
+
     #chdir into folder
     # print 'individual.vcf_file.name'
     # print individual.vcf_file.name
@@ -150,14 +154,28 @@ def AnnotateVariants(individual_id):
     os.system(command)
 
     filename = str(individual.vcf_file.name.split('/')[-1])
-
+    print(filename)
     #deal with different types of compressed files
     #ex. zip, vcf, gz, rar
     #check if user uploaded a compressed vcf
     if filename.endswith('.vcf'):
         command = 'cp %s sample.vcf' % (filename)
         os.system(command)
-    if filename.endswith('.gz'):
+    elif filename.endswith('.tar.gz'):
+        print('targz')
+        tar = tarfile.open(filename, "r:gz")
+        for tarinfo in tar:
+            #print(tarinfo.name, "is", tarinfo.size, "bytes in size and is", end="")
+            if tarinfo.name.endswith('.vcf'):
+                if not os.path.exists('outdir'):
+                    os.mkdir('outdir')
+                tar.extract(tarinfo.name, 'outdir')
+                vcfs = os.listdir('outdir')
+                command = 'cp outdir/%s sample.vcf' % (vcfs[0])
+                print(command)
+                os.system(command)
+    
+    if filename.endswith('.vcf.gz'):
         command = 'gunzip -c -d %s > sample.vcf' % (filename)
         os.system(command)
     if filename.endswith('.zip'):
@@ -175,9 +193,9 @@ def AnnotateVariants(individual_id):
 
 
     # print(os.getcwd())
-
-    command = 'pynnotator -i sample.vcf'
-    os.system(command)
+    if os.path.exists('sample.vcf'):
+        command = 'pynnotator -i sample.vcf'
+        os.system(command)
 
     #get sample name using pyvcf
 

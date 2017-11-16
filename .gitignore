@@ -35,3 +35,5 @@ mendelmdenv/
 mendelmdenv/*
 ann_sample
 data/files/
+data/genomes/
+venv/
