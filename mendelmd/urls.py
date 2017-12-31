@@ -1,6 +1,7 @@
 from django.conf.urls import *
 
 from django.contrib import admin
+
 from django.views.generic import TemplateView
 
 admin.autodiscover()
@@ -20,7 +21,8 @@ urlpatterns = [
 	url(r'^docs/$', views.docs, name="docs"),
 
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
+
 
 	url(r'^accounts/', include('allauth.urls')),
 

@@ -8,7 +8,7 @@ class Project(models.Model):
     # class Meta:
     #     app_label = 'projects'
 
-    user = models.ForeignKey(User, editable=False, null=True)
+    user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
     individuals = models.ManyToManyField(Individual, blank=True)
     files = models.ManyToManyField(File, blank=True)
 

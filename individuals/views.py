@@ -1,31 +1,30 @@
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
-from django.http import HttpResponse
-
-from django.utils.text import slugify
-
-from django.views.generic import DeleteView
-from django.contrib import messages
-
-
-from django.contrib.auth.decorators import login_required
-
-from individuals.forms import *
-from individuals.models import *
-from variants.models import *
-
-from individuals.tasks import *
-
-from django.db.models import Count, Sum, Avg, Min, Max
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.template import RequestContext
-from django.db.models import Q
+import gzip
+import json
+import os
 
 from django.conf import settings
-
-import os
-import json
-import gzip
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
+from django.db.models import Avg
+from django.db.models import Count
+from django.db.models import Max
+from django.db.models import Min
+from django.db.models import Q
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.template import RequestContext
+from django.utils.text import slugify
+from django.views.generic import DeleteView
+from individuals.forms import IndividualForm
+from individuals.models import Individual
+from individuals.tasks import *
+from variants.models import Variant
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
@@ -49,7 +48,7 @@ def create(request):
             
             # print('form is valid!')
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
                 individual = Individual.objects.create(user=None, status='new')
@@ -68,7 +67,9 @@ def create(request):
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
 
-            individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+            # individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+
+            individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
             
             individual.save()
             
@@ -77,7 +78,7 @@ def create(request):
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
 
                 os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
             else:
@@ -85,7 +86,7 @@ def create(request):
 
             # AnnotateVariants.delay(individual.id)
             
-            VerifyVCF.delay(individual.id)
+            # VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 
