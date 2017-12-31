@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "dashboard.html" %}
 
 {% block content %}
 <h1>{{project.name}}</h1>
@@ -7,6 +7,71 @@
 <a href="{% url 'projects-import-files' project.id %}">Import Files</a>
 
 <h2>Files</h2>
+
+<div class="row">
+
+<div class="col-md-6">
+
+    <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">Actions</h3>
+    </div>
+    <div class="box-body">
+      
+      <a class="btn btn-app">
+        <i class="fa fa-trash-o"></i> Delete
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-edit"></i> Edit
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-play"></i> Play
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-repeat"></i> Repeat
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-pause"></i> Pause
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-save"></i> Save
+      </a>
+      <a class="btn btn-app">
+        <span class="badge bg-yellow">3</span>
+        <i class="fa fa-bullhorn"></i> Notifications
+      </a>
+      <a class="btn btn-app">
+        <span class="badge bg-green">300</span>
+        <i class="fa fa-barcode"></i> Products
+      </a>
+      <a class="btn btn-app">
+        <span class="badge bg-purple">891</span>
+        <i class="fa fa-users"></i> Users
+      </a>
+      <a class="btn btn-app">
+        <span class="badge bg-teal">67</span>
+        <i class="fa fa-inbox"></i> Orders
+      </a>
+      <a class="btn btn-app">
+        <span class="badge bg-aqua">12</span>
+        <i class="fa fa-envelope"></i> Inbox
+      </a>
+      <a class="btn btn-app">
+        <span class="badge bg-red">531</span>
+        <i class="fa fa-heart-o"></i> Likes
+      </a>
+    </div>
+    <!-- /.box-body -->
+    </div>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
 <table class="table">
 <thead>
 <tr>
@@ -46,6 +111,10 @@
 {% endfor %}
 </tbody>
 </table>
+
+</div>
+
+</div>
 
 {% endblock content %}
 
