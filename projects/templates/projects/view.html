@@ -7,11 +7,13 @@
 <a href="{% url 'projects-import-files' project.id %}">Import Files</a>
 
 <h2>Files</h2>
-
 <table class="table">
 <thead>
 <tr>
+    <th>#<input type="checkbox" id="select_all"></th>
     <th>Name</th>
+    <th>Location</th>
+    <th>Status</th>
     <th>
         Extension
         <select>
@@ -27,10 +29,18 @@
 <tbody>
 {% for file in project.files.all %}
 <tr>
+    
+    
+    <td>
+        <input type="checkbox" name="files" class="files" id="option{{file.id}}" value="{{file.id}}" />
+    </td>
     <td>
         <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
     </td>
-    <td>{{ file.file_type }}</td>
+    <td>{{ file.location }}</td>
+    <td>{{ file.status }}</td>
+    <td>{{ file.extension }}</td>
+    
 
 </tr>
 {% endfor %}
@@ -39,3 +49,12 @@
 
 {% endblock content %}
 
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".files:checkbox").attr('checked', this.checked);
+});
+</script>
+{% endblock %}
