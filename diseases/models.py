@@ -49,12 +49,12 @@ class HGMDGene(models.Model):
 
 class HGMDMutation(models.Model):
     
-    gene = models.ForeignKey(HGMDGene)
+    gene = models.ForeignKey(HGMDGene, on_delete=models.CASCADE)
 
     mutation_type = models.CharField(max_length=255, null=True, blank=True)
     acession = models.CharField(max_length=255, null=True, blank=True)
     
-    phenotype = models.ForeignKey(HGMDPhenotype)
+    phenotype = models.ForeignKey(HGMDPhenotype, on_delete=models.CASCADE)
     reference = models.TextField(null=True, blank=True)
     extras = models.TextField(null=True, blank=True)
 

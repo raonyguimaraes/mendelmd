@@ -55,7 +55,7 @@ INSTALLED_APPS = [
 
     'djcelery',
     'celery',
-    'kombu.transport.django',
+    # 'kombu.transport.django',
     # 'django_celery_results',
     # 'django_celery_beat',
 
