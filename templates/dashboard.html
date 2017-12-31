@@ -91,6 +91,9 @@
   
 }
 </style>
+
+{% block extra_css %}{% endblock %}
+
 </head>
 <body class="hold-transition skin-blue sidebar-mini" onload="myFunction()" style="margin:0;">
 
@@ -115,20 +118,21 @@
 
       <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="#">Upload a VCF</a></li>
-            <li class="active"><a href="#">Dashboard<span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Genome Reports</a></li>
+            <li><a href="{% url 'individual_create' %}">Upload a VCF</a></li>
+            <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li>
+            <li><a href="{% url 'oneclick' %}">1-Click</a></li>
+     <!--        <li><a href="#">Genome Reports</a></li>
             <li><a href="#">1-Click</a></li>
             <li><a href="#">Cases</a></li>
-            <li><a href="#">Individuals</a></li>
-            <li><a href="#">Samples</a></li>
+            <li><a href="#">Individuals</a></li> -->
+<!--             <li><a href="#">Samples</a></li>
             <li><a href="#">Genes</a></li>
             <li><a href="#">Diseases</a></li>
-            <li><a href="#">Files</a></li>
+ --><!--             <li><a href="#">Files</a></li>
             <li><a href="#">Tasks</a></li>
             <li><a href="#">Profile</a></li>
             <li><a href="#">Billing</a></li>
-
+ -->
             <li><a href="#">1-Click Apps</a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Apps <span class="caret"></span></a>
@@ -166,7 +170,7 @@
                   <li><!-- start message -->
                     <a href="#">
                       <div class="pull-left">
-                        <img src="{% static "adminlte/dist/img/user2-160x160.jpg" %}" class="img-circle" alt="User Image">
+                        <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="img-circle" alt="User Image">
                       </div>
                       <h4>
                         Support Team
@@ -352,13 +356,13 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="{% static "adminlte/dist/img/user2-160x160.jpg" %}" class="user-image" alt="User Image">
+              <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="user-image" alt="User Image">
               <span class="hidden-xs">Raony Guimaraes</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="{% static "adminlte/dist/img/user2-160x160.jpg" %}" class="img-circle" alt="User Image">
+                <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="img-circle" alt="User Image">
 
                 <p>
                   Raony Guimaraes - Web Developer
@@ -406,7 +410,7 @@
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="{% static "adminlte/dist/img/user2-160x160.jpg" %}" class="img-circle" alt="User Image">
+          <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
           <p>Raony Guimaraes</p>
@@ -601,34 +605,19 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <h1>
-        Dashboard
-        <small>Control panel</small>
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
-      </ol>
-    </section>
 
-    <!-- Main content -->
-    <section class="content">
-      <!-- Small boxes (Stat box) -->
+  <div class="content-wrapper">
+    
       {% block content %}
-      {% endblock %}
-        
-    </section>
-    <!-- /.content -->
+      {% endblock content %}
+      
   </div>
   <!-- /.content-wrapper -->
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
       <b>Version</b> 2.4.0
     </div>
-    <strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights
+    <strong>Copyright &copy; 2017 <a href="https://torchmed.com">Raony Guimaraes</a>.</strong> All rights
     reserved.
   </footer>
 
@@ -877,5 +866,20 @@ function showPage() {
   document.getElementById("myDiv").style.display = "";
 }
 </script>
+
+
+
+{% block javascript %}
+ <!-- Bootstrap core JavaScript
+    ================================================== -->
+
+    <script type="text/javascript" src="{% static "select2/js/select2.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/project.js" %}"></script>
+
+    {% block extra_js %} {% endblock %}
+
+
+{% endblock %}
+
 </body>
 </html>
