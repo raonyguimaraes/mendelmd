@@ -22,8 +22,8 @@ from django.template import RequestContext
 from django.utils.text import slugify
 from django.views.generic import DeleteView
 from individuals.forms import IndividualForm
-from individuals.models import Individual
-from individuals.tasks import *
+from individuals.models import Individual, Group
+from individuals.tasks import VerifyVCF
 from variants.models import Variant
 
 def response_mimetype(request):
@@ -86,7 +86,7 @@ def create(request):
 
             # AnnotateVariants.delay(individual.id)
             
-            # VerifyVCF.delay(individual.id)
+            VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 

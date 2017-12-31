@@ -1,8 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from individuals.models import Individual
-from files.models import File
+# from files.models import File
 # Create your models here.
+
+
+class File(models.Model):
+
+    user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30)
+    status = models.CharField(max_length=30)
+    location = models.TextField(null=True, blank=True)
+
 
 class Project(models.Model):
     # class Meta:
@@ -23,4 +32,3 @@ class Project(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     modified_date = models.DateTimeField(null=True, blank=True)
-

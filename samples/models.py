@@ -1,5 +1,8 @@
 from django.db import models
 
+from django.contrib.auth.models import User
+
+
 # Create your models here.
 
 class Sample(models.Model):
@@ -12,8 +15,8 @@ class Sample(models.Model):
 
     user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
 
-    shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
-    shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
+    # shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
+    # shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
 
     name = models.CharField(max_length=600)
     is_featured = models.BooleanField(default=True)

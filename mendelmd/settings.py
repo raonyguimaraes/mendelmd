@@ -53,8 +53,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
 
-    'djcelery',
+    # 'djcelery',
     'celery',
+    'django_celery_results',
     # 'kombu.transport.django',
     # 'django_celery_results',
     # 'django_celery_beat',
@@ -74,6 +75,8 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
+    'samples',
+    'upload',
 ]
 
 MIDDLEWARE = [
@@ -192,45 +195,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INTERNAL_IPS = ['127.0.0.1']
 # INTERNAL_IPS = ['127.0.0.1']
 
-#django celery
-# CELERY_RESULT_BACKEND = 'django-db'
-# CELERY_RESULT_BACKEND = 'django-cache'
-
-
-
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_RESULT_BACKEND = 'db+sqlite:///mendelmd.sqlite3'
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_BROKER_URL = 'django://'
-
-import djcelery
-djcelery.setup_loader()
-BROKER_URL = 'django://'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ('individuals.tasks', )
-
-# CELERY_ROUTES = {
-#     'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
-#     'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-#     'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
-# }
-
-# # from __future__ import absolute_import
-# # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
-# # CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-# CELERY_REDIRECT_STDOUTS = "true"
-# CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
-
-
-if "celery" in sys.argv:
-    DEBUG = False
-
-
+# new celery 4 config
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-
 
 try:
     from .local_settings import *
@@ -238,16 +207,4 @@ except ImportError:
     pass
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
-
-
 from datetime import timedelta
-
-# CELERYBEAT_SCHEDULE = {
-#     'clean_individuals': {
-#         'task': 'individuals.tasks.clean_individuals',
-#         'schedule': timedelta(days=1),
-#         # 'args': (16, 16)
-#     },
-# }
-
-# CELERY_TIMEZONE = 'UTC'
