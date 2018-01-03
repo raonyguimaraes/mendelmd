@@ -24,7 +24,7 @@ def index(request):
             individuals = Individual.objects.filter(status=status).order_by('-id')
         else:
             individuals = Individual.objects.all().order_by('-id')
-    elif request.user.is_authenticated():
+    elif request.user.is_authenticated:
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
         individuals = Individual.objects.filter(user=None).order_by('-id')
