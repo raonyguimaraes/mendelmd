@@ -1,0 +1,81 @@
+{% load static i18n %}
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'index' %}">
+          <img src="{{ STATIC_URL }}img/Gregor_Mendel_small.png" style="height:100%;">Mendel,MD</a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-left">
+            <li><a href="{% url 'individual_create' %}">Upload a VCF</a></li>
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'oneclick' %}">1-Click</a></li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'individuals_list' %}">Individuals</a></li>
+                <li><a href="{% url 'diseases_list' %}">Diseases</a></li>
+                <li><a href="{% url 'genes_list' %}">Genes</a></li>
+
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'oneclick' %}">1-Click</a></li>
+                <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
+                <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
+                <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
+              </ul>
+            </li>
+
+            <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
+            <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
+            {% if request.user.is_staff %}
+              <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
+              <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
+            {% endif %}
+          </ul>
+
+          {% if user.is_authenticated %}
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
+                <li><a href="{% url 'account_email' %}">Change E-mail</a></li>
+                <li><a href="{% url 'account_logout' %}">Logout</a></li>
+              </ul>
+            </li>
+            <!-- <li><a href="#">Profile</a></li> -->
+
+            <!-- <li><a href="#">Help</a></li> -->
+          </ul>
+          {% else %}
+          <form class="navbar-form navbar-right" role="form" method="POST" action="{% url 'account_login' %}">  {% csrf_token %}
+
+            <div class="form-group">
+              <input type="text" placeholder="Login" name="login" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+            <!-- <font color="white">or</font>
+            <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a>
+      -->
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>

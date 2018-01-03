@@ -21,7 +21,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.text import slugify
 from django.views.generic import DeleteView
-from individuals.forms import IndividualForm, ComparisonForm
+from individuals.forms import IndividualForm, ComparisonForm, GroupForm, BrowserForm
 from individuals.models import Individual, Group
 from individuals.tasks import VerifyVCF, AnnotateVariants
 from variants.models import Variant
@@ -319,7 +319,7 @@ def browse(request, individual_id):
        # If page is out of range (e.g. 9999), deliver last page of results.
        variants = paginator.page(paginator.num_pages)
     
-    return render(request, 'variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string})
+    return render(request, 'variants/variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string})
 
 @login_required
 def list(request):
