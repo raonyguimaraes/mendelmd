@@ -157,3 +157,12 @@ vertical-align:middle;
   font-weight:bold;
 
 }
+
+.analysis-icon {
+    background: url('../img/dna_analysis.png');
+    background-size: 14px 14px;
+    height: 14px;
+    width: 14px;
+    /*display: block;*/
+    /* Other styles here */
+}
