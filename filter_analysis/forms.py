@@ -434,7 +434,7 @@ class FamilyAnalysisForm(forms.Form):
         
         super(FamilyAnalysisForm, self).__init__(*args, **kwargs)
 
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             # print('user None', user)
             self.fields['mother'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
