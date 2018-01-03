@@ -12,7 +12,9 @@
 
 
   {% block css %}{% endblock %}
-  
+
+  <!-- Select2  -->
+  <link href="{% static "select2/css/select2.min.css" %}" type="text/css" media="screen" rel="stylesheet" />
   <!-- Bootstrap 3.3.7 -->
   <link rel="stylesheet" href="{% static "adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
   <!-- Font Awesome -->
@@ -45,6 +47,11 @@
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+    
+    <link rel="stylesheet" href="{% static "jquery-ui-1.12.1/jquery-ui.min.css" %}">
+
+    <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+    <script src="{% static "jquery-ui-1.12.1/jquery-ui.min.js" %}"></script>
   
 
   <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
@@ -54,7 +61,7 @@
 
 
 </head>
-<body class="hold-transition skin-blue sidebar-mini" onload="myFunction()" style="margin:0;">
+<body class="hold-transition skin-blue sidebar-mini sidebar-collapse" onload="myFunction()" style="margin:0;">
 
 <div id="loader"></div>
 

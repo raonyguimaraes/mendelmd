@@ -20,5 +20,3 @@ class FilterConfig(models.Model):
     user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     
-
-    
