@@ -18,8 +18,6 @@
       <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
 
           <ul class="nav navbar-nav">
-            
-            
             <!-- <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li> -->
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload/Import Files</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
@@ -27,42 +25,43 @@
             <!-- 
             -->
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Analysis <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa analysis-icon"></i> <span>Analysis </span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'individuals_list' %}">MultiQC</a></li>
-                <li><a href="{% url 'individuals_list' %}">BWA</a></li>
-                <li><a href="{% url 'individuals_list' %}">GATK Pipeline</a></li>
-                <li><a href="{% url 'individuals_list' %}">Graphtyper</a></li>
-                <li><a href="{% url 'individuals_list' %}">VG</a></li>
-                <li><a href="{% url 'individuals_list' %}">BCBIO</a></li>
-                <li><a href="{% url 'individuals_list' %}">Genome Reports</a></li>
-                <li><a href="{% url 'individuals_list' %}">Assembly Pipeline</a></li>
+                <li><a href="#">MultiQC</a></li>
+                <li><a href="#">BWA</a></li>
+                <li><a href="#">GATK Pipeline</a></li>
+                <li><a href="#">Freebayes</a></li>
+                <li><a href="#">Deep Variant</a></li>
+                <li><a href="#">Graphtyper</a></li>
+                <li><a href="#">Bg</a></li>
+                <li><a href="#">Bcbio</a></li>
+                <li><a href="#">Genome Reports</a></li>
+                <li><a href="#">Assembly Pipeline</a></li>
               </ul>
             </li>
-
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Models <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'individuals_list' %}">Individuals</a></li>
                 <li><a href="{% url 'diseases_list' %}">Diseases</a></li>
                 <li><a href="{% url 'genes_list' %}">Genes</a></li>
-                <li><a href="{% url 'projects-index' %}">Cases</a></li>
-                <li><a href="{% url 'projects-index' %}">Cohorts</a></li>
-                <li><a href="{% url 'projects-index' %}">Projects</a></li>
-                <li><a href="{% url 'projects-index' %}">Samples</a></li>
-                <li><a href="{% url 'files-index' %}">Files</a></li>
-                <li><a href="{% url 'files-index' %}">Tasks</a></li>
+                <li><a href="#">Cases</a></li>
+                <li><a href="#">Cohorts</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Samples</a></li>
+                <li><a href="#">Files</a></li>
+                <li><a href="#">Tasks</a></li>
               </ul>
             </li>
 
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'files-index' %}">Browser</a></li>
-                <li><a href="{% url 'files-index' %}">Data Query</a></li> 
                 <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
                 <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
                 <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
+                <li><a href="#">Browser</a></li>
+                <li><a href="#">Data Query</a></li> 
                 <li class="divider"></li>
                 <!-- <li><a href="#">Separated link</a></li> -->
                 <li class="divider"></li>
@@ -73,6 +72,7 @@
             <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
             <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
             {% if user.is_staff %}
+                  <li><a href="#">Tasks</a></li>
                   <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
                   <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
                   <li><a href="{% url "admin:index" %}" target="_blank">{% trans "Admin" %}</a></li>
