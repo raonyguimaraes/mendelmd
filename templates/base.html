@@ -61,11 +61,9 @@
 
 
 </head>
-<body class="hold-transition skin-blue sidebar-mini sidebar-collapse" onload="myFunction()" style="margin:0;">
+<body class="skin-blue sidebar-mini sidebar-collapse">
 
-<div id="loader"></div>
-
-<div class="wrapper animate-bottom" id="myDiv">
+<div class="wrapper">
 
   {% include "header.html" %}
   {% include "main_sidebar.html" %}
@@ -130,20 +128,6 @@
 <script src="{% static "adminlte/dist/js/pages/dashboard.js" %}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{% static "adminlte/dist/js/demo.js" %}"></script>
-<script>
-var myVar;
-
-function myFunction() {
-    myVar = setTimeout(showPage, 700);
-}
-
-function showPage() {
-  document.getElementById("loader").style.display = "none";
-  document.getElementById("myDiv").style.display = "";
-}
-</script>
-
-
 
 {% block javascript %}
  <!-- Bootstrap core JavaScript
@@ -153,7 +137,13 @@ function showPage() {
     <script type="text/javascript" src="{% static "js/project.js" %}"></script>
 
     {% block extra_js %} {% endblock %}
-
+<script>
+  $(document).on('click', '.sidebar-toggle', function () {
+    if ($('body').hasClass("sidebar-collapse") && $('body').hasClass("sidebar-open")) {
+       $('body').removeClass("sidebar-collapse");
+    }
+});
+</script>
 
 {% endblock %}
 
