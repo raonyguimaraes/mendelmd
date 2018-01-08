@@ -18,12 +18,12 @@ class File(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     modified_date = models.DateTimeField(null=True, blank=True)
 
-class S3Credential(models.Model):
-    def get_absolute_url(self):
-        return "/files/settings/"
-    name = models.CharField(max_length=255)
-    access_key = models.CharField(max_length=255)
-    secret_key = models.CharField(max_length=255)
-    buckets = models.TextField(null=True, blank=True)
-    exclude_paths= models.TextField(null=True, blank=True)
-    exclude_files = models.TextField(null=True, blank=True)
+# class S3Credential(models.Model):
+#     def get_absolute_url(self):
+#         return "/files/settings/"
+#     name = models.CharField(max_length=255)
+#     access_key = models.CharField(max_length=255)
+#     secret_key = models.CharField(max_length=255)
+#     buckets = models.TextField(null=True, blank=True)
+#     exclude_paths= models.TextField(null=True, blank=True)
+#     exclude_files = models.TextField(null=True, blank=True)

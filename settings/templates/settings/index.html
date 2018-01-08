@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Settings</h1>
+
+<a href="{% url 'settings-s3-create' %}" type="button" class="btn btn-success">Create S3 Credentials</a>
+
+<table class="table">
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Options</th>
+</tr>
+</thead>
+<tbody>
+{% for s3_setting in s3_settings %}
+<tr>
+    <td>
+        <a href="{% url 'settings-s3-view' s3_setting.id %}">{{s3_setting.name}}</a>
+    </td>
+    <td>
+      <a href="{% url 'settings-s3-update' s3_setting.id %}">Edit</a>
+      <a href="{% url 'settings-s3-delete' s3_setting.id %}">Delete</a>
+    </td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+{% endblock content %}

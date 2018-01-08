@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'files',
     'samples',
     'upload',
+    'settings',
 ]
 
 MIDDLEWARE = [
