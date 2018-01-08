@@ -67,7 +67,9 @@
 		</tr>
 		{% endfor %}
 	</table>
-	{% include "pagination.html" %}
+	{% with objects=genes %}
+    {% include  "pagination.html" %}
+    {% endwith %}
 	<input type="submit" value="Use selected genes for Filter Analysis" />
 	</form>
     
