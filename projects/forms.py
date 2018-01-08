@@ -9,5 +9,7 @@ class ProjectForm(ModelForm):
         fields = ['name', 'description', 'groups', 'members']
         # fields = '__all__'
 
-class ImportFilesForm(forms.Form):
-    file_list = forms.CharField(widget=forms.Textarea)
+class ImportForm(forms.Form):
+    path = forms.CharField(required=False)
+    file_list = forms.CharField(widget=forms.Textarea, required=False)
+    samples = forms.CharField(widget=forms.Textarea, required=False)

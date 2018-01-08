@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import Project, File
-from .forms import ProjectForm, ImportFilesForm
+from .models import Project, File, Path
+from .forms import ProjectForm, ImportForm
 from django.contrib.auth.decorators import login_required
-
 
 @login_required
 def index(request):
@@ -37,18 +36,17 @@ def view(request, project_id):
 @login_required
 def import_files(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
-    form = ImportFilesForm(request.POST or None)
+    form = ImportForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            for file in form.cleaned_data['file_list'].splitlines():
-                # print(file)
-                file_obj = File(location=file)
-                file_obj.save()
-                # print(file_obj)
-                # for file_obj in file_objs:
-                project.files.add(file_obj)
-            # form.save()
-            return redirect('projects-view', project.id)
+            path = form.cleaned_data['path']
+            # if path.startswith('s3://'):
+                #get files form s3 and add to project
 
+            # for file in form.cleaned_data['file_list'].splitlines():
+            #     file_obj = File(location=file)
+            #     file_obj.save()
+            #     project.files.add(file_obj)
+            return redirect('projects-view', project.id)
     context = {'form': form, 'project': project}
     return render(request, 'projects/import_files.html', context)
