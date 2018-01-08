@@ -21,13 +21,12 @@ class Project(models.Model):
     is_public = models.BooleanField(default=False)
     status = models.CharField(max_length=100, blank=True, editable=False)
 
+    paths = models.TextField(null=True, blank=True)
+
     groups = models.ManyToManyField(Group, editable=True, related_name="project_groups", blank=True)
     members = models.ManyToManyField(User, editable=True, related_name="project_members", blank=True)
 
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     modified_date = models.DateTimeField(null=True, blank=True)
 
-class Path(models.Model):
-
-    project = models.ForeignKey(Project, editable=False, null=True, on_delete=models.SET_NULL)
-    path = models.TextField(null=True, blank=True)
+    

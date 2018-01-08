@@ -1,12 +1,27 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import Project, File, Path
+from .models import Project, File
 from .forms import ProjectForm, ImportForm
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.contrib.auth.decorators import login_required
+
+from django.urls import reverse_lazy
+
+from .tasks import import_project_files_task
+
 
 @login_required
 def index(request):
-    projects = Project.objects.all()
+
+    if request.user.is_staff:
+        projects = Project.objects.all()
+    else:
+        projects = Project.objects.all(user=request.user)
+
+    
     # for project in projects:
     #     project.n_files = project.files.count()
     context = {'projects':projects}
@@ -21,11 +36,16 @@ def create(request):
     form = ProjectForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
-            return redirect('projects-index')
+            project = form.save()
+
+            return redirect('projects-view', project_id=project.id)
 
     context = {'form': form}
     return render(request, 'projects/create.html', context)
+
+class ProjectUpdate(UpdateView):
+    model = Project
+    fields = ['name', 'paths']
 
 @login_required
 def view(request, project_id):
@@ -50,3 +70,15 @@ def import_files(request, project_id):
             return redirect('projects-view', project.id)
     context = {'form': form, 'project': project}
     return render(request, 'projects/import_files.html', context)
+
+
+class ProjectDelete(DeleteView):
+    model = Project
+    success_url = reverse_lazy('projects-index')
+
+def import_project_files(request, project_id):
+    
+    print('Import Stuff')
+    import_project_files_task.delay(project_id)
+    return redirect('projects-view', project_id=project_id)
+    

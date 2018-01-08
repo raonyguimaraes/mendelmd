@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 class S3Credential(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, editable=False)
+    def get_absolute_url(self):
+        return "/settings/"
+    user = models.ForeignKey(User, on_delete=models.CASCADE, editable=False)
     name = models.CharField(max_length=255)
     access_key = models.CharField(max_length=255)
     secret_key = models.CharField(max_length=255)

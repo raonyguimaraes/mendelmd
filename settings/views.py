@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import render
 from .models import S3Credential
@@ -7,13 +9,20 @@ from .forms import S3CredentialForm
 
 from django.urls import reverse_lazy
 
-# Create your views here.
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def index(request):
-    s3_settings = S3Credential.objects.all()
+
+    if request.user.is_staff:
+        s3_settings = S3Credential.objects.all()
+    else:
+        s3_settings = S3Credential.objects.filter(user=request.user)
+
     context = {'s3_settings':s3_settings}
     return render(request, 'settings/index.html', context)
 
-
+@login_required
 def create_s3_credential(request):
     form = S3CredentialForm(request.POST or None)
     if request.method == 'POST':
@@ -30,13 +39,17 @@ def create_s3_credential(request):
     context = {'form': form}
     return render(request, 'settings/create-s3-credential.html', context)
 
-class S3CredentialUpdate(UpdateView):
+class S3CredentialUpdate(LoginRequiredMixin, UpdateView):
     model = S3Credential
     fields = ['name', 'access_key', 'secret_key', 'buckets', 'exclude_paths', 'exclude_files']
 
-def settings_s3_view(request, settings_s3_id):
-    print('Hello')
+    def get_queryset(self):
+        base_qs = super(S3CredentialUpdate, self).get_queryset()
+        return base_qs.filter(user=self.request.user)
 
+
+class S3CredentialDetailView(DetailView):
+    model = S3Credential
 
 class S3CredentialDelete(DeleteView):
     model = S3Credential
