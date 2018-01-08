@@ -10,13 +10,12 @@
 language: python
 
 python:
-  - 2.7
   - 3.5
 
 services: postgresql
 
 env:
-  - DJANGO=1.10.6
+  - DJANGO=2.0.1
 
 before_install:
   - export DJANGO_SETTINGS_MODULE=mendelmd.settings
