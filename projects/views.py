@@ -2,19 +2,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Project, File
 from .forms import ProjectForm, ImportFilesForm
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
+
+@login_required
 def index(request):
     projects = Project.objects.all()
-    for project in projects:
-        project.n_files = project.files.count()
+    # for project in projects:
+    #     project.n_files = project.files.count()
     context = {'projects':projects}
     return render(request, 'projects/index.html', context)
 
+@login_required
 def create(request):
     """
     Create Project
     """
+
     form = ProjectForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
@@ -24,11 +28,13 @@ def create(request):
     context = {'form': form}
     return render(request, 'projects/create.html', context)
 
+@login_required
 def view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     context = {'project': project}
     return render(request, 'projects/view.html', context)
 
+@login_required
 def import_files(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     form = ImportFilesForm(request.POST or None)
