@@ -108,8 +108,10 @@
 	Export to: <a href="?{{ query_string }}&export=csv">CSV</a> 
 
 	<br>	
-
-	{% include  "pagination.html" %}
+	{% with objects=variants %}
+    {% include  "pagination.html" %}
+    {% endwith %}
+	
 
 	<div style="overflow-x: scroll;overflow-y: scroll; max-height:400px;">
 	
@@ -117,7 +119,9 @@
 	
 	</div>
 		
-	{% include  "pagination.html" %}
+	{% with objects=variants %}
+    {% include  "pagination.html" %}
+    {% endwith %}
 
 {% endif %}
 	

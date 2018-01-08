@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static i18n %}
+{% load pagination_tags %}
+
 
 {% block content %}
 <!-- Content Header (Page header) -->
@@ -53,6 +55,11 @@
 
     <h2 class="sub-header">Individuals</h2>
     Showing {{ n_individuals }} individuals
+    <br>
+    {% with objects=individuals %}
+    {% include  "pagination.html" %}
+    {% endwith %}
+
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -125,6 +132,10 @@
 
             </tbody>
         </table>
+
+        {% with objects=individuals %}
+        {% include  "pagination.html" %}
+        {% endwith %}
 </form>
 
 
