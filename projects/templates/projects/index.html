@@ -12,13 +12,19 @@
 <tr>
     <th>Name</th>
     <th>N Files</th>
+    <th>Options</th>
 </tr>
 </thead>
 <tbody>
 {% for project in projects %}
 <tr>
     <td><a href="{% url 'projects-view' project.id %}">{{project.name}}</a></td>
+
     <td>{{ project.n_files }}</td>
+    <td>
+        <a href="{% url 'projects-update' project.id %}">Update</a>
+        <a href="{% url 'projects-delete' project.id %}">Delete</a>
+    </td>
 </tr>
 {% endfor %}
 </tbody>

@@ -4,7 +4,16 @@
 <h1>{{project.name}}</h1>
 
 <a href="">Upload Files</a>
+
 <a href="{% url 'projects-import-files' project.id %}">Import Files</a>
+
+<a href="{% url 'import_project_files' project.id %}">Reimport Files</a>
+
+
+
+<h2>Paths</h2>
+
+{{project.paths}}
 
 <h2>Files</h2>
 
