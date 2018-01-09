@@ -10,6 +10,7 @@ from .forms import S3CredentialForm
 from django.urls import reverse_lazy
 
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 @login_required
 def index(request):
@@ -47,10 +48,11 @@ class S3CredentialUpdate(LoginRequiredMixin, UpdateView):
         base_qs = super(S3CredentialUpdate, self).get_queryset()
         return base_qs.filter(user=self.request.user)
 
-
+@method_decorator(login_required, name='dispatch')
 class S3CredentialDetailView(DetailView):
     model = S3Credential
 
+@method_decorator(login_required, name='dispatch')
 class S3CredentialDelete(DeleteView):
     model = S3Credential
     success_url = reverse_lazy('settings-index')

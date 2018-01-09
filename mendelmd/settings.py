@@ -78,6 +78,9 @@ INSTALLED_APPS = [
     'samples',
     'upload',
     'settings',
+    'tasks',
+    'analyses',
+    'formtools',
 ]
 
 MIDDLEWARE = [

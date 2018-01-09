@@ -4,12 +4,8 @@
 <h1>{{project.name}}</h1>
 
 <a href="">Upload Files</a>
-
 <a href="{% url 'projects-import-files' project.id %}">Import Files</a>
-
 <a href="{% url 'import_project_files' project.id %}">Reimport Files</a>
-
-
 
 <h2>Paths</h2>
 
@@ -18,7 +14,6 @@
 <h2>Files</h2>
 
 <div class="row">
-
 
 <form action="{% url 'projects-bulk-action' project.id %}" method="post" id='project_files'>
     {% csrf_token %}

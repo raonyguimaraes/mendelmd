@@ -14,3 +14,4 @@ django-celery-results
 django-appconf
 gunicorn
 boto3
+django-formtools
