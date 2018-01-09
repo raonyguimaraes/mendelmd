@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Project
 from files.models import File
 
-# from tasks.models import Task
+from tasks.models import Task
 
 from .forms import ProjectForm, ImportForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.urls import reverse_lazy
 
-from .tasks import import_project_files_task, check_file
+from tasks.tasks import import_project_files_task, check_file
 
 
 @login_required
@@ -54,7 +54,7 @@ class ProjectUpdate(UpdateView):
 def view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     context = {'project': project}
-    print(project.files_set.all)
+    # print(project.files.all)
     return render(request, 'projects/view.html', context)
 
 @login_required
@@ -105,13 +105,19 @@ def bulk_action(request, project_id):
             task_manifest['action'] = action
             task = Task(user=request.user)
             task.manifest = task_manifest
-
+            
+            task.status = 'new'
+            task.action = action
+            task.user = request.user
             task.save()
 
             if action == "check":
-                # task = Task()
-                check_file.delay(file)
+                task.name = 'check file'
+                check_file.delay(task.id)
             if action == "download":
-                download_file.delay(file)
+                task.name = 'download file'
+                download_file.delay(task.id)
+            
+            task.save()
 
     return redirect('projects-view', project_id=project_id)
