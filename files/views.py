@@ -33,3 +33,12 @@ def import_files(request):
     print('Hello World')
     call_command('import_files')
     return redirect('files-index')
+
+
+class FileUpdate(UpdateView):
+    model = File
+    fields = '__all__'
+
+class FileDelete(DeleteView):
+    model = File
+    success_url = reverse_lazy('files-index')
