@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'diseases',
     'genes',
     'pagination',
-    'cases',
+    # 'cases',
     'filter_analysis',
     'pathway_analysis',
     'statistics',
