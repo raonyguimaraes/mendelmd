@@ -54,6 +54,7 @@ class ProjectUpdate(UpdateView):
 def view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     context = {'project': project}
+    print(project.files_set.all)
     return render(request, 'projects/view.html', context)
 
 @login_required
