@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^diseases/', include('diseases.urls')),
     url(r'^genes/', include('genes.urls')),
     url(r'^variants/', include('variants.urls')),
-    url(r'^cases/', include('cases.urls')),
+    # url(r'^cases/', include('cases.urls')),
     url(r'^filter_analysis/', include('filter_analysis.urls')),
     # url(r'^pathway_analysis/', include('apps.pathway_analysis.urls')),
     url(r'^statistics/', include('statistics.urls')),
