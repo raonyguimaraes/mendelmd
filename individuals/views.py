@@ -39,15 +39,12 @@ class JSONResponse(HttpResponse):
         content = json.dumps(obj,**json_opts)
         super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
 
-# Create your views here.
 def create(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
-        # print('entrou no create!')
+        
         if form.is_valid():
             
-            # print('form is valid!')
-
             if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
