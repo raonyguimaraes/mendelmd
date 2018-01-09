@@ -23,6 +23,11 @@
     </td>
     <td>{{ file.file_type }}</td>
     <td>{{ file.location }}</td>
+    <td>
+    	<a href="{% url 'file-update' file.id %}">Edit</a>
+    	<a href="{% url 'file-delete' file.id %}">Delete</a>
+    </td>
+    
 </tr>
 {% endfor %}
 </tbody>
