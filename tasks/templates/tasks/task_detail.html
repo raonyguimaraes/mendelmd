@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{task.name}}</h1>
+
+<a href="#">Edit Task</a>
+<a href="{% url 'tasks-run' task.id %}">Run Task</a>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<table class="table">
+
+<tr><th>ID</th><td>{{task.id}}</td></tr>
+<tr><th>User</th><td>{{task.user}}</td></tr>
+<tr><th>Name</th><td>{{task.name}}</td></tr>
+<tr><th>Manifest</th><td>{{task.manifest}}</td></tr>
+<tr><th>Status</th><td>{{task.status}}</td></tr>
+<tr><th>Action</th><td>{{task.action}}</td></tr>
+<tr><th>Md5</th><td>{{task.md5}}</td></tr>
+<tr><th>Creation_date</th><td>{{task.creation_date}}</td></tr>
+<tr><th>Modified_date</th><td>{{task.modified_date}}</td></tr>
+<tr><th>Options</th><td></td></tr>
+
+</table>
+
+</div>
+</div>
+
+{% endblock content %}
+

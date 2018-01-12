@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% load paginator %}
+
+{% block title %}{% trans "Analyses" %}{% endblock %}
+
+{% block content %}
+<h1>Analyses</h1>
+
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %}</a>
+    </div>
+
+<br><br>
+
+<div class="row">
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#">
+          <div class="small-box bg-aqua">
+            <div class="inner">
+              <h3>Genome Alignment</h3>
+              <p>FASTQ</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-bag"></i> -->
+              <img src="{% static 'img/genome_alignment.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+      	  </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3>Variant Calling</h3>
+
+              <p>BAM</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_calling.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>Variant Annotation</h3>
+
+              <p>VCF</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_annotation.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>VCF QC</h3>
+
+              <p>VCF</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_annotation.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+</div>
+<div class="row">
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#">
+          <div class="small-box bg-aqua">
+            <div class="inner">
+              <h3>Genome Alignment</h3>
+              <p>FASTQ</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-bag"></i> -->
+              <img src="{% static 'img/genome_alignment.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+      	  </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3>Variant Calling</h3>
+
+              <p>BAM</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_calling.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>Variant Annotation</h3>
+
+              <p>VCF</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_annotation.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>VCF QC</h3>
+
+              <p>VCF</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_annotation.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+</div>
+<div class="row">
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#">
+          <div class="small-box bg-aqua">
+            <div class="inner">
+              <h3>Genome Alignment</h3>
+              <p>FASTQ</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-bag"></i> -->
+              <img src="{% static 'img/genome_alignment.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+      	  </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3>Variant Calling</h3>
+
+              <p>BAM</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_calling.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>Variant Annotation</h3>
+
+              <p>VCF</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_annotation.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <a href="#" class="small-box-footer">
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>VCF QC</h3>
+
+              <p>VCF</p>
+            </div>
+            <div class="icon">
+              <!-- <i class="ion ion-stats-bars"></i> -->
+              <img src="{% static 'img/variant_annotation.png' %}" style="width: 80px; height: 70px;">
+            </div>
+            <span class="small-box-footer">Create <i class="fa fa-arrow-circle-right"></i></span>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+</div>
+{% if analyses %}
+<table class="table table-bordered table-striped table-condensed">
+	<tr>
+		<th>id</th>
+		<th>status</th>
+		<th width="20%">name</th>
+		<th width="20%">description</th>
+		<th>members</th>
+		<th>Options</th>
+	</tr>
+	{% for analysis in analyses %}
+	<tr>
+		<td>{{analysis.id}}</td>
+		<td>{{analysis.status}}</td>
+		<td>{{analysis.name}}</td>
+		<td>{{analysis.description}}</td>
+		<td></td>
+		<td>
+			<a href="{% url 'analysis-detail' analysis.id %}" class="btn btn-primary">Detail</a>
+			<a href="{% url 'analysis-update' analysis.id %}" class="btn btn-primary">Update</a>
+			<a href="{% url 'analysis-delete' analysis.id %}" class="btn btn-primary">Delete</a>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+You still have no analyses created. <br>
+
+Please create your analyses into the system!
+
+{% endif %}
+{% endblock %}
+
