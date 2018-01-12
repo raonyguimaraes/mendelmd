@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Tasks</h1>
+
+<form action="{% url 'tasks-bulk-action' %}" method="post" id='tasks_form'>
+    {% csrf_token %}
+<input type="hidden" id="action" name="action" value="">
+
+{% include 'tasks/task_navbar.html' %}
+
+<div class="col-md-12">
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+    <th># 
+        <input type="checkbox" id="select_all">
+    </th>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Status</th>
+    <th>Action</th>
+    <th>md5</th>
+    <th>started</th>
+    <th>finished</th>
+    <th>timetaken</th>
+    <th>total_cost</th>
+    <th>creation_date</th>
+    <th>modified_date</th>
+
+    <th>Options</th>
+</tr>
+</thead>
+<tbody>
+{% for task in tasks %}
+<tr>
+    <td>
+        <input type="checkbox" name="tasks" class="tasks" id="option{{task.id}}" value="{{task.id}}" />
+    </td>
+    <td>{{task.id}}</td>
+
+    <td>
+        <a href="{% url 'tasks-view' task.id %}">{{task.name}}</a>
+    </td>
+    <td>{{task.status}}</td>
+    <td>{{task.action}}</td>
+    <td>{{task.md5}}</td>
+    <td>{{task.started}}</td>
+    <td>{{task.finished}}</td>
+    <td>{{task.timetaken}}</td>
+    <td>{{task.total_cost}}</td>
+    <td>{{task.creation_date}}</td>
+    <td>{{task.modified_date}}</td>
+    <td>
+        <a href="{% url 'tasks-view' task.id %}">View</a>
+        <a href="#">Edit</a>
+        <a href="{% url 'tasks-delete' task.id %}">Delete</a>
+    </td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</form>
+</div>
+
+{% endblock content %}
+
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".tasks:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       // document.project_files.elements["action"].value = action;
+       document.getElementById("action").value = action;
+       document.getElementById("tasks_form").submit();
+
+  
+    }
+</script>
+
+{% endblock %}
