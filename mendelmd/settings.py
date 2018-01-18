@@ -212,3 +212,5 @@ except ImportError:
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
 from datetime import timedelta
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000

@@ -9,6 +9,9 @@ from django.contrib.auth.decorators import login_required
 from tasks.tasks import check_file
 from tasks.models import Task
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 @login_required
 def index(request):
 
@@ -24,41 +27,48 @@ def index(request):
 def view(request, file_id):
     print('Hello')
 
-@login_required
-def settings_index(request):
-    s3_settings = S3Credential.objects.all()
-    context = {'s3_settings':s3_settings}
-    return render(request, 'files/settings/index.html', context)
-
-@login_required
-def settings_view(request, settings_id):
-    print('Hello')
-
 
 @login_required
 def import_files(request):
     print('Hello World')
-    call_command('import_files')
+    # call_command('import_files')
     return redirect('files-index')
 
-class FileUpdate(UpdateView):
+class FileUpdate(LoginRequiredMixin, UpdateView):
     model = File
     fields = '__all__'
 
-class FileDelete(DeleteView):
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
+
+class FileDelete(LoginRequiredMixin, DeleteView):
     model = File
     success_url = reverse_lazy('files-index')
-
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
 
 @login_required
 def bulk_action(request):
+
     if request.method == 'POST':
         files = request.POST.getlist('files')
         action = request.POST['action']
 
         for file_id in files:
-            file = File.objects.get(pk=file_id)
-            
+
+
+            # file = File.objects.get(pk=file_id)
+            if request.user.is_staff:
+                file = get_object_or_404(File, pk=file_id)
+            else:
+                file = get_object_or_404(File, pk=file_id, user=request.user)
+
             if action == "delete":
                 file.delete()
             if action == "check":

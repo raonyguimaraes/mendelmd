@@ -6,34 +6,44 @@ from django.views.generic import DetailView
 
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
 from tasks.tasks import check_file, download_file
 
 
-
+@login_required
 def index(request):
 
-    tasks = Task.objects.all()
+    if request.user.is_staff:
+        tasks = Task.objects.all()
+    else:
+        tasks = Task.objects.filter(user=request.user)
+
     context = {
         'tasks':tasks,
     }
     return render(request, 'tasks/index.html', context)
 
+@method_decorator(login_required, name='dispatch')
 class TaskDelete(DeleteView):
+
     model = Task
-    # template_name = "email_delete.html"
+
     success_url = reverse_lazy('tasks-index')
-
-    # def delete(self, request, *args, **kwargs):
-    #    self.object = self.get_object()
-    #    if self.object.user == request.user:
-    #       self.object.delete()
-    #       return HttpResponseRedirect(self.get_success_url())
-    #    else:
-    #       raise Http404 #or return HttpResponse('404_url')
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
 
 
+@login_required
 def run_task(request, task_id):
-    task = Task.objects.get(pk=task_id)
+
+    if request.user.is_staff:
+        task = Task.objects.get(pk=task_id)
+    else:
+        task = Task.objects.get(pk=task_id, user=request.user)
 
     if task.action == "check":
         check_file.delay(task.id)
@@ -45,28 +55,31 @@ def run_task(request, task_id):
 
     return redirect('tasks-view', task.id)
 
-
+@method_decorator(login_required, name='dispatch')
 class TaskDetail(DetailView):
-
     model = Task
-
-    # def get_context_data(self, **kwargs):
-    #     # Call the base implementation first to get a context
-    #     context = super().get_context_data(**kwargs)
-    #     # Add in a QuerySet of all the books
-    #     context['book_list'] = Book.objects.all()
-    #     return context
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
 
 
 @login_required
 def bulk_action(request):
     if request.method == 'POST':
+        
         tasks = request.POST.getlist('tasks')
         action = request.POST['action']
         
         for task_id in tasks:
 
-            task = Task.objects.get(pk=task_id)
+            if request.user.is_staff:
+                task = Task.objects.get(pk=task_id)
+            else:
+                task = Task.objects.get(pk=task_id, user=request.user)
+            
+            #save to change modified date
             task.save()
 
             if action == "run":

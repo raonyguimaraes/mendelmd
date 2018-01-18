@@ -45,14 +45,28 @@ class S3CredentialUpdate(LoginRequiredMixin, UpdateView):
     fields = ['name', 'access_key', 'secret_key', 'buckets', 'exclude_paths', 'exclude_files']
 
     def get_queryset(self):
-        base_qs = super(S3CredentialUpdate, self).get_queryset()
-        return base_qs.filter(user=self.request.user)
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
 
 @method_decorator(login_required, name='dispatch')
 class S3CredentialDetailView(DetailView):
     model = S3Credential
+    # def get_queryset(self):
+    #     return self.model.objects.filter(user=self.request.user)
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
 
 @method_decorator(login_required, name='dispatch')
 class S3CredentialDelete(DeleteView):
     model = S3Credential
     success_url = reverse_lazy('settings-index')
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
