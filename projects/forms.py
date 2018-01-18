@@ -10,6 +10,6 @@ class ProjectForm(ModelForm):
         # fields = '__all__'
 
 class ImportForm(forms.Form):
-    path = forms.CharField(required=False)
+    paths = forms.CharField(widget=forms.Textarea, required=False)
     file_list = forms.CharField(widget=forms.Textarea, required=False)
     samples = forms.CharField(widget=forms.Textarea, required=False)

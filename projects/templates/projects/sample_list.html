@@ -1,0 +1,86 @@
+
+<div class="row">
+    
+<div class="col-md-8">
+
+    <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">Actions</h3>
+    </div>
+    <div class="box-body">
+      
+      <a class="btn btn-app" href='javascript: submitform("samples", check")'>
+        <i class="fa fa-search"></i> Check
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("samples", "download")'>
+        <i class="fa fa-cloud-download"></i> Download
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("samples", "delete")'>
+        <i class="fa fa-trash-o"></i> Delete
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-edit"></i> Edit
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-play"></i> Play
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-repeat"></i> Repeat
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-pause"></i> Pause
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-save"></i> Save
+      </a>
+    </div>
+    <!-- /.box-body -->
+    </div>
+
+</div>
+
+</div>
+
+<h2>Samples</h2>
+
+Number of Samples: {{n_samples}}
+
+<table class="table">
+<thead>
+<tr>
+    <th>#<input type="checkbox" id="select_all_samples"></th>
+    <th>Name</th>
+    <th>Alias</th>
+    <th>Status</th>
+    <th>Location</th>
+    <th>Prefix</th>
+    <th>N Files</th>
+    <th>N FASTQs</th>
+    <th>N BAMs</th>
+    <th>N VCFs</th>
+    <th>Options</th>
+</tr>
+</thead>
+<tbody>
+{% for sample in project.projectsample_set.all %}
+<tr>  
+    <td>
+        <input type="checkbox" name="samples" class="samples" id="option{{sample.id}}" value="{{sample.id}}" />
+    </td>
+    <td>
+        <a href="#">{{sample.name}}</a>
+    </td>
+    <td>{{ sample.alias }}</td>
+    <td>{{ sample.status }}</td>
+    <td>{{ sample.location }}</td>
+    <td>{{ sample.prefix }}</td>
+    <td>{{ sample.n_files }}</td>
+    <td>{{ sample.n_fastqs }}</td>
+    <td>{{ sample.n_bams }}</td>
+    <td>{{ sample.n_vcfs }}</td>
+    
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
