@@ -11,6 +11,7 @@ from .views import ContactWizard
 urlpatterns = [
     url(r'^$', views.index, name='analyses-index'),
     url(r'^create/$', views.AnalysisCreate.as_view(), {}, 'analysis-create'),
+    url(r'^create-wizard/$', views.create, {}, 'analysis-create-wizard'),
     url(r'detail/(?P<pk>\d+)/$', views.AnalysisDetailView.as_view(), name='analysis-detail'),
     url(r'delete/(?P<pk>\d+)/$', views.AnalysisDelete.as_view(), name='analysis-delete'),
     url(r'update/(?P<pk>\d+)/$', views.AnalysisUpdate.as_view(), name='analysis-update'),

@@ -1,0 +1,79 @@
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+from workers.models import Worker
+from workers.tasks import launch_worker, launch_workers, terminate_worker, install_worker, update_workers
+
+from subprocess import check_output, call
+
+# Create your views here.
+def index(request):
+    workers = Worker.objects.all().order_by('-id')
+    context = {'workers':workers}
+    return render(request, 'workers/index.html', context)
+
+def launch(request):
+    type = request.GET.get('type')
+    n = request.GET.get('n')
+    if n:
+        for i in range(0,int(n)):
+            launch_worker.delay(type)    
+    else:
+        launch_worker.delay(type)
+    messages.success(request, 'Worker is being launched.')
+    return redirect('worker-list')
+
+def terminate(request, pk):
+    worker=Worker.objects.get(pk=pk)
+    terminate_worker.delay(worker.id)
+    messages.success(request, 'Worker is being terminated.')
+    return redirect('worker-list')
+
+def install(request, pk):
+    worker=Worker.objects.get(pk=pk)
+    install_worker.delay(worker.id)
+    messages.success(request, 'Worker is being installed.')
+    return redirect('worker-list')
+
+
+class WorkerDelete(DeleteView):
+    model = Worker
+    success_url = reverse_lazy('worker-list')
+
+
+    
+
+
+def action(request):
+    if request.method == 'POST':
+        print('Hello World')
+        action = request.POST['action']
+        workers = request.POST.getlist('select[]')
+        
+        # print(action, workers)
+        for worker_id in workers:
+            
+            worker=Worker.objects.get(id=worker_id)
+
+            if action == 'run':
+                worker.current_status = 'queued'
+                worker.save()
+            elif action == 'install':
+                install_worker.delay(worker.id)
+                worker.status = 'installing'
+                worker.save()
+            elif action == 'terminate':
+                terminate_worker.delay(worker.id)
+                worker.status = 'will be terminated'
+                worker.save()
+            elif action == 'delete':
+                worker.delete()
+        
+        if action == 'update':                
+            update_workers.delay()
+            
+                
+    return redirect('worker-list')    

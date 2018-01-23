@@ -4,7 +4,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import render
-from .models import S3Credential
+from .models import S3Credential, Provider
 from .forms import S3CredentialForm
 
 from django.urls import reverse_lazy
@@ -70,3 +70,7 @@ class S3CredentialDelete(DeleteView):
             return self.model.objects.filter(user=self.request.user)
         else:
             return self.model.objects
+
+class ProviderCreate(CreateView):
+    model = Provider
+    fields = ['name', ]

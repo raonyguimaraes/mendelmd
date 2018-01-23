@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
+from .tasks import test_task
 
 
 # Create your views here.
@@ -18,6 +19,10 @@ def index(request):
     context = {'analyses': analyses}
 
     return render(request, 'analyses/index.html', context)
+
+def create(request, project_id):
+    print('create analysis', project_id)
+
 
 class AnalysisDelete(DeleteView):
     model = Analysis

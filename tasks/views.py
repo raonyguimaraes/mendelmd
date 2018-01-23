@@ -8,19 +8,34 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from tasks.tasks import check_file, download_file
+from tasks.tasks import check_file, download_file, run_qc
+
+from django.db.models import Q
+from collections import Counter
 
 
 @login_required
 def index(request):
 
+    query = request.GET.get('query', '')
+    args = []
+
+    if query != '':
+        args.append(Q(name__icontains=query))
+
     if request.user.is_staff:
-        tasks = Task.objects.all()
+        tasks = Task.objects.filter(*args)
     else:
-        tasks = Task.objects.filter(user=request.user)
+        tasks = Task.objects.filter(*args, user=request.user).order_by('-id')
+
+    tasks_summary = dict(Counter(tasks.values_list('status', flat=True)))
+
+    n_tasks = len(tasks) 
 
     context = {
         'tasks':tasks,
+        'n_tasks':n_tasks,
+        'tasks_summary':tasks_summary
     }
     return render(request, 'tasks/index.html', context)
 
@@ -83,7 +98,9 @@ def bulk_action(request):
             task.save()
 
             if action == "run":
-            
+                if task.action == "qc":
+                    task.status = 'scheduled'
+                    run_qc.delay(task.id)
                 if task.action == "check":
                     task.status = 'scheduled'
                     check_file.delay(task.id)

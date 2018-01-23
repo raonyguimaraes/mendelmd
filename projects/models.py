@@ -67,7 +67,6 @@ class ProjectSample(models.Model):
     description = models.TextField(null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
 
-
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     modified_date = models.DateTimeField(auto_now=True, null=True, blank=True)
     last_modified = models.DateTimeField(null=True, blank=True)
