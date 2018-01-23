@@ -32,6 +32,6 @@ print(user)
 
 individual = Individual.objects.create(user=user, status='new')
 individual.name = 'test sample'
-individual.location = 's3://analysis-testdev-results/mendelmd/sample.1000.vcf'
+individual.location = ''
 individual.save()
 

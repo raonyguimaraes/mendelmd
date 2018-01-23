@@ -41,7 +41,9 @@ urlpatterns = [
     url(r'^files/', include('files.urls')),
     url(r'^settings/', include('settings.urls')),
     url(r'^tasks/', include('tasks.urls')),
+    url(r'^workers/', include('workers.urls')),
     url(r'^analyses/', include('analyses.urls')),
+    url(r'^apps/', include('mapps.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

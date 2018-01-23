@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
+# Create your tasks here
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
-@shared_task()
-def test_task(project_file_id):
-    print('Hello')
+
+@shared_task
+def test_task(project_id):
+    print('hello!')

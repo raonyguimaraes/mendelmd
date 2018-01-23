@@ -4,11 +4,46 @@
 
 <h1>Tasks</h1>
 
+<div class="row">
+<div class='col-md-6'>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key,value in tasks_summary.items %}
+        <tr>
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+
+<div class="row">
+<form name="task_form" id="task_form" action="." method="get">
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" name="query"> <button type="submit">Search</button>
+
+        </div>
+    </div>
+</form>
+</div>
+
 <form action="{% url 'tasks-bulk-action' %}" method="post" id='tasks_form'>
     {% csrf_token %}
 <input type="hidden" id="action" name="action" value="">
 
+
 {% include 'tasks/task_navbar.html' %}
+
+<div class="row">
 
 <div class="col-md-12">
 <table class="table table-hover table-striped">
@@ -64,6 +99,8 @@
 
 </table>
 </form>
+</div>
+
 </div>
 
 {% endblock content %}

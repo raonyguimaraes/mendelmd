@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.urls import reverse_lazy
 
-from tasks.tasks import check_file
+from tasks.tasks import check_file, run_qc
 
 from .tasks import import_project_files_task
 
@@ -115,8 +115,6 @@ def import_files(request, project_id):
     if request.method == 'POST':
         if form.is_valid():
             paths = form.cleaned_data['paths']
-            # if path.startswith('s3://'):
-                #get files form s3 and add to project
 
             for file in form.cleaned_data['file_list'].splitlines():
                 
@@ -222,6 +220,21 @@ def bulk_action(request, project_id):
                 file = ProjectFile.objects.get(pk=file_id)
                 if action == "delete":
                     file.delete()
+                if action == "qc":
+                    if file.file_type in ['fq', 'fastq', 'bam', 'vcf']:
+                        task = Task()
+                        task.name = 'QC ProjectFile %s' % (file.id)
+                        task.type = 'qc'
+                        task.action = 'qc'
+                        task.status = 'new'
+                        task.manifest = {
+                            'input':file.location,
+                            'project':project.id,
+                            'file':file.id,
+                            'type':'qc',
+                        }
+                        task.save()
+                        run_qc.delay(task.id)
 
         if model == 'samples':
             samples = request.POST.getlist('samples')

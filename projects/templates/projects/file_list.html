@@ -12,6 +12,9 @@
       <a class="btn btn-app" href='javascript: submitform("files", "check")'>
         <i class="fa fa-search"></i> Check
       </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "qc")'>
+        <i class="fa fa-search"></i> QC
+      </a>
       <a class="btn btn-app" href='javascript: submitform("files", "download")'>
         <i class="fa fa-cloud-download"></i> Download
       </a>
@@ -86,7 +89,8 @@ Number of files: {{n_files}}
     <td>{{ file.human_size }}</td>
     <td>{{ file.location }}</td>
     <td>{{ file.status }}</td>
-    <td>{{ file.extension }}</td>
+    <td>{{ file.file_type }}</td>
+    <td></td>
     
 
 </tr>
