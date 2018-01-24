@@ -6,6 +6,10 @@ from variants.models import *
 
 
 class IndividualForm(ModelForm):
+
+
+    vcf_file = forms.CharField(max_length=600)
+
     class Meta:
         model = Individual
         fields = '__all__'
