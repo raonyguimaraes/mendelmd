@@ -31,3 +31,10 @@ class Subnet(models.Model):
     name = models.CharField(max_length=255)
     config = JSONField()
     count = models.IntegerField(null=True, blank=True)
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+            User,
+            on_delete=models.CASCADE,
+            primary_key=True,
+        )

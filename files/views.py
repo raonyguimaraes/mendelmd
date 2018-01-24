@@ -11,14 +11,27 @@ from tasks.models import Task
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django.shortcuts import get_object_or_404, redirect
+
 
 @login_required
 def index(request):
-
+    if request.method == 'GET':
+        print(request.GET)
+        if 'orderby' in request.GET:
+            orderby = request.GET['orderby'][0]
+            order = request.GET['order'][0]
+            if order == 'desc':
+                order_string = '-{}'.format(orderby)
+            else:
+                order_string = orderby
+        else:
+            order_string = 'name'
+    
     if request.user.is_staff:
-        files = File.objects.all()
+        files = File.objects.filter().order_by('location')
     else:
-        files = File.objects.filter(user=request.user)
+        files = File.objects.filter(user=request.user).order_by(order_string)
 
     context = {'files':files}
     return render(request, 'files/index.html', context)

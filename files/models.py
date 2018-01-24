@@ -17,7 +17,7 @@ class File(models.Model):
 
     user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
     
-    name = models.CharField(max_length=50, blank=True)
+    name = models.CharField(max_length=600, blank=True)
     
     size = models.BigIntegerField(null=True, blank=True)
     human_size = models.CharField(max_length=30, blank=True)

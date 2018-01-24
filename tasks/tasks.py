@@ -62,20 +62,30 @@ def check_file(task_id):
     print('File ID', file_id)
 
     file = File.objects.get(pk=file_id)
-    link = file.location
-    print('link', link)
-    print('link', link.strip())
-    print('link', link.encode())
-    
+    if file.location.startswith('http'):
+        link = file.location
+        print('link', link)
+        print('link', link.strip())
+        print('link', link.encode())
+        
 
-    file.name = os.path.basename(link)
-    
-    site = urllib.request.urlopen(link)
-    file_size = site.info()['Content-Length']
-    file.size = int(file_size)
-    file.human_size = human_size(int(file_size))
+        file.name = os.path.basename(link)
+        
+        site = urllib.request.urlopen(link)
+        file_size = site.info()['Content-Length']
+        file.size = int(file_size)
+        file.human_size = human_size(int(file_size))
+        
+    elif file.location.startswith('/'):
+        file.name = os.path.basename(file.location)
+        # print(os.stat(file.location))
+        # print(os.path.getsize(file.location))
+        file.size = int(os.path.getsize(file.location))
+
+
     file.status = 'checked'
     file.save()
+
     task.status = 'done'
     task.save()
 
