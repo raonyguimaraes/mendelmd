@@ -10,6 +10,7 @@ pysam
 pynnotator
 pyvcf
 celery
+django-celery
 django-celery-results
 django-appconf
 gunicorn

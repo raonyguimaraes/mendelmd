@@ -19,6 +19,9 @@
     <th>Name</th>
     <th>Status</th>
     <th>Extension</th>
+    <th>Size
+        <a href="?{{query}}orderby=size&order=asc"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
+        <a href="?{{query}}orderby=size&order=desc"><i class="fa fa-arrow-down" aria-hidden="true"></i></th></a>
     <th>Location</th>
     <th>Options</th>
 </tr>
@@ -32,6 +35,7 @@
     </td>
     <td>{{ file.status }}</td>
     <td>{{ file.file_type }}</td>
+    <td>{{ file.size }}</td>
     <td>{{ file.location }}</td>
     <td>
     	<a href="{% url 'file-update' file.id %}">Edit</a>
