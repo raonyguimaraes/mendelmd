@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^view/(?P<file_id>[0-9]+)/$', views.view, name='file-view'),
     url(r'^update/(?P<pk>[0-9]+)/$', views.FileUpdate.as_view(), name='file-update'),
     url(r'^delete/(?P<pk>[0-9]+)/$', views.FileDelete.as_view(), name='file-delete'),
+    url(r'^run_task/(?P<pk>[0-9]+)/$', views.run_task, name='files-runtask'),
     url(r'^bulk_action/$', views.bulk_action, name='files-bulk-action'),
 ]

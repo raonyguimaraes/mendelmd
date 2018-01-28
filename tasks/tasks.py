@@ -38,7 +38,7 @@ import gzip
 import datetime
 
 import socket
-
+import json
 
 @shared_task()
 def import_project_files_task(project_id):
@@ -82,7 +82,7 @@ def check_file(task_id):
         # print(os.path.getsize(file.location))
         file.size = int(os.path.getsize(file.location))
 
-
+    print('File Name', file.name)
     file.status = 'checked'
     file.save()
 
@@ -123,12 +123,20 @@ def run_qc(task_id):
     run(command, shell=True)
 
     os.chdir(task_location)
+
+
+    with open('manifest.json', 'w') as fp:
+        json.dump(manifest, fp, sort_keys=True,indent=4)
     
-    command = 'python {}/main.py -i %s -m 55' % (manifest['path'], manifest['input'])
+    command = 'python /projects/qcpipeline2/main.py -i %s -m 55' % (manifest['input'])
     run(command, shell=True)
 
     command = 'rm -rf %s/input/' % (task_location)
     run(command, shell=True)
+
+    command = 'aws s3 sync --profile analysistestdev %s s3://analysis-testdev-results/mendelmd/projects/%s/%s/' % (task_location, manifest['project'], task.id)
+    run(command, shell=True)
+
 
     task.status = 'done'
     stop = datetime.datetime.now()

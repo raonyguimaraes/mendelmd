@@ -38,6 +38,7 @@
     <td>{{ file.size }}</td>
     <td>{{ file.location }}</td>
     <td>
+        <a href="{% url 'file-runtask' %}?action=check&fileid={{file.id}}">Edit</a>
     	<a href="{% url 'file-update' file.id %}">Edit</a>
     	<a href="{% url 'file-delete' file.id %}">Delete</a>
     </td>
