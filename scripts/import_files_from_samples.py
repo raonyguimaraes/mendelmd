@@ -29,12 +29,12 @@ from django.contrib.auth.models import User
 individuals = Individual.objects.all()
 
 for individual in individuals:
-	print(individual)
-	print(individual.vcf_file)
+    print(individual)
+    print(individual.vcf_file)
 
-	file = File(user=individual.user)
-	file.location = individual.vcf_file
-	file.save()
+    file = File(user=individual.user)
+    file.location = individual.vcf_file
+    file.save()
 
     # user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
 
@@ -54,5 +54,5 @@ for individual in individuals:
     # modified_date = models.DateTimeField(null=True, blank=True)
 
     # annotation_time = models.CharField(max_length=200, null=True, blank=True)
-    # insertion_time = models.CharField(max_length=200, null=True, blank=True)	
-
+    # insertion_time = models.CharField(max_length=200, null=True, blank=True)
+    
