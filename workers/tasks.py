@@ -17,6 +17,8 @@ from django.db.models import Q
 
 from subprocess import run, check_output
 
+from helpers.aws_wrapper import AWS
+
 @app.task(queue="master")
 def check_queue():
     #check tasks and launch workers if necessary
@@ -46,7 +48,7 @@ def launch_worker():
     worker.status = 'new'
     worker.save()
 
-    worker_result = IWorker().launch()
+    worker_result = AWS().launch()
     worker.ip = worker_result['ip']
     worker.worker_id = worker_result['id']
     worker.save()
@@ -79,8 +81,7 @@ def terminate_workers():
     idle_workers = Worker.objects.filter(status='idle')
     for worker in idle_workers:
         print('Terminate Worker')
-        # command = '' % (worker.worker_id)
-        run(command, shell=True)
+        AWS().terminate(worker.worker_id)
         print('Terminate Worker', worker.id)
         worker.status = 'terminated'
         worker.save()
@@ -88,9 +89,9 @@ def terminate_workers():
 @app.task(queue="master")
 def terminate_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
-    # command = '' % (worker.worker_id)
-    run(command, shell=True)
+    
     print('Terminate Worker', worker.id)
+    AWS().terminate(worker.worker_id)
     worker.status = 'terminated'
     worker.save()
 
@@ -100,16 +101,14 @@ def install_worker(worker_id):
     
     print('Install Worker', worker.id)
 
-    # if worker.type =='qc':    
-    command = "scp %s scripts/install_worker_ubuntu.sh ubuntu@%s:~/" % (worker.ip)
+    command = "scp scripts/install_worker_ubuntu.sh ubuntu@%s:~/" % (worker.ip)
     run(command, shell=True)
 
-    command = "scp %s scripts/qc_wrapper.sh ubuntu@%s:~/" % (worker.ip)
-    run(command, shell=True)
+    # command = "scp scripts/qc_wrapper.sh ubuntu@%s:~/" % (worker.ip)
+    # run(command, shell=True)
 
-    command = """bash qc_wrapper.sh 2>&1 & sleep 2"""
-    command = """ssh %s -t ubuntu@%s '%s'""" % (
-        params, worker.ip, command)
+    command = """nohup bash install_worker_ubuntu.sh >nohup.out 2>&1 & sleep 2"""
+    command = """ssh -t ubuntu@%s '%s'""" % (worker.ip, command)
     
     print(command)
 

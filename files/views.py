@@ -43,6 +43,17 @@ def run_task(request):
             
     return redirect('files-index')
 
+@login_required
+def run_task(request):
+    if request.method == 'GET':
+        print(request.GET)
+        if 'action' in request.GET:
+            action = request.GET['action'][0]
+            file_id  = request.GET['file_id'][0]
+            print(action, file_id)
+    return redirect('files-index')
+
+
 
 @login_required
 def index(request):

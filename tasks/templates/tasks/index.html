@@ -54,7 +54,16 @@
     </th>
     <th>ID</th>
     <th>Name</th>
-    <th>Status</th>
+    <th>Manifest</th>
+    <th>
+        Status
+        <select>
+          <option value="checked">Checked</option>
+          <option value="scheduled">Scheduled</option>
+        </select>
+
+
+    </th>
     <th>Action</th>
     <th>md5</th>
     <th>started</th>
@@ -78,6 +87,7 @@
     <td>
         <a href="{% url 'tasks-view' task.id %}">{{task.name}}</a>
     </td>
+    <td>{{task.manifest}}</td>
     <td>{{task.status}}</td>
     <td>{{task.action}}</td>
     <td>{{task.md5}}</td>
