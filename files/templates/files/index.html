@@ -32,6 +32,18 @@
 
 <form action="." method="post" id='files_form'>
     {% csrf_token %}
+<div class="row">
+<div class='col-md-6'>    
+
+<div class="input-group input-group-sm">
+<input class="form-control" type="text" name="query">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </span>
+</div>
+
+</div>
+</div>
 <input type="hidden" id="action" name="action" value="">
 
 <table class="table">

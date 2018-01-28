@@ -58,11 +58,14 @@ def run_task(request):
 @login_required
 def index(request):
 
+    query  = ''
     queries = []
 
     if request.method == 'POST':
         files = request.POST.getlist('files')
         action = request.POST['action']
+        query = request.POST['query']
+        # print('query', query)
 
         for file_id in files:
 
@@ -115,13 +118,14 @@ def index(request):
             order_string = 'name'
     
     if request.user.is_staff:#status='scheduled' size=0
-        files = File.objects.filter().order_by('size')
+        files = File.objects.filter(location__icontains=query).order_by('size')
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
 
     files_summary = dict(Counter(files.values_list('status', flat=True)))
 
     context = {
+        'query':query,
         'files':files,
         'files_summary':files_summary
     }

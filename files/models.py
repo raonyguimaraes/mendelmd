@@ -31,7 +31,9 @@ class File(models.Model):
     remote_location = models.TextField(null=True, blank=True)
     
     status = models.TextField(null=True, blank=True)
-    
+    last_output = models.TextField(null=True, blank=True)
+
+
     md5 = models.TextField(null=True, blank=True)
 
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
