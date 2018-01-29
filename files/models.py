@@ -23,6 +23,7 @@ class File(models.Model):
     human_size = models.CharField(max_length=30, blank=True)
     
     file_type = models.TextField(null=True, blank=True)
+    extension = models.TextField(null=True, blank=True)
 
     location = models.TextField(null=True, blank=True)
     
@@ -31,7 +32,9 @@ class File(models.Model):
     remote_location = models.TextField(null=True, blank=True)
     
     status = models.TextField(null=True, blank=True)
-    
+    last_output = models.TextField(null=True, blank=True)
+
+
     md5 = models.TextField(null=True, blank=True)
 
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)

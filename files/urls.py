@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^delete/(?P<pk>[0-9]+)/$', views.FileDelete.as_view(), name='file-delete'),
     url(r'^run_task/(?P<pk>[0-9]+)/$', views.run_task, name='files-runtask'),
     url(r'^bulk_action/$', views.bulk_action, name='files-bulk-action'),
+    url(r'^run_task/$', views.run_task, name='files-runtask'),
 ]

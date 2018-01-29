@@ -6,12 +6,42 @@ from django.core.management import call_command
 from files.models import File
 from django.contrib.auth.decorators import login_required
 
-from tasks.tasks import check_file
+from tasks.tasks import check_file, compress_file
 from tasks.models import Task
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import get_object_or_404, redirect
+from collections import Counter
+from django.db.models import Q
+@login_required
+def run_task(request):
+    if request.method == 'GET':
+        print(request.GET)
+        if 'action' in request.GET:
+            action = request.GET['action']
+            file_id  = request.GET['file_id']
+
+            file = File.get_object_or_404(pk=file_id)
+            if action == "check":
+                
+                task_manifest = {}
+                task_manifest['file'] = file.id
+                task_manifest['action'] = action
+                task = Task(user=request.user)
+                
+                task.manifest = task_manifest
+                task.status = 'new'
+                task.action = action
+                task.user = request.user
+                task.save()
+
+                check_file.delay(task.id)
+
+                file.status = 'scheduled'
+                file.save()
+            
+    return redirect('files-index')
 
 @login_required
 def run_task(request):
@@ -23,10 +53,69 @@ def run_task(request):
             print(action, file_id)
     return redirect('files-index')
 
-
-
 @login_required
 def index(request):
+
+    query  = ''
+    args = []
+
+    if request.method == 'POST':
+        print(request.POST)
+        files = request.POST.getlist('files')
+        action = request.POST['action']
+        query = request.POST['query']
+        # print('query', query)
+
+        for file_id in files:
+
+            # file = File.objects.get(pk=file_id)
+            if request.user.is_staff:
+                file = get_object_or_404(File, pk=file_id)
+            else:
+                file = get_object_or_404(File, pk=file_id, user=request.user)
+
+            if action == "delete":
+                file.delete()
+            else:
+                task_manifest = {}
+                task_manifest['file'] = file.id
+                task_manifest['action'] = action
+                task = Task(user=request.user)
+                
+                task.manifest = task_manifest
+                task.status = 'new'
+                task.action = action
+                task.user = request.user
+                task.save()
+
+                if action == "check":
+                    check_file.delay(task.id)                
+                if action == "compress":
+                    compress_file.delay(task.id)
+                file.status = 'scheduled'
+                file.save()
+
+        status = request.POST.getlist('status')
+        
+        print('status', status)
+
+        if len(status[0]) > 0:
+            args.append(Q(status__in=status))
+
+        extension = request.POST.getlist('extension')
+
+        if len(extension[0]) > 0:
+            print('extension',extension)
+            args.append(Q(extension__in=extension))
+
+        
+        print('args', args)
+
+
+
+    # Or the Q object with the ones remaining in the list
+    
+    
     if request.method == 'GET':
         print(request.GET)
         if 'orderby' in request.GET:
@@ -39,12 +128,23 @@ def index(request):
         else:
             order_string = 'name'
     
-    if request.user.is_staff:
-        files = File.objects.filter().order_by('location')
+    if request.user.is_staff:#status='scheduled' size=0
+        files = File.objects.filter(location__icontains=query, *args).order_by('size')
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
 
-    context = {'files':files}
+    files_summary = {}
+    files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
+    files_summary['file_type'] = dict(Counter(files.values_list('file_type', flat=True)))
+    files_summary['extension'] = dict(Counter(files.values_list('extension', flat=True)))
+
+    context = {
+        'query':query,
+        'files':files,
+        'n_files':len(files),
+        'files_summary':files_summary
+    }
+
     return render(request, 'files/index.html', context)
 
 @login_required

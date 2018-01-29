@@ -6,7 +6,7 @@ from django import forms
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'paths', 'groups', 'members']
+        fields = ['name', 'description', 'paths', 'groups']#, 'members'
         # fields = '__all__'
 
 class ImportForm(forms.Form):
