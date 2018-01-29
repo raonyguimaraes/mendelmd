@@ -53,8 +53,6 @@ def run_task(request):
             print(action, file_id)
     return redirect('files-index')
 
-
-
 @login_required
 def index(request):
 
@@ -79,9 +77,6 @@ def index(request):
             if action == "delete":
                 file.delete()
             else:
-
-            
-                    
                 task_manifest = {}
                 task_manifest['file'] = file.id
                 task_manifest['action'] = action
@@ -111,7 +106,7 @@ def index(request):
 
         if len(extension[0]) > 0:
             print('extension',extension)
-            args.append(Q(file_type__in=extension))
+            args.append(Q(extension__in=extension))
 
         
         print('args', args)
@@ -141,10 +136,12 @@ def index(request):
     files_summary = {}
     files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
     files_summary['file_type'] = dict(Counter(files.values_list('file_type', flat=True)))
+    files_summary['extension'] = dict(Counter(files.values_list('extension', flat=True)))
 
     context = {
         'query':query,
         'files':files,
+        'n_files':len(files),
         'files_summary':files_summary
     }
 

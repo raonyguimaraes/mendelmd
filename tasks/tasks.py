@@ -92,7 +92,11 @@ def check_file(task_id):
             filename, file_extension  = os.path.splitext(filename)
             file_extension += compression
 
-        file.file_type = file_extension
+        file.extension = file_extension
+
+        command = 'file {}'.format(file.location)
+        output = check_output(command, shell=True)
+        file.file_type = ' '.join(output.decode('utf-8').strip().split(' ')[1:])
 
         file.name = os.path.basename(file.location)
         # print(os.stat(file.location))

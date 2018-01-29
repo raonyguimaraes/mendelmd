@@ -22,17 +22,20 @@
             <td>{{value}}</td>
         </tr>
         {% endfor %}
+        <tr>
+            <td>Total</td><td>{{n_files}}</td>
+        </tr>
     </tbody>
 </table>
 <table class="table">
     <thead>
         <tr>
-            <th>File Type</th>
+            <th>Extension</th>
             <th>Count</th>
         </tr>
     </thead>
     <tbody>
-        {% for key,value in files_summary.file_type.items %}
+        {% for key,value in files_summary.extension.items %}
         <tr>
             <td>{{key}}</td>
             <td>{{value}}</td>
@@ -75,10 +78,11 @@
         </select>
     </th>
     <th>Last output</th>
+    <th>File Type</th>
     <th>Extension
         <select name="extension" id="extension" onchange="this.form.submit()">
             <option value="">Select</option>
-            {% for key,value in files_summary.file_type.items %}
+            {% for key,value in files_summary.extension.items %}
             <option value="{{key}}">{{key}}</option>
             {% endfor %}
        </select>
@@ -100,6 +104,7 @@
     <td>{{ file.status }}</td>
     <td><pre>{{ file.last_output|linebreaks }}</pre></td>
     <td>{{ file.file_type }}</td>
+    <td>{{ file.extension }}</td>
     <td>{{ file.size }}</td>
     <td>{{ file.location }}</td>
     <td>

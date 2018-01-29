@@ -23,6 +23,7 @@ class File(models.Model):
     human_size = models.CharField(max_length=30, blank=True)
     
     file_type = models.TextField(null=True, blank=True)
+    extension = models.TextField(null=True, blank=True)
 
     location = models.TextField(null=True, blank=True)
     
