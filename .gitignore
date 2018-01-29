@@ -39,3 +39,4 @@ data/genomes/
 venv/
 .vscode/
 celerybeat-schedule
+__pycache__
