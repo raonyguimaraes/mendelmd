@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>Workers</h1>
+
+<a href="{% url 'worker-launch' %}">Launch Worker</a>
+<a href="{% url 'worker-launch' %}?n=5">Launch 5 Workers</a>
+<a href="{% url 'worker-launch' %}?n=10">Launch 10 Workers</a>
+<a href="{% url 'worker-launch' %}?n=25">Launch 25 Workers</a>
+
+<form action="{% url 'bulk_action' %}" method="post">{% csrf_token %}
+
+<div class="col-md-2">
+<select class="form-control" id="action" name="action">
+        <option value="update">update</option>
+        <option value="install">install</option>
+        <option value="terminate">terminate</option>
+        <option value="delete">delete</option>
+</select>
+</div>
+<input type="submit" value="Submit"/>
+
+<table class="table">
+<thead>
+    <tr>
+        <th>#<input type="checkbox" id="select_all"/></th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>N Tasks</th>
+        <th>Status</th>
+        <th>Current Status</th>
+        <th>Type</th>
+        <th>IP</th>
+        <th>Created</th>
+        <th>Modified</th>
+        <th>Started</th>
+        <th>Finished</th>
+        <th>Execution Time</th>
+        <th>Options</th>
+    </tr>
+</thead>
+<tbody>
+{% for worker in workers%}
+<tr>
+    <td>#</td>
+    <td><input type="checkbox" name="select[]" value="{{worker.id}}">{{ worker.id }}</td>
+    <td>{{ worker.name }}</td>
+    <td>{{ worker.n_tasks }}</td>
+    <td>{{ worker.status }}</td>
+    <td>{{ worker.current_status }}</td>
+    <td>{{ worker.type }}</td>
+    <td>{{ worker.ip}}</td>
+    <td>{{ worker.creation_date }}</td>
+    <td>{{ worker.modified_date }}</td>
+    <td>{{ worker.started }}</td>
+    <td>{{ worker.finished }}</td>
+    <td>{{ worker.execution_time }}</td>
+    <td>
+        <a class='btn btn-primary' href="{% url 'worker-install' worker.id %}">Install</a>
+        <a class='btn btn-primary' href="{% url 'worker-terminate' worker.id %}">Terminate</a>
+        <a class='btn btn-primary' href="{% url 'worker-delete' worker.id %}">Delete</a>
+    </td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock content %}
+
+
+{% block extra_js %}
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $("#select_all").click(function(){
+      var checked_status = this.checked;
+      $("input[name='select[]']").each(function(){
+        this.checked = checked_status;
+      });
+    });
+  });
+
+</script>
+{% endblock %}

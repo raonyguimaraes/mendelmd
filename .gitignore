@@ -38,3 +38,4 @@ data/files/
 data/genomes/
 venv/
 .vscode/
+celerybeat-schedule

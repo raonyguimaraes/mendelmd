@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^diseases/', include('diseases.urls')),
     url(r'^genes/', include('genes.urls')),
     url(r'^variants/', include('variants.urls')),
-    # url(r'^cases/', include('cases.urls')),
+    url(r'^cases/', include('cases.urls')),
     url(r'^filter_analysis/', include('filter_analysis.urls')),
     # url(r'^pathway_analysis/', include('apps.pathway_analysis.urls')),
     url(r'^statistics/', include('statistics.urls')),
@@ -39,7 +39,11 @@ urlpatterns = [
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^files/', include('files.urls')),
-    url(r'^settings/', include('settings.urls')),    
+    url(r'^settings/', include('settings.urls')),
+    url(r'^tasks/', include('tasks.urls')),
+    url(r'^workers/', include('workers.urls')),
+    url(r'^analyses/', include('analyses.urls')),
+    url(r'^apps/', include('mapps.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

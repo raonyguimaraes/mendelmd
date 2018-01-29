@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'diseases',
     'genes',
     'pagination',
-    # 'cases',
+    'cases',
     'filter_analysis',
     'pathway_analysis',
     'statistics',
@@ -78,6 +78,11 @@ INSTALLED_APPS = [
     'samples',
     'upload',
     'settings',
+    'tasks',
+    'workers',
+    'analyses',
+    'formtools',
+    'mapps',
 ]
 
 MIDDLEWARE = [
@@ -133,21 +138,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-# TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
-# TEMPLATE_CONTEXT_PROCESSORS = (
-#     "django.contrib.auth.context_processors.auth",
-#     "django.core.context_processors.debug",
-#     "django.core.context_processors.i18n",
-#     "django.core.context_processors.media",
-#     "django.core.context_processors.static",
-#     "django.core.context_processors.tz",
-#     "django.contrib.messages.context_processors.messages",
-#     "django.core.context_processors.request",
-#     # allauth specific context processors
-#     "allauth.account.context_processors.account",
-#     "allauth.socialaccount.context_processors.socialaccount",)
-
 
 TEMPLATES = [
     {
@@ -193,12 +183,21 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #this prevents crash when loading filter_analysis forms.py
 # DEBUG_TOOLBAR_PATCH_SETTINGS = True
+
 INTERNAL_IPS = ['127.0.0.1']
-# INTERNAL_IPS = ['127.0.0.1']
 
 # new celery 4 config
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
+
+CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks',)
+
+CELERYBEAT_SCHEDULE = {
+    'check_queue': {
+        'task': 'workers.tasks.check_queue',
+        'schedule': 30.0,
+    },
+}
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
@@ -209,3 +208,6 @@ except ImportError:
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
 from datetime import timedelta
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
+

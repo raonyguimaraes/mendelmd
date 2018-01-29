@@ -39,15 +39,12 @@ class JSONResponse(HttpResponse):
         content = json.dumps(obj,**json_opts)
         super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
 
-# Create your views here.
 def create(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
-        # print('entrou no create!')
+        
         if form.is_valid():
             
-            # print('form is valid!')
-
             if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
@@ -323,6 +320,7 @@ def browse(request, individual_id):
 
 @login_required
 def list(request):
+
     if request.method == 'POST':
         individuals = request.POST.getlist('individuals')
         print(individuals) 
@@ -376,23 +374,27 @@ def list(request):
     args = []
     # groups = Groups.objects.filter(user=request.user, shared_with_users=).order_by("-id")
     args.append(Q(user=request.user) | Q(shared_with_users=request.user) | Q(shared_with_groups__members=request.user))
-    individuals = Individual.objects.filter(*args).order_by("-id")
+    
+    if request.user.is_staff:
+        individuals = Individual.objects.all()
+    else:
+        individuals = Individual.objects.filter(*args).order_by("-id")
     
     ind_featured = Individual.objects.filter(is_featured= True).order_by("id")
-    paginator = Paginator(individuals, 25) # Show 25 contacts per page
+    # paginator = Paginator(individuals, 25) # Show 25 contacts per page
            
-    try:
-       page = int(request.GET.get('page', '1'))
-    except ValueError:
-       page = 1
-    try:
-       individuals = paginator.page(page)
-    except PageNotAnInteger:
-       # If page is not an integer, deliver first page.
-       individuals = paginator.page(1)
-    except EmptyPage:
-       # If page is out of range (e.g. 9999), deliver last page of results.
-       individuals = paginator.page(paginator.num_pages)
+    # try:
+    #    page = int(request.GET.get('page', '1'))
+    # except ValueError:
+    #    page = 1
+    # try:
+    #    individuals = paginator.page(page)
+    # except PageNotAnInteger:
+    #    # If page is not an integer, deliver first page.
+    #    individuals = paginator.page(1)
+    # except EmptyPage:
+    #    # If page is out of range (e.g. 9999), deliver last page of results.
+    #    individuals = paginator.page(paginator.num_pages)
 
 
 

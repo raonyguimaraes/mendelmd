@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Tasks</h1>
+
+<div class="row">
+<div class='col-md-6'>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key,value in tasks_summary.items %}
+        <tr>
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+
+<div class="row">
+<form name="task_form" id="task_form" action="." method="get">
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" name="query"> <button type="submit">Search</button>
+
+        </div>
+    </div>
+</form>
+</div>
+
+<form action="{% url 'tasks-bulk-action' %}" method="post" id='tasks_form'>
+    {% csrf_token %}
+<input type="hidden" id="action" name="action" value="">
+
+
+{% include 'tasks/task_navbar.html' %}
+
+<div class="row">
+
+<div class="col-md-12">
+<table class="table table-hover table-striped">
+<thead>
+<tr>
+    <th># 
+        <input type="checkbox" id="select_all">
+    </th>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Manifest</th>
+    <th>
+        Status
+        <select>
+          <option value="checked">Checked</option>
+          <option value="scheduled">Scheduled</option>
+        </select>
+
+
+    </th>
+    <th>Action</th>
+    <th>md5</th>
+    <th>started</th>
+    <th>finished</th>
+    <th>timetaken</th>
+    <th>total_cost</th>
+    <th>creation_date</th>
+    <th>modified_date</th>
+
+    <th>Options</th>
+</tr>
+</thead>
+<tbody>
+{% for task in tasks %}
+<tr>
+    <td>
+        <input type="checkbox" name="tasks" class="tasks" id="option{{task.id}}" value="{{task.id}}" />
+    </td>
+    <td>{{task.id}}</td>
+
+    <td>
+        <a href="{% url 'tasks-view' task.id %}">{{task.name}}</a>
+    </td>
+    <td>{{task.manifest}}</td>
+    <td>{{task.status}}</td>
+    <td>{{task.action}}</td>
+    <td>{{task.md5}}</td>
+    <td>{{task.started}}</td>
+    <td>{{task.finished}}</td>
+    <td>{{task.timetaken}}</td>
+    <td>{{task.total_cost}}</td>
+    <td>{{task.creation_date}}</td>
+    <td>{{task.modified_date}}</td>
+    <td>
+        <a href="{% url 'tasks-view' task.id %}">View</a>
+        <a href="#">Edit</a>
+        <a href="{% url 'tasks-delete' task.id %}">Delete</a>
+    </td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</form>
+</div>
+
+</div>
+
+{% endblock content %}
+
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".tasks:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       // document.project_files.elements["action"].value = action;
+       document.getElementById("action").value = action;
+       document.getElementById("tasks_form").submit();
+
+  
+    }
+</script>
+
+{% endblock %}

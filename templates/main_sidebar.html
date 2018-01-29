@@ -41,6 +41,7 @@
             <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
           </ul>
         </li>
+
         <li class="treeview">
           <a href="#">
             <i class="fa fa-files-o"></i><span>Models</span>
@@ -67,7 +68,26 @@
             <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
           </ul>
         </li>
-        
+        <li>
+          <a href="{% url 'cases_list' %}"><i class="fa fa-users"></i> <span> Cases</span></a>
+        </li>
+        <li  class="treeview">
+          <a href="#">
+            <i class="caret"></i> <span>Models</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="{% url 'individuals_list' %}">Individuals</a></li>
+            <li><a href="{% url 'diseases_list' %}">Diseases</a></li>
+            <li><a href="{% url 'genes_list' %}">Genes</a></li>
+            <li><a href="#">Cases</a></li>
+            <li><a href="#">Cohorts</a></li>
+            <li><a href="#">Samples</a></li>
+            <li><a href="#">Tasks</a></li>
+          </ul>
+        </li>        
       </ul>
     </section>
     <!-- /.sidebar -->
