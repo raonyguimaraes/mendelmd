@@ -27,14 +27,26 @@ from django.contrib.auth.models import User
 
 
 individuals = Individual.objects.all()
+files = File.objects.all()
 
-for individual in individuals:
-    print(individual)
-    print(individual.vcf_file)
+for file in files:
+    path = os.path.dirname(file.location)+'/'
+    print(path)
+    individual = Individual.objects.get(vcf_file__icontains=path)
+    # for individual in individuals:
+    print(individual.name, individual.vcf_file)
+    individual.vcf_file = file.location
+    individual.save()
+    # die()
 
-    file = File(user=individual.user)
-    file.location = individual.vcf_file
-    file.save()
+
+# for individual in individuals:
+#     print(individual)
+#     print(individual.vcf_file)
+
+#     file = File(user=individual.user)
+#     file.location = individual.vcf_file
+#     file.save()
 
     # user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
 

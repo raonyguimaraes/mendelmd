@@ -16,7 +16,23 @@
         </tr>
     </thead>
     <tbody>
-        {% for key,value in files_summary.items %}
+        {% for key,value in files_summary.status.items %}
+        <tr>
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<table class="table">
+    <thead>
+        <tr>
+            <th>File Type</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key,value in files_summary.file_type.items %}
         <tr>
             <td>{{key}}</td>
             <td>{{value}}</td>
@@ -49,15 +65,24 @@
 <table class="table">
 <thead>
 <tr>
-    <th># {{file.id}} <input type="checkbox" id="select_all"> ID</th>
+    <th># <input type="checkbox" id="select_all"> ID</th>
     <th>Name</th>
     <th>Status
-        <select id="status" onchange="this.form.submit()">
-          <option value="checked">Checked</option>
+        <select name="status" id="status" onchange="this.form.submit()">
+            <option value="">Select</option>
+            <option value="checked">Checked</option>
           <option value="scheduled">Scheduled</option>
         </select>
     </th>
-    <th>Extension</th>
+    <th>Last output</th>
+    <th>Extension
+        <select name="extension" id="extension" onchange="this.form.submit()">
+            <option value="">Select</option>
+            {% for key,value in files_summary.file_type.items %}
+            <option value="{{key}}">{{key}}</option>
+            {% endfor %}
+       </select>
+    </th>
     <th>Size
         <a href="?{{query}}orderby=size&order=asc"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
         <a href="?{{query}}orderby=size&order=desc"><i class="fa fa-arrow-down" aria-hidden="true"></i></th></a>
@@ -68,11 +93,12 @@
 <tbody>
 {% for file in files %}
 <tr>
-    <td><input type="checkbox" name="files" class="files" id="option{{file.id}}" value="{{file.id}}" /></td>
+    <td><input type="checkbox" name="files" class="files" id="option{{file.id}}" value="{{file.id}}" />{{file.id}}</td>
     <td>
         <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
     </td>
     <td>{{ file.status }}</td>
+    <td><pre>{{ file.last_output|linebreaks }}</pre></td>
     <td>{{ file.file_type }}</td>
     <td>{{ file.size }}</td>
     <td>{{ file.location }}</td>

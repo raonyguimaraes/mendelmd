@@ -25,7 +25,7 @@ from django.db.models import Q
 from workers.tasks import launch_worker, launch_workers, terminate_workers
 
 import os
-from subprocess import run
+from subprocess import run, check_output
 
 from individuals.tasks import parse_vcf
 from individuals.models import Individual
@@ -48,6 +48,7 @@ def import_project_files_task(project_id):
 def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
     """ Returns a human readable string reprentation of bytes"""
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
+
 
 @shared_task()
 def check_file(task_id):
@@ -77,6 +78,22 @@ def check_file(task_id):
         file.human_size = human_size(int(file_size))
         
     elif file.location.startswith('/'):
+
+        path = '/'.join(file.location.split('/')[:-1])
+
+        command = 'ls -lah {}'.format(path)
+        output = check_output(command, shell=True)
+        file.last_output = output.decode('utf-8')
+
+        filename, file_extension = os.path.splitext(file.location)
+
+        if file_extension in ['.gz', '.zip', '.rar', 'bz2', '.7z']:
+            compression = file_extension
+            filename, file_extension  = os.path.splitext(filename)
+            file_extension += compression
+
+        file.file_type = file_extension
+
         file.name = os.path.basename(file.location)
         # print(os.stat(file.location))
         # print(os.path.getsize(file.location))
@@ -84,6 +101,37 @@ def check_file(task_id):
 
     print('File Name', file.name)
     file.status = 'checked'
+    file.save()
+
+    task.status = 'done'
+    task.save()
+
+
+@shared_task()
+def compress_file(task_id):
+
+    task = Taskobj.objects.get(pk=task_id)
+
+    task.status = 'started'
+    task.save()
+
+    manifest = task.manifest
+    file_id = manifest['file']
+    print('File ID', file_id)
+
+    file = File.objects.get(pk=file_id)
+        
+    if file.location.startswith('/'):
+
+        path = '/'.join(file.location.split('/')[:-1])
+
+        command = 'bgzip {}'.format(file.location)
+
+        output = check_output(command, shell=True)
+        
+        file.last_output = output.decode('utf-8')
+        file.location += '.gz'
+
     file.save()
 
     task.status = 'done'

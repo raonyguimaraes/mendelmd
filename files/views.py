@@ -6,14 +6,14 @@ from django.core.management import call_command
 from files.models import File
 from django.contrib.auth.decorators import login_required
 
-from tasks.tasks import check_file
+from tasks.tasks import check_file, compress_file
 from tasks.models import Task
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import get_object_or_404, redirect
 from collections import Counter
-
+from django.db.models import Q
 @login_required
 def run_task(request):
     if request.method == 'GET':
@@ -59,9 +59,10 @@ def run_task(request):
 def index(request):
 
     query  = ''
-    queries = []
+    args = []
 
     if request.method == 'POST':
+        print(request.POST)
         files = request.POST.getlist('files')
         action = request.POST['action']
         query = request.POST['query']
@@ -77,8 +78,10 @@ def index(request):
 
             if action == "delete":
                 file.delete()
-            if action == "check":
-                
+            else:
+
+            
+                    
                 task_manifest = {}
                 task_manifest['file'] = file.id
                 task_manifest['action'] = action
@@ -90,17 +93,30 @@ def index(request):
                 task.user = request.user
                 task.save()
 
-                check_file.delay(task.id)
-
+                if action == "check":
+                    check_file.delay(task.id)                
+                if action == "compress":
+                    compress_file.delay(task.id)
                 file.status = 'scheduled'
                 file.save()
 
         status = request.POST.getlist('status')
         
-        if status:
-            queries.append(Q(status=status))
-
         print('status', status)
+
+        if len(status[0]) > 0:
+            args.append(Q(status__in=status))
+
+        extension = request.POST.getlist('extension')
+
+        if len(extension[0]) > 0:
+            print('extension',extension)
+            args.append(Q(file_type__in=extension))
+
+        
+        print('args', args)
+
+
 
     # Or the Q object with the ones remaining in the list
     
@@ -118,11 +134,13 @@ def index(request):
             order_string = 'name'
     
     if request.user.is_staff:#status='scheduled' size=0
-        files = File.objects.filter(location__icontains=query).order_by('size')
+        files = File.objects.filter(location__icontains=query, *args).order_by('size')
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
 
-    files_summary = dict(Counter(files.values_list('status', flat=True)))
+    files_summary = {}
+    files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
+    files_summary['file_type'] = dict(Counter(files.values_list('file_type', flat=True)))
 
     context = {
         'query':query,
