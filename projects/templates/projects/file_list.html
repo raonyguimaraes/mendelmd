@@ -71,7 +71,7 @@ Number of files: {{n_files}}
 </tr>
 </thead>
 <tbody>
-{% for file in project.projectfile_set.all %}
+{% for file in project.files.all %}
 <tr>  
     <td>
         <input type="checkbox" name="files" class="files" id="option{{file.id}}" value="{{file.id}}" />

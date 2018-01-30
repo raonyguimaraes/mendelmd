@@ -74,8 +74,10 @@ def view(request, project_id):
     else:
         project = get_object_or_404(Project, pk=project_id, user=request.user)
 
-    n_files = project.projectfile_set.count()
-    n_samples = project.projectsample_set.count()
+    print(dir(project))
+
+    n_files = project.files.count()
+    n_samples = project.files.count()
     
     context = {
         'project': project,
@@ -217,7 +219,7 @@ def bulk_action(request, project_id):
         if model == 'files':
             files = request.POST.getlist('files')
             for file_id in files:
-                file = ProjectFile.objects.get(pk=file_id)
+                file = File.objects.get(pk=file_id)
                 if action == "delete":
                     file.delete()
                 if action == "qc":
@@ -235,6 +237,22 @@ def bulk_action(request, project_id):
                         }
                         task.save()
                         run_qc.delay(task.id)
+                if action == "check":
+               
+                   task_manifest = {}
+                   task_manifest['file'] = file.id
+                   task_manifest['action'] = action
+                   task = Task(user=request.user)
+                   task.manifest = task_manifest
+                   task.status = 'new'
+                   task.action = action
+                   task.user = request.user
+                   task.save()
+                   check_file.delay(task.id)
+                   file.status = 'scheduled'
+                   file.save()
+
+
 
         if model == 'samples':
             samples = request.POST.getlist('samples')

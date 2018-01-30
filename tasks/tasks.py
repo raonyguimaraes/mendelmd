@@ -40,6 +40,16 @@ import datetime
 import socket
 import json
 
+from urllib.parse import urlparse
+
+import threading
+import time
+import ftplib
+
+from contextlib import closing
+
+mutex = threading.Lock()
+
 @shared_task()
 def import_project_files_task(project_id):
     print('Import Files on ', project_id)
@@ -52,7 +62,7 @@ def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
 
 @shared_task()
 def check_file(task_id):
-
+    global mutex
     task = Taskobj.objects.get(pk=task_id)
 
     task.status = 'started'
@@ -63,12 +73,49 @@ def check_file(task_id):
     print('File ID', file_id)
 
     file = File.objects.get(pk=file_id)
-    if file.location.startswith('http'):
+
+    if file.location.startswith('ftp://'):
+        print('ftp')
+        print(file.location)
+        
+        try:
+            file.name = os.path.basename(file.location)
+            link = file.location
+            link = link.strip()
+            link = link.replace('ftp://', 'http://')        
+            file_size = site.info()['Content-Length']
+            file.size = int(file_size)
+            file.human_size = human_size(file.size)
+            site.close()
+        except error_perm as e:
+            print( 'Ftp fail -> ', e )
+            
+            # flag = False
+            
+
+        # exception ftplib.all_errors:
+        #     print('aal erros!')
+        
+        # o = urlparse(file.location)
+        
+        # 
+        # while(flag):
+        #     ftp = FTP_TLS(o.netloc)
+        #     ftp.login()
+        #     size = ftp.size(o.path)
+        #     ftp.quit()
+        #     if size:
+        #         flag = False
+            
+        # file.size = int(size)
+        
+
+
+    elif file.location.startswith('http'):
         link = file.location
         print('link', link)
         print('link', link.strip())
         print('link', link.encode())
-        
 
         file.name = os.path.basename(link)
         
