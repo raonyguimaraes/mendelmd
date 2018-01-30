@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^files/', include('files.urls')),
+    url(r'^samples/', include('samples.urls')),
     url(r'^settings/', include('settings.urls')),
     url(r'^tasks/', include('tasks.urls')),
     url(r'^workers/', include('workers.urls')),

@@ -70,6 +70,7 @@
 <tr>
     <th># <input type="checkbox" id="select_all"> ID</th>
     <th>Name</th>
+    <th>Sample</th>
     <th>Status
         <select name="status" id="status" onchange="this.form.submit()">
             <option value="">Select</option>
@@ -101,6 +102,7 @@
     <td>
         <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
     </td>
+    <td>{{ file.sample_set.all }}</td>
     <td>{{ file.status }}</td>
     <td><pre>{{ file.last_output|linebreaks }}</pre></td>
     <td>{{ file.file_type }}</td>

@@ -1,9 +1,8 @@
 from django.db import models
 
 from django.contrib.auth.models import User
-
-
-# Create your models here.
+from datetime import datetime
+from files.models import File
 
 class Sample(models.Model):
     def get_upload_path(self, filename):
@@ -14,6 +13,7 @@ class Sample(models.Model):
         return string
 
     user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
+    files = models.ManyToManyField(File, blank=True)
 
     # shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
     # shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
@@ -24,6 +24,9 @@ class Sample(models.Model):
     
     file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
     file_header = models.TextField(null=True, blank=True)
+
+    prefix = models.TextField(null=True, blank=True)
+
 
     status = models.CharField(max_length=100, blank=True, editable=False)
     n_variants = models.IntegerField(null=True, blank=True, editable=False)

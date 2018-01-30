@@ -129,7 +129,7 @@ def index(request):
             order_string = 'name'
     
     if request.user.is_staff:#status='scheduled' size=0
-        files = File.objects.filter(location__icontains=query, *args).order_by('size')
+        files = File.objects.filter(location__icontains=query, *args).order_by('sample')#size
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
 
@@ -149,7 +149,13 @@ def index(request):
 
 @login_required
 def view(request, file_id):
-    print('Hello')
+
+    file = File.objects.get(pk=file_id)
+    # print(dir(file))
+    context = {
+    'file':file
+    }
+    return render(request, 'files/view.html', context)
 
 
 @login_required
