@@ -230,12 +230,11 @@ def bulk_action(request, project_id):
 
 
             if action == 'analysis':
-                
+
                 request.session['files'] = files
-
                 request.session['project_id'] = project_id
-
-                return redirect('analysis-create-wizard')
+                
+                return redirect('analysis-create')
 
 
             for file_id in files:

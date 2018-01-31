@@ -24,10 +24,10 @@ class Analysis(models.Model):
         verbose_name_plural = "analyses"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    params = JSONField()
+    params = JSONField(null=True, blank=True)
 
     name = models.CharField(max_length=30)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     samples = models.ManyToManyField(Sample)
 
     # type = models.ForeignKey(AnalysisType, on_delete=models.CASCADE)

@@ -27,9 +27,13 @@ def index(request):
 
 def create(request):
     params = {}
-    file_list = request.session['files']
-
-    files = File.objects.filter(pk__in=file_list)
+    
+    if 'files' in request.session:
+        file_list = request.session['files']
+        files = File.objects.filter(pk__in=file_list)
+    else:
+        file_list = None
+        files = None
 
     if 'project_id' in request.session:
 
@@ -85,9 +89,9 @@ class AnalysisDelete(DeleteView):
     model = Analysis
     success_url = reverse_lazy('analyses-index')
 
-class AnalysisCreate(CreateView):
-    model = Analysis
-    fields = ['name']
+# class AnalysisCreate(CreateView):
+#     model = Analysis
+#     fields = ['name']
 
 class AnalysisUpdate(UpdateView):
     model = Analysis
