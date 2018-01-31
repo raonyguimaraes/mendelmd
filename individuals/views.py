@@ -51,7 +51,10 @@ def create(request):
                 individual = Individual.objects.create(user=None, status='new')
 
             individual.vcf_file= request.FILES.get('file')
-            #request.FILES.get('file')
+            
+            print('file')
+            print(request.FILES.get('file'))
+
             filename = individual.vcf_file.name.split('.')
             new_filename = [] 
             for tag in filename:

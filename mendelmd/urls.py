@@ -18,16 +18,15 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
 
-	url(r'^docs/$', views.docs, name="docs"),
+    url(r'^docs/$', views.docs, name="docs"),
 
 
     url(r'^admin/', admin.site.urls),
 
+    url(r'^accounts/', include('allauth.urls')),
 
-	url(r'^accounts/', include('allauth.urls')),
-
-	url(r'^dashboard/', include('dashboard.urls')),
-	url(r'^individuals/', include('individuals.urls')),
+    url(r'^dashboard/', include('dashboard.urls')),
+    url(r'^individuals/', include('individuals.urls')),
     url(r'^diseases/', include('diseases.urls')),
     url(r'^genes/', include('genes.urls')),
     url(r'^variants/', include('variants.urls')),

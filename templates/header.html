@@ -22,7 +22,8 @@
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
-            <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>            
+            <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
+            <li><a href="{% url 'files-index' %}"><i class="fa fa-files-o"></i> Files</a></li>
             <li class="dropdown">
 
               <a href="{% url 'analyses-index' %}" class="dropdown-toggle"><i class="fa analysis-icon"></i> 
@@ -351,4 +352,5 @@
 
       {% endif %}
     </nav>
+  </header>
   </header>
