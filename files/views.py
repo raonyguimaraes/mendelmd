@@ -65,7 +65,10 @@ def index(request):
         action = request.POST['action']
         query = request.POST['query']
         # print('query', query)
-
+        if action == 'analysis':
+            request.session['files'] = files
+            return redirect('analysis-create-wizard')
+        
         for file_id in files:
 
             # file = File.objects.get(pk=file_id)

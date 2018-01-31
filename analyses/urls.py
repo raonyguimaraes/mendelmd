@@ -15,6 +15,6 @@ urlpatterns = [
     url(r'detail/(?P<pk>\d+)/$', views.AnalysisDetailView.as_view(), name='analysis-detail'),
     url(r'delete/(?P<pk>\d+)/$', views.AnalysisDelete.as_view(), name='analysis-delete'),
     url(r'update/(?P<pk>\d+)/$', views.AnalysisUpdate.as_view(), name='analysis-update'),
-    url(r'run/(?P<pk>\d+)/$', views.run_analysis, name='analysis-run'),
+    url(r'run/(?P<analysis_id>\d+)/$', views.run_analysis, name='analysis-run'),
     url(r'^contact/$', ContactWizard.as_view([ContactForm1, ContactForm2])),
 ]

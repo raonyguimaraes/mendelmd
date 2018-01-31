@@ -27,6 +27,8 @@ from .models import ProjectFile, ProjectSample
 
 from django.utils.decorators import method_decorator
 
+from django.core import serializers
+
 @login_required
 def index(request):
 
@@ -78,11 +80,13 @@ def view(request, project_id):
 
     n_files = project.files.count()
     n_samples = project.files.count()
+    total_file_size = sum(project.files.values_list('size', flat=True))
     
     context = {
         'project': project,
         'n_files':n_files,
         'n_samples':n_samples,
+        'total_file_size':total_file_size,
     }
     
     return render(request, 'projects/view.html', context)
@@ -214,10 +218,26 @@ def bulk_action(request, project_id):
     if request.method == 'POST':
         
         action = request.POST['action']
+
+        print('POST', request.POST)
+
         model = request.POST['model']
 
+
         if model == 'files':
+    
             files = request.POST.getlist('files')
+
+
+            if action == 'analysis':
+                
+                request.session['files'] = files
+
+                request.session['project_id'] = project_id
+
+                return redirect('analysis-create-wizard')
+
+
             for file_id in files:
                 file = File.objects.get(pk=file_id)
                 if action == "delete":
@@ -238,7 +258,6 @@ def bulk_action(request, project_id):
                         task.save()
                         run_qc.delay(task.id)
                 if action == "check":
-               
                    task_manifest = {}
                    task_manifest['file'] = file.id
                    task_manifest['action'] = action

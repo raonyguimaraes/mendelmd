@@ -1,5 +1,6 @@
-
+{% load humanize %}
 <div class="row">
+  
     
 <div class="col-md-8">
 
@@ -12,9 +13,6 @@
       <a class="btn btn-app" href='javascript: submitform("files", "check")'>
         <i class="fa fa-search"></i> Check
       </a>
-      <a class="btn btn-app" href='javascript: submitform("files", "qc")'>
-        <i class="fa fa-search"></i> QC
-      </a>
       <a class="btn btn-app" href='javascript: submitform("files", "download")'>
         <i class="fa fa-cloud-download"></i> Download
       </a>
@@ -24,18 +22,25 @@
       <a class="btn btn-app">
         <i class="fa fa-edit"></i> Edit
       </a>
-      <a class="btn btn-app">
-        <i class="fa fa-play"></i> Play
+      <a class="btn btn-app" href='javascript: submitform("files", "run")'>
+        <i class="fa fa-play"></i> Run
       </a>
-      <a class="btn btn-app">
-        <i class="fa fa-repeat"></i> Repeat
+      <a class="btn btn-app" href='javascript: submitform("files", "analysis")'>
+        <i class="fa fa-plus" aria-hidden="true"></i> Create Analysis
       </a>
-      <a class="btn btn-app">
-        <i class="fa fa-pause"></i> Pause
+      <a class="btn btn-app" href='javascript: submitform("files", "compress")'>
+        <i class="fa fa-compress" aria-hidden="true"></i> Compress
       </a>
-      <a class="btn btn-app">
-        <i class="fa fa-save"></i> Save
+      <a class="btn btn-app" href='javascript: submitform("files", "expand")'>
+        <i class="fa fa-expand" aria-hidden="true"></i> Expand
       </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "upload")'>
+        <i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "download")'>
+        <i class="fa fa-cloud-download" aria-hidden="true"></i> Download
+      </a>
+
     </div>
     <!-- /.box-body -->
     </div>
@@ -71,6 +76,16 @@ Number of files: {{n_files}}
 </tr>
 </thead>
 <tbody>
+  <tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td>{{total_file_size|filesizeformat}}</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
 {% for file in project.files.all %}
 <tr>  
     <td>
@@ -95,6 +110,16 @@ Number of files: {{n_files}}
 
 </tr>
 {% endfor %}
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td>{{total_file_size|filesizeformat}}</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
 </tbody>
 </table>
 

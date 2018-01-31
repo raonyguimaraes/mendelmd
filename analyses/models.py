@@ -4,6 +4,10 @@ from django.urls import reverse
 
 from projects.models import Project
 from settings.models import Provider
+from samples.models import Sample
+
+from django.contrib.auth.models import User, Group
+from django.contrib.postgres.fields import JSONField
 
 class AnalysisType(models.Model):
     class Meta:
@@ -19,10 +23,15 @@ class Analysis(models.Model):
     class Meta:
         verbose_name_plural = "analyses"
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    params = JSONField()
+
     name = models.CharField(max_length=30)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    type = models.ForeignKey(AnalysisType, on_delete=models.CASCADE)
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    samples = models.ManyToManyField(Sample, null=True, blank=True)
+
+    # type = models.ForeignKey(AnalysisType, on_delete=models.CASCADE)
+    # provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
 
     def get_absolute_url(self):
         return reverse('analysis-detail', kwargs={'pk': self.pk})

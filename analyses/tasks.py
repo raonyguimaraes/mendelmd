@@ -4,5 +4,6 @@ from celery import shared_task
 
 
 @shared_task
-def test_task(project_id):
-    print('hello!')
+def run_analysis_task(analysis_id):
+    print('analysis_id', analysis_id)
+    # print('hello!')
