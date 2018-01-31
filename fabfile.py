@@ -41,6 +41,11 @@ def resetdb():
     # local('python manage.py createsuperuser')
     #local('python manage.py runserver mendel.medicina.ufmg.br:8001')
 
+def import_samples():
+    local('./manage.py import_files')
+    local('python ../scripts/import_samples.py')
+    local('python ../scripts/update_sample_files.py')
+
 
 def make_doc():
     with lcd('../docs'):

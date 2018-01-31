@@ -43,3 +43,11 @@ class Sample(models.Model):
             self.creation_date = datetime.now()
         self.modified_date = datetime.now()
         return super(Sample, self).save(*args, **kwargs)
+
+
+class SampleGroup(models.Model):
+    name = models.CharField(max_length=128)
+    members = models.ManyToManyField(Sample,
+        related_name='samplegroup_members')
+    def __str__(self):
+        return self.name

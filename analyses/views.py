@@ -31,9 +31,12 @@ def create(request):
 
     files = File.objects.filter(pk__in=file_list)
 
-    project_id = request.session['project_id']
+    if 'project_id' in request.session:
 
-    project = Project.objects.get(pk=project_id)
+        project_id = request.session['project_id']
+        project = Project.objects.get(pk=project_id)
+    else:
+        project = None
 
     if request.method == 'POST':
         
@@ -63,7 +66,7 @@ def create(request):
         form = CreateAnalysis()
     
     # print(file)
-    print(project.name)
+    # print(project.name)
 
     # if request.POST:
         # params = request.POST['params']

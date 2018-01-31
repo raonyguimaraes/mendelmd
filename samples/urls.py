@@ -7,7 +7,11 @@ from . import views
 urlpatterns = [
 
     url(r'^$', views.index, name='sample_index'),
-
+    url(r'^create_group/$', views.create_group, name='create_group'),
+    url(r'^groups/$', views.SampleGroupList.as_view(), name='samplegroup-list'),
+    url(r'^groups/delete/(?P<pk>\d+)$', views.SampleGroupDelete.as_view(), name='samplegroup_delete'),
+    # url(r'^view_group/(?P<group_id>\d+)/$', views.view_group, name='view_group'),
+    # url(r'^delete_group/(?P<pk>\d+)$', SampleGroupDeleteView.as_view(), {}, 'group_delete'),
     # url(r'^view/(?P<pk>\d+)$', views.view, name='sample_view'),
     # url(r'^search/$', views.search, name='sample_search'),
     # url(r'^action/$', views.action, name='sample_action'),

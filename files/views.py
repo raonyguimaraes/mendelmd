@@ -140,6 +140,7 @@ def index(request):
     files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
     files_summary['file_type'] = dict(Counter(files.values_list('file_type', flat=True)))
     files_summary['extension'] = dict(Counter(files.values_list('extension', flat=True)))
+    files_summary['total_size'] = sum(files.values_list('size', flat=True))
 
     context = {
         'query':query,

@@ -67,7 +67,7 @@ class Command(BaseCommand):
                     name=basename,
                     size=files[file]['size'],
                     last_modified=str(files[file]['date']),
-                    file_type=file_extension.replace('.', ''),
+                    extension=file_extension.replace('.', ''),
                     location=file,
                 )
                 #print(file_obj,files[file])

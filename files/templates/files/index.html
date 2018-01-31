@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% load humanize %}
+
+
 {% block content %}
 <h1>Files</h1>
 
@@ -46,8 +49,9 @@
 </div>
 </div>
 
-
 {% include 'files/files_navbar.html' %}
+<br>
+Total Size: {{files_summary.total_size|filesizeformat}}
 
 <form action="." method="post" id='files_form'>
     {% csrf_token %}

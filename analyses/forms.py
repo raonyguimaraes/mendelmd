@@ -15,8 +15,8 @@ ANALYSIS_TYPES = (
 
 class CreateAnalysis(forms.Form):
     name = forms.CharField(max_length=100)
-    project = forms.CharField(widget=forms.Textarea)
-    settings = forms.CharField(widget=forms.Textarea)
+    description = forms.CharField(widget=forms.Textarea, required=False)
+    settings = forms.CharField(widget=forms.Textarea, required=False)
     analysis_types = forms.MultipleChoiceField(
         required=False,
         choices=ANALYSIS_TYPES,
