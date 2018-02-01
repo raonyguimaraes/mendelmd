@@ -29,6 +29,8 @@ from samples.forms import SampleGroupForm
 from django.views.generic import ListView
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
+from django.views.generic.detail import DetailView
+
 
 # Create your views here.
 @login_required
@@ -78,3 +80,7 @@ class SampleGroupList(ListView):
 class SampleGroupDelete(DeleteView):
     model = SampleGroup
     success_url = reverse_lazy('samplegroup-list')
+
+class SampleGroupDetailView(DetailView):
+
+    model = SampleGroup

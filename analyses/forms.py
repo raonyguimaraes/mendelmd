@@ -1,5 +1,7 @@
 from django import forms
 
+from samples.models import SampleGroup
+
 class ContactForm1(forms.Form):
     subject = forms.CharField(max_length=100)
     sender = forms.EmailField()
@@ -21,4 +23,4 @@ class CreateAnalysis(forms.Form):
         required=False,
         choices=ANALYSIS_TYPES,
     )
-
+    samplegroups = forms.ModelChoiceField(queryset = SampleGroup.objects.all() )

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content_header %}
+<section class="content-header">
+  <h1>
+    Sample Groups
+    <small>List of all samples groups</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+    <li class="active">Here</li>
+  </ol>
+</section>
+{% endblock %}
+
+{% block content %}
+
+<table class='table'>
+<thead><tr><th>{{object_name}}</th><th>Action</th></tr></thead>
+<tbody>
+  {% for object in object_list %}
+  
+  <tr><td><a href="{% url 'samplegroup-view' object.id %}">{{object}}</a></td><td><a href="{{object.get_update_url}}">Update</a> | <a href="{% url 'samplegroup_delete' object.id %}">Delete</a></td></tr>
+  {% endfor %}
+</tbody>
+</table>
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}
