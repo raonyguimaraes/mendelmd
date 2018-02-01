@@ -24,7 +24,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 import io
 
-from .forms import SampleGroupForm
+from samples.forms import SampleGroupForm
 
 from django.views.generic import ListView
 from django.views.generic.edit import DeleteView

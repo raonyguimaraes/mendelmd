@@ -18,6 +18,27 @@ from .forms import CreateAnalysis
 
 # Create your views here.
 def index(request):
+
+    query  = ''
+    args = []
+
+    if request.method == 'POST':
+        
+        analyses = request.POST.getlist('analyses')
+        action = request.POST['action']
+        query = request.POST['query']
+        # print('query', query)
+        for analysis_id in analyses:
+
+            # file = File.objects.get(pk=file_id)
+            if request.user.is_staff:
+                analysis = get_object_or_404(Analysis, pk=analysis_id)
+            else:
+                analysis = get_object_or_404(Analysis, pk=analysis_id, user=request.user)
+
+            if action == "delete":
+                analysis.delete()
+
     print('Hello World')
     analyses = Analysis.objects.all()
 
@@ -95,7 +116,7 @@ class AnalysisDelete(DeleteView):
 
 class AnalysisUpdate(UpdateView):
     model = Analysis
-    fields = ['name']
+    fields = ['name', 'params']
 
 class AnalysisDetailView(DetailView):
     model = Analysis

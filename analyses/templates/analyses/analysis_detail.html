@@ -3,7 +3,7 @@
 {% block content %}
 <h1>{{analysis.name}}</h1>
 
-<a href="#">Edit Analysis</a>
+<a href="{% url 'analysis-update' analysis.id %}">Edit Analysis</a>
 <a href="{% url 'analysis-run' analysis.id %}">Run Analysis</a>
 
 <div class="row">

@@ -14,44 +14,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from collections import Counter
 from django.db.models import Q
-@login_required
-def run_task(request):
-    if request.method == 'GET':
-        print(request.GET)
-        if 'action' in request.GET:
-            action = request.GET['action']
-            file_id  = request.GET['file_id']
-
-            file = File.get_object_or_404(pk=file_id)
-            if action == "check":
-                
-                task_manifest = {}
-                task_manifest['file'] = file.id
-                task_manifest['action'] = action
-                task = Task(user=request.user)
-                
-                task.manifest = task_manifest
-                task.status = 'new'
-                task.action = action
-                task.user = request.user
-                task.save()
-
-                check_file.delay(task.id)
-
-                file.status = 'scheduled'
-                file.save()
-            
-    return redirect('files-index')
-
-@login_required
-def run_task(request):
-    if request.method == 'GET':
-        print(request.GET)
-        if 'action' in request.GET:
-            action = request.GET['action'][0]
-            file_id  = request.GET['file_id'][0]
-            print(action, file_id)
-    return redirect('files-index')
 
 @login_required
 def index(request):
@@ -67,7 +29,7 @@ def index(request):
         # print('query', query)
         if action == 'analysis':
             request.session['files'] = files
-            return redirect('analysis-create-wizard')
+            return redirect('analysis-create')
         
         for file_id in files:
 
@@ -223,4 +185,43 @@ def bulk_action(request):
                 file.status = 'scheduled'
                 file.save()
 
+    return redirect('files-index')
+
+@login_required
+def run_task(request):
+    if request.method == 'GET':
+        print(request.GET)
+        if 'action' in request.GET:
+            action = request.GET['action']
+            file_id  = request.GET['file_id']
+
+            file = File.get_object_or_404(pk=file_id)
+            if action == "check":
+                
+                task_manifest = {}
+                task_manifest['file'] = file.id
+                task_manifest['action'] = action
+                task = Task(user=request.user)
+                
+                task.manifest = task_manifest
+                task.status = 'new'
+                task.action = action
+                task.user = request.user
+                task.save()
+
+                check_file.delay(task.id)
+
+                file.status = 'scheduled'
+                file.save()
+            
+    return redirect('files-index')
+
+@login_required
+def run_task(request):
+    if request.method == 'GET':
+        print(request.GET)
+        if 'action' in request.GET:
+            action = request.GET['action'][0]
+            file_id  = request.GET['file_id'][0]
+            print(action, file_id)
     return redirect('files-index')
