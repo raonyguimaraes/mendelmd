@@ -15,9 +15,32 @@ from .tasks import run_analysis_task
 from projects.models import Project
 from files.models import File
 from .forms import CreateAnalysis
+from tasks.models import Task
+from samples.models import SampleGroup
 
 # Create your views here.
 def index(request):
+
+    query  = ''
+    args = []
+
+    if request.method == 'POST':
+        
+        analyses = request.POST.getlist('analyses')
+        action = request.POST['action']
+        query = request.POST['query']
+        # print('query', query)
+        for analysis_id in analyses:
+
+            # file = File.objects.get(pk=file_id)
+            if request.user.is_staff:
+                analysis = get_object_or_404(Analysis, pk=analysis_id)
+            else:
+                analysis = get_object_or_404(Analysis, pk=analysis_id, user=request.user)
+
+            if action == "delete":
+                analysis.delete()
+
     print('Hello World')
     analyses = Analysis.objects.all()
 
@@ -34,6 +57,8 @@ def create(request):
     else:
         file_list = None
         files = None
+
+    files = File.objects.all()
 
     if 'project_id' in request.session:
 
@@ -59,10 +84,19 @@ def create(request):
             # analysis.analysis_types = form.cleaned_data['analysis_types']
             params['analysis_types'] = form.cleaned_data['analysis_types']
             params['files'] = file_list#form.cleaned_data['files']
+            analysis.status = 'new'
             analysis.project = project
             analysis.params = params
 
             analysis.save()
+
+            task_manifest = params
+            
+            task = Task(user=request.user)
+            task.manifest = task_manifest
+            task.status = 'new'
+            task.action = 'analysis'
+            task.save()
 
             return redirect('analysis-detail', analysis.id)
             
@@ -95,10 +129,25 @@ class AnalysisDelete(DeleteView):
 
 class AnalysisUpdate(UpdateView):
     model = Analysis
-    fields = ['name']
+    fields = ['name', 'params']
 
 class AnalysisDetailView(DetailView):
     model = Analysis
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        print('params', self.object.params)
+        files = []
+        if 'sample_groups' in self.object.params:
+            # for group in self.object.params['sample_groups']:
+                # files = File.objects.filter()
+                sample_groups = self.object.params['sample_groups']
+                samples = SampleGroup.objects.filter(pk__in=sample_groups).values_list('members', flat=True)
+                print('samples', samples)
+                context['files'] = File.objects.filter(sample__in=samples)
+                print(context['files'])
+        return context
 
 def run_analysis(request, analysis_id):
     

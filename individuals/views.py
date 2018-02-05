@@ -530,7 +530,6 @@ class GroupDeleteView(DeleteView):
 
 
 def comparison(request):
-#    group = get_object_or_404(Group, pk=group_id)
     query = {}
     summary = {}
     variants = []

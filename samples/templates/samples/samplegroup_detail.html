@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+{{object.name}}
+<a href="{% url 'samplegroup-edit' object.id %}">Update</a>
+<br>
+
+{% with samples=object.members.all %}
+{% include 'samples/sample_list.html' %}
+{% endwith %}
+
+{% endblock content %}

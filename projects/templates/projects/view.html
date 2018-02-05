@@ -22,7 +22,7 @@
             <ul class="nav nav-tabs">
               <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Files</a></li>
               <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Samples</a></li>
-              <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Tab 3</a></li>
+              <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Tasks</a></li>
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="tab_1">
@@ -34,6 +34,8 @@
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="tab_3">
+
+                {% include 'tasks/task_list.html' %}
                 
               </div>
               <!-- /.tab-pane -->
@@ -74,6 +76,13 @@ $("#select_all_samples").change(function() {
        document.getElementById("project_form").submit();  
     }
     
+</script>
+
+
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".tasks:checkbox").attr('checked', this.checked);
+});
 </script>
 
 {% endblock %}

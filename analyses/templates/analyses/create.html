@@ -13,7 +13,7 @@
 <h1>Analyses</h1>
 
     <div class="btn-group">
-        <a class="btn btn-primary" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %}</a>
+        <a class="btn btn-success" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %} &raquo;</a>
     </div>
 
 <br><br>
@@ -75,7 +75,7 @@ Number of files: {{n_files}}
       {% endfor %}
 
     </td>
-    <td>{{ file.human_size }}</td>
+    <td>{{ file.size|filesizeformat }}</td>
     <td>{{ file.location }}</td>
     <td>{{ file.status }}</td>
     <td>{{ file.file_type }}</td>
@@ -97,7 +97,7 @@ Number of files: {{n_files}}
 </tbody>
 </table>
 
-    <input type="submit" value="OK">
+    <a class="btn btn-success" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %} &raquo;</a>
 </form>
 
 

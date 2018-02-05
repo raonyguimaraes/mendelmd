@@ -4,17 +4,8 @@
     <div class="box-header">
       <h3 class="box-title">Actions</h3>
     </div>
-
-    {% if user.is_staff %}
-    <a href="{% url 'files-import' %}" type="button" class="btn btn-success">Import Files</a>
-    {%endif %}
-
-
     <div class="box-body">
       
-      <a class="btn btn-app" href="{% url 'upload' %}">
-        <i class="fa fa-plus"></i> Upload Files
-      </a>
       <a class="btn btn-app" href='javascript: submitform("check")'>
         <i class="fa fa-search"></i> Check
       </a>

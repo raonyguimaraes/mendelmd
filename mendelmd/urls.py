@@ -12,6 +12,8 @@ from django.conf.urls.static import static
 
 from . import views
 
+import files.views
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'mendelmd.views.home', name='home'),
@@ -23,8 +25,9 @@ urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
 
-    url(r'^accounts/', include('allauth.urls')),
+    url(r'^upload/', files.views.upload, name='upload'),
 
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
     url(r'^individuals/', include('individuals.urls')),
     url(r'^diseases/', include('diseases.urls')),

@@ -25,6 +25,7 @@ import os
 
 from .models import ProjectFile, ProjectSample
 
+
 from django.utils.decorators import method_decorator
 
 from django.core import serializers
@@ -80,13 +81,14 @@ def view(request, project_id):
 
     n_files = project.files.count()
     n_samples = project.files.count()
-    total_file_size = sum(project.files.values_list('size', flat=True))
+    # total_file_size = 0
+    # total_file_size = sum(project.files.values_list('size', flat=True))
     
     context = {
         'project': project,
         'n_files':n_files,
         'n_samples':n_samples,
-        'total_file_size':total_file_size,
+        # 'total_file_size':total_file_size,
     }
     
     return render(request, 'projects/view.html', context)
@@ -269,6 +271,10 @@ def bulk_action(request, project_id):
                    check_file.delay(task.id)
                    file.status = 'scheduled'
                    file.save()
+
+
+
+
 
 
 

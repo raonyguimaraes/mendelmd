@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
 from files.models import File
+from django.urls import reverse
 
 class Sample(models.Model):
     def get_upload_path(self, filename):
@@ -51,3 +52,8 @@ class SampleGroup(models.Model):
         related_name='samplegroup_members')
     def __str__(self):
         return self.name
+
+    
+    def get_absolute_url(self):
+        return reverse('samplegroup-view', kwargs={'pk': self.pk})
+
