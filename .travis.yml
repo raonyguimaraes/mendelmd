@@ -16,7 +16,8 @@ services: postgresql
 
 env:
   - DJANGO=2.0.1
-  - DATABASE_URL = postgres://postgres@localhost/mendelmd
+  - DATABASE_URL=postgres://postgres@localhost/mendelmd
+  
 
 before_install:
   - export DJANGO_SETTINGS_MODULE=mendelmd.settings
