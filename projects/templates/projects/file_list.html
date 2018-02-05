@@ -10,6 +10,9 @@
     </div>
     <div class="box-body">
       
+      <a class="btn btn-app" href='javascript: submitform("files", "analysis")'>
+        <i class="fa fa-plus" aria-hidden="true"></i> Create Analysis
+      </a>
       <a class="btn btn-app" href='javascript: submitform("files", "check")'>
         <i class="fa fa-search"></i> Check
       </a>
@@ -24,9 +27,6 @@
       </a>
       <a class="btn btn-app" href='javascript: submitform("files", "run")'>
         <i class="fa fa-play"></i> Run
-      </a>
-      <a class="btn btn-app" href='javascript: submitform("files", "analysis")'>
-        <i class="fa fa-plus" aria-hidden="true"></i> Create Analysis
       </a>
       <a class="btn btn-app" href='javascript: submitform("files", "compress")'>
         <i class="fa fa-compress" aria-hidden="true"></i> Compress
@@ -101,7 +101,7 @@ Number of files: {{n_files}}
       {% endfor %}
 
     </td>
-    <td>{{ file.human_size }}</td>
+    <td>{{ file.size|filesizeformat }}</td>
     <td>{{ file.location }}</td>
     <td>{{ file.status }}</td>
     <td>{{ file.file_type }}</td>

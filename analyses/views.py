@@ -15,6 +15,7 @@ from .tasks import run_analysis_task
 from projects.models import Project
 from files.models import File
 from .forms import CreateAnalysis
+from tasks.models import Task
 
 # Create your views here.
 def index(request):
@@ -56,6 +57,8 @@ def create(request):
         file_list = None
         files = None
 
+    files = File.objects.all()
+
     if 'project_id' in request.session:
 
         project_id = request.session['project_id']
@@ -80,10 +83,19 @@ def create(request):
             # analysis.analysis_types = form.cleaned_data['analysis_types']
             params['analysis_types'] = form.cleaned_data['analysis_types']
             params['files'] = file_list#form.cleaned_data['files']
+            analysis.status = 'new'
             analysis.project = project
             analysis.params = params
 
             analysis.save()
+
+            task_manifest = params
+            
+            task = Task(user=request.user)
+            task.manifest = task_manifest
+            task.status = 'new'
+            task.action = 'analysis'
+            task.save()
 
             return redirect('analysis-detail', analysis.id)
             

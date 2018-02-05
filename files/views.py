@@ -15,6 +15,14 @@ from django.shortcuts import get_object_or_404, redirect
 from collections import Counter
 from django.db.models import Q
 
+from django.http import HttpResponse
+#for upload
+from .forms import UploadForm
+from django.utils.text import slugify
+import os
+from django.conf import settings
+import json
+
 @login_required
 def index(request):
 
@@ -76,11 +84,7 @@ def index(request):
         
         print('args', args)
 
-
-
     # Or the Q object with the ones remaining in the list
-    
-    
     if request.method == 'GET':
         print(request.GET)
         if 'orderby' in request.GET:
@@ -98,12 +102,14 @@ def index(request):
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
 
+    files = File.objects.all()
+
     files_summary = {}
     files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
     files_summary['file_type'] = dict(Counter(files.values_list('file_type', flat=True)))
     files_summary['extension'] = dict(Counter(files.values_list('extension', flat=True)))
-    files_summary['total_size'] = sum(files.values_list('size', flat=True))
-
+    # files_summary['total_size'] = sum(files.values_list('size', flat=True))
+    files_summary = 0
     context = {
         'query':query,
         'files':files,
@@ -127,8 +133,104 @@ def view(request, file_id):
 @login_required
 def import_files(request):
     print('Hello World')
-    # call_command('import_files')
+    
+    # 
+
+
     return redirect('files-index')
+
+def response_mimetype(request):
+    if "application/json" in request.META['HTTP_ACCEPT']:
+        return "application/json"
+    else:
+        return "text/plain"
+
+
+class JSONResponse(HttpResponse):
+    """JSON response class."""
+    def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
+        content = json.dumps(obj,**json_opts)
+        super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
+
+def upload(request):
+    if request.method == 'POST':
+        form = UploadForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            
+            if request.user.is_authenticated:
+                file = File.objects.create(user=request.user, status='new')
+            else:
+                file = File.objects.create(user=None, status='new')
+
+            file.local_file = request.FILES.get('file')
+            
+            print('file')
+            print(request.FILES.get('file'))
+
+            filename = file.local_file.name.split('.')
+            new_filename = []
+            for tag in filename:
+                new_filename.append(slugify(tag))
+
+            file.local_file.name = ".".join(new_filename)
+
+            
+
+            # print('file.location ', file.location)
+
+            #get name from inside vcf file
+            #clean this...
+            file.name= str(os.path.splitext(file.local_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
+
+            # file.shared_with_groups = form.cleaned_data['shared_with_groups']
+            # file.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
+            
+            file.save()
+            
+            f = file.local_file
+
+            #fix permissions
+            #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, file.user), 0777)
+
+            if request.user.is_authenticated:
+                file_path = "%s/media/%s/%s" % (settings.BASE_DIR, slugify(file.user), file.id)
+            else:
+                file_path = "%s/media/public/%s" % (settings.BASE_DIR, file.id)
+            os.chmod(file_path, 0o777)
+
+            file.location = '/'+file.local_file.url
+
+            # AnnotateVariants.delay(file.id)
+            
+            task_manifest = {}
+            task_manifest['file'] = file.id
+            task_manifest['action'] = 'check'
+            task = Task(user=request.user)
+            
+            task.manifest = task_manifest
+            task.status = 'new'
+            task.action = 'check'
+            task.save()
+
+            check_file.delay(task.id)
+
+            file.status = 'scheduled'
+            file.save()
+
+            data = {'files': [{'deleteType': 'DELETE', 'name': file.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
+
+            response = JSONResponse(data, mimetype=response_mimetype(request))
+            response['Content-Disposition'] = 'inline; filename=files.json'
+            return response
+        else:
+            print(form.errors)
+
+    else:
+        form = UploadForm()
+
+    return render(request, 'files/upload.html', {'form':form})
+
 
 class FileUpdate(LoginRequiredMixin, UpdateView):
     model = File

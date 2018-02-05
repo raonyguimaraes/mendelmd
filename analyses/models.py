@@ -27,6 +27,7 @@ class Analysis(models.Model):
     params = JSONField(null=True, blank=True)
 
     name = models.CharField(max_length=30)
+    status = models.TextField(null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     samples = models.ManyToManyField(Sample)
 

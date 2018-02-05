@@ -86,7 +86,7 @@ def check_file(task_id):
         size = output.split()[1]
 
         file.size = int(size)
-        file.human_size = human_size(file.size)
+        # file.human_size = human_size(file.size)
 
 
 
@@ -101,7 +101,7 @@ def check_file(task_id):
         site = urllib.request.urlopen(link)
         file_size = site.info()['Content-Length']
         file.size = int(file_size)
-        file.human_size = human_size(int(file_size))
+        # file.human_size = human_size(int(file_size))
         
     elif file.location.startswith('/'):
 
