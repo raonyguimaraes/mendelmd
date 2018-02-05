@@ -33,6 +33,7 @@ class Variant(models.Model):
     genomes1k_maf = models.FloatField(null=True, blank=True, verbose_name="1000 Genomes Frequency", db_index=True)
     dbsnp_maf = models.FloatField(null=True, blank=True, verbose_name="dbSNP Frequency", db_index=True)
     esp_maf = models.FloatField(null=True, blank=True, verbose_name="ESP6500 Frequency", db_index=True)
+    
 
     #dbsnp
     # dbsnp_pm = models.TextField(null=True, blank=True)
