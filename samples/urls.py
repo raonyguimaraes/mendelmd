@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^groups/$', views.SampleGroupList.as_view(), name='samplegroup-list'),
     url(r'^groups/delete/(?P<pk>\d+)$', views.SampleGroupDelete.as_view(), name='samplegroup_delete'),
     url(r'^groups/(?P<pk>\d+)/$', views.SampleGroupDetailView.as_view(), name='samplegroup-view'),
+    url(r'^groups/edit/(?P<pk>\d+)$', views.SampleGroupUpdateView.as_view(), name='samplegroup-edit'),
     # url(r'^delete_group/(?P<pk>\d+)$', SampleGroupDeleteView.as_view(), {}, 'group_delete'),
     # url(r'^view/(?P<pk>\d+)$', views.view, name='sample_view'),
     # url(r'^search/$', views.search, name='sample_search'),

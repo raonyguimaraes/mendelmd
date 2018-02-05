@@ -1,0 +1,37 @@
+<table id="example2" class="table table-bordered table-hover dataTable" role="grid" aria-describedby="example2_info">
+                <thead>
+                  <tr role="row">
+                    <th>#<input type="checkbox" id="select_all"/></th>
+                    <th>
+                      id
+                    </th>
+                    <th>
+                      Name
+                    </th>
+                    <th>
+                      Prefix
+                    </th>
+                    <th style="width:350px;">Options</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for sample in samples %}
+
+                    <tr role="row" class="odd">
+                      <td><input type="checkbox" name="samples" value="{{sample.id}}"></td>
+                      <td>{{sample.id}}</td>
+                      <td>{{sample.name}}</td>
+                      <td>{{sample.prefix }}</td>
+                      <td>
+                          <a href="" class="btn btn-success" role="button">Create Analysis</a>
+                          <a href="" class="btn btn-success" role="button">View</a>
+                          <a href="" class="btn btn-success" role="button">Edit</a>
+                          <a href="" class="btn btn-success" role="button">Delete</a>
+                      </td>
+                    </tr>
+
+                    {% endfor %}
+
+                  </tbody>
+
+                </table>
