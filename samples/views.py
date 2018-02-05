@@ -30,6 +30,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
 
 
 # Create your views here.
@@ -84,3 +85,7 @@ class SampleGroupDelete(DeleteView):
 class SampleGroupDetailView(DetailView):
 
     model = SampleGroup
+
+class SampleGroupUpdateView(UpdateView):
+    model = SampleGroup
+    fields = '__all__'

@@ -16,6 +16,7 @@ from projects.models import Project
 from files.models import File
 from .forms import CreateAnalysis
 from tasks.models import Task
+from samples.models import SampleGroup
 
 # Create your views here.
 def index(request):
@@ -132,6 +133,21 @@ class AnalysisUpdate(UpdateView):
 
 class AnalysisDetailView(DetailView):
     model = Analysis
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        print('params', self.object.params)
+        files = []
+        if 'sample_groups' in self.object.params:
+            # for group in self.object.params['sample_groups']:
+                # files = File.objects.filter()
+                sample_groups = self.object.params['sample_groups']
+                samples = SampleGroup.objects.filter(pk__in=sample_groups).values_list('members', flat=True)
+                print('samples', samples)
+                context['files'] = File.objects.filter(sample__in=samples)
+                print(context['files'])
+        return context
 
 def run_analysis(request, analysis_id):
     

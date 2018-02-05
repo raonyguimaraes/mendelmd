@@ -2,10 +2,13 @@
 
 {% block content %}
 
-{{object}}
+
+{{object.name}}
+<a href="{% url 'samplegroup-edit' object.id %}">Update</a>
 <br>
 
-{{object.members.all}}
-
+{% with samples=object.members.all %}
+{% include 'samples/sample_list.html' %}
+{% endwith %}
 
 {% endblock content %}

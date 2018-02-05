@@ -15,6 +15,12 @@
 
 {% block content %}
 
+
+<div class="btn-group">
+  <a class="btn btn-primary" href="{% url 'samplegroup-list' %}">Groups</a>
+</div>
+
+
 <form action="." method="post" name='samples_form' id='samples_form'>
   
     {% csrf_token %}

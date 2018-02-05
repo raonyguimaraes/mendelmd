@@ -123,7 +123,7 @@ def index(request):
 def view(request, file_id):
 
     file = File.objects.get(pk=file_id)
-    # print(dir(file))
+    print(dir(file))
     context = {
     'file':file
     }
