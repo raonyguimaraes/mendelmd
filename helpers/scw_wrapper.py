@@ -1,9 +1,11 @@
 from subprocess import run
 
-class SW():
-	def __init__():
+class SCW():
 
-	def main():
+	def __init__(self):
+		pass
+
+	def main(self):
 		print('main')
 
 	def install():
@@ -22,7 +24,7 @@ class SW():
 		# command = 'GO15VENDOREXPERIMENT=1 go get -u github.com/scaleway/scaleway-cli/cmd/scw'
 		run(command,shell=True)
 
-	def create():
+	def launch(self, worker_type=None):
 		# Create a new server but do not start it.
 
 		# Options:
@@ -45,7 +47,8 @@ class SW():
 		#     $ scw create $(scw tag my-snapshot my-image)
 		#     $ scw create --tmp-ssh-key 10GB
 
-		command = 'scw create 150GB'
+		command = 'scw create --region=ams1 ubuntu 150GB'
+		run(command,shell=True)
 		
 
 		# scw ps

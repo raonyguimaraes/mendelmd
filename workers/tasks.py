@@ -17,13 +17,13 @@ from django.db.models import Q
 
 from subprocess import run, check_output
 
-from helpers.aws_wrapper import AWS
+from helpers.scw_wrapper import SCW
 
 @app.task(queue="master")
 def check_queue():
     #check tasks and launch workers if necessary
     print('Check Queue')
-    max_workers = 55
+    max_workers = 1
     tasks = Task.objects.filter(status='new')
     workers = Worker.objects.filter(~Q(status='terminated'))
     n_tasks = len(tasks)
@@ -48,7 +48,8 @@ def launch_worker():
     worker.status = 'new'
     worker.save()
 
-    worker_result = AWS().launch()
+    worker_result = SCW().launch()
+
     worker.ip = worker_result['ip']
     worker.worker_id = worker_result['id']
     worker.save()

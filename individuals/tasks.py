@@ -70,7 +70,7 @@ def VerifyVCF(individual_id):
     if filename.endswith('.vcf'):
         command = 'cp %s sample.vcf' % (filename)
         os.system(command)
-    elif filename.endswith('vcf.gz'):
+    elif filename.endswith('.gz'):
         command = 'gunzip -c -d %s > sample.vcf' % (filename)
         os.system(command)
     elif filename.endswith('.zip'):

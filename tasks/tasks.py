@@ -202,16 +202,9 @@ def run_qc(task_id):
 
     os.chdir(task_location)
 
-
     with open('manifest.json', 'w') as fp:
         json.dump(manifest, fp, sort_keys=True,indent=4)
     
-    run(command, shell=True)
-
-    run(command, shell=True)
-
-    run(command, shell=True)
-
 
     task.status = 'done'
     stop = datetime.datetime.now()

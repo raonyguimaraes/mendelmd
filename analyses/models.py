@@ -5,6 +5,7 @@ from django.urls import reverse
 from projects.models import Project
 from settings.models import Provider
 from samples.models import Sample
+from tasks.models import Task
 
 from django.contrib.auth.models import User, Group
 from django.contrib.postgres.fields import JSONField
@@ -30,6 +31,7 @@ class Analysis(models.Model):
     status = models.TextField(null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     samples = models.ManyToManyField(Sample)
+    tasks = models.ManyToManyField(Task)
 
     # type = models.ForeignKey(AnalysisType, on_delete=models.CASCADE)
     # provider = models.ForeignKey(Provider, on_delete=models.CASCADE)

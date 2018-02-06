@@ -11,6 +11,7 @@ from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
 from .tasks import run_analysis_task
+from tasks.tasks import run_qc
 
 from projects.models import Project
 from files.models import File
@@ -82,6 +83,7 @@ def create(request):
             # analysis.files = form.cleaned_data['files']
 
             # analysis.analysis_types = form.cleaned_data['analysis_types']
+            params['providers'] = form.cleaned_data['providers']
             params['analysis_types'] = form.cleaned_data['analysis_types']
             params['files'] = file_list#form.cleaned_data['files']
             analysis.status = 'new'
@@ -137,22 +139,53 @@ class AnalysisDetailView(DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # Add in a QuerySet of all the books
-        print('params', self.object.params)
+        # print('params', self.object.params)
         files = []
         if 'sample_groups' in self.object.params:
             # for group in self.object.params['sample_groups']:
                 # files = File.objects.filter()
                 sample_groups = self.object.params['sample_groups']
                 samples = SampleGroup.objects.filter(pk__in=sample_groups).values_list('members', flat=True)
-                print('samples', samples)
+                # print('samples', samples)
                 context['files'] = File.objects.filter(sample__in=samples)
-                print(context['files'])
+                # print(context['files'])
+        if 'files' in self.object.params:
+            files = self.object.params['files']
+            context['files'] = File.objects.filter(pk__in=files)
+        context['tasks'] = Task.objects.filter(analysis=self.object)
+            
         return context
+
+def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
+    """ Returns a human readable string reprentation of bytes"""
+    return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
 
 def run_analysis(request, analysis_id):
     
-    print('run analysis')
-    run_analysis_task.delay(analysis_id)
+    analysis = get_object_or_404(Analysis, pk=analysis_id)
+    params = analysis.params
+    print(params)
+    files = File.objects.filter(pk__in=params['files'])
+    print(len(files))
+    analysis_types = params['analysis_types']
+    for analysis_type in analysis_types:
+        if analysis_type == 'qc':
+            for file in files:
+                print('file', file.name)
+                task = Task(user=request.user)
+                manifest = {
+                'worker':'small',
+                'files':file.id,
+                'type':'qc',
+                'total_file_size':human_size(file.size)
+                }
+                task.manifest = manifest
+                task.nane = 'qc of file {}'.format(file.name)
+                task.status = 'new'
+                task.action = 'qc'
+                task.save()
+                analysis.tasks.add(task)
+                run_qc.delay(task.id)
 
     return redirect('analysis-detail', analysis_id)
     
