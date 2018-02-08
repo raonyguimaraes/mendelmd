@@ -66,6 +66,8 @@ def VerifyVCF(individual_id):
     print(new_path)
 
     os.chdir(path)
+    
+    print('filename', filename)
 
     if filename.endswith('.vcf'):
         command = 'cp %s sample.vcf' % (filename)
@@ -100,14 +102,14 @@ def VerifyVCF(individual_id):
         original_name = individual.name
         individual.name += ' %s' % (first_sample)
         individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, first_sample)
-        individual.save()
+        # individual.save()
         AnnotateVariants.delay(individual.id)
         #create other samples
         for sample in vcf_reader.samples[1:]:
             print(sample)
             new_individual = Individual.objects.create(user=individual.user, status='new')
             new_individual.name = original_name + ' %s' % (sample)
-            new_individual.save()
+            # new_individual.save()
             output_folder = '../%s' % (new_individual.id)
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
@@ -115,8 +117,8 @@ def VerifyVCF(individual_id):
             command = 'mv %s.vcf %s' % (sample, output_folder)
             os.system(command)
             new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, sample)
-            new_individual.save()
-            AnnotateVariants.delay(new_individual.id)
+            # new_individual.save()
+            # AnnotateVariants.delay(new_individual.id)
     else:
         AnnotateVariants.delay(individual_id)
     #check if VCF is multisample

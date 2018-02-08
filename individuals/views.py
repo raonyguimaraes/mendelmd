@@ -85,7 +85,6 @@ def create(request):
                 os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             # AnnotateVariants.delay(individual.id)
-            
             VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
@@ -413,7 +412,7 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    AnnotateVariants.delay(individual.id)
+    VerifyVCF.delay(individual.id)
     individual.save()
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
