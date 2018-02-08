@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
-from .tasks import run_analysis_task
+from .tasks import create_analysis_tasks
 
 from projects.models import Project
 from files.models import File
@@ -152,7 +152,7 @@ class AnalysisDetailView(DetailView):
 def run_analysis(request, analysis_id):
     
     print('run analysis')
-    run_analysis_task.delay(analysis_id)
+    create_analysis_tasks.delay(analysis_id)
 
     return redirect('analysis-detail', analysis_id)
     
