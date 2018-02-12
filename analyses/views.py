@@ -10,8 +10,8 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
-from .tasks import run_analysis_task
 from tasks.tasks import run_qc
+from .tasks import create_analysis_tasks
 
 from projects.models import Project
 from files.models import File
@@ -162,6 +162,7 @@ def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
 
 def run_analysis(request, analysis_id):
     
+<<<<<<< HEAD
     analysis = get_object_or_404(Analysis, pk=analysis_id)
     params = analysis.params
     print(params)
@@ -186,6 +187,10 @@ def run_analysis(request, analysis_id):
                 task.save()
                 analysis.tasks.add(task)
                 run_qc.delay(task.id)
+=======
+    print('run analysis')
+    create_analysis_tasks.delay(analysis_id)
+>>>>>>> origin
 
     return redirect('analysis-detail', analysis_id)
     
