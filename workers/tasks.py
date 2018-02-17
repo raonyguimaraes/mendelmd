@@ -102,21 +102,37 @@ def install_worker(worker_id):
     
     print('Install Worker', worker.id)
 
-    command = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/install_worker_ubuntu.sh root@%s:~/" % (worker.ip)
+    command = "scp -o StrictHostKeyChecking=no scripts/install_worker_scw.sh root@%s:~/" % (worker.ip)
     run(command, shell=True)
 
-    # command = "scp scripts/qc_wrapper.sh ubuntu@%s:~/" % (worker.ip)
-    # run(command, shell=True)
+    command = "scp -o StrictHostKeyChecking=no /projects/scripts/local_settings.py root@%s:~/" % (worker.ip)
+    run(command, shell=True)
 
-    command = """nohup bash install_worker_ubuntu.sh >nohup.out 2>&1 & sleep 2"""
-    command = """ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t root@%s '%s'""" % (worker.ip, command)
+    command = """nohup bash install_worker_scw.sh >nohup.out 2>&1 & sleep 2"""
+    command = """ssh -o StrictHostKeyChecking=no -t root@%s '%s'""" % (worker.ip, command)
     
     print(command)
 
     run(command, shell=True)
 
 @app.task(queue="master")
-def update_workers():
+def update_worker(worker_id):
+    worker = Worker.objects.get(id=worker_id)
+    
+    print('Update Worker', worker.id)
+
+    command = "scp -o StrictHostKeyChecking=no scripts/update_worker_scw.sh root@%s:~/" % (worker.ip)
+    run(command, shell=True)
+
+    command = """nohup bash update_worker_scw.sh >nohup.out 2>&1 & sleep 10"""
+    command = """ssh -o StrictHostKeyChecking=no -t root@%s '%s'""" % (worker.ip, command)
+    
+    print(command)
+
+    run(command, shell=True)
+
+@app.task(queue="master")
+def check_workers():
 
     workers = Worker.objects.all()
     for worker in workers:
@@ -127,7 +143,7 @@ def update_workers():
         # command = 'top -b -n 1 | head -n 10'
         command = 'top -bcn1 -w512 | head -n 10'
         
-        command = """ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@%s %s""" % (ip,command)
+        command = """ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@%s %s""" % (ip,command)
         output = check_output(command, shell=True)
         # print(output.decode('utf-8'))
         text = output.decode('utf-8').splitlines()

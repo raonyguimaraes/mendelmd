@@ -32,7 +32,7 @@ class SCW():
 		result = {}
 		# Options:
 
-		command = 'scw --region=ams1 create --name="mendelmd_worker" --commercial-type=X64-15GB --volume=150GB ubuntu-xenial'
+		command = 'scw --region=ams1 create --name="mendelmd_worker" ubuntu-xenial'#--volume=150GB --commercial-type=X64-15GB 
 		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
 

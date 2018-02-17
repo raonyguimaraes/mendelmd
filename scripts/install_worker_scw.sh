@@ -1,10 +1,22 @@
 sudo apt update
-sudo apt -y upgrade
-sudo apt install git
+sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
+sudo apt -y install git python3-pip python3-venv postgresql-client
 
 mkfs -t ext4 /dev/vdb
 mkdir -p /projects
 mount /dev/vdb /projects
 cd /projects
 
-git clone -b development git@github.com:raonyguimaraes/mendelmd.git
+python3 -m venv venv
+source venv/bin/activate
+
+git clone -b development https://github.com/raonyguimaraes/mendelmd
+cd mendelmd
+pip install wheel
+pip install -r requirements.txt
+
+bash scripts/install_conda.sh
+
+cp ~/local_settings.py mendelmd/
+
+./manage.py celery

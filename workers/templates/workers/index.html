@@ -14,6 +14,7 @@
 
 <div class="col-md-2">
 <select class="form-control" id="action" name="action">
+        <option value="check">check</option>
         <option value="update">update</option>
         <option value="install">install</option>
         <option value="terminate">terminate</option>
@@ -58,6 +59,7 @@
     <td>{{ worker.finished }}</td>
     <td>{{ worker.execution_time }}</td>
     <td>
+        <a class='btn btn-primary' href="{% url 'worker-update' worker.id %}">Update</a>
         <a class='btn btn-primary' href="{% url 'worker-install' worker.id %}">Install</a>
         <a class='btn btn-primary' href="{% url 'worker-terminate' worker.id %}">Terminate</a>
         <a class='btn btn-primary' href="{% url 'worker-delete' worker.id %}">Delete</a>

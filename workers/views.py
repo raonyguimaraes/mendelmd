@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 from workers.models import Worker
-from workers.tasks import launch_worker, launch_workers, terminate_worker, install_worker, update_workers
+from workers.tasks import launch_worker, launch_workers, terminate_worker, install_worker, check_workers, update_worker
 
 from subprocess import check_output, call
 
@@ -45,6 +45,12 @@ def install(request, pk):
     messages.success(request, 'Worker is being installed.')
     return redirect('worker-list')
 
+@login_required
+def update(request, pk):
+    worker=Worker.objects.get(pk=pk)
+    update_worker.delay(worker.id)
+    messages.success(request, 'Worker is being updated!')
+    return redirect('worker-list')
 
 class WorkerDelete(LoginRequiredMixin, DeleteView):
     model = Worker
@@ -65,6 +71,8 @@ def action(request):
             if action == 'run':
                 worker.current_status = 'queued'
                 worker.save()
+            elif action == 'update':
+                update_worker.delay(worker.id)
             elif action == 'install':
                 install_worker.delay(worker.id)
                 worker.status = 'installing'
@@ -76,8 +84,8 @@ def action(request):
             elif action == 'delete':
                 worker.delete()
         
-        if action == 'update':                
-            update_workers.delay()
+        if action == 'check':                
+            check_workers.delay()
             
                 
     return redirect('worker-list')    

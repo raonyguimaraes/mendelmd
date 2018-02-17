@@ -1,5 +1,5 @@
 Django
-psycopg2
+psycopg2-binary
 django-allauth
 django-debug-toolbar
 django-crispy-forms
