@@ -1,4 +1,7 @@
-from subprocess import run
+from subprocess import run, check_output
+import subprocess
+from time import sleep
+
 
 class SCW():
 
@@ -26,30 +29,48 @@ class SCW():
 
 	def launch(self, worker_type=None):
 		# Create a new server but do not start it.
-
+		result = {}
 		# Options:
 
-		#   --bootscript=""           Assign a bootscript
-		#   --commercial-type=X64-2GB Create a server with specific commercial-type C1, C2[S|M|L], X64-[2|4|8|15|30|60|120]GB, ARM64-[2|4|8]GB
-		#   -e, --env=""              Provide metadata tags passed to initrd (i.e., boot=rescue INITRD_DEBUG=1)
-		#   -h, --help=false          Print usage
-		#   --ip-address=dynamic      Assign a reserved public IP, a 'dynamic' one or 'none'
-		#   --name=""                 Assign a name
-		#   --tmp-ssh-key=false       Access your server without uploading your SSH key to your account
-		#   -v, --volume=""           Attach additional volume (i.e., 50G)
+		command = 'scw --region=ams1 create --name="mendelmd_worker" --commercial-type=X64-15GB --volume=150GB ubuntu-xenial'
+		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
-		# Examples:
 
-		#     $ scw create docker
-		#     $ scw create 10GB
-		#     $ scw create --bootscript=3.2.34 --env="boot=live rescue_image=http://j.mp/scaleway-ubuntu-trusty-tarball" 50GB
-		#     $ scw inspect $(scw create 1GB --bootscript=rescue --volume=50GB)
-		#     $ scw create $(scw tag my-snapshot my-image)
-		#     $ scw create --tmp-ssh-key 10GB
-
-		command = 'scw create --region=ams1 ubuntu 150GB'
-		run(command,shell=True)
+		short_id = output.split('-')[0]
 		
+		result['id'] = short_id
+
+		command = 'scw --region=ams1 start {}'.format(short_id)
+		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+
+		flag = True
+		while(flag):
+			command = 'scw --region=ams1 ps -a'
+			output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()			
+			for line in output:
+				# print(line)
+				row = line.split()
+				# print(row)
+				if row[0] == short_id:
+					if row[5] == 'running':
+						ip = row[6]
+						result['ip'] = ip
+						flag = False
+					else:
+						print('Waiting {} to start'.format(short_id))
+						sleep(30)
+
+		command = 'ssh-keygen -f ~/.ssh/known_hosts -R {}'.format(ip)
+		print(command)
+
+		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
+		print(output)
+		return(result)
+
+	def terminate(self, id):
+		command = 'scw --region=ams1 stop -t {}'.format(id)
+		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
+
 
 		# scw ps
 		# scw create ubuntu

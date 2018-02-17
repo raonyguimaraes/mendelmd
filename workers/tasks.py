@@ -71,7 +71,7 @@ def launch_workers(n_workers, type):
     for i, worker in enumerate(workers):
         print('Launch ', i)
         # launch new worker
-        worker_result = IWorker().launch(type)
+        worker_result = SCW().launch(type)
         worker.ip = worker_result['ip']
         worker.worker_id = worker_result['id']
         worker.save()
@@ -82,7 +82,7 @@ def terminate_workers():
     idle_workers = Worker.objects.filter(status='idle')
     for worker in idle_workers:
         print('Terminate Worker')
-        AWS().terminate(worker.worker_id)
+        SCW().terminate(worker.worker_id)
         print('Terminate Worker', worker.id)
         worker.status = 'terminated'
         worker.save()
@@ -92,7 +92,7 @@ def terminate_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
     
     print('Terminate Worker', worker.id)
-    AWS().terminate(worker.worker_id)
+    SCW().terminate(worker.worker_id)
     worker.status = 'terminated'
     worker.save()
 
@@ -102,14 +102,14 @@ def install_worker(worker_id):
     
     print('Install Worker', worker.id)
 
-    command = "scp scripts/install_worker_ubuntu.sh ubuntu@%s:~/" % (worker.ip)
+    command = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/install_worker_ubuntu.sh root@%s:~/" % (worker.ip)
     run(command, shell=True)
 
     # command = "scp scripts/qc_wrapper.sh ubuntu@%s:~/" % (worker.ip)
     # run(command, shell=True)
 
     command = """nohup bash install_worker_ubuntu.sh >nohup.out 2>&1 & sleep 2"""
-    command = """ssh -t ubuntu@%s '%s'""" % (worker.ip, command)
+    command = """ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -t root@%s '%s'""" % (worker.ip, command)
     
     print(command)
 

@@ -162,35 +162,8 @@ def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
 
 def run_analysis(request, analysis_id):
     
-<<<<<<< HEAD
-    analysis = get_object_or_404(Analysis, pk=analysis_id)
-    params = analysis.params
-    print(params)
-    files = File.objects.filter(pk__in=params['files'])
-    print(len(files))
-    analysis_types = params['analysis_types']
-    for analysis_type in analysis_types:
-        if analysis_type == 'qc':
-            for file in files:
-                print('file', file.name)
-                task = Task(user=request.user)
-                manifest = {
-                'worker':'small',
-                'files':file.id,
-                'type':'qc',
-                'total_file_size':human_size(file.size)
-                }
-                task.manifest = manifest
-                task.nane = 'qc of file {}'.format(file.name)
-                task.status = 'new'
-                task.action = 'qc'
-                task.save()
-                analysis.tasks.add(task)
-                run_qc.delay(task.id)
-=======
     print('run analysis')
     create_analysis_tasks.delay(analysis_id)
->>>>>>> origin
 
     return redirect('analysis-detail', analysis_id)
     
