@@ -162,7 +162,7 @@ def task_run_task(task_id):
         command = 'python scripts/{} install'.format(basename)
         run(command, shell=True)
         #run
-        command = 'python scripts/{} -i {}'.format(basename, file_list)
+        command = 'python scripts/{} -i {}'.format(basename, ' '.join(file_list))
         run(command, shell=True)
 
 
