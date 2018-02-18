@@ -45,6 +45,20 @@ from urllib.parse import urlparse
 from ftplib import FTP, FTP_TLS
 import ftplib
 
+
+
+import socket
+import fcntl
+import struct
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
 @shared_task()
 def import_project_files_task(project_id):
     print('Import Files on ', project_id)
@@ -193,12 +207,12 @@ def task_run_task(task_id):
 
     manifest = task.manifest
 
-    task.machine = socket.gethostbyname(socket.gethostname())
+    task.machine = get_ip_address('eth0')
     task.status = 'running'
     task.started = start
     task.save()
 
-    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    worker = Worker.objects.filter(ip=task.machine).reverse()[0]
     worker.n_tasks += 1 
     worker.status = 'running task %s' % (task.id)
     worker.started = start

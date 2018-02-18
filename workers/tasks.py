@@ -121,6 +121,8 @@ def update_worker(worker_id):
     
     print('Update Worker', worker.id)
 
+    # command = 'rsync -avz {} root@%s:/projects/mendelmd'.format(settings.BASE_DIR, worker.ip)
+
     command = "scp -o StrictHostKeyChecking=no scripts/update_worker_scw.sh root@%s:~/" % (worker.ip)
     run(command, shell=True)
 
