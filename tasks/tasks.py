@@ -76,7 +76,7 @@ def download_file(file):
         if not os.path.exists('input/{}'.format(basename)):
 
             b2_location = file.location.replace('b2://mendelmd/','')
-            command = 'b2 download-file-by-name mendelmd {} input/{}'.format(basename, b2_location, basename)
+            command = 'b2 download-file-by-name mendelmd {} input/{}'.format(b2_location, basename)
             output = check_output(command, shell=True)
             print(output.decode('utf-8'))
 
