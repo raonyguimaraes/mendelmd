@@ -51,12 +51,13 @@ def download_file(file):
     if file.location.startswith('ftp://'):
 
         basename = os.path.basename(file.location)
-        command = 'wget {}'.format(file.location)
-        run(command, shell=True)
-        #upload to b2
-        command = 'b2 upload_file mendelmd {} files/{}/{}'.format(basename, file.id, basename)
-        output = check_output(command, shell=True)
-        print(output.stdout)
+        if not os.path.exists('input/{}'.format(basename)):
+            command = 'wget -P input/ {}'.format(file.location)
+            run(command, shell=True)
+            #upload to b2
+            command = 'b2 upload_file mendelmd input/{} files/{}/{}'.format(basename, file.id, basename)
+            output = check_output(command, shell=True)
+            print(output.decode('utf-8').stdout)
 
 
         # file.
