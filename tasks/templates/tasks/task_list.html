@@ -46,7 +46,7 @@
 <thead>
 <tr>
     <th># 
-        <input type="checkbox" id="tasks_select_all">
+        <input type="checkbox" id="select_all">
     </th>
     <th>ID</th>
     <th>Name</th>
@@ -94,9 +94,13 @@
     <td>{{task.creation_date}}</td>
     <td>{{task.modified_date}}</td>
     <td>
-        <a href="{% url 'tasks-view' task.id %}">View</a>
-        <a href="#">Edit</a>
-        <a href="{% url 'tasks-delete' task.id %}">Delete</a>
+
+       
+        <a class="btn btn-primary" href="{% url 'tasks-run' task.id %}">Run</a>
+        
+        <a class="btn btn-primary" href="{% url 'tasks-view' task.id %}">View</a>
+        <a class="btn btn-primary" href="#">Edit</a>
+        <a class="btn btn-primary" href="{% url 'tasks-delete' task.id %}">Delete</a>
     </td>
 
 </tr>
