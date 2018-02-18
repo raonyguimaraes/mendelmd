@@ -9,7 +9,7 @@ from samples.models import Sample, SampleGroup
 @shared_task
 def create_analysis_tasks(analysis_id):
     print('analysis_id', analysis_id)
-    samples = []
+    # samples = []
     # print('hello!')
     #create analysis tasks
     # analysis = Analysis.objects.()
@@ -17,26 +17,26 @@ def create_analysis_tasks(analysis_id):
     print(dir(analysis))
     params = analysis.params
 
-    if 'sample_groups' in  params:
-        samples = Sample.objects.filter(samplegroup_members__in=params['sample_groups'])
+    # if 'sample_groups' in  params:
+    #     samples = Sample.objects.filter(samplegroup_members__in=params['sample_groups'])
 
-        # sample = Sample.objects.first()
-        # print(dir(sample))
-    for sample in samples:      
-        print(sample)
-        for file in sample.files.all():
-            bam_size = 9223372036854775807
-            if file.extension == 'bam':
-                if file.size < bam_size:
-                    bamfile = file
-                    bam_size = file.size
-        print('small bam', bamfile.size)
+    #     # sample = Sample.objects.first()
+    #     # print(dir(sample))
+    # for sample in samples:      
+    #     print(sample)
+    #     for file in sample.files.all():
+    #         bam_size = 9223372036854775807
+    #         if file.extension == 'bam':
+    #             if file.size < bam_size:
+    #                 bamfile = file
+    #                 bam_size = file.size
+    #     print('small bam', bamfile.size)
         #get smallest bam file
-        task = Task(user=analysis.user)
-        task.manifest = {}
-        task.manifest['analyses'] = params['analysis_types']
-        task.manifest['input'] = bamfile.location
-        task.status = 'new'
-        task.action = 'cnv identification'
-        task.save()
-        analysis.tasks.add(task)
+    task = Task(user=analysis.user)
+    task.manifest = {}
+    task.manifest['analyses'] = params['analysis_types']
+    task.manifest['files'] = params.files
+    task.status = 'new'
+    task.action = 'analysis'
+    task.save()
+    analysis.tasks.add(task)

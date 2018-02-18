@@ -170,6 +170,8 @@ def task_run_task(task_id):
         output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log_output += output.stdout.decode('utf-8')
 
+    #upload results to b2
+    #add objects if needed :)
 
     task.status = 'done'
     stop = datetime.datetime.now()
