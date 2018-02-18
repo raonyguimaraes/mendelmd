@@ -54,6 +54,11 @@ def download_file(file):
         if not os.path.exists('input/{}'.format(basename)):
             command = 'wget -P input/ {}'.format(file.location)
             run(command, shell=True)
+
+            command = 'md5sum input/{}'.format(basename)
+            output = check_output(command, shell=True).decode('utf-8').split()[0]
+
+            file.md5 = output
             #upload to b2
             command = 'b2 upload_file mendelmd input/{} files/{}/{}'.format(basename, file.id, basename)
             output = check_output(command, shell=True)
@@ -64,7 +69,18 @@ def download_file(file):
             file.url = file.location
             file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, basename)
             file.save()
-        # file.
+    if file.location.startswith('b2://'):
+
+        basename = os.path.basename(file.location)
+
+        if not os.path.exists('input/{}'.format(basename)):
+
+            b2_location = file.location.replace('b2://mendelmd/','')
+            command = 'b2 download-file-by-name mendelmd {} input/{}'.format(basename, b2_location, basename)
+            output = check_output(command, shell=True)
+            print(output.decode('utf-8'))
+
+
     return(file)
     # file = File.objects.get(pk=project_file_id)
     # link = file.location

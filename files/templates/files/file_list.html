@@ -11,6 +11,8 @@
           <option value="scheduled">Scheduled</option>
         </select>
     </th>
+    <th>MD5</th>    
+    <th>Params</th>
     <th>Last output</th>
     <th>File Type</th>
     <th>Extension
@@ -37,6 +39,8 @@
     </td>
     <td>{{ file.sample_set.all }}</td>
     <td>{{ file.status }}</td>
+    <td>{{ file.md5 }}</td>    
+    <td>{#{ file.params }#}</td>
     <td><pre>{{ file.last_output|linebreaks }}</pre></td>
     <td>{{ file.file_type }}</td>
     <td>{{ file.extension }}</td>
