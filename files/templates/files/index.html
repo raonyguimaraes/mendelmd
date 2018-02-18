@@ -8,25 +8,9 @@
 
 {% include 'files/files_summary_table.html' %}
 
-{% include 'files/files_navbar.html' %}
-<br>
-Total Size: {{files_summary.total_size|filesizeformat}}
-
-<form action="." method="post" id='files_form'>
-    {% csrf_token %}
-<div class="row">
-<div class='col-md-6'>    
-
-<div class="input-group input-group-sm">
-<input class="form-control" type="text" name="query">
-    <span class="input-group-btn">
-      <button type="submit" class="btn btn-primary">Search</button>
-    </span>
-</div>
-
-</div>
-</div>
-<input type="hidden" id="action" name="action" value="">
+{% if user.is_staff %}
+<a href="{% url 'files-import' %}" type="button" class="btn btn-success">Import Files</a>
+{%endif %}
 
 {% include 'files/file_list.html' %}
 

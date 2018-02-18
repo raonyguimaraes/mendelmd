@@ -71,7 +71,7 @@ def get_file(file):
             file.url = file.location
             file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, basename)
             file.save()
-    if file.location.startswith('b2://'):
+    elif file.location.startswith('b2://'):
 
         basename = os.path.basename(file.location)
 

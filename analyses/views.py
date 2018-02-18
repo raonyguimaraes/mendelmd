@@ -154,6 +154,11 @@ class AnalysisDetailView(DetailView):
             files = self.object.params['files']
             context['files'] = File.objects.filter(pk__in=files)
         context['tasks'] = Task.objects.filter(analysis=self.object)
+
+        context['output_files'] = File.objects.filter(task__in=context['tasks'])
+        print(len(context['output_files']))
+        # for file in context['output_files']:
+        #     print(dir(file))
             
         return context
 

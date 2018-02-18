@@ -6,35 +6,15 @@
 <a href="{% url 'analysis-update' analysis.id %}">Edit Analysis</a>
 <a href="{% url 'analysis-run' analysis.id %}">Run Analysis</a>
 
-
-<div class="row">
-
-<div class="col-md-6">
-
-<table class="table">
-
-<tr><th>ID</th><td>{{analysis.id}}</td></tr>
-<tr><th>User</th><td>{{analysis.user}}</td></tr>
-<tr><th>Name</th><td>{{analysis.name}}</td></tr>
-<tr><th>Params</th><td>{{analysis.params}}</td></tr>
-<tr><th>Status</th><td>{{analysis.status}}</td></tr>
-<tr><th>Creation_date</th><td>{{analysis.creation_date}}</td></tr>
-<tr><th>Modified_date</th><td>{{analysis.modified_date}}</td></tr>
-<tr><th>Options</th><td></td></tr>
-
-</table>
-
-</div>
-</div>
-
 <div class="row">
 <div class="col-md-12">
           <!-- Custom Tabs -->
           <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab_1" data-toggle="tab">Tasks</a></li>
-              <li><a href="#tab_2" data-toggle="tab">Output Files</a></li>
-              <li><a href="#tab_3" data-toggle="tab">Files</a></li>
+              <li class="active"><a href="#tab_1" data-toggle="tab">Summary</a></li>
+              <li><a href="#tab_2" data-toggle="tab">Tasks</a></li>
+              <li><a href="#tab_3" data-toggle="tab">Output Files</a></li>
+              <li><a href="#tab_4" data-toggle="tab">Files</a></li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                   Dropdown <span class="caret"></span>
@@ -51,17 +31,18 @@
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="tab_1">
+              {% include 'analyses/analysis_summary.html' %}
+              </div>
+              <div class="tab-pane" id="tab_2">
 				      {% include 'tasks/task_list.html' %}
               </div>
               <!-- /.tab-pane -->
-              <div class="tab-pane" id="tab_2">
-                The European languages are members of the same family. Their separate existence is a myth.
-                For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
-                in their grammar, their pronunciation and their most common words. Everyone realizes why a
-                new common language would be desirable: one could refuse to pay expensive translators. To
-                achieve this, it would be necessary to have uniform grammar, pronunciation and more common
-                words. If several languages coalesce, the grammar of the resulting language is more simple
-                and regular than that of the individual languages.
+              <div class="tab-pane" id="tab_3">
+                
+                {% with output_files as files %}     
+                  {% include 'files/file_list.html' %}
+                {% endwith %}
+
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="tab_3">
@@ -76,14 +57,7 @@
 
 </div>
 
-
-
-
-
 {% endblock content %}
-
-
-
 
 {% block extra_js %}
 <script type="text/javascript" >

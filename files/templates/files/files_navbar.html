@@ -5,11 +5,6 @@
       <h3 class="box-title">Actions</h3>
     </div>
 
-    {% if user.is_staff %}
-    <a href="{% url 'files-import' %}" type="button" class="btn btn-success">Import Files</a>
-    {%endif %}
-
-
     <div class="box-body">
       
       <a class="btn btn-app" href="{% url 'upload' %}">
