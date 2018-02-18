@@ -188,10 +188,20 @@ def task_run_task(task_id):
             file = File.objects.get(md5=hash)
         except:
             pass
-            # file = File(user=task.user)
-            # file.md5 = hash
-            # file.name = md5_dict[hash]
-            # file.save()
+            file = File(user=task.user)
+            file.md5 = hash
+            file.name = md5_dict[hash]
+            file.save()
+
+            command = 'b2 upload_file mendelmd output/{} files/{}/{}'.format(file.name, file.id, file.name)
+            output = check_output(command, shell=True)
+            
+            print(output.decode('utf-8'))
+            
+            file.params = output.decode('utf-8')
+            file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, basename)
+            file.save()
+            task.files.add(file)
 
     # add files if needed :)
 
