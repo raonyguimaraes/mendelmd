@@ -1,5 +1,5 @@
 import argparse
-from subprocess import run
+from subprocess import run, check_output
 import sys
 
 sys.path.append('$HOME/miniconda/bin')
