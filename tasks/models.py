@@ -12,6 +12,8 @@ class Task(models.Model):
     status = models.CharField(max_length=30)
     action = models.CharField(max_length=30)
     md5 = models.TextField(null=True, blank=True)
+
+    output = models.TextField(null=True, blank=True)
     
     started = models.DateTimeField(null=True, blank=True)
     finished = models.DateTimeField(null=True, blank=True)

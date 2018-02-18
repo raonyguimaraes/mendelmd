@@ -100,6 +100,8 @@ def task_run_task(task_id):
     print('RUN TASK :D')
     print('task_id', task_id)
 
+    log_output = ''
+
     task = Task.objects.get(id=task_id)
     task.status = 'will be running'
     task.save()
@@ -160,16 +162,19 @@ def task_run_task(task_id):
         run(command, shell=True)
         #install
         command = 'python scripts/{} install'.format(basename)
-        run(command, shell=True)
+        output = check_output(command, shell=True)
+        log_output += output.decode('utf-8')
         #run
         command = 'python scripts/{} -i {}'.format(basename, ' '.join(file_list))
-        run(command, shell=True)
+        output = check_output(command, shell=True)
+        log_output += output.decode('utf-8')
 
 
     task.status = 'done'
     stop = datetime.datetime.now()
     task.execution_time = str(stop - start)
     task.finished = stop
+    task.output = log_output
     task.save()
 
     # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
