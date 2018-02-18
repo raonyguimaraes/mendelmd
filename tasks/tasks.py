@@ -26,6 +26,7 @@ from workers.tasks import launch_worker, launch_workers, terminate_workers
 
 import os
 from subprocess import run, check_output
+import subprocess
 
 from individuals.tasks import parse_vcf
 from individuals.models import Individual
