@@ -2,6 +2,7 @@ import argparse
 from subprocess import run, check_output
 import sys
 import subprocess
+import os
 
 sys.path.append('$HOME/miniconda/bin')
 
@@ -24,9 +25,11 @@ class FASTQC():
             run(command, shell=True)
     def run(self, input):
         for file in input:
-            command = 'fastqc input/{} -o output/'.format(file)
-            print(command)
-            run(command, shell=True)
+            basename = os.path.basename(file)
+            if not os.path.exists('output/{}_fastqc.html'):
+                command = 'fastqc input/{} -o output/'.format(file)
+                print(command)
+                run(command, shell=True)
 
 if __name__ == "__main__":
     

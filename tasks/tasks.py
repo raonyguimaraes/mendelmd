@@ -165,6 +165,7 @@ def task_run_task(task_id):
         print('analysis_name', analysis_name)
         analysis = App.objects.filter(name=analysis_name)[0]
         print(analysis)
+
         basename = os.path.basename(analysis.source)
         
         command = 'rm scripts/{}'.format(basename)
@@ -202,10 +203,10 @@ def task_run_task(task_id):
             
             file.params = output.decode('utf-8')
             file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
-            file.save()
-            if task.analysis:
-                task.analysis_set.all()[0].files.add(file)
-            task.files.add(file)
+            file.save()    
+            # if task.analysis:
+            #     task.analysis_set.all()[0].files.add(file)
+        task.files.add(file)
 
     # add files if needed :)
 
