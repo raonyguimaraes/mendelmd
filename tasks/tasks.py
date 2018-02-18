@@ -57,9 +57,13 @@ def download_file(file):
             #upload to b2
             command = 'b2 upload_file mendelmd input/{} files/{}/{}'.format(basename, file.id, basename)
             output = check_output(command, shell=True)
+            
             print(output.decode('utf-8'))
-
-
+            
+            file.params = output.decode('utf-8')
+            file.url = file.location
+            file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, basename)
+            file.save()
         # file.
     return(file)
     # file = File.objects.get(pk=project_file_id)
