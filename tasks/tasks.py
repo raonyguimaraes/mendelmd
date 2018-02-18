@@ -145,7 +145,7 @@ def task_run_task(task_id):
     #start analysis
     for analysis_name in manifest['analysis_types']:
         print('analysis_name', analysis_name)
-        analysis = App.objects.filter(name=analysis_name)
+        analysis = App.objects.filter(name=analysis_name)[0]
         print(analysis)
         basename = os.path.basename(analysis.source)
         command = 'curl {} -o scripts/{}'.format(analysis.source, basename)
