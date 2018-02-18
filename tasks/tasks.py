@@ -147,7 +147,8 @@ def task_run_task(task_id):
         print('analysis_name', analysis_name)
         analysis = App.objects.filter(name=analysis_name)
         print(analysis)
-        command = 'curl {}'.format(analysis.source)
+        basename = os.path.basename(analysis.source)
+        command = 'curl {} -o scripts/{}'.format(analysis.source, basename)
         run(command, shell=True)
 
 
