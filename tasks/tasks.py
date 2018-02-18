@@ -57,7 +57,7 @@ def download_file(file):
             #upload to b2
             command = 'b2 upload_file mendelmd input/{} files/{}/{}'.format(basename, file.id, basename)
             output = check_output(command, shell=True)
-            print(output.decode('utf-8').stdout)
+            print(output.decode('utf-8'))
 
 
         # file.
