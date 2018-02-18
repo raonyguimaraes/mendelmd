@@ -87,6 +87,16 @@ def get_file(file):
     # file = File.objects.get(pk=project_file_id)
     # link = file.location
 
+def calculate_md5(path):
+    md5_dict = {}
+    files = os.listdir(path)
+    for file in files:
+        command = 'md5sum output/{}'.format(file)
+        output = check_output(command, shell=True).decode('utf-8').split()[0]
+        file_md5 = output
+        md5_dict[file_md5] = file
+    return(md5_dict)
+
 @shared_task()
 def task_run_task(task_id):
     # if task.action == "qc":
@@ -171,7 +181,19 @@ def task_run_task(task_id):
         log_output += output.stdout.decode('utf-8')
 
     #upload results to b2
-    #add objects if needed :)
+    md5_dict = calculate_md5('output/')
+    for hash in md5_dict:
+        print(hash)
+        try:
+            file = File.objects.get(md5=hash)
+        except:
+            pass
+            # file = File(user=task.user)
+            # file.md5 = hash
+            # file.name = md5_dict[hash]
+            # file.save()
+
+    # add files if needed :)
 
     task.status = 'done'
     stop = datetime.datetime.now()
