@@ -16,7 +16,7 @@
 
 <br><br>
 
-<form action="." method="post" id='analyses_form'>
+<form action="." method="post" id='apps_form'>
     {% csrf_token %}
 <div class="row">
 <div class='col-md-6'>    
@@ -33,7 +33,7 @@
 <input type="hidden" id="action" name="action" value="">
 
 <div class="row">
-{% include 'analyses/analysis_navbar.html' %}
+{% include 'mapps/navbar.html' %}
 </div>
 
 {% if app_list %}
@@ -48,7 +48,7 @@
 	</tr>
 	{% for app in app_list %}
 	<tr>
-		<td><input type="checkbox" name="analyses" class="analyses" id="option{{app.id}}" value="{{app.id}}" />{{app.id}}</td>
+		<td><input type="checkbox" name="apps" class="apps" id="option{{app.id}}" value="{{app.id}}" />{{app.id}}</td>
 		<td>{{app.status}}</td>
 		<td>{{app.name}}</td>
 		<td>{{app.description}}</td>
@@ -79,7 +79,7 @@ $("#select_all").change(function() {
     {
        
        document.getElementById("action").value = action;
-       document.getElementById("analyses_form").submit();  
+       document.getElementById("apps_form").submit();  
     }
 </script>
 

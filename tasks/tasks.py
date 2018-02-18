@@ -45,6 +45,7 @@ from urllib.parse import urlparse
 from ftplib import FTP, FTP_TLS
 import ftplib
 
+from mapps.models import App
 
 @shared_task()
 def get_file(file):
