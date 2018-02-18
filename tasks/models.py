@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.contrib.auth.models import User
 from files.models import File
+# from analyses.models import Analysis
 
 class Task(models.Model):
 
@@ -23,9 +24,7 @@ class Task(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     modified_date = models.DateTimeField(null=True, blank=True)
-
     files = models.ManyToManyField(File)
-
 
     def __str__(self):
         return self.name

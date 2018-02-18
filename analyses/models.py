@@ -6,6 +6,7 @@ from projects.models import Project
 from settings.models import Provider
 from samples.models import Sample
 from tasks.models import Task
+from files.models import File
 from mapps.models import App as Mapp
 
 from django.contrib.auth.models import User, Group
@@ -34,6 +35,7 @@ class Analysis(models.Model):
     apps = models.ManyToManyField(Mapp)
     samples = models.ManyToManyField(Sample)
     tasks = models.ManyToManyField(Task)
+    files = models.ManyToManyField(File)
 
     # type = models.ForeignKey(AnalysisType, on_delete=models.CASCADE)
     # provider = models.ForeignKey(Provider, on_delete=models.CASCADE)

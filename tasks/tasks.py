@@ -204,7 +204,7 @@ def task_run_task(task_id):
             file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
             file.save()
             if task.analysis:
-                task.analysis.files.add(file)
+                task.analysis_set.all()[0].files.add(file)
             task.files.add(file)
 
     # add files if needed :)

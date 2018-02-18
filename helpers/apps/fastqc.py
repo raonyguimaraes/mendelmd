@@ -16,7 +16,7 @@ class FASTQC():
     def install(self):
         #check if package is installed
         command = 'conda list | grep fastqc'
-        output = check_output(command, shell=True).decode('utf-8')
+        output = check_output(command, shell=True)
         print('output', output)
         if output == '':
             command = 'conda install -y fastqc'
