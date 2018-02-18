@@ -93,16 +93,25 @@ def task_run_task(task_id):
     command = 'mkdir -p %s' % (task_location)
     run(command, shell=True)
 
+    command = 'mkdir -p %s/input' % (task_location)
+    run(command, shell=True)
+
+    command = 'mkdir -p %s/output' % (task_location)
+    run(command, shell=True)
+
+    command = 'mkdir -p %s/scripts' % (task_location)
+    run(command, shell=True)
+
+
     os.chdir(task_location)
 
     with open('manifest.json', 'w') as fp:
         json.dump(manifest, fp, sort_keys=True,indent=4)
 
-    for file_id in manifest['files']:
-        
+    for file_id in manifest['files']:        
         print(file_id)
         file = File.objects.get(pk=file_id)        
-        file = download_file(file)
+        file = check_file(file)
 
 
     task.status = 'done'
