@@ -19,13 +19,15 @@ class FASTQC():
     def run(self, input):
         for file in input:
             command = 'fastqc input/{} -o output/'.format(file)
+            print(command)
             run(command, shell=True)
 
 if __name__ == "__main__":
-    # execute only if run as a script
+    
     fastqc = FASTQC()
     
     if args.args:
-        fastqc.install()
-
-    fastqc.run(args.input)
+        if 'install' in args.args:
+            fastqc.install()
+    if args.input:
+        fastqc.run(args.input)
