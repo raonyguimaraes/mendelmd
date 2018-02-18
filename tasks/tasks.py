@@ -152,6 +152,10 @@ def task_run_task(task_id):
         analysis = App.objects.filter(name=analysis_name)[0]
         print(analysis)
         basename = os.path.basename(analysis.source)
+        
+        command = 'rm scripts/{}'.format(basename)
+        run(command, shell=True)
+
         command = 'curl {} -o scripts/{}'.format(analysis.source, basename)
         run(command, shell=True)
         #install
