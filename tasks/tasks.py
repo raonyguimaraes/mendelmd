@@ -172,6 +172,69 @@ def download_file(project_file_id):
     file = File.objects.get(pk=project_file_id)
     link = file.location
 
+@shared_task()
+def task_run_task(task_id):
+    # if task.action == "qc":
+    #     task.status = 'scheduled'
+    #     run_qc.delay(task.id)
+    # if task.action == "check":
+    #     task.status = 'scheduled'
+    #     check_file.delay(task.id)
+    # if task.action == "download":
+    #     task.status = 'scheduled'
+    #     download_file.delay(task.id)
+    print('RUN TASK :D')
+    print('task_id', task_id)
+
+    task = Task.objects.get(id=task_id)
+    task.status = 'will be running'
+    task.save()
+    start = datetime.datetime.now()
+
+    manifest = task.manifest
+
+    task.machine = socket.gethostbyname(socket.gethostname())
+    task.status = 'running'
+    task.started = start
+    task.save()
+
+    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    worker.n_tasks += 1 
+    worker.status = 'running task %s' % (task.id)
+    worker.started = start
+    worker.save()
+
+    task_location = '/projects/tasks/%s/' % (task.id)
+    command = 'mkdir -p %s' % (task_location)
+    run(command, shell=True)
+
+    os.chdir(task_location)
+
+    with open('manifest.json', 'w') as fp:
+        json.dump(manifest, fp, sort_keys=True,indent=4)
+    
+
+    task.status = 'done'
+    stop = datetime.datetime.now()
+    task.execution_time = str(stop - start)
+    task.finished = stop
+    task.save()
+
+    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    
+    worker.n_tasks -= 1
+
+    if worker.n_tasks == 0:
+        worker.status = 'idle'
+
+    worker.finished = stop
+    worker.execution_time = str(stop - start)
+    worker.save()
+
+    print('Finished Task %s' % (task.name))
+
+
+
 @app.task(queue="qc")
 def run_qc(task_id):
 

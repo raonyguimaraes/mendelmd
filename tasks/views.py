@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from tasks.tasks import check_file, download_file, run_qc
+from tasks.tasks import check_file, download_file, task_run_task
 
 from django.db.models import Q
 from collections import Counter
@@ -98,15 +98,16 @@ def bulk_action(request):
             task.save()
 
             if action == "run":
-                if task.action == "qc":
-                    task.status = 'scheduled'
-                    run_qc.delay(task.id)
-                if task.action == "check":
-                    task.status = 'scheduled'
-                    check_file.delay(task.id)
-                if task.action == "download":
-                    task.status = 'scheduled'
-                    download_file.delay(task.id)
+                task_run_task.delay(task.id)
+                # if task.action == "qc":
+                #     task.status = 'scheduled'
+                #     run_qc.delay(task.id)
+                # if task.action == "check":
+                #     task.status = 'scheduled'
+                #     check_file.delay(task.id)
+                # if task.action == "download":
+                #     task.status = 'scheduled'
+                #     download_file.delay(task.id)
                 task.save()
 
             if action == "delete":
