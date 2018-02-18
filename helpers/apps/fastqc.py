@@ -14,8 +14,13 @@ class FASTQC():
     def __init__(self):
         pass
     def install(self):
-        command = 'conda install -y fastqc'
-        run(command, shell=True)
+        #check if package is installed
+        command = 'conda list | grep fastqc'
+        output = check_output(command, shell=True).decode('utf-8')
+        print('output', output)
+        if output == '':
+            command = 'conda install -y fastqc'
+            run(command, shell=True)
     def run(self, input):
         for file in input:
             command = 'fastqc input/{} -o output/'.format(file)

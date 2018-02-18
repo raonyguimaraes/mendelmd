@@ -167,7 +167,7 @@ def task_run_task(task_id):
         log_output += output.decode('utf-8')
         #run
         command = 'python scripts/{} -i {}'.format(basename, ' '.join(file_list))
-        output = run(command, shell=True, stdout=subprocess.PIPE)
+        output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log_output += output.stdout.decode('utf-8')
 
 
