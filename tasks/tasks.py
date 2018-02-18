@@ -47,7 +47,7 @@ import ftplib
 
 
 @shared_task()
-def download_file(file):
+def get_file(file):
     if file.location.startswith('ftp://'):
 
         basename = os.path.basename(file.location)
@@ -139,7 +139,13 @@ def task_run_task(task_id):
     for file_id in manifest['files']:        
         print(file_id)
         file = File.objects.get(pk=file_id)        
-        file = download_file(file)
+        file = get_file(file)
+
+    #start analysis
+    for analysis_name in manifest['analysis_types']:
+        print('analysis_name', analysis_name)
+        analysis = App.objects.filter(name=analysis_name)
+        print(analysis)
 
 
     task.status = 'done'
@@ -156,7 +162,6 @@ def task_run_task(task_id):
     # worker.execution_time = str(stop - start)
     # worker.save()
     print('Finished Task %s' % (task.name))
-
 
 @app.task(queue="qc")
 def run_qc(task_id):

@@ -8,11 +8,10 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from tasks.tasks import check_file, download_file, task_run_task
+from tasks.tasks import check_file, task_run_task
 
 from django.db.models import Q
 from collections import Counter
-
 
 @login_required
 def index(request):
