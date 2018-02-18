@@ -18,6 +18,13 @@
 
 <form action="." method="post" id='apps_form'>
     {% csrf_token %}
+
+<input type="hidden" id="action" name="action" value="">
+
+<div class="row">
+{% include 'mapps/navbar.html' %}
+</div>
+
 <div class="row">
 <div class='col-md-6'>    
 
@@ -30,11 +37,6 @@
 
 </div>
 </div>
-<input type="hidden" id="action" name="action" value="">
-
-<div class="row">
-{% include 'mapps/navbar.html' %}
-</div>
 
 {% if app_list %}
 <table class="table table-bordered table-striped table-condensed">
@@ -43,7 +45,8 @@
 		<th>status</th>
 		<th width="20%">name</th>
 		<th width="20%">description</th>
-		<th>members</th>
+		<th>source</th>
+		<th>repository</th>
 		<th>Options</th>
 	</tr>
 	{% for app in app_list %}
@@ -52,9 +55,10 @@
 		<td>{{app.status}}</td>
 		<td>{{app.name}}</td>
 		<td>{{app.description}}</td>
-		<td></td>
+		<td>{{app.source}}</td>
+		<td>{{app.repository}}</td>
 		<td>
-			
+			<a href="{% url 'apps-update' app.id %}">Update</a>
 		</td>
 	</tr>
 	{% endfor %}

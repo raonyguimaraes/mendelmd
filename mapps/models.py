@@ -12,6 +12,7 @@ class App(models.Model):
     name = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
     category = models.CharField(max_length=255)
+    source = models.CharField(max_length=600, null=True, blank=True)
     repository = models.CharField(max_length=600, null=True, blank=True)
     type = models.CharField(max_length=255)
     config = JSONField(null=True, blank=True)
