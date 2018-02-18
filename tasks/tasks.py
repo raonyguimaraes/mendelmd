@@ -195,7 +195,7 @@ def task_run_task(task_id):
 
             command = 'b2 upload_file mendelmd output/{} files/{}/{}'.format(file.name, file.id, file.name)
             
-            output = run(command, shell=True)
+            output = check_output(command, shell=True)
             
             print(output.decode('utf-8'))
             
