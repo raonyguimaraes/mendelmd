@@ -36,6 +36,7 @@ def create_analysis_tasks(analysis_id):
     task.manifest = {}
     task.manifest = params
     task.status = 'new'
+    task.analysis = analysis
     task.action = 'analysis'
     task.save()
     analysis.tasks.add(task)

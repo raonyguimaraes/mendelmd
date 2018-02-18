@@ -115,6 +115,7 @@ def task_run_task(task_id):
 
     task = Task.objects.get(id=task_id)
     task.status = 'will be running'
+    task.output = ''
     task.save()
     start = datetime.datetime.now()
 
@@ -202,6 +203,8 @@ def task_run_task(task_id):
             file.params = output.decode('utf-8')
             file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
             file.save()
+            if task.analysis:
+                task.analysis.files.add(file)
             task.files.add(file)
 
     # add files if needed :)
