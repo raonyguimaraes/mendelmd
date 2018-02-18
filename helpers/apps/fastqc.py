@@ -26,7 +26,8 @@ class FASTQC():
     def run(self, input):
         for file in input:
             basename = os.path.basename(file)
-            if not os.path.exists('output/{}_fastqc.html'):
+            basename = os.path.splitext(basename)[0].replace('.fastq','').replace('.fq','')
+            if not os.path.exists('output/{}_fastqc.html'.format(basename)):
                 command = 'fastqc input/{} -o output/'.format(file)
                 print(command)
                 run(command, shell=True)
