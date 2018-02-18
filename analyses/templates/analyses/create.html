@@ -12,17 +12,11 @@
 {% block content %}
 <h1>Analyses</h1>
 
-    <div class="btn-group">
-        <a class="btn btn-success" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %} &raquo;</a>
-    </div>
-
-<br><br>
-
 <form action="." method="post">
 	{% csrf_token %}
 	{{ form|crispy }}
 
-<input type="submit" value="OK">
+<input type="submit" value="Save">
 
 <h2>Files</h2>
 

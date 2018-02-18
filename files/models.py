@@ -32,6 +32,7 @@ class File(models.Model):
     location = models.TextField(null=True, blank=True)    
     local_file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
     remote_location = models.TextField(null=True, blank=True)
+    url = models.TextField(null=True, blank=True)
     
     status = models.TextField(null=True, blank=True)
     last_output = models.TextField(null=True, blank=True)

@@ -85,7 +85,8 @@ def create(request):
             # analysis.analysis_types = form.cleaned_data['analysis_types']
             params['providers'] = form.cleaned_data['providers']
             params['analysis_types'] = form.cleaned_data['analysis_types']
-            params['files'] = file_list#form.cleaned_data['files']
+            params['files'] = request.POST.getlist('files')
+            # file_list#
             analysis.status = 'new'
             analysis.project = project
             analysis.params = params

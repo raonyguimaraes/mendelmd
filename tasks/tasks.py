@@ -56,7 +56,8 @@ def download_file(file):
         #upload to b2
         command = 'b2 upload_file mendelmd {} files/{}/{}'.format(file.location, file.id, basename)
         output = check_output(command, shell=True)
-        print(output)
+        print(output.stdout)
+        
 
         # file.
     return(file)
@@ -117,7 +118,7 @@ def task_run_task(task_id):
     for file_id in manifest['files']:        
         print(file_id)
         file = File.objects.get(pk=file_id)        
-        # file = check_file(file)
+        file = download_file(file)
 
 
     task.status = 'done'
