@@ -34,8 +34,7 @@ def create_analysis_tasks(analysis_id):
         #get smallest bam file
     task = Task(user=analysis.user)
     task.manifest = {}
-    task.manifest['analyses'] = params['analysis_types']
-    task.manifest['files'] = params['files']
+    task.manifest = params
     task.status = 'new'
     task.action = 'analysis'
     task.save()
