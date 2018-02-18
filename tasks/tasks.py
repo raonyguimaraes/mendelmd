@@ -54,10 +54,10 @@ def download_file(file):
         command = 'wget {}'.format(file.location)
         run(command, shell=True)
         #upload to b2
-        command = 'b2 upload_file mendelmd {} files/{}/{}'.format(file.location, file.id, basename)
+        command = 'b2 upload_file mendelmd {} files/{}/{}'.format(basename, file.id, basename)
         output = check_output(command, shell=True)
         print(output.stdout)
-        
+
 
         # file.
     return(file)
