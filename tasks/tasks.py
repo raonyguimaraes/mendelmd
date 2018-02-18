@@ -49,9 +49,15 @@ import ftplib
 @shared_task()
 def download_file(file):
     if file.location.startswith('ftp://'):
+
+        basename = os.path.basename(file.location)
         command = 'wget {}'.format(file.location)
         run(command, shell=True)
         #upload to b2
+        command = 'b2 upload_file mendelmd {} files/{}/{}'.format(file.location, file.id, basename)
+        output = check_output(command, shell=True)
+        print(output)
+
         # file.
     return(file)
     # file = File.objects.get(pk=project_file_id)
@@ -111,7 +117,7 @@ def task_run_task(task_id):
     for file_id in manifest['files']:        
         print(file_id)
         file = File.objects.get(pk=file_id)        
-        file = check_file(file)
+        # file = check_file(file)
 
 
     task.status = 'done'
