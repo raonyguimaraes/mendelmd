@@ -1,6 +1,7 @@
 import argparse
 from subprocess import run, check_output
 import sys
+import subprocess
 
 sys.path.append('$HOME/miniconda/bin')
 
@@ -16,7 +17,7 @@ class FASTQC():
     def install(self):
         #check if package is installed
         command = 'conda list | grep fastqc'
-        output = check_output(command, shell=True)
+        output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.decode('utf-8')
         print('output', output)
         if output == '':
             command = 'conda install -y fastqc'
