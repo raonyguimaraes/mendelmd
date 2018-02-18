@@ -47,9 +47,15 @@ import ftplib
 
 
 @shared_task()
-def download_file(project_file_id):
-    file = File.objects.get(pk=project_file_id)
-    link = file.location
+def download_file(file):
+    if file.location.startswith('ftp://'):
+        command = 'wget {}'.format(file.location)
+        run(command, shell=True)
+        #upload to b2
+        # file.
+    return(file)
+    # file = File.objects.get(pk=project_file_id)
+    # link = file.location
 
 @shared_task()
 def task_run_task(task_id):
@@ -92,8 +98,12 @@ def task_run_task(task_id):
     with open('manifest.json', 'w') as fp:
         json.dump(manifest, fp, sort_keys=True,indent=4)
 
-    for file in manifest['files']:
-        print(file)
+    for file_id in manifest['files']:
+        
+        print(file_id)
+        file = File.objects.get(pk=file_id)        
+        file = download_file(file)
+
 
     task.status = 'done'
     stop = datetime.datetime.now()
