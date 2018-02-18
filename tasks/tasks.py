@@ -234,19 +234,14 @@ def task_run_task(task_id):
     task.finished = stop
     task.save()
 
-    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    
-    worker.n_tasks -= 1
-
-    if worker.n_tasks == 0:
-        worker.status = 'idle'
-
-    worker.finished = stop
-    worker.execution_time = str(stop - start)
-    worker.save()
-
+    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    # worker.n_tasks -= 1
+    # if worker.n_tasks == 0:
+    #     worker.status = 'idle'
+    # worker.finished = stop
+    # worker.execution_time = str(stop - start)
+    # worker.save()
     print('Finished Task %s' % (task.name))
-
 
 
 @app.task(queue="qc")
