@@ -137,10 +137,14 @@ def task_run_task(task_id):
     with open('manifest.json', 'w') as fp:
         json.dump(manifest, fp, sort_keys=True,indent=4)
 
+
+    file_list = []
+
     for file_id in manifest['files']:        
         print(file_id)
         file = File.objects.get(pk=file_id)        
         file = get_file(file)
+        file_list.append(file.name)
 
     #start analysis
     for analysis_name in manifest['analysis_types']:
@@ -149,6 +153,12 @@ def task_run_task(task_id):
         print(analysis)
         basename = os.path.basename(analysis.source)
         command = 'curl {} -o scripts/{}'.format(analysis.source, basename)
+        run(command, shell=True)
+        #install
+        command = 'python scripts/{} install'.format(basename)
+        run(command, shell=True)
+        #run
+        command = 'python scripts/{} -i {}'.format(basename, file_list)
         run(command, shell=True)
 
 
