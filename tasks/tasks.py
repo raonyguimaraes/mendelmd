@@ -207,16 +207,16 @@ def task_run_task(task_id):
 
     manifest = task.manifest
 
-    task.machine = get_ip_address('eth0')
+    task.machine = ''
     task.status = 'running'
     task.started = start
     task.save()
 
-    worker = Worker.objects.filter(ip=task.machine).reverse()[0]
-    worker.n_tasks += 1 
-    worker.status = 'running task %s' % (task.id)
-    worker.started = start
-    worker.save()
+    # worker = Worker.objects.filter(ip=task.machine).reverse()[0]
+    # worker.n_tasks += 1 
+    # worker.status = 'running task %s' % (task.id)
+    # worker.started = start
+    # worker.save()
 
     task_location = '/projects/tasks/%s/' % (task.id)
     command = 'mkdir -p %s' % (task_location)

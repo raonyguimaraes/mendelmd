@@ -60,10 +60,12 @@ def run_task(request, task_id):
     else:
         task = Task.objects.get(pk=task_id, user=request.user)
 
-    if task.action == "check":
-        check_file.delay(task.id)
-    if task.action == "download":
-        download_file.delay(task.id)
+    task_run_task.delay(task.id)
+
+    # if task.action == "check":
+    #     check_file.delay(task.id)
+    # if task.action == "download":
+    #     download_file.delay(task.id)
 
     task.status = 'scheduled'
     task.save()
