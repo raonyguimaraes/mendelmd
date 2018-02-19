@@ -1,3 +1,6 @@
+pkill celery
+pkill python
+
 sudo apt update
 sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
 sudo apt -y install git python3-pip python3-venv postgresql-client htop
@@ -11,6 +14,7 @@ cd /projects
 python3 -m venv venv
 source venv/bin/activate
 
+rm -rf mendelmd
 git clone -b development https://github.com/raonyguimaraes/mendelmd
 cd mendelmd
 pip install wheel

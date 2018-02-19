@@ -157,6 +157,7 @@ def task_run_task(task_id):
         
         command = 'mkdir -p /projects/programs/'
         run(command, shell=True)
+        os.chdir('/projects/programs/')
 
         basename = os.path.basename(analysis.repository)
         print('basename', basename)
@@ -172,7 +173,7 @@ def task_run_task(task_id):
 
         log_output += output.decode('utf-8')
         #run
-        command = 'python scripts/main.py -i {}'.format(' '.join(manifest['files']))
+        command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
         output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log_output += output.stdout.decode('utf-8')
 
