@@ -6,7 +6,15 @@ from tasks.models import Task
 from .models import Analysis
 from samples.models import Sample, SampleGroup
 
-@shared_task
+from celery import Celery
+app = Celery('mendelmd')
+
+# Using a string here means the worker will not have to
+# pickle the object when using Windows.
+app.config_from_object('django.conf:settings')
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+@app.task(queue="master")
 def create_analysis_tasks(analysis_id):
     print('analysis_id', analysis_id)
     # samples = []
