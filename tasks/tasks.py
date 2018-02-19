@@ -173,6 +173,8 @@ def task_run_task(task_id):
 
         log_output += output.decode('utf-8')
         #run
+        
+        os.chdir(task_location)
         command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
         output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log_output += output.stdout.decode('utf-8')

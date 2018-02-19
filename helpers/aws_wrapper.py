@@ -123,6 +123,19 @@ class AWS:
 
         run(command, shell=True)
 
+    def update(self,ip):
+
+        command = "scp -o StrictHostKeyChecking=no scripts/update_worker_aws.sh ubuntu@%s:~/" % (ip)
+        run(command, shell=True)
+
+        command = """nohup bash update_worker_aws.sh >nohup.out 2>&1 & sleep 5"""
+        command = """ssh -o StrictHostKeyChecking=no -t ubuntu@%s '%s'""" % (ip, command)
+        
+        print(command)
+
+        run(command, shell=True)
+
+
 
 
 if __name__ == '__main__':

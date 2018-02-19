@@ -123,18 +123,10 @@ def update_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
     
     print('Update Worker', worker.id)
+    if settings.DEFAULT_PROVIDER == 'AWS':
+        AWS().update(worker.ip)
 
     # command = 'rsync -avz {} root@%s:/projects/mendelmd'.format(settings.BASE_DIR, worker.ip)
-
-    command = "scp -o StrictHostKeyChecking=no scripts/update_worker_scw.sh root@%s:~/" % (worker.ip)
-    run(command, shell=True)
-
-    command = """nohup bash update_worker_scw.sh >nohup.out 2>&1 & sleep 10"""
-    command = """ssh -o StrictHostKeyChecking=no -t root@%s '%s'""" % (worker.ip, command)
-    
-    print(command)
-
-    run(command, shell=True)
 
 @app.task(queue="master")
 def check_workers():
