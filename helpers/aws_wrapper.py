@@ -99,6 +99,9 @@ class AWS:
 
         print('Install Worker')
 
+        command = "scp -r -o StrictHostKeyChecking=no ~/.aws ubuntu@%s:~/" % (ip)
+        run(command, shell=True)
+
         command = "scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa ubuntu@%s:~/.ssh" % (ip)
         run(command, shell=True)
 
@@ -110,7 +113,6 @@ class AWS:
 
         command = "scp -o StrictHostKeyChecking=no scripts/install_worker_aws.sh ubuntu@%s:~/" % (ip)
         run(command, shell=True)
-
         
         command = "scp -o StrictHostKeyChecking=no scripts/install_worker_aws.sh ubuntu@%s:~/" % (ip)
         run(command, shell=True)

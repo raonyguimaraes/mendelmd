@@ -20,7 +20,7 @@ def create_analysis_tasks(analysis_id):
     for file in files:
         task = Task(user=analysis.user)
         task.manifest = {}
-        task.manifest['files'] = file
+        task.manifest['files'] = [file]
         task.manifest['analysis_types'] = params['analysis_types']
         task.status = 'new'
         task.analysis = analysis
