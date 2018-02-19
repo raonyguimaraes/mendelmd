@@ -18,6 +18,7 @@ from files.models import File
 from .forms import CreateAnalysis
 from tasks.models import Task
 from samples.models import SampleGroup
+from django.utils.html import strip_tags
 
 # Create your views here.
 def index(request):
@@ -85,7 +86,10 @@ def create(request):
             # analysis.analysis_types = form.cleaned_data['analysis_types']
             params['providers'] = form.cleaned_data['providers']
             params['analysis_types'] = form.cleaned_data['analysis_types']
-            params['files'] = request.POST.getlist('files')
+            params['files'] = strip_tags(form.cleaned_data['files'].replace('<br>', '\n')).strip().split('\n')
+            
+            
+
             # file_list#
             analysis.status = 'new'
             analysis.project = project
@@ -93,13 +97,14 @@ def create(request):
 
             analysis.save()
 
-            task_manifest = params
-            
-            task = Task(user=request.user)
-            task.manifest = task_manifest
-            task.status = 'new'
-            task.action = 'analysis'
-            task.save()
+            create_analysis_tasks.delay(analysis.id)
+
+            # task_manifest = params
+            # task = Task(user=request.user)
+            # task.manifest = task_manifest
+            # task.status = 'new'
+            # task.action = 'analysis'
+            # task.save()
 
             return redirect('analysis-detail', analysis.id)
             
@@ -115,7 +120,7 @@ def create(request):
 
     context = {
         'project': project,
-        'files': files,
+        # 'files': files,
         'form':form,
         }
 
@@ -152,7 +157,7 @@ class AnalysisDetailView(DetailView):
                 # print(context['files'])
         if 'files' in self.object.params:
             files = self.object.params['files']
-            context['files'] = File.objects.filter(pk__in=files)
+            # context['files'] = File.objects.filter(pk__in=files)
         context['tasks'] = Task.objects.filter(analysis=self.object)
 
         context['output_files'] = File.objects.filter(task__in=context['tasks'])

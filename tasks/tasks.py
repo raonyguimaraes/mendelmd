@@ -102,28 +102,15 @@ def calculate_md5(path):
 
 @shared_task()
 def task_run_task(task_id):
-    # if task.action == "qc":
-    #     task.status = 'scheduled'
-    #     run_qc.delay(task.id)
-    # if task.action == "check":
-    #     task.status = 'scheduled'
-    #     check_file.delay(task.id)
-    # if task.action == "download":
-    #     task.status = 'scheduled'
-    #     download_file.delay(task.id)
-    print('RUN TASK :D')
-    print('task_id', task_id)
-
+    print('RUN TASK: ', task_id)
     log_output = ''
 
     task = Task.objects.get(id=task_id)
-    task.status = 'will be running'
+    
     task.output = ''
-    task.save()
+    
     start = datetime.datetime.now()
-
     manifest = task.manifest
-
     task.machine = ''
     task.status = 'running'
     task.started = start
@@ -153,15 +140,13 @@ def task_run_task(task_id):
 
     with open('manifest.json', 'w') as fp:
         json.dump(manifest, fp, sort_keys=True,indent=4)
+    # file_list = []
 
-
-    file_list = []
-
-    for file_id in manifest['files']:        
-        print(file_id)
-        file = File.objects.get(pk=file_id)        
-        file = get_file(file)
-        file_list.append(file.name)
+    # for file_id in manifest['files']:        
+    #     print(file_id)
+    #     file = File.objects.get(pk=file_id)        
+    #     file = get_file(file)
+        # file_list.append(file.name)
 
     #start analysis
     for analysis_name in manifest['analysis_types']:
@@ -169,46 +154,52 @@ def task_run_task(task_id):
         analysis = App.objects.filter(name=analysis_name)[0]
         print(analysis)
 
-        basename = os.path.basename(analysis.source)
         
-        command = 'rm scripts/{}'.format(basename)
+        command = 'mkdir -p /projects/programs/'
         run(command, shell=True)
 
-        command = 'curl {} -o scripts/{}'.format(analysis.source, basename)
+        basename = os.path.basename(analysis.repository)
+        print('basename', basename)
+        
+        command = 'git clone {}'.format(analysis.source)
         run(command, shell=True)
-        #install
-        command = 'python scripts/{} install'.format(basename)
+
+        os.chdir(basename)
+
+        # install
+        command = 'bash scripts/install.sh'
         output = check_output(command, shell=True)
+
         log_output += output.decode('utf-8')
         #run
-        command = 'python scripts/{} -i {}'.format(basename, ' '.join(file_list))
+        command = 'python scripts/main.py -i {}'.format(' '.join(manifest['files']))
         output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log_output += output.stdout.decode('utf-8')
 
-    #upload results to b2
-    md5_dict = calculate_md5('output/')
-    for hash in md5_dict:
-        print(hash)
-        try:
-            file = File.objects.get(md5=hash)
-        except:
-            pass
-            file = File(user=task.user)
-            file.md5 = hash
-            file.name = md5_dict[hash]
-            file.save()
+    #upload results to b2/s3
+    # md5_dict = calculate_md5('output/')
+    # for hash in md5_dict:
+    #     print(hash)
+    #     try:
+    #         file = File.objects.get(md5=hash)
+    #     except:
+    #         pass
+    #         file = File(user=task.user)
+    #         file.md5 = hash
+    #         file.name = md5_dict[hash]
+    #         file.save()
 
-            source = 'output/{}'.format(file.name)
-            dest = 'files/{}/{}'.format(file.id, file.name)
+    #         source = 'output/{}'.format(file.name)
+    #         dest = 'files/{}/{}'.format(file.id, file.name)
 
-            output = b2.upload(source, dest)
+    #         output = b2.upload(source, dest)
             
-            file.params = output
-            file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
-            file.save()    
-            # if task.analysis:
-            #     task.analysis_set.all()[0].files.add(file)
-        task.files.add(file)
+    #         file.params = output
+    #         file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
+    #         file.save()    
+    #         # if task.analysis:
+    #         #     task.analysis_set.all()[0].files.add(file)
+    #     task.files.add(file)
 
     # add files if needed :)
 

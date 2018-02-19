@@ -84,9 +84,9 @@ class TaskDetail(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        files = self.object.manifest['files']
-        context['input_files'] = File.objects.filter(pk__in=files)
-        context['output_files'] = File.objects.filter(task=self.object.id)
+        # files = self.object.manifest['files']
+        # context['input_files'] = File.objects.filter(pk__in=files)
+        # context['output_files'] = File.objects.filter(task=self.object.id)
         return context
         
 @login_required

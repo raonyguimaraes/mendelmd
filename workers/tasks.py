@@ -13,11 +13,13 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 from tasks.models import Task
 from workers.models import Worker
 from django.db.models import Q
-# from scripts.worker import IWorker
 
 from subprocess import run, check_output
 
 from helpers.scw_wrapper import SCW
+from helpers.aws_wrapper import AWS
+
+from settings.models import Provider
 
 @app.task(queue="master")
 def check_queue():
@@ -48,7 +50,17 @@ def launch_worker():
     worker.status = 'new'
     worker.save()
 
-    worker_result = SCW().launch()
+    if settings.DEFAULT_PROVIDER == 'AWS':
+        provider = Provider.objects.filter(name='AWS')[0]
+        print(provider, provider.config)
+        worker_result = AWS().launch(provider.config)
+        worker.provider = 'AWS'
+        worker.type = provider.config['instance_type']
+    else:
+        worker_result = SCW().launch(provider.config)
+        worker.provider = 'SCW'
+        worker.type = ''
+
 
     worker.ip = worker_result['ip']
     worker.worker_id = worker_result['id']
@@ -82,7 +94,7 @@ def terminate_workers():
     idle_workers = Worker.objects.filter(status='idle')
     for worker in idle_workers:
         print('Terminate Worker')
-        SCW().terminate(worker.worker_id)
+        AWS().terminate(worker.worker_id)
         print('Terminate Worker', worker.id)
         worker.status = 'terminated'
         worker.save()
@@ -92,28 +104,19 @@ def terminate_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
     
     print('Terminate Worker', worker.id)
-    SCW().terminate(worker.worker_id)
+    AWS().terminate(worker.worker_id)
     worker.status = 'terminated'
     worker.save()
 
 @app.task(queue="master")
 def install_worker(worker_id):
+
     worker = Worker.objects.get(id=worker_id)
     
     print('Install Worker', worker.id)
+    if settings.DEFAULT_PROVIDER == 'AWS':
+        AWS().install(worker.ip)
 
-    command = "scp -o StrictHostKeyChecking=no scripts/install_worker_scw.sh root@%s:~/" % (worker.ip)
-    run(command, shell=True)
-
-    command = "scp -o StrictHostKeyChecking=no /projects/scripts/local_settings.py root@%s:~/" % (worker.ip)
-    run(command, shell=True)
-
-    command = """nohup bash install_worker_scw.sh >nohup.out 2>&1 & sleep 2"""
-    command = """ssh -o StrictHostKeyChecking=no -t root@%s '%s'""" % (worker.ip, command)
-    
-    print(command)
-
-    run(command, shell=True)
 
 @app.task(queue="master")
 def update_worker(worker_id):

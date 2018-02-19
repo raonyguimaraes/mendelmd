@@ -27,7 +27,7 @@ def index(request):
 
 class AppCreate(CreateView):
     model = App
-    fields = ['name', 'status', 'category', 'source', 'repository', 'type', 'config']
+    fields = ['name', 'status', 'category', 'source', 'repository', 'type', 'config', 'main', 'install']
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -36,7 +36,7 @@ class AppCreate(CreateView):
 
 class AppUpdate(UpdateView):
     model = App
-    fields = ['name', 'status', 'category', 'source', 'repository', 'type', 'config']
+    fields = ['name', 'status', 'category', 'source', 'repository', 'type', 'config', 'main', 'install']
 
     def form_valid(self, form):
         form.instance.user = self.request.user

@@ -16,10 +16,20 @@ def create_analysis_tasks(analysis_id):
     analysis = Analysis.objects.get(pk=analysis_id)
     print(dir(analysis))
     params = analysis.params
+    files = params['files']
+    for file in files:
+        task = Task(user=analysis.user)
+        task.manifest = {}
+        task.manifest['files'] = file
+        task.manifest['analysis_types'] = params['analysis_types']
+        task.status = 'new'
+        task.analysis = analysis
+        task.action = 'analysis'
+        task.save()
+        analysis.tasks.add(task)
 
     # if 'sample_groups' in  params:
     #     samples = Sample.objects.filter(samplegroup_members__in=params['sample_groups'])
-
     #     # sample = Sample.objects.first()
     #     # print(dir(sample))
     # for sample in samples:      
@@ -31,12 +41,4 @@ def create_analysis_tasks(analysis_id):
     #                 bamfile = file
     #                 bam_size = file.size
     #     print('small bam', bamfile.size)
-        #get smallest bam file
-    task = Task(user=analysis.user)
-    task.manifest = {}
-    task.manifest = params
-    task.status = 'new'
-    task.analysis = analysis
-    task.action = 'analysis'
-    task.save()
-    analysis.tasks.add(task)
+    # get smallest bam file

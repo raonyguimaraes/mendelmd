@@ -37,4 +37,5 @@ class CreateAnalysis(forms.Form):
         required=False,
         choices=ANALYSIS_TYPES,
     )
+    files = forms.CharField(widget=forms.Textarea)
     # samplegroups = forms.ModelChoiceField(queryset = SampleGroup.objects.all() )

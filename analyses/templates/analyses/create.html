@@ -4,7 +4,6 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-
 {% load paginator %}
 
 {% block title %}Create Analysis{% endblock %}
@@ -17,106 +16,7 @@
 	{{ form|crispy }}
 
 <input type="submit" value="Save">
-
-<h2>Files</h2>
-
-Number of files: {{n_files}}
-
-<table class="table">
-<thead>
-<tr>
-    <th>#<input type="checkbox" id="select_all_files"></th>
-    <th>Name</th>
-    <th>Sample</th>
-    <th>Size</th>
-    <th>Location</th>
-    <th>Status</th>
-    <th>
-        Extension
-        <select>
-            <option value="all">ALL</option>
-            <option value="fastq">FASTQ</option>
-            <option value="bam">BAM</option>
-            <option value="vcf">VCF</option>
-        </select>
-    </th>
-    <th>Options</th>
-</tr>
-</thead>
-<tbody>
-  <tr>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td>{{total_file_size|filesizeformat}}</td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-</tr>
-{% for file in files %}
-<tr>  
-    <td>
-        <input type="checkbox" name="files" class="files" id="option{{file.id}}" value="{{file.id}}" />
-    </td>
-    <td>
-        <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
-    </td>
-    <td>
-      
-      {% for sample in file.projectsample_set.all %}
-        {{ sample.name}}
-      {% endfor %}
-
-    </td>
-    <td>{{ file.size|filesizeformat }}</td>
-    <td>{{ file.location }}</td>
-    <td>{{ file.status }}</td>
-    <td>{{ file.file_type }}</td>
-    <td></td>
-    
-
-</tr>
-{% endfor %}
-<tr>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td>{{total_file_size|filesizeformat}}</td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
-</tr>
-</tbody>
-</table>
-
-    <a class="btn btn-success" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %} &raquo;</a>
 </form>
 
-
-{% endblock %}
-
-
-
-{% block extra_js %}
-<script type="text/javascript" >
-$("#select_all_files").change(function() {
-  $(".files:checkbox").attr('checked', this.checked);
-});
-$("#select_all_samples").change(function() {
-  $(".samples:checkbox").attr('checked', this.checked);
-});
-</script>
-<script type="text/javascript">
-    function submitform(model, action)
-    {
-       
-       document.getElementById("action").value = action;
-       document.getElementById("model").value = model;
-       document.getElementById("project_form").submit();  
-    }
-    
-</script>
 
 {% endblock %}
