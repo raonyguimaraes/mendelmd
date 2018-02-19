@@ -107,6 +107,7 @@ def bulk_action(request):
             task.save()
 
             if action == "run":
+                
                 task_run_task.delay(task.id)
                 # if task.action == "qc":
                 #     task.status = 'scheduled'
@@ -117,6 +118,7 @@ def bulk_action(request):
                 # if task.action == "download":
                 #     task.status = 'scheduled'
                 #     download_file.delay(task.id)
+                task.status = 'scheduled'
                 task.save()
 
             if action == "delete":

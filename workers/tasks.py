@@ -25,7 +25,7 @@ from settings.models import Provider
 def check_queue():
     #check tasks and launch workers if necessary
     print('Check Queue')
-    max_workers = 1
+    max_workers = 50
     tasks = Task.objects.filter(status='scheduled')
     workers = Worker.objects.filter(~Q(status='terminated'))
     n_tasks = len(tasks)
