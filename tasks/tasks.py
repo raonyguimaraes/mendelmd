@@ -48,6 +48,7 @@ import ftplib
 
 from mapps.models import App
 from helpers import b2_wrapper
+from helpers.aws_wrapper import AWS
 
 b2 = b2_wrapper.B2()
 
@@ -111,16 +112,17 @@ def task_run_task(task_id):
     
     start = datetime.datetime.now()
     manifest = task.manifest
-    task.machine = ''
+    task.machine = socket.gethostbyname(socket.gethostname())
     task.status = 'running'
     task.started = start
     task.save()
 
-    # worker = Worker.objects.filter(ip=task.machine).reverse()[0]
-    # worker.n_tasks += 1 
-    # worker.status = 'running task %s' % (task.id)
-    # worker.started = start
-    # worker.save()
+    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    worker.n_tasks += 1 
+    worker.status = 'running task %s' % (task.id)
+    worker.started = start
+    worker.save()
+
 
     task_location = '/projects/tasks/%s/' % (task.id)
     command = 'mkdir -p %s' % (task_location)
@@ -176,8 +178,12 @@ def task_run_task(task_id):
         
         os.chdir(task_location)
         command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
+        print(command)
         output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log_output += output.stdout.decode('utf-8')
+
+
+    AWS.upload(task_location+'/output', task.id)
 
     #upload results to b2/s3
     # md5_dict = calculate_md5('output/')
@@ -213,13 +219,13 @@ def task_run_task(task_id):
     task.output = log_output
     task.save()
 
-    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    # worker.n_tasks -= 1
-    # if worker.n_tasks == 0:
-    #     worker.status = 'idle'
-    # worker.finished = stop
-    # worker.execution_time = str(stop - start)
-    # worker.save()
+    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    worker.n_tasks -= 1
+    if worker.n_tasks == 0:
+        worker.status = 'idle'
+    worker.finished = stop
+    worker.execution_time = str(stop - start)
+    worker.save()
     print('Finished Task %s' % (task.name))
 
 @app.task(queue="qc")

@@ -1,6 +1,7 @@
 import boto3
 from time import sleep
 from subprocess import run
+from django.conf import settings
 
 class AWS:
 
@@ -135,6 +136,13 @@ class AWS:
         
         print(command)
 
+        run(command, shell=True)
+
+    def upload(source,dest):
+
+        dest = '{}/{}'.format(settings.UPLOAD_FOLDER, dest)
+
+        commmand = 'aws s3 sync --profile {} {} {}'.format(settings.UPLOAD_FOLDER_PROFILE, source, dest)
         run(command, shell=True)
 
 
