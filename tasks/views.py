@@ -25,7 +25,7 @@ def index(request):
         args.append(Q(name__icontains=query))
 
     if request.user.is_staff:
-        tasks = Task.objects.filter(*args)
+        tasks = Task.objects.filter(*args).order_by('-id')
     else:
         tasks = Task.objects.filter(*args, user=request.user).order_by('-id')
 

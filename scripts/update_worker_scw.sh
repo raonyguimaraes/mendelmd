@@ -11,4 +11,4 @@ cd mendelmd
 
 cp ~/local_settings.py mendelmd/
 
-./manage.py celery
+celery worker -l info -A mendelmd -c 1 -P solo

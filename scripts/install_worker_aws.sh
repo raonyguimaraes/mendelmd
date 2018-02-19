@@ -24,4 +24,5 @@ bash scripts/install_conda.sh
 
 cp ~/local_settings.py mendelmd/
 
-./manage.py celery
+# ./manage.py celery
+celery worker -l info -A mendelmd -c 1 -P solo
