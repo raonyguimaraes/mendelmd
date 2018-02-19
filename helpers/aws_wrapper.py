@@ -142,7 +142,7 @@ class AWS:
 
         dest = '{}/{}'.format(settings.UPLOAD_FOLDER, dest)
 
-        commmand = 'aws s3 sync --profile {} {} {}'.format(settings.UPLOAD_FOLDER_PROFILE, source, dest)
+        command = 'aws s3 sync --profile {} {} {}'.format(settings.UPLOAD_FOLDER_PROFILE, source, dest)
         run(command, shell=True)
 
 
