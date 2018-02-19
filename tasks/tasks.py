@@ -47,6 +47,9 @@ from ftplib import FTP, FTP_TLS
 import ftplib
 
 from mapps.models import App
+from helpers import b2_wrapper
+
+b2 = b2_wrapper.B2()
 
 @shared_task()
 def get_file(file):
@@ -195,13 +198,12 @@ def task_run_task(task_id):
             file.name = md5_dict[hash]
             file.save()
 
-            command = 'b2 upload_file mendelmd output/{} files/{}/{}'.format(file.name, file.id, file.name)
+            source = 'output/{}'.format(file.name)
+            dest = 'files/{}/{}'.format(file.id, file.name)
+
+            output = b2.upload(source, dest)
             
-            output = check_output(command, shell=True)
-            
-            print(output.decode('utf-8'))
-            
-            file.params = output.decode('utf-8')
+            file.params = output
             file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
             file.save()    
             # if task.analysis:

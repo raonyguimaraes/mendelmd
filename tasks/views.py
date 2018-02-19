@@ -13,6 +13,8 @@ from tasks.tasks import check_file, task_run_task
 from django.db.models import Q
 from collections import Counter
 
+from files.models import File
+
 @login_required
 def index(request):
 
@@ -79,8 +81,14 @@ class TaskDetail(DetailView):
             return self.model.objects.filter(user=self.request.user)
         else:
             return self.model.objects
-
-
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        files = self.object.manifest['files']
+        context['input_files'] = File.objects.filter(pk__in=files)
+        context['output_files'] = File.objects.filter(task=self.object.id)
+        return context
+        
 @login_required
 def bulk_action(request):
     if request.method == 'POST':
