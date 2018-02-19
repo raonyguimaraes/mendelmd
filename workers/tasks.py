@@ -26,7 +26,7 @@ def check_queue():
     #check tasks and launch workers if necessary
     print('Check Queue')
     max_workers = 1
-    tasks = Task.objects.filter(status='new')
+    tasks = Task.objects.filter(status='scheduled')
     workers = Worker.objects.filter(~Q(status='terminated'))
     n_tasks = len(tasks)
     n_workers = len(workers)
@@ -140,7 +140,7 @@ def check_workers():
         # command = 'top -b -n 1 | head -n 10'
         command = 'top -bcn1 -w512 | head -n 10'
         
-        command = """ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@%s %s""" % (ip,command)
+        command = """ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@%s %s""" % (ip,command)
         output = check_output(command, shell=True)
         # print(output.decode('utf-8'))
         text = output.decode('utf-8').splitlines()

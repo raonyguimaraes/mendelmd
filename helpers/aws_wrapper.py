@@ -140,7 +140,7 @@ class AWS:
 
     def upload(source,dest):
 
-        dest = '{}/{}'.format(settings.UPLOAD_FOLDER, dest)
+        dest = '{}{}'.format(settings.UPLOAD_FOLDER, dest)
 
         command = 'aws s3 sync --profile {} {} {}'.format(settings.UPLOAD_FOLDER_PROFILE, source, dest)
         run(command, shell=True)
