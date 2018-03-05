@@ -42,6 +42,25 @@ class VariSNP(models.Model):
     # RNA_annotation
     # protein_annotation    
 
+class HGMD(models.Model):
+    index = models.TextField(db_index=True)
+    chrom = models.TextField(null=True, blank=True, db_index=True)
+    pos = models.TextField(null=True, blank=True, db_index=True)
+    rsid = models.TextField(null=True, blank=True)
+    ref = models.TextField(null=True, blank=True, db_index=True)
+    alt = models.TextField(null=True, blank=True, db_index=True)
+    qual = models.TextField(null=True, blank=True)
+    filter = models.TextField(null=True, blank=True)
+    mutclass = models.TextField(null=True, blank=True)
+    mut = models.TextField(null=True, blank=True)
+    gene = models.TextField(null=True, blank=True)
+    strand = models.TextField(null=True, blank=True)
+    dna = models.TextField(null=True, blank=True)
+    prot = models.TextField(null=True, blank=True)
+    db = models.TextField(null=True, blank=True)
+    phen = models.TextField(null=True, blank=True)
+
+
 class Dbnfsp(models.Model):
     chr = models.TextField(null=True, blank=True)
     pos_1_based = models.TextField(null=True, blank=True)
@@ -292,7 +311,6 @@ class Dbnfsp(models.Model):
 
 class Genome1kVariant(models.Model):
     pos_index = models.TextField(db_index=True)#ex. 1-326754756
-    
     chrom = models.TextField(null=True, blank=True, db_index=True)
     pos = models.TextField(null=True, blank=True, db_index=True)
     rsid = models.TextField(null=True, blank=True)
@@ -312,7 +330,6 @@ class Genome1kSample(models.Model):
     def __str__(self):
         return self.name
 
-
 class Genome1kGenotype(models.Model):
     genotype = models.TextField(null=True, blank=True)
 
@@ -320,3 +337,8 @@ class Genome1kSampleVariant(models.Model):
     sample = models.ForeignKey(Genome1kSample, on_delete=models.CASCADE)
     variant = models.ForeignKey(Genome1kVariant, on_delete=models.CASCADE)
     genotype = models.ForeignKey(Genome1kGenotype, on_delete=models.CASCADE)
+    # class Meta:
+    #    managed = False
+    #or add a fake primary key
+    #https://groups.google.com/forum/#!topic/django-users/nRPURDAlgH0
+

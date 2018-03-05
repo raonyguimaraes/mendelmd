@@ -110,18 +110,14 @@ def terminate_worker(worker_id):
 
 @app.task(queue="master")
 def install_worker(worker_id):
-
     worker = Worker.objects.get(id=worker_id)
-    
     print('Install Worker', worker.id)
     if settings.DEFAULT_PROVIDER == 'AWS':
         AWS().install(worker.ip)
 
-
 @app.task(queue="master")
 def update_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
-    
     print('Update Worker', worker.id)
     if settings.DEFAULT_PROVIDER == 'AWS':
         AWS().update(worker.ip)
