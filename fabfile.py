@@ -20,9 +20,9 @@ def backup_users():
 
 def reset_migrations():
 
-    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'filter_analysis']
+    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files', 'filter_analysis', 'samples', 'analyses', 'tasks', 'workers']
     for model in models:
-        local('rm -rf apps/%s/migrations' % (model))
+        local('rm -rf %s/migrations' % (model))
     for model in models:
         local('python manage.py makemigrations %s' % (model))
 
@@ -30,9 +30,12 @@ def reset_migrations():
 
 def resetdb():
     # local('rm db.sqlite3')
-    local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')
-    local('psql -d template1 -c "CREATE DATABASE mendelmd_prod;"')
-    local('python manage.py syncdb')
+    # local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')
+    # local('psql -d template1 -c "CREATE DATABASE mendelmd_prod;"')
+    # local('python manage.py syncdb')
+    local('dropdb mendelmd')
+    local('createdb mendelmd')
+    local('./manage.py migrate')
     # local('python manage.py loaddata fixtures/users.json')
     # local('python manage.py loaddata fixtures/usergroups.json')
     #load genes, diseases, pathways

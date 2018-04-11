@@ -3,7 +3,22 @@
 {% block content %}
 
 {{file}}
-{{file.sample_set.all}}
 
+user {{file.user}} <br>
+name {{file.name}} <br>
+size {{file.size}} <br>
+file_type {{file.file_type}} <br>
+extension {{file.extension}} <br>
+location {{file.location}} <br>
+local_file {{file.local_file}} <br>
+remote_location {{file.remote_location}} <br>
+url {{file.url}} <br>
+status {{file.status}} <br>
+last_output {{file.last_output}} <br>
+params {{file.params}} <br>
+md5 {{file.md5}} <br>
+last_modified {{file.last_modified}} <br>
+creation_date {{file.creation_date}} <br>
+modified_date {{file.modified_date}} <br>
 
 {% endblock content %}

@@ -25,5 +25,4 @@ class Command(BaseCommand):
         		os.makedirs(d)
         	command = 'cp %s/%s %s/' % (orig_path, individual.variants_file, d)
         	os.system(command)
-
-
+            

@@ -13,18 +13,20 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 from tasks.models import Task
 from workers.models import Worker
 from django.db.models import Q
-# from scripts.worker import IWorker
 
 from subprocess import run, check_output
 
+from helpers.scw_wrapper import SCW
 from helpers.aws_wrapper import AWS
+
+from settings.models import Provider
 
 @app.task(queue="master")
 def check_queue():
     #check tasks and launch workers if necessary
     print('Check Queue')
-    max_workers = 55
-    tasks = Task.objects.filter(status='new')
+    max_workers = 50
+    tasks = Task.objects.filter(status='scheduled')
     workers = Worker.objects.filter(~Q(status='terminated'))
     n_tasks = len(tasks)
     n_workers = len(workers)
@@ -48,7 +50,18 @@ def launch_worker():
     worker.status = 'new'
     worker.save()
 
-    worker_result = AWS().launch()
+    if settings.DEFAULT_PROVIDER == 'AWS':
+        provider = Provider.objects.filter(name='AWS')[0]
+        print(provider, provider.config)
+        worker_result = AWS().launch(provider.config)
+        worker.provider = 'AWS'
+        worker.type = provider.config['instance_type']
+    else:
+        worker_result = SCW().launch(provider.config)
+        worker.provider = 'SCW'
+        worker.type = ''
+
+
     worker.ip = worker_result['ip']
     worker.worker_id = worker_result['id']
     worker.save()
@@ -70,7 +83,7 @@ def launch_workers(n_workers, type):
     for i, worker in enumerate(workers):
         print('Launch ', i)
         # launch new worker
-        worker_result = IWorker().launch(type)
+        worker_result = SCW().launch(type)
         worker.ip = worker_result['ip']
         worker.worker_id = worker_result['id']
         worker.save()
@@ -98,24 +111,21 @@ def terminate_worker(worker_id):
 @app.task(queue="master")
 def install_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
-    
     print('Install Worker', worker.id)
-
-    command = "scp scripts/install_worker_ubuntu.sh ubuntu@%s:~/" % (worker.ip)
-    run(command, shell=True)
-
-    # command = "scp scripts/qc_wrapper.sh ubuntu@%s:~/" % (worker.ip)
-    # run(command, shell=True)
-
-    command = """nohup bash install_worker_ubuntu.sh >nohup.out 2>&1 & sleep 2"""
-    command = """ssh -t ubuntu@%s '%s'""" % (worker.ip, command)
-    
-    print(command)
-
-    run(command, shell=True)
+    if settings.DEFAULT_PROVIDER == 'AWS':
+        AWS().install(worker.ip)
 
 @app.task(queue="master")
-def update_workers():
+def update_worker(worker_id):
+    worker = Worker.objects.get(id=worker_id)
+    print('Update Worker', worker.id)
+    if settings.DEFAULT_PROVIDER == 'AWS':
+        AWS().update(worker.ip)
+
+    # command = 'rsync -avz {} root@%s:/projects/mendelmd'.format(settings.BASE_DIR, worker.ip)
+
+@app.task(queue="master")
+def check_workers():
 
     workers = Worker.objects.all()
     for worker in workers:

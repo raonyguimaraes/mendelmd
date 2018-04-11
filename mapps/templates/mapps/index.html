@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% load paginator %}
+
+{% block title %}{% trans "Apps" %}{% endblock %}
+
+{% block content %}
+<h1>Apps</h1>
+
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{% url 'apps-create' %}">{% trans "Create new App" %}</a>
+    </div>
+
+<br><br>
+
+<form action="." method="post" id='apps_form'>
+    {% csrf_token %}
+
+<input type="hidden" id="action" name="action" value="">
+
+<div class="row">
+{% include 'mapps/navbar.html' %}
+</div>
+
+<div class="row">
+<div class='col-md-6'>    
+
+<div class="input-group input-group-sm">
+<input class="form-control" type="text" name="query">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </span>
+</div>
+
+</div>
+</div>
+
+{% if app_list %}
+<table class="table table-bordered table-striped table-condensed">
+	<tr>
+		<th>#<input type="checkbox" id="select_all"> ID</th>
+		<th>status</th>
+		<th width="20%">name</th>
+		<th width="20%">description</th>
+		<th>source</th>
+		<th>repository</th>
+		<th>Options</th>
+	</tr>
+	{% for app in app_list %}
+	<tr>
+		<td><input type="checkbox" name="apps" class="apps" id="option{{app.id}}" value="{{app.id}}" />{{app.id}}</td>
+		<td>{{app.status}}</td>
+		<td>{{app.name}}</td>
+		<td>{{app.description}}</td>
+		<td>{{app.source}}</td>
+		<td>{{app.repository}}</td>
+		<td>
+			<a href="{% url 'apps-update' app.id %}">Update</a>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+You still have no apps created. <br>
+
+Please create your apps into the system!
+
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".apps:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       document.getElementById("action").value = action;
+       document.getElementById("apps_form").submit();  
+    }
+</script>
+
+{% endblock %}

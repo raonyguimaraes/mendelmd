@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from formtools.wizard.views import SessionWizardView
 
+from tasks.tasks import run_qc
 from .tasks import create_analysis_tasks
 
 from projects.models import Project
@@ -17,6 +18,7 @@ from files.models import File
 from .forms import CreateAnalysis
 from tasks.models import Task
 from samples.models import SampleGroup
+from django.utils.html import strip_tags
 
 # Create your views here.
 def index(request):
@@ -82,21 +84,27 @@ def create(request):
             # analysis.files = form.cleaned_data['files']
 
             # analysis.analysis_types = form.cleaned_data['analysis_types']
+            params['providers'] = form.cleaned_data['providers']
             params['analysis_types'] = form.cleaned_data['analysis_types']
-            params['files'] = file_list#form.cleaned_data['files']
+            params['files'] = strip_tags(form.cleaned_data['files'].replace('<br>', '\n')).strip().split('\n')
+            
+            
+
+            # file_list#
             analysis.status = 'new'
             analysis.project = project
             analysis.params = params
 
             analysis.save()
 
-            task_manifest = params
-            
-            task = Task(user=request.user)
-            task.manifest = task_manifest
-            task.status = 'new'
-            task.action = 'analysis'
-            task.save()
+            create_analysis_tasks.delay(analysis.id)
+
+            # task_manifest = params
+            # task = Task(user=request.user)
+            # task.manifest = task_manifest
+            # task.status = 'new'
+            # task.action = 'analysis'
+            # task.save()
 
             return redirect('analysis-detail', analysis.id)
             
@@ -112,7 +120,7 @@ def create(request):
 
     context = {
         'project': project,
-        'files': files,
+        # 'files': files,
         'form':form,
         }
 
@@ -137,17 +145,31 @@ class AnalysisDetailView(DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # Add in a QuerySet of all the books
-        print('params', self.object.params)
+        # print('params', self.object.params)
         files = []
         if 'sample_groups' in self.object.params:
             # for group in self.object.params['sample_groups']:
                 # files = File.objects.filter()
                 sample_groups = self.object.params['sample_groups']
                 samples = SampleGroup.objects.filter(pk__in=sample_groups).values_list('members', flat=True)
-                print('samples', samples)
+                # print('samples', samples)
                 context['files'] = File.objects.filter(sample__in=samples)
-                print(context['files'])
+                # print(context['files'])
+        if 'files' in self.object.params:
+            files = self.object.params['files']
+            # context['files'] = File.objects.filter(pk__in=files)
+        context['tasks'] = Task.objects.filter(analysis=self.object)
+
+        context['output_files'] = File.objects.filter(task__in=context['tasks'])
+        print(len(context['output_files']))
+        # for file in context['output_files']:
+        #     print(dir(file))
+            
         return context
+
+def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
+    """ Returns a human readable string reprentation of bytes"""
+    return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
 
 def run_analysis(request, analysis_id):
     

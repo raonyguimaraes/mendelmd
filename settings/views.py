@@ -4,7 +4,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.shortcuts import render
-from .models import S3Credential, Provider
+from .models import S3Credential, Provider, Profile
 from .forms import S3CredentialForm
 
 from django.urls import reverse_lazy
@@ -49,6 +49,7 @@ class S3CredentialUpdate(LoginRequiredMixin, UpdateView):
             return self.model.objects.filter(user=self.request.user)
         else:
             return self.model.objects
+
 
 @method_decorator(login_required, name='dispatch')
 class S3CredentialDetailView(DetailView):

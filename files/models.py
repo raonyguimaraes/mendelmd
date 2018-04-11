@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.template.defaultfilters import slugify
-
+from django.contrib.postgres.fields import JSONField
 
 # Create your models here.
 class File(models.Model):
@@ -32,10 +32,11 @@ class File(models.Model):
     location = models.TextField(null=True, blank=True)    
     local_file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
     remote_location = models.TextField(null=True, blank=True)
+    url = models.TextField(null=True, blank=True)
     
     status = models.TextField(null=True, blank=True)
     last_output = models.TextField(null=True, blank=True)
-
+    params = JSONField(null=True, blank=True)
 
     md5 = models.TextField(null=True, blank=True)
 
