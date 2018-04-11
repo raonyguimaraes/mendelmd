@@ -188,7 +188,7 @@ INTERNAL_IPS = ['127.0.0.1']
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
 
-CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks',)
+CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks','samples.tasks')
 
 CELERYBEAT_SCHEDULE = {
     'check_queue': {

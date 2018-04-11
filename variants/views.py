@@ -11,6 +11,12 @@ import pickle
 import json
 
 @login_required
+def index(request):
+    variants = Variant.objects.all()[:10]
+    context = {'variants':variants}
+    return render(request, 'variants/index.html', context)
+
+@login_required
 def view(request, variant_id):
     variant = get_object_or_404(Variant, pk=variant_id)
 
