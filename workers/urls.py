@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^terminate/(?P<pk>[0-9]+)/$', views.terminate, name='worker-terminate'),
     url(r'^delete/(?P<pk>\d+)/$', views.WorkerDelete.as_view(),
         name='worker-delete'),
-    url(r'^action/$', views.action, name='bulk_action'),
+    url(r'^action/$', views.action, name='worker-bulk-action'),
 ]
