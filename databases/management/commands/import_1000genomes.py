@@ -19,9 +19,9 @@ class Command(BaseCommand):
 
         files = self.get_files()
 
-        self.add_samples(files)
-        self.add_genotypes()
-        self.add_variants(files)
+        # self.add_samples(files)
+        # self.add_genotypes()
+        # self.add_variants(files)
         self.add_indexes(files)
         self.add_sample_genotypes(files)
 
@@ -92,7 +92,7 @@ class Command(BaseCommand):
                         count += 1
                         count2 += 1
                         #bulk insert variants objects
-                        if count == 1000000:
+                        if count == 100000:
                             print("Inserting %s " % (count2))
                             Genome1kVariant.objects.bulk_create(variants)
                             count = 0
@@ -130,7 +130,7 @@ class Command(BaseCommand):
                         alt = row[4].split(',')
                         for item in alt:
                             count+=1
-                            if count == 1000000:
+                            if count == 100000:
                                 print("Inserting %s " % (count))
                                 Genome1kVariantIndex.objects.bulk_create(indexes)
                                 count = 0
@@ -138,7 +138,11 @@ class Command(BaseCommand):
                             index = '{}-{}-{}-{}'.format(row[0], row[1], row[3], item)
                             index_obj = Genome1kVariantIndex()
                             index_obj.index = index
-                            index_obj.variant = Genome1kVariant.objects.get(pos_index='{}-{}'.format(row[0], row[1]), ref=row[3], alt=row[4])
+                            try:
+                                index_obj.variant = Genome1kVariant.objects.get(pos_index='{}-{}'.format(row[0], row[1]), ref=row[3], alt=row[4])
+                            except:
+                                print('duplicated index!')
+                                print(row)
                             indexes.append(index_obj)
                 Genome1kVariantIndex.objects.bulk_create(indexes)
 
