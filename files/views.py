@@ -6,7 +6,8 @@ from django.core.management import call_command
 from files.models import File
 from django.contrib.auth.decorators import login_required
 
-from tasks.tasks import check_file, compress_file
+from tasks.tasks import compress_file
+from .tasks import check_file
 from tasks.models import Task
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -23,6 +24,9 @@ import os
 from django.conf import settings
 import json
 
+from .forms import FileForm
+
+
 @login_required
 def index(request):
 
@@ -30,7 +34,12 @@ def index(request):
     args = []
 
     if request.method == 'POST':
-        print(request.POST)
+
+        form = FileForm(request.POST)
+        if form.is_valid():
+            pass
+
+        # print(request.POST)
         files = request.POST.getlist('files')
         action = request.POST['action']
         query = request.POST['query']
@@ -81,11 +90,10 @@ def index(request):
             print('extension',extension)
             args.append(Q(extension__in=extension))
 
-        
         print('args', args)
 
-    # Or the Q object with the ones remaining in the list
-    if request.method == 'GET':
+    else:
+        form = FileForm()
         print(request.GET)
         if 'orderby' in request.GET:
             orderby = request.GET['orderby'][0]
@@ -101,8 +109,8 @@ def index(request):
         files = File.objects.filter(location__icontains=query, *args).order_by('sample')#size
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
-
-    files = File.objects.all().order_by('-id')
+    #sample__isnull=True
+    files = File.objects.filter(*args).order_by('-id')
 
     files_summary = {}
     files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
@@ -110,7 +118,9 @@ def index(request):
     files_summary['extension'] = dict(Counter(files.values_list('extension', flat=True)))
     # files_summary['total_size'] = sum(files.values_list('size', flat=True))
     files_summary = 0
+
     context = {
+        'form': form,
         'query':query,
         'files':files,
         'n_files':len(files),

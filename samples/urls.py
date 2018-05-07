@@ -10,10 +10,13 @@ urlpatterns = [
     url(r'^create_group/$', views.create_group, name='create_group'),
     url(r'^groups/$', views.SampleGroupList.as_view(), name='samplegroup-list'),
     url(r'^groups/delete/(?P<pk>\d+)$', views.SampleGroupDelete.as_view(), name='samplegroup_delete'),
-    url(r'^groups/(?P<pk>\d+)/$', views.SampleGroupDetailView.as_view(), name='samplegroup-view'),
+    url(r'^groups/(?P<pk>\d+)/$', views.group_detail, name='samplegroup-view'),
     url(r'^groups/edit/(?P<pk>\d+)$', views.SampleGroupUpdateView.as_view(), name='samplegroup-edit'),
+    url(r'^import_vcf/(?P<pk>\d+)/$', views.sample_import_vcf, name='sample_import_vcf'),
     # url(r'^delete_group/(?P<pk>\d+)$', SampleGroupDeleteView.as_view(), {}, 'group_delete'),
-    # url(r'^view/(?P<pk>\d+)$', views.view, name='sample_view'),
+    url(r'^view/(?P<pk>\d+)$', views.SampleDetailView.as_view(), name='sample_view'),
+    url(r'^bulk_action/$', views.bulk_action, name='samples-bulk-action'),
+    
     # url(r'^search/$', views.search, name='sample_search'),
     # url(r'^action/$', views.action, name='sample_action'),
 

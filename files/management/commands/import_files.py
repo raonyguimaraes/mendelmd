@@ -5,6 +5,7 @@ import boto3
 import os
 from django.conf import settings
 import time
+from django.core.exceptions import ObjectDoesNotExist
 
 class Command(BaseCommand):
     help = 'Import Files'
@@ -14,7 +15,7 @@ class Command(BaseCommand):
         start_time = time.time()
 
         print('Import Files')
-        File.objects.all().delete()
+        # File.objects.all().delete()
         file_list = open('%s/data/files/all_files.txt' % (settings.BASE_DIR))
         file_types = {}
         files = {}
@@ -46,8 +47,6 @@ class Command(BaseCommand):
                     file_types[file_extension] = []
                 file_types[file_extension].append(full_path)
                 files[full_path] = file
-        #
-        # print(n_files)
         print('Summary')
         print('Number of files: {}'.format(n_files))
         print('Number of file types: {}'.format(len(file_types)))
@@ -56,23 +55,22 @@ class Command(BaseCommand):
         for extension in extensions:
             for file in file_types[extension]:
                 # print(file)
-
-
                 file_name, file_extension = os.path.splitext(file)
                 if file_extension == '.gz':
                     file_name, file_extension = os.path.splitext(file_name)
                 basename = os.path.basename(file_name)
-
-                file_obj = File(
-                    name=basename,
-                    size=files[file]['size'],
-                    last_modified=str(files[file]['date']),
-                    extension=file_extension.replace('.', ''),
-                    location=file,
-                )
-                #print(file_obj,files[file])
-                file_objs.append(file_obj)
-                #file_obj.save()
+                try:
+                    test = File.objects.get(location=file)
+                except ObjectDoesNotExist:
+                    file_obj = File(
+                        name=basename,
+                        size=files[file]['size'],
+                        last_modified=str(files[file]['date']),
+                        extension=file_extension.replace('.', ''),
+                        location=file,
+                    )
+                    #print(file_obj,files[file])
+                    file_objs.append(file_obj)
         File.objects.bulk_create(file_objs)
 
         elapsed_time = time.time() - start_time

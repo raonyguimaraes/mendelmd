@@ -5,6 +5,7 @@ import boto3
 import os
 from django.conf import settings
 import time
+from subprocess import run
 
 class Command(BaseCommand):
     help = 'Download Files'
@@ -13,6 +14,8 @@ class Command(BaseCommand):
         print('Hello World Import Files')
         start_time = time.time()
         print('Download Files')
+        command = 'mkdir -p {}/data/files/'.format(settings.BASE_DIR)
+        run(command, shell=True)
         file_list = open('%s/data/files/all_files.txt' % (settings.BASE_DIR), 'w')
         s3credentials = S3Credential.objects.all()
         for s3credential in s3credentials:

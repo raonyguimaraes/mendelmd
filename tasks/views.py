@@ -8,8 +8,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from tasks.tasks import check_file, task_run_task
-
+from tasks.tasks import task_run_task
+from files.tasks import check_file
 from django.db.models import Q
 from collections import Counter
 

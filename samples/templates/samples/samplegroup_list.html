@@ -16,11 +16,24 @@
 {% block content %}
 
 <table class='table'>
-<thead><tr><th>{{object_name}}</th><th>Action</th></tr></thead>
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Members</th>
+    <th>Action</th>
+  </tr>
+</thead>
 <tbody>
   {% for object in object_list %}
   
-  <tr><td><a href="{% url 'samplegroup-view' object.id %}">{{object}}</a></td><td><a href="{{object.get_update_url}}">Update</a> | <a href="{% url 'samplegroup_delete' object.id %}">Delete</a></td></tr>
+  <tr>
+    <td><a href="{% url 'samplegroup-view' object.id %}">{{object}}</a></td>
+    <td>{{ object.members.count }}</td>
+    <td>
+      <a class='btn btn-primary start' href="{% url 'samplegroup-view' object.id %}">View</a>
+      <a class='btn btn-primary start' href="{{object.get_update_url}}">Update</a> 
+      <a class='btn btn-primary start' href="{% url 'samplegroup_delete' object.id %}">Delete</a>
+    </td></tr>
   {% endfor %}
 </tbody>
 </table>
