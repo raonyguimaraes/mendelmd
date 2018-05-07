@@ -26,6 +26,7 @@ from workers.tasks import launch_worker, launch_workers, terminate_workers
 
 import os
 from subprocess import run, check_output
+import subprocess
 
 from individuals.tasks import parse_vcf
 from individuals.models import Individual
@@ -45,10 +46,245 @@ from urllib.parse import urlparse
 from ftplib import FTP, FTP_TLS
 import ftplib
 
+from mapps.models import App
+from helpers import b2_wrapper
+from helpers.aws_wrapper import AWS
+
+b2 = b2_wrapper.B2()
+
+@shared_task()
+def get_file(file):
+    if file.location.startswith('ftp://'):
+
+        basename = os.path.basename(file.location)
+        if not os.path.exists('input/{}'.format(basename)):
+            command = 'wget -P input/ {}'.format(file.location)
+            run(command, shell=True)
+
+            command = 'md5sum input/{}'.format(basename)
+            output = check_output(command, shell=True).decode('utf-8').split()[0]
+
+            file.md5 = output
+            #upload to b2
+            command = 'b2 upload_file mendelmd input/{} files/{}/{}'.format(basename, file.id, basename)
+            output = check_output(command, shell=True)
+            
+            print(output.decode('utf-8'))
+            
+            file.params = output.decode('utf-8')
+            file.url = file.location
+            file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, basename)
+            file.save()
+    elif file.location.startswith('b2://'):
+
+        basename = os.path.basename(file.location)
+
+        if not os.path.exists('input/{}'.format(basename)):
+
+            b2_location = file.location.replace('b2://mendelmd/','')
+            command = 'b2 download-file-by-name mendelmd {} input/{}'.format(b2_location, basename)
+            output = check_output(command, shell=True)
+            print(output.decode('utf-8'))
+
+
+    return(file)
+    # file = File.objects.get(pk=project_file_id)
+    # link = file.location
+
+def calculate_md5(path):
+    md5_dict = {}
+    files = os.listdir(path)
+    for file in files:
+        command = 'md5sum output/{}'.format(file)
+        output = check_output(command, shell=True).decode('utf-8').split()[0]
+        file_md5 = output
+        md5_dict[file_md5] = file
+    return(md5_dict)
+
+@shared_task()
+def task_run_task(task_id):
+    print('RUN TASK: ', task_id)
+    log_output = ''
+
+    task = Task.objects.get(id=task_id)
+    
+    task.output = ''
+    
+    start = datetime.datetime.now()
+    manifest = task.manifest
+    task.machine = socket.gethostbyname(socket.gethostname())
+    task.status = 'running'
+    task.started = start
+    task.save()
+
+    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    worker.n_tasks += 1 
+    worker.status = 'running task %s' % (task.id)
+    worker.started = start
+    worker.save()
+
+
+    task_location = '/projects/tasks/%s/' % (task.id)
+    command = 'mkdir -p %s' % (task_location)
+    run(command, shell=True)
+
+    command = 'mkdir -p %s/input' % (task_location)
+    run(command, shell=True)
+
+    command = 'mkdir -p %s/output' % (task_location)
+    run(command, shell=True)
+
+    command = 'mkdir -p %s/scripts' % (task_location)
+    run(command, shell=True)
+
+
+    os.chdir(task_location)
+
+    with open('manifest.json', 'w') as fp:
+        json.dump(manifest, fp, sort_keys=True,indent=4)
+    # file_list = []
+
+    # for file_id in manifest['files']:        
+    #     print(file_id)
+    #     file = File.objects.get(pk=file_id)        
+    #     file = get_file(file)
+        # file_list.append(file.name)
+
+    #start analysis
+    for analysis_name in manifest['analysis_types']:
+        print('analysis_name', analysis_name)
+        analysis = App.objects.filter(name=analysis_name)[0]
+        print(analysis)
+
+        
+        command = 'mkdir -p /projects/programs/'
+        run(command, shell=True)
+        os.chdir('/projects/programs/')
+
+        basename = os.path.basename(analysis.repository)
+        print('basename', basename)
+        
+        command = 'git clone {}'.format(analysis.source)
+        run(command, shell=True)
+
+        os.chdir(basename)
+
+        # install
+        command = 'bash scripts/install.sh'
+        output = check_output(command, shell=True)
+
+        log_output += output.decode('utf-8')
+        #run
+        
+        os.chdir(task_location)
+        command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
+        print(command)
+        output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        log_output += output.stdout.decode('utf-8')
+
+
+    AWS.upload(task_location+'/output', task.id)
+
+    #upload results to b2/s3
+    # md5_dict = calculate_md5('output/')
+    # for hash in md5_dict:
+    #     print(hash)
+    #     try:
+    #         file = File.objects.get(md5=hash)
+    #     except:
+    #         pass
+    #         file = File(user=task.user)
+    #         file.md5 = hash
+    #         file.name = md5_dict[hash]
+    #         file.save()
+
+    #         source = 'output/{}'.format(file.name)
+    #         dest = 'files/{}/{}'.format(file.id, file.name)
+
+    #         output = b2.upload(source, dest)
+            
+    #         file.params = output
+    #         file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
+    #         file.save()    
+    #         # if task.analysis:
+    #         #     task.analysis_set.all()[0].files.add(file)
+    #     task.files.add(file)
+
+    # add files if needed :)
+
+    task.status = 'done'
+    stop = datetime.datetime.now()
+    task.execution_time = str(stop - start)
+    task.finished = stop
+    task.output = log_output
+    task.save()
+
+    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    worker.n_tasks -= 1
+    if worker.n_tasks == 0:
+        worker.status = 'idle'
+    worker.finished = stop
+    worker.execution_time = str(stop - start)
+    worker.save()
+    print('Finished Task %s' % (task.name))
+
+@app.task(queue="qc")
+def run_qc(task_id):
+
+    print('RUN QC :D')
+    print('task_id', task_id)
+
+    task = Task.objects.get(id=task_id)
+    task.status = 'will be running'
+    task.save()
+    start = datetime.datetime.now()
+
+    manifest = task.manifest
+
+    task.machine = ''
+    task.status = 'running'
+    task.started = start
+    task.save()
+
+    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    # worker.n_tasks += 1 
+    # worker.status = 'running task %s' % (task.id)
+    # worker.started = start
+    # worker.save()
+
+    task_location = '/projects/tasks/%s/' % (task.id)
+    command = 'mkdir -p %s' % (task_location)
+    run(command, shell=True)
+
+    os.chdir(task_location)
+
+    with open('manifest.json', 'w') as fp:
+        json.dump(manifest, fp, sort_keys=True,indent=4)
+    
+
+    task.status = 'done'
+    stop = datetime.datetime.now()
+    task.execution_time = str(stop - start)
+    task.finished = stop
+    task.save()
+
+    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    
+    # worker.n_tasks -= 1
+
+    # if worker.n_tasks == 0:
+    #     worker.status = 'idle'
+
+    # worker.finished = stop
+    # worker.execution_time = str(stop - start)
+    # worker.save()
+
+    print('Finished QC %s' % (task.name))
+
+
 @shared_task()
 def import_project_files_task(project_id):
     print('Import Files on ', project_id)
-    # return x + y
 
 def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
     """ Returns a human readable string reprentation of bytes"""
@@ -166,73 +402,6 @@ def compress_file(task_id):
 
     task.status = 'done'
     task.save()
-
-@shared_task()
-def download_file(project_file_id):
-    file = File.objects.get(pk=project_file_id)
-    link = file.location
-
-@app.task(queue="qc")
-def run_qc(task_id):
-
-    print('RUN QC :D')
-    print('task_id', task_id)
-
-    task = Task.objects.get(id=task_id)
-    task.status = 'will be running'
-    task.save()
-    start = datetime.datetime.now()
-
-    manifest = task.manifest
-
-    task.machine = socket.gethostbyname(socket.gethostname())
-    task.status = 'running'
-    task.started = start
-    task.save()
-
-    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    worker.n_tasks += 1 
-    worker.status = 'running task %s' % (task.id)
-    worker.started = start
-    worker.save()
-
-    task_location = '/projects/tasks/%s/' % (task.id)
-    command = 'mkdir -p %s' % (task_location)
-    run(command, shell=True)
-
-    os.chdir(task_location)
-
-
-    with open('manifest.json', 'w') as fp:
-        json.dump(manifest, fp, sort_keys=True,indent=4)
-    
-    run(command, shell=True)
-
-    run(command, shell=True)
-
-    run(command, shell=True)
-
-
-    task.status = 'done'
-    stop = datetime.datetime.now()
-    task.execution_time = str(stop - start)
-    task.finished = stop
-    task.save()
-
-    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    
-    worker.n_tasks -= 1
-
-    if worker.n_tasks == 0:
-        worker.status = 'idle'
-
-    worker.finished = stop
-    worker.execution_time = str(stop - start)
-    worker.save()
-
-    print('Finished QC %s' % (task.name))
-
-
 
 @app.task(queue="annotation")
 def annotate_vcf(task_id):

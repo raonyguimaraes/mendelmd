@@ -102,7 +102,7 @@ def index(request):
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
 
-    files = File.objects.all()
+    files = File.objects.all().order_by('-id')
 
     files_summary = {}
     files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))

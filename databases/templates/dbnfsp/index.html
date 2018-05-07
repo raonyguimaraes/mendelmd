@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "DBNFSP" %}{% endblock %}
+
+{% block content %}
+    <h1>DBNFSP</h1>
+
+    {{dbnfsp_list.chr}}
+    {% for dbnfsp_list in dbnfsp_list.object_list %}
+    {{dbnfsp_list}}
+    {% endfor %}
+	
+
+{% endblock %}

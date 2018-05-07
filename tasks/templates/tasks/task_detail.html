@@ -10,23 +10,44 @@
 
 <div class="col-md-6">
 
-<table class="table">
 
-<tr><th>ID</th><td>{{task.id}}</td></tr>
-<tr><th>User</th><td>{{task.user}}</td></tr>
-<tr><th>Name</th><td>{{task.name}}</td></tr>
-<tr><th>Manifest</th><td>{{task.manifest}}</td></tr>
-<tr><th>Status</th><td>{{task.status}}</td></tr>
-<tr><th>Action</th><td>{{task.action}}</td></tr>
-<tr><th>Md5</th><td>{{task.md5}}</td></tr>
-<tr><th>Creation_date</th><td>{{task.creation_date}}</td></tr>
-<tr><th>Modified_date</th><td>{{task.modified_date}}</td></tr>
-<tr><th>Options</th><td></td></tr>
 
-</table>
-
+<h2>Output</h2>
+{{task.output|linebreaks}}
 </div>
 </div>
 
+<div class="row">
+<div class="col-md-12">
+          <!-- Custom Tabs -->
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_1" data-toggle="tab">Summary</a></li>
+              <li><a href="#tab_2" data-toggle="tab">Input Files</a></li>
+              <li><a href="#tab_3" data-toggle="tab">Output Files</a></li>
+              <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_1">
+              {% include 'tasks/task_summary.html' %}
+              </div>
+              <div class="tab-pane" id="tab_2">
+				{% with input_files=files %}     
+                  {% include 'files/file_list.html' %}
+                {% endwith %}
+              </div>
+              <div class="tab-pane" id="tab_3">
+                
+                {% with output_files as files %}     
+                  {% include 'files/file_list.html' %}
+                {% endwith %}
+
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- nav-tabs-custom -->
+        </div>
+</div>
 {% endblock content %}
-

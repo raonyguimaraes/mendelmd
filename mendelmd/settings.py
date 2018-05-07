@@ -101,16 +101,12 @@ ROOT_URLCONF = 'mendelmd.urls'
 
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'mendelmd.sqlite3'),
-#     }
-# }
-
-import dj_database_url
-
-DATABASES = {'default': dj_database_url.config()}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mendelmd',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

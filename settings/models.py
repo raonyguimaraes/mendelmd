@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 
-# class Profile(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
 class S3Credential(models.Model):
     def get_absolute_url(self):
         return "/settings/"
@@ -38,3 +35,4 @@ class Profile(models.Model):
             on_delete=models.CASCADE,
             primary_key=True,
         )
+    params = JSONField()

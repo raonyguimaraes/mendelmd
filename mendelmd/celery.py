@@ -15,7 +15,7 @@ app = Celery('mendelmd')
 # pickle the object when using Windows.
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
-
+# app.conf.broker_transport_options = {'visibility_timeout': 43200}
 
 # app.conf.update(
 #     CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
