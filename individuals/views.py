@@ -23,7 +23,7 @@ from django.utils.text import slugify
 from django.views.generic import DeleteView
 from individuals.forms import IndividualForm, ComparisonForm, GroupForm, BrowserForm
 from individuals.models import Individual, Group
-from individuals.tasks import VerifyVCF, AnnotateVariants
+from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
 from variants.models import Variant
 
 def response_mimetype(request):
