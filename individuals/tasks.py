@@ -368,9 +368,9 @@ def parse_vcf(line):
 
     #parse VEP
     #Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|SIFT|PolyPhen
-
+    vep = OrderedDict()
+    
     if 'CSQ' in information:
-        vep = OrderedDict()
         vep_list = information['CSQ'].split('|')
 
         vep['Allele'] = vep_list[0]
@@ -401,6 +401,33 @@ def parse_vcf(line):
         vep['sift'] = vep_list[23]
         vep['polyphen2'] = vep_list[24]
 
+        # vep['1000Gp3_AC'] = vep_list[25]
+        vep['1000Gp3_AF'] = vep_list[26]
+        # print('1000Gp3_AF', vep_list[26])
+
+        # 1000Gp3_EUR_AC
+        # 1000Gp3_EUR_AF
+        # ALSPAC_AC
+        # ALSPAC_AF
+        # CADD_phred
+        # CADD_raw
+        # CADD_raw_rankscore
+        # M-CAP_pred
+        # M-CAP_rankscore
+        # M-CAP_score
+        # MutationTaster_AAE
+        # MutationTaster_converted_rankscore
+        # MutationTaster_model
+        # MutationTaster_pred
+        # MutationTaster_score
+        # TWINSUK_AC
+        # TWINSUK_AF
+        # gnomAD_exomes_AC
+        # gnomAD_exomes_AF
+        # gnomAD_exomes_AN
+        # gnomAD_genomes_AC
+        # gnomAD_genomes_AF
+        # gnomAD_genomes_AN
 
         # print vep
         variant['vep'] = vep
@@ -408,6 +435,16 @@ def parse_vcf(line):
 
     else:
         variant['gene'] = None
+
+    float_list = ['1000Gp3_AF']
+    for tag in float_list:
+        if tag in vep:
+            try:
+                variant[tag] = float(vep[tag])
+            except ValueError:
+                variant[tag] = None
+        else:
+            variant[tag] = None
 
     #treat vep sift, polyphen
     csq_list = ['sift', 'polyphen2']
@@ -642,7 +679,7 @@ def PopulateVariants(individual_id):
                 gene=variant['gene'],
                 mutation_type=variant['mutation_type'],
                 vartype=variant['vartype'],
-                genomes1k_maf=variant['genomes1k.AF'],
+                genomes1k_maf=variant['1000Gp3_AF'],
                 dbsnp_maf=variant['dbsnp.MAF'],
                 esp_maf=variant['esp6500.MAF'],
                 dbsnp_build=variant['dbsnp_build'],
