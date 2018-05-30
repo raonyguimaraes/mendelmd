@@ -340,7 +340,7 @@ def parse_vcf(line):
     # dbnfsp_fields = []
     for element in string:
       #get all tags from line
-      element = element.split('=')
+      element = element.split('=',1)
       tag = element[0]
       if len(element) > 1:
         information[tag] = element[1]#.decode("utf-8", "ignore")
@@ -464,31 +464,45 @@ def parse_vcf(line):
     #parse SNPEFF
     ##INFO=<ID=EFF,Number=.,Type=String,Description="Predicted effects for this variant.Format: 'Effect ( Effect_Impact | Functional_Class | Codon_Change | Amino_Acid_Change| Amino_Acid_length | Gene_Name | Transcript_BioType | Gene_Coding | Transcript_ID | Exon_Rank  | Genotype_Number [ | ERRORS | WARNINGS ] )' ">
 
-    if 'EFF' in information:
+    if 'snpeff_eff' in information:
         # print information['EFF']
         variant['snpeff'] = []
-        effects = information['EFF'].split(',')
+        effects = information['snpeff_eff'].split(',')
         # print len(effects), effects
         for ann in effects:
             snpeff = OrderedDict()
 
             eff_str = ann
 
-            eff_str_list = eff_str.split('(')
-            effects = eff_str_list[1].split('|')
-            #EFF,Number=.,Type=String,Description="Predicted effects for this variant.Format: 'Effect ( Effect_Impact | Functional_Class | Codon_Change | Amino_Acid_Change| Amino_Acid_length | Gene_Name | Transcript_BioType | Gene_Coding | Transcript_ID | Exon_Rank  | Genotype [ | ERRORS | WARNINGS ] )' ">
-            snpeff['effect'] = eff_str_list[0]
-            snpeff['impact'] = effects[0]
-            snpeff['func_class'] = effects[1]
-            snpeff['codon_change'] = effects[2]
-            snpeff['aa_change'] = effects[3]
-            snpeff['aa_len'] = effects[4]
-            snpeff['gene_name'] = effects[5]
-            snpeff['biotype'] = effects[6]
-            snpeff['gene_coding'] = effects[7]
-            snpeff['transcript_id'] = effects[8]
-            snpeff['exon_rank'] = effects[9]
-            snpeff['genotype_number'] = effects[10].split(')')[0]
+            #eff_str_list = eff_str.split('(')
+            effects = eff_str.split('|')
+            #Allele|Annotation|Annotation_Impact|Gene_Name|Gene_ID|Feature_Type|Feature_ID|Transcript_BioType|Rank|HGVS.c|HGVS.p|cDNA.pos/cDNA.l            ength|CDS.pos/CDS.length|AA.pos/AA.length|Distance|ERRORS/WARNINGS/INFO
+            snpeff['allele'] = effects[0]
+            snpeff['effect'] = effects[1]
+            snpeff['impact'] = effects[2]
+            snpeff['gene_name'] = effects[3]
+            snpeff['gene_id'] = effects[4]
+            snpeff['feature_type'] = effects[5]
+            snpeff['feature_id'] = effects[6]
+            snpeff['transcript_biotype'] = effects[7]
+            snpeff['rank'] = effects[8]
+            snpeff['hgvs_c'] = effects[9]
+            snpeff['hgvs_p'] = effects[10]
+            snpeff['cdna_pos_cdna_len'] = effects[11]
+            snpeff['aa_pos_aa_len'] = effects[12]
+            snpeff['distance'] = effects[13]
+            snpeff['errors_warnings_info'] = effects[14]
+
+            #snpeff['func_class'] = effects[1]
+            #snpeff['codon_change'] = effects[2]
+            #snpeff['aa_change'] = effects[3]
+            #snpeff['aa_len'] = effects[4]
+            #snpeff['gene_name'] = effects[5]
+            #snpeff['biotype'] = effects[6]
+            #snpeff['gene_coding'] = effects[7]
+            #snpeff['transcript_id'] = effects[8]
+            #snpeff['exon_rank'] = effects[9]
+            #snpeff['genotype_number'] = effects[10].split(')')[0]
             variant['snpeff'].append(snpeff)
 
     float_list = ['genomes1k.AF']
@@ -704,19 +718,22 @@ def PopulateVariants(individual_id):
                 if 'snpeff' in variant:
                     #for snpeff in variant['snpeff']:
                         #snpeff = SnpeffAnnotation(
-                    variant_obj.snpeff_effect=variant['snpeff'][0]['effect']
-                    variant_obj.snpeff_impact=variant['snpeff'][0]['impact']
-                    variant_obj.snpeff_func_class=variant['snpeff'][0]['func_class']
-                    variant_obj.snpeff_codon_change=variant['snpeff'][0]['codon_change']
-                    variant_obj.snpeff_aa_change=variant['snpeff'][0]['aa_change']
-                    # variant_obj.snpeff_aa_len=variant['snpeff'][0]['aa_len']
-                    variant_obj.snpeff_gene_name=variant['snpeff'][0]['gene_name']
-                    variant_obj.snpeff_biotype=variant['snpeff'][0]['biotype']
-                    variant_obj.snpeff_gene_coding=variant['snpeff'][0]['gene_coding']
-                    variant_obj.snpeff_transcript_id=variant['snpeff'][0]['transcript_id']
-                    variant_obj.snpeff_exon_rank=variant['snpeff'][0]['exon_rank']
-                    # variant_obj.snpeff_genotype_number=variant['snpeff'][0]['genotype_number']
-                    #)
+                    variant_obj.snpeff_allele = variant['snpeff'][0]['snpeff_allele']
+                    variant_obj.snpeff_effect = variant['snpeff'][0]['snpeff_effect']
+                    variant_obj.snpeff_impact = variant['snpeff'][0]['snpeff_impact']
+                    variant_obj.snpeff_gene_name = variant['snpeff'][0]['snpeff_gene_name']
+                    variant_obj.snpeff_gene_id = variant['snpeff'][0]['snpeff_gene_id']
+                    variant_obj.snpeff_feature_type = variant['snpeff'][0]['snpeff_feature_type']
+                    variant_obj.snpeff_feature_id = variant['snpeff'][0]['snpeff_feature_id']
+                    variant_obj.snpeff_transcript_biotype = variant['snpeff'][0]['snpeff_transcript_biotype']
+                    variant_obj.snpeff_rank = variant['snpeff'][0]['snpeff_rank']
+                    variant_obj.snpeff_hgvs_c = variant['snpeff'][0]['snpeff_hgvs_c']
+                    variant_obj.snpeff_hgvs_p = variant['snpeff'][0]['snpeff_hgvs_p']
+                    variant_obj.snpeff_cdna_pos_cdna_len = variant['snpeff'][0]['snpeff_cdna_pos_cdna_len']
+                    variant_obj.snpeff_aa_pos_aa_len = variant['snpeff'][0]['snpeff_aa_pos_aa_len']
+                    variant_obj.snpeff_distance = variant['snpeff'][0]['snpeff_distance']
+                    variant_obj.snpeff_errors_warnings_info = variant['snpeff'][0]['snpeff_errors_warnings_info']
+
                     #snpeff_dict[variant['index']] = snpeff
 
                 #parse vep
