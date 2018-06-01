@@ -31,7 +31,7 @@ def index(request):
 
     n_individuals = individuals.count()
 
-    paginator = Paginator(individuals, 25) # Show 25 contacts per page
+    paginator = Paginator(individuals, 1000) # Show 25 contacts per page
 
     page = request.GET.get('page')
 

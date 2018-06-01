@@ -23,7 +23,7 @@ from django.utils.text import slugify
 from django.views.generic import DeleteView
 from individuals.forms import IndividualForm, ComparisonForm, GroupForm, BrowserForm
 from individuals.models import Individual, Group
-from individuals.tasks import VerifyVCF, AnnotateVariants
+from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
 from variants.models import Variant
 
 def response_mimetype(request):
@@ -62,7 +62,7 @@ def create(request):
 
             individual.vcf_file.name = ".".join(new_filename)
 
-            # print('filename ', filename)
+            print('filename ', filename)
 
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
@@ -78,10 +78,11 @@ def create(request):
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
 
-            if request.user.is_authenticated:
-                os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
-            else:
-                os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
+            #if request.user.is_authenticated:
+
+            #    os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
+            #else:
+            #    os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             # AnnotateVariants.delay(individual.id)
             VerifyVCF.delay(individual.id)
