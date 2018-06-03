@@ -1,3 +1,4 @@
+{% load gravatar %}
 {% load static i18n %}
 
 <header class="main-header">
@@ -298,13 +299,14 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <!-- <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="user-image" alt="User Image"> -->
+              <img src="{% gravatar_url user.email 150 %}" class="user-image" alt="User Image">
+
               <span class="hidden-xs">{{ user.username }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <!-- <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="img-circle" alt="User Image"> -->
+                <img src="{% gravatar_url user.email 400 %}" class="img-circle" alt="User Image">
                 <p>
                   {{ user.username }}
                   <!-- <small>Member since Nov. 2012</small> -->

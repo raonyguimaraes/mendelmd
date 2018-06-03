@@ -1,6 +1,7 @@
 {% extends "account/base.html" %}
 
 {% load i18n %}
+{% load static %}
 {% load account %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
@@ -8,6 +9,12 @@
 {% block content %}
 
 <h1>{% trans "Sign In" %}</h1>
+
+<a id="google_login" href="/accounts/google/login">
+  <img src="{% static "img/btn_google_signin_small.png" %}">
+</a>
+
+
 
 {% if socialaccount.providers  %}
 <p>{% blocktrans with site.name as site_name %}Please sign in with one
