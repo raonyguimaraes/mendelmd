@@ -7,8 +7,37 @@
 <a href="{% url 'samplegroup-edit' object.id %}">Update</a>
 <br>
 
+n samples: {{n_samples}}<br>
+
+<form action="{% url 'samples-bulk-action' %}" name='samples_form' id='samples_form' method="post">
+{% csrf_token %}
+<input type="hidden" id="action" name="action" value="">
+
+{% include 'samples/sample_navbar.html' %}
+
 {% with samples=object.members.all %}
 {% include 'samples/sample_list.html' %}
 {% endwith %}
 
+</form>
+
 {% endblock content %}
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".samples:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       document.getElementById("action").value = action;
+       document.getElementById("samples_form").submit();
+
+  
+    }
+</script>
+
+{% endblock %}

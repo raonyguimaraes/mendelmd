@@ -1,16 +1,13 @@
 from django.db import models
-from individuals.models import Individual
+from samples.models import Sample
 
 class Variant(models.Model):
 
-    individual = models.ForeignKey(Individual, on_delete=models.CASCADE)
-
-    index = models.TextField(db_index=True)#ex. 1-2387623-G-T
     pos_index = models.TextField(db_index=True)#ex. 1-326754756
-
-    #First save all 9 VCF columns
+    index = models.TextField(db_index=True)#ex. 1-326754756-326754756-G-T
     chr = models.TextField(verbose_name="Chr", db_index=True)
-    pos = models.IntegerField(db_index=True)
+    start = models.IntegerField(db_index=True)
+    end = models.IntegerField(db_index=True)
     variant_id = models.TextField(verbose_name="ID", db_index=True)
     ref = models.TextField(null=True, blank=True, db_index=True)
     alt = models.TextField(null=True, blank=True, db_index=True)
@@ -66,18 +63,21 @@ class Variant(models.Model):
     hgmd_entries = models.TextField(null=True, blank=True, db_index=True)
 
     #snpeff annotation
+    snpeff_allele = models.TextField(null=True, blank=True, db_index=True)
     snpeff_effect = models.TextField(null=True, blank=True, db_index=True)
     snpeff_impact = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_func_class = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_codon_change = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_aa_change = models.TextField(null=True, blank=True, db_index=True)
-    # snpeff_aa_len = models.TextField(null=True, blank=True)
     snpeff_gene_name = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_biotype = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_gene_coding = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_transcript_id = models.TextField(null=True, blank=True, db_index=True)
-    snpeff_exon_rank = models.TextField(null=True, blank=True, db_index=True)
-    # snpeff_genotype_number = models.TextField(null=True, blank=True)
+    snpeff_gene_id = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_feature_type = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_feature_id = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_transcript_biotype = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_rank = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_hgvs_c = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_hgvs_p = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_cdna_pos_cdna_len = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_aa_pos_aa_len = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_distance = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_errors_warnings_info = models.TextField(null=True, blank=True, db_index=True)
 
     #vep annotation
     vep_allele = models.TextField(null=True, blank=True, db_index=True)
@@ -201,8 +201,16 @@ class Variant(models.Model):
     mcap_rankscore = models.FloatField(null=True, blank=True, db_index=True)
     mcap_pred = models.TextField(null=True, blank=True, db_index=True)
     revel_score = models.TextField(null=True, blank=True, db_index=True)
+>>>>>>> origin
 
+class VariantIndex(models.Model):
+    index = models.TextField()#ex. 1-2387623-G-T REF ALT for each REF and ALT
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
 
-    def get_fields(self):
-    	return [(field.name, field.verbose_name.title().replace('_', ' ')) for field in Variant._meta.fields]
+class Genotype(models.Model):
+    genotype = models.TextField(null=True, blank=True)
 
+class SampleVariantGenotype(models.Model):
+    sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    genotype = models.ForeignKey(Genotype, on_delete=models.CASCADE)

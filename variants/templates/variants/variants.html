@@ -138,7 +138,9 @@
 			<td>{{ variant.variant_id }}
 			{% if variant.variant_id != "." %}
 			<br>
-			<a href="http://www.ncbi.nlm.nih.gov/snp/?term={{ variant.variant_id }}&SITE=NcbiHome&submit=Go">dbSNP</a></td>
+			<a href="http://www.ncbi.nlm.nih.gov/snp/?term={{ variant.variant_id }}&SITE=NcbiHome&submit=Go">dbSNP</a>
+			<a href="https://www.ncbi.nlm.nih.gov/clinvar/?term={{ variant.variant_id }}">Clinvar</a>
+			</td>
 			{% endif %} <td>{{ variant.pos }}</td>
 			<td>{{ variant.qual }}</td>
 			<td>{{ variant.ref|truncatechars:5 }}</td>

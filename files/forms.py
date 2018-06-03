@@ -9,3 +9,11 @@ class UploadForm(ModelForm):
     class Meta:
         model = File
         fields = '__all__'
+
+class FileForm(forms.Form):
+    OPTIONS = (
+                ("fastq", "fastq"),
+                ("bam", "bam"),
+                ("vcf", "vcf"),
+                )
+    extension = forms.MultipleChoiceField(choices=OPTIONS)

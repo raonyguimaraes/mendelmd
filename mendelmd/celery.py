@@ -24,6 +24,7 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 app.conf.update(
     CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend',
 )
+app.conf.timezone = 'UTC'
 
 @app.task(bind=True)
 def debug_task(self):

@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'formtools',
     'mapps',
     'django_gravatar',    
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -135,9 +136,9 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/var/www/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, "static"),
+#]
 
 
 TEMPLATES = [
@@ -194,7 +195,7 @@ INTERNAL_IPS = ['127.0.0.1']
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
 
-CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks',)
+CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks','individuals.tasks')
 
 CELERYBEAT_SCHEDULE = {
     'check_queue': {
