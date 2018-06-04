@@ -201,7 +201,6 @@ class Variant(models.Model):
     mcap_rankscore = models.FloatField(null=True, blank=True, db_index=True)
     mcap_pred = models.TextField(null=True, blank=True, db_index=True)
     revel_score = models.TextField(null=True, blank=True, db_index=True)
->>>>>>> origin
 
 class VariantIndex(models.Model):
     index = models.TextField()#ex. 1-2387623-G-T REF ALT for each REF and ALT

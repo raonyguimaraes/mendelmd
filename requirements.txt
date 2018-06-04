@@ -19,3 +19,4 @@ boto3
 django-formtools
 dj-database-url
 django-gravatar2
+django-storages

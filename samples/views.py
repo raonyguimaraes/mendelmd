@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib import messages
 
-from .tasks import import_vcf
+from files.tasks import import_vcf
 
 # from sample_tracking_system.users.models import User
 from django.contrib.auth.models import User
