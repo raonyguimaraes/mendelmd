@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "1000Genomes Browser" %}{% endblock %}
+
+{% block content %}
+    <h1>1000Genomes</h1>
+
+    Total variants: {{total_variants}}<br>
+    Query variants: {{query_variants}}<br>
+    Time Taken: {{time_taken}}
+
+    <form action="." method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit" />
+    </form>
+
+    <table class='table'>
+        <thead>
+        <tr>
+            <th>Sample</th>
+            <th>Genotype</th>
+            <th>CHR</th>
+            <th>POS</th>
+            <th>rsid</th>
+            <th>ref</th>
+            <th>alt</th>
+            <th>qual</th>
+            <th>filter</th>
+            <th>info</th>
+            <th>format</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for variant in genomes1k_variants %}
+        <tr>
+            <td>{{variant.sample.name}}</td>
+            <td>{{variant.genotype.genotype}}</td>
+            <td>{{variant.variant.chrom}}</td>
+            <td>{{variant.variant.pos}}</td>
+            <td>{{variant.variant.rsid}}</td>
+            <td>{{variant.variant.ref}}</td>
+            <td>{{variant.variant.alt}}</td>
+            <td>{{variant.variant.qual}}</td>
+            <td>{{variant.variant.filter}}</td>
+            <td>{{variant.variant.info}}</td>
+            <td>{{variant.variant.format}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+
+{% endblock %}

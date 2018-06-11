@@ -1,7 +1,7 @@
 Mendel,MD
 =========
 
-An online tool for organizing, annotating, filtering and diagnosing patients with Mendelian Disorders using Exome and Genome sequencing data.
+An online tool for organizing, annotating, filtering and diagnosing patients with Mendelian Disorders using Whole Exome or Genome sequencing data.
 
 Requirements
 ============

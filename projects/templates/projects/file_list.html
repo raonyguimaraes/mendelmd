@@ -1,0 +1,125 @@
+{% load humanize %}
+<div class="row">
+  
+    
+<div class="col-md-8">
+
+    <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">Actions</h3>
+    </div>
+    <div class="box-body">
+      
+      <a class="btn btn-app" href='javascript: submitform("files", "analysis")'>
+        <i class="fa fa-plus" aria-hidden="true"></i> Create Analysis
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "check")'>
+        <i class="fa fa-search"></i> Check
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "download")'>
+        <i class="fa fa-cloud-download"></i> Download
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "delete")'>
+        <i class="fa fa-trash-o"></i> Delete
+      </a>
+      <a class="btn btn-app">
+        <i class="fa fa-edit"></i> Edit
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "run")'>
+        <i class="fa fa-play"></i> Run
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "compress")'>
+        <i class="fa fa-compress" aria-hidden="true"></i> Compress
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "expand")'>
+        <i class="fa fa-expand" aria-hidden="true"></i> Expand
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "upload")'>
+        <i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload
+      </a>
+      <a class="btn btn-app" href='javascript: submitform("files", "download")'>
+        <i class="fa fa-cloud-download" aria-hidden="true"></i> Download
+      </a>
+
+    </div>
+    <!-- /.box-body -->
+    </div>
+
+</div>
+
+</div>
+
+
+<h2>Files</h2>
+
+Number of files: {{n_files}}
+
+<table class="table">
+<thead>
+<tr>
+    <th>#<input type="checkbox" id="select_all_files"></th>
+    <th>Name</th>
+    <th>Sample</th>
+    <th>Size</th>
+    <th>Location</th>
+    <th>Status</th>
+    <th>
+        Extension
+        <select>
+            <option value="all">ALL</option>
+            <option value="fastq">FASTQ</option>
+            <option value="bam">BAM</option>
+            <option value="vcf">VCF</option>
+        </select>
+    </th>
+    <th>Options</th>
+</tr>
+</thead>
+<tbody>
+  <tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td>{{total_file_size|filesizeformat}}</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
+{% for file in project.files.all %}
+<tr>  
+    <td>
+        <input type="checkbox" name="files" class="files" id="option{{file.id}}" value="{{file.id}}" />
+    </td>
+    <td>
+        <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
+    </td>
+    <td>
+      
+      {% for sample in file.projectsample_set.all %}
+        {{ sample.name}}
+      {% endfor %}
+
+    </td>
+    <td>{{ file.size|filesizeformat }}</td>
+    <td>{{ file.location }}</td>
+    <td>{{ file.status }}</td>
+    <td>{{ file.file_type }}</td>
+    <td></td>
+    
+
+</tr>
+{% endfor %}
+<tr>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td>{{total_file_size|filesizeformat}}</td>
+  <td></td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
+</tbody>
+</table>
+

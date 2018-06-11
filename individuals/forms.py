@@ -6,6 +6,10 @@ from variants.models import *
 
 
 class IndividualForm(ModelForm):
+
+
+    vcf_file = forms.CharField(max_length=600, required=False)
+
     class Meta:
         model = Individual
         fields = '__all__'
@@ -34,8 +38,13 @@ class ComparisonForm(forms.Form):
         
         super(ComparisonForm, self).__init__(*args, **kwargs)
 
-        if not user.is_authenticated():
-            print('user None', user)
+        if user.is_staff:
+            
+            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
+            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
+
+        elif not user.is_authenticated:
+            
             self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
             self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
         else:

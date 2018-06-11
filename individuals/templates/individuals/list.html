@@ -13,17 +13,6 @@
     </div>
 </div>
 <br>
-{% if individuals %}
-    <div class="container">
-      <div class="row">
-       {% for individual in ind_featured %}
-                    {% if individual.is_featured %}
-                    <div id="boxes" class="col-lg-2 col-md-3 col-xs-5"> <a href="{% url 'individual_view' individual.id %}">{{ individual.name }}</a></div>
-                    {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-{% endif %}
 
     {% if groups %}
 <h1>Groups</h1>
@@ -122,6 +111,8 @@
                 <input type="checkbox" id="select_all"></th>
             <th>ID</th>
             <th>Name</th>
+            <th>Location</th>
+            <th>Status</th>
             <th>Options</th>
             <th>Uploaded By</th>
             <th>Nº Lines</th>
@@ -129,8 +120,7 @@
             <th>Modified on</th>
             <th>Annotation Time</th>
             <th>Insertion Time</th>
-            <th>Insertion Time MongoDB</th>
-            <th>Status</th>
+            
             {% if user.is_staff %}
             <th>Operations</th>
             {% endif %}
@@ -145,6 +135,8 @@
             <td>
                 <a href="{% url 'individual_view' individual.id %}">{{ individual.name }}</a>
             </td>
+            <td>{{ individual.vcf_file }}</td>
+            <td>{{ individual.status }}</td>
             <td>
                 <ul>
                     <li>
@@ -158,17 +150,18 @@
                     </li>
                 </ul>
             </td>
+            
             <td>{{ individual.user.username }}</td>
             <td>{{ individual.n_lines }}</td>
             <td>{{ individual.creation_date }}</td>
             <td>{{ individual.modified_date }}</td>
             <td>{{ individual.annotation_time }}</td>
             <td>{{ individual.insertion_time }}</td>
-            <td>{{ individual.insertion_time_mongo }}</td>
+            
 
             
 
-            <td>{{ individual.status }}</td>
+            
             {% if user.is_staff %}
             <td>
                 
@@ -177,9 +170,6 @@
                     </a>
                     <a href="{% url 'individual_populate' individual.id %}">
                         <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate Individual</i></button>
-                    </a>
-                    <a href="{% url 'individual_populate_mongo' individual.id %}">
-                        <button type="button" class="btn btn-primary"><i class="icon-align-center">Populate to MongoDB</i></button>
                     </a>
                         
                 

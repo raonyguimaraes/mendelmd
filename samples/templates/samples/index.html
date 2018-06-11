@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content_header %}
+    <section class="content-header">
+      <h1>
+        Samples
+        <small>List of all samples</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+        <li class="active">Here</li>
+      </ol>
+    </section>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="btn-group">
+  <a class="btn btn-primary" href="{% url 'samplegroup-list' %}">Groups</a>
+</div>
+
+
+<form action="." method="post" name='samples_form' id='samples_form'>
+  
+    {% csrf_token %}
+<input type="hidden" id="action" name="action" value="">
+{% include 'samples/samples_navbar.html' %}
+
+              {% include 'samples/sample_list.html' %}
+
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+ <script type="text/javascript">
+ $('#sample_status').change(function()
+ {
+     $('#sample_form').submit();
+ });
+
+$(document).ready(function(){
+    $("#select_all").click(function(){
+      var checked_status = this.checked;
+      $("input[name='samples']").each(function(){
+        this.checked = checked_status;
+      });
+    });
+  });
+
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       document.getElementById("action").value = action;
+       document.getElementById("samples_form").submit();
+  
+    }
+</script>
+{% endblock %}

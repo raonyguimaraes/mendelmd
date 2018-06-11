@@ -20,9 +20,11 @@ def backup_users():
 
 def reset_migrations():
 
-    models = ['cases', 'projects', 'individuals', 'variants', 'diseases', 'genes', 'files']
+    models = ['cases', 'projects', 'individuals', 'databases', 'variants', 
+    'diseases', 'genes', 'files', 'filter_analysis', 'samples', 'analyses', 
+    'tasks', 'workers', 'upload', 'settings', 'projects', 'mapps', 'pathway_analysis', 'mapps', 'analyses']
     for model in models:
-        local('rm -rf apps/%s/migrations' % (model))
+        local('rm -rf %s/migrations' % (model))
     for model in models:
         local('python manage.py makemigrations %s' % (model))
 
@@ -30,9 +32,12 @@ def reset_migrations():
 
 def resetdb():
     # local('rm db.sqlite3')
-    local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')
-    local('psql -d template1 -c "CREATE DATABASE mendelmd_prod;"')
-    local('python manage.py syncdb')
+    # local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')
+    # local('psql -d template1 -c "CREATE DATABASE mendelmd_prod;"')
+    # local('python manage.py syncdb')
+    local('dropdb mendelmd')
+    local('createdb mendelmd')
+    local('./manage.py migrate')
     # local('python manage.py loaddata fixtures/users.json')
     # local('python manage.py loaddata fixtures/usergroups.json')
     #load genes, diseases, pathways
@@ -40,6 +45,11 @@ def resetdb():
 
     # local('python manage.py createsuperuser')
     #local('python manage.py runserver mendel.medicina.ufmg.br:8001')
+
+def import_samples():
+    local('./manage.py import_files')
+    local('python ../scripts/import_samples.py')
+    local('python ../scripts/update_sample_files.py')
 
 
 def make_doc():

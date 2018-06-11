@@ -1,6 +1,7 @@
 from django.conf.urls import *
 
 from django.contrib import admin
+
 from django.views.generic import TemplateView
 
 admin.autodiscover()
@@ -11,21 +12,24 @@ from django.conf.urls.static import static
 
 from . import views
 
+import files.views
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'mendelmd.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.index, name='index'),
 
-	url(r'^docs/$', views.docs, name="docs"),
+    url(r'^docs/$', views.docs, name="docs"),
 
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 
-	url(r'^accounts/', include('allauth.urls')),
+    url(r'^upload/', files.views.upload, name='upload'),
 
-	url(r'^dashboard/', include('dashboard.urls')),
-	url(r'^individuals/', include('individuals.urls')),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^dashboard/', include('dashboard.urls')),
+    url(r'^individuals/', include('individuals.urls')),
     url(r'^diseases/', include('diseases.urls')),
     url(r'^genes/', include('genes.urls')),
     url(r'^variants/', include('variants.urls')),
@@ -37,6 +41,12 @@ urlpatterns = [
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^files/', include('files.urls')),
+    url(r'^samples/', include('samples.urls')),
+    url(r'^settings/', include('settings.urls')),
+    url(r'^tasks/', include('tasks.urls')),
+    url(r'^workers/', include('workers.urls')),
+    url(r'^analyses/', include('analyses.urls')),
+    url(r'^apps/', include('mapps.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

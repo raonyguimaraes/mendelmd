@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% load paginator %}
+
+{% block title %}{% trans "Analyses" %}{% endblock %}
+
+{% block content %}
+<h1>Analyses</h1>
+
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{% url 'analysis-create' %}">{% trans "Create new Analysis" %}</a>
+    </div>
+
+<br><br>
+
+<form action="." method="post" id='analyses_form'>
+    {% csrf_token %}
+<div class="row">
+<div class='col-md-6'>    
+
+<div class="input-group input-group-sm">
+<input class="form-control" type="text" name="query">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </span>
+</div>
+
+</div>
+</div>
+<input type="hidden" id="action" name="action" value="">
+
+<div class="row">
+{% include 'analyses/analysis_navbar.html' %}
+</div>
+
+{% if analyses %}
+<table class="table table-bordered table-striped table-condensed">
+	<tr>
+		<th>#<input type="checkbox" id="select_all"> ID</th>
+		<th>status</th>
+		<th width="20%">name</th>
+		<th width="20%">description</th>
+		<th>members</th>
+		<th>Options</th>
+	</tr>
+	{% for analysis in analyses %}
+	<tr>
+		<td><input type="checkbox" name="analyses" class="analyses" id="option{{analysis.id}}" value="{{analysis.id}}" />{{analysis.id}}</td>
+		<td>{{analysis.status}}</td>
+		<td>{{analysis.name}}</td>
+		<td>{{analysis.description}}</td>
+		<td></td>
+		<td>
+			<a href="{% url 'analysis-detail' analysis.id %}" class="btn btn-primary">Detail</a>
+			<a href="{% url 'analysis-update' analysis.id %}" class="btn btn-primary">Update</a>
+			<a href="{% url 'analysis-delete' analysis.id %}" class="btn btn-primary">Delete</a>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+You still have no analyses created. <br>
+
+Please create your analyses into the system!
+
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".analyses:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       document.getElementById("action").value = action;
+       document.getElementById("analyses_form").submit();
+
+  
+    }
+</script>
+
+{% endblock %}

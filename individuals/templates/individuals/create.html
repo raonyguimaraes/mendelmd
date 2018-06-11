@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load upload_tags %}
 
@@ -14,7 +14,6 @@
     <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    
 
 {% endblock %}
 
@@ -113,10 +112,6 @@ $('#fileupload').fileupload({
         { width: 'off',
         placeholder: "Select your Groups", }
         ); });
-    
-    
-    
-
 </script>
 
 {% endblock %}
@@ -124,7 +119,6 @@ $('#fileupload').fileupload({
 {% block javascript %}
 <!-- Latest compiled and minified JavaScript -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-
 
 <script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>

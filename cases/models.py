@@ -17,7 +17,7 @@ class Case(models.Model):
     status = models.CharField(max_length=100,
                                       choices=STATUS_CHOICES,
                                       default='new')
-    user = models.ForeignKey(User, editable=False)
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
 
     shared_with_users = models.ManyToManyField(User, related_name='shared_with', blank=True)
     shared_with_groups= models.ManyToManyField(Group, related_name='shared_with', blank=True)
@@ -27,8 +27,8 @@ class Case(models.Model):
     description = models.TextField(blank=True, null=True)
     # individuals = models.ManyToManyField(Individual)
    
-    mother = models.ForeignKey(Individual, blank=True, related_name='mother', null=True)
-    father = models.ForeignKey(Individual, blank=True, related_name='father', null=True)
+    mother = models.ForeignKey(Individual, blank=True, related_name='mother', null=True, on_delete=models.CASCADE)
+    father = models.ForeignKey(Individual, blank=True, related_name='father', null=True, on_delete=models.CASCADE)
 
     children = models.ManyToManyField(Individual, blank=True, related_name='children')
 

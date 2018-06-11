@@ -37,3 +37,7 @@ ann_sample
 data/files/
 data/genomes/
 venv/
+.vscode/
+celerybeat-schedule
+__pycache__
+media/

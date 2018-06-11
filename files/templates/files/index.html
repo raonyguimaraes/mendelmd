@@ -1,31 +1,37 @@
 {% extends "base.html" %}
 
+{% load humanize %}
+
+
 {% block content %}
 <h1>Files</h1>
 
-<a href="{% url 'files-settings-index' %}" type="button" class="btn btn-success">Settings</a>
-<a href="{% url 'files-import' %}" type="button" class="btn btn-success">Import Files</a>
+{% include 'files/files_summary_table.html' %}
 
-<table class="table">
-<thead>
-<tr>
-    <th>Name</th>
-    <th>Extension</th>
-    <th>Location</th>
-    <th>Options</th>
-</tr>
-</thead>
-<tbody>
-{% for file in files %}
-<tr>
-    <td>
-        <a href="{% url 'file-view' file.id %}">{{file.name}}</a>
-    </td>
-    <td>{{ file.file_type }}</td>
-    <td>{{ file.location }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+{% if user.is_staff %}
+<a href="{% url 'files-import' %}" type="button" class="btn btn-success">Import Files</a>
+{%endif %}
+
+{% include 'files/file_list.html' %}
 
 {% endblock content %}
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#files_select_all").change(function() {
+  $(".files:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       document.getElementById("action").value = action;
+       document.getElementById("files_form").submit();
+
+  
+    }
+</script>
+
+{% endblock %}

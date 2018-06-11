@@ -26,7 +26,7 @@ class Individual(models.Model):
             string = "%s/genomes/public/%s/%s" % (settings.BASE_DIR, self.id, filename)#.replace(' ', '_')
             print('string',string)
         return string
-    user = models.ForeignKey(User, editable=False, null=True)
+    user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
 
     shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
     shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
@@ -91,5 +91,5 @@ class ControlGroup(models.Model):
 
 class ControlVariant(models.Model):
 
-    controlgroup = models.ForeignKey(ControlGroup)
+    controlgroup = models.ForeignKey(ControlGroup, on_delete=models.CASCADE)
     index = models.TextField(db_index=True)#ex. 1-2387623-G-T

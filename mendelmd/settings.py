@@ -50,12 +50,15 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    
+    'allauth.socialaccount.providers.google',
     'crispy_forms',
     'django_select2',
 
-    'djcelery',
+    # 'djcelery',
     'celery',
-    'kombu.transport.django',
+    'django_celery_results',
+    # 'kombu.transport.django',
     # 'django_celery_results',
     # 'django_celery_beat',
 
@@ -74,6 +77,16 @@ INSTALLED_APPS = [
     'databases',
     'projects',
     'files',
+    'samples',
+    'upload',
+    'settings',
+    'tasks',
+    'workers',
+    'analyses',
+    'formtools',
+    'mapps',
+    'django_gravatar',    
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -94,12 +107,10 @@ WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'mendelmd.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mendelmd',
     }
 }
-
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -125,24 +136,9 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/var/www/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-# TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
-# TEMPLATE_CONTEXT_PROCESSORS = (
-#     "django.contrib.auth.context_processors.auth",
-#     "django.core.context_processors.debug",
-#     "django.core.context_processors.i18n",
-#     "django.core.context_processors.media",
-#     "django.core.context_processors.static",
-#     "django.core.context_processors.tz",
-#     "django.contrib.messages.context_processors.messages",
-#     "django.core.context_processors.request",
-#     # allauth specific context processors
-#     "allauth.account.context_processors.account",
-#     "allauth.socialaccount.context_processors.socialaccount",)
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, "static"),
+#]
 
 
 TEMPLATES = [
@@ -158,12 +154,15 @@ TEMPLATES = [
                 # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
                 # list if you haven't customized them:
                 'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                # Required by allauth template tags
+                
             ],
 
         },
@@ -189,48 +188,23 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #this prevents crash when loading filter_analysis forms.py
 # DEBUG_TOOLBAR_PATCH_SETTINGS = True
+
 INTERNAL_IPS = ['127.0.0.1']
-# INTERNAL_IPS = ['127.0.0.1']
 
-#django celery
-# CELERY_RESULT_BACKEND = 'django-db'
-# CELERY_RESULT_BACKEND = 'django-cache'
+# new celery 4 config
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
 
+CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks','individuals.tasks')
 
-
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_RESULT_BACKEND = 'db+sqlite:///mendelmd.sqlite3'
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_BROKER_URL = 'django://'
-
-import djcelery
-djcelery.setup_loader()
-BROKER_URL = 'django://'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_IMPORTS = ('individuals.tasks', )
-
-# CELERY_ROUTES = {
-#     'individuals.tasks.VerifyVCF': {'queue': 'annotation'},
-#     'individuals.tasks.AnnotateVariants': {'queue': 'annotation'},
-#     'individuals.tasks.PopulateVariants': {'queue': 'insertion'},
-# }
-
-# # from __future__ import absolute_import
-# # CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
-# # CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-# CELERY_REDIRECT_STDOUTS = "true"
-# CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
-
-
-if "celery" in sys.argv:
-    DEBUG = False
-
-
+CELERYBEAT_SCHEDULE = {
+    'check_queue': {
+        'task': 'workers.tasks.check_queue',
+        'schedule': 30.0,
+    },
+}
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
-
 
 try:
     from .local_settings import *
@@ -238,16 +212,14 @@ except ImportError:
     pass
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
-
-
 from datetime import timedelta
 
-# CELERYBEAT_SCHEDULE = {
-#     'clean_individuals': {
-#         'task': 'individuals.tasks.clean_individuals',
-#         'schedule': timedelta(days=1),
-#         # 'args': (16, 16)
-#     },
-# }
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
-# CELERY_TIMEZONE = 'UTC'
+# ALL AUTH
+ACCOUNT_EMAIL_REQUIRED=True
+ACCOUNT_AUTHENTICATION_METHOD="username_email"
+ACCOUNT_SESSION_REMEMBER=True
+# ACCOUNT_UNIQUE_EMAIL=False
+SOCIALACCOUNT_AUTO_SIGNUP=True
+SOCIALACCOUNT_QUERY_EMAIL=True

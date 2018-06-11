@@ -159,15 +159,19 @@
 
 	<br>	
 
-	{% include  "pagination.html" %}
+	{% with objects=variants %}
+    {% include  "pagination.html" %}
+    {% endwith %}
 
 	<div style="overflow-x: scroll;overflow-y: scroll; max-height:400px;">
 	
-	{% include  "variants.html" %}
+	{% include  "variants/variants.html" %}
 	
 	</div>
 		
-	{% include  "pagination.html" %}
+	{% with objects=variants %}
+    {% include  "pagination.html" %}
+    {% endwith %}
 
 {% endif %}
 

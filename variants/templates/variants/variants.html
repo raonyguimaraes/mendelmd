@@ -1,0 +1,174 @@
+{% load filter_extras %}
+{% load humanize %}
+<table id="tablevariants" class="table table-striped table-bordered table-condensed">
+	<!-- class="table table-condensed" -->
+	
+	<tbody>
+		{% regroup variants by gene as gene_list %}
+		{% for gene in gene_list %}
+		{% if gene.grouper %}
+		<tr>
+			<td colspan="26" style="background-color: #009f34;"><span id='{{ gene.grouper }}'></span><h3><a href="{% url 'gene_view' gene.grouper %}" target="_blank" style="color:#fff;";>{{ gene.grouper }}</a></h3></td>
+		</tr>
+		{% endif %}
+		<tr>
+			<td colspan="26"><a href="http://omim.org/search?index=entry&sort=score+desc%2C+prefix_sort+desc&start=1&limit=10&search={{ gene.grouper }}" target="_blank">Omim</a> - <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={{ gene.grouper }}" target="_blank">GeneCards</a> - <a href="http://www.ncbi.nlm.nih.gov/gquery/?term={{ gene.grouper }}&SITE=NcbiHome&submit=Go" target="_blank">NCBI</a></td>
+		</tr>
+		<tr>
+
+			<td style="width: 1%"></td>
+			<td style="width: 1%">Options</td>
+
+			<td style="width: 4%">Individual</td>
+			<td style="width: 2%">
+			Chr<br>
+			<a href="?{{query_string}}&order_by=chr&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=chr&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a>
+			</td>
+			<td style="width: 4%">
+			RsId<br>
+			<a href="?{{query_string}}&order_by=variant_id&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=variant_id&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a> 
+			</td>
+			<td style="width: 4%">
+			Pos<br>
+			<a href="?{{query_string}}&order_by=pos&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=pos&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a> 
+			</td>
+			<td style="width: 2%">
+			Qual<br>
+			<a href="?{{query_string}}&order_by=qual&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=qual&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a>
+			</td>
+			<td style="width: 2%">
+			Ref<br>
+			<a href="?{{query_string}}&order_by=ref&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=ref&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a>
+			</td>
+			<td style="width: 2%">
+			Alt<br>
+			<a href="?{{query_string}}&order_by=alt&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=alt&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a>
+			</td>
+			<td>Filter</td>
+			<td style="width: 2%">
+			Gen<br>
+			<a href="?{{query_string}}&order_by=genotype&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+			 <a href="?{{query_string}}&order_by=genotype&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a> 	
+			</td>
+			<td style="width: 2%">Read Depth</td>
+			<td style="width: 5%">Effect</td>
+			<td style="width: 4%">Impact</td>
+			<td style="width: 4%">Func Class</td>
+			<td style="width: 4%">
+				 
+				 1kgenomes 
+				 <a href="?{{query_string}}&order_by=genomes1k_maf&sort_by=asc"><img src="{{ STATIC_URL }}/img/uparrow.png"></a>
+				 <a href="?{{query_string}}&order_by=genomes1k_maf&sort_by=desc"><img src="{{ STATIC_URL }}/img/downarrow.png"></a>
+
+			</td>
+			<td style="width: 3%">dbSNP</td>
+			<td style="width: 3%">ESP6500</td>
+			<td style="width: 2%">Sift</td>
+			<td style="width: 3%">PP2</td>
+			<td style="width: 3%">CADD</td>
+			<td style="width: 3%">M-CAP</td>
+			<td style="width: 3%">CLINVAR</td>
+			<td style="width: 3%">HI Score</td>
+			<!-- <td style="width: 3%">TRAIT</td> -->
+			<!-- <td style="width: 3%">RF SCORE</td>
+			<td style="width: 3%">ADA SCORE</td> -->
+
+		</tr>
+		{% for variant in gene.list %}
+		<tr>
+			<td>
+                <input type="checkbox" name="variants" class="variants" id="option{{variants.id}}" value="{{variants.id}}" />
+            </td>
+            <td>
+
+			<!-- <a href="#" onclick="return false;" id="variant{{ variant.id }}" class="btn btn-primary" rel="popover" data-content="
+			{% if variant.filter %}
+			<b>Filter:</b> {{variant.filter}}
+
+			<br>
+			{% endif %}
+			
+			{% if variant.cln_omim %}
+			<b>Variant is Clinical</b>
+			{% if variant.cln_omim != 'unknown' %}
+			{% for item in variant|cut %} <a href={{ item }}>{{ item }}</a> {% endfor %}
+			<br>
+			{% endif %}
+			{% endif %}
+			{% if variant.amino_acid_change %} <b>Aminoacid change:</b> {{ variant.amino_acid_change }}
+			<br>
+			{% endif %}
+			{% if variant.cdna_position %} <b>CDNA pos:</b> {{ variant.cdna_position }}
+			<br>
+			{% endif %}
+			{% if variant.granthamscore %} <b>granthamscore:</b> {{ variant.granthamscore }}
+			<br>
+			{% endif %}
+			{% if variant.protein_position %} <b>prot_pos:</b> {{ variant.protein_position }}
+			<br>
+			{% endif %}
+			{% if variant.genotype_info %} <b>genotype info:</b> {{ variant.genotype_info }}
+			<br>
+			{% endif %}
+			{% if variant.ann_esp_maf %} <b>esp maf:</b> {{ variant.ann_esp_maf }}
+			<br>
+			{% endif %}
+			{% if variant.tac %} <b>esp tac:</b> {{ variant.tac }}
+			<br>
+			{% endif %}
+
+			{% if variant.hi_score_str %}
+			<br>
+			<b>Haploinsufficiency String:</b> {{ variant.hi_score_str }} <br>
+			<b>Haploinsufficiency Score:</b> {{ variant.hi_score }} <br>
+			<b>Haploinsufficiency Percentage:</b> {{ variant.hi_score_perc }}% <br>
+
+			{% endif %}
+			" data-original-title="Other Info">View More</a> -->
+			<a href="{% url 'variant_view' variant.id %}" class="btn btn-primary" target="_blank">View</a>
+			</td>
+			<td>{{ variant.individual }}</td>
+			<td>{{ variant.chr }}</td>
+			<td>{{ variant.variant_id }}
+			{% if variant.variant_id != "." %}
+			<br>
+			<a href="http://www.ncbi.nlm.nih.gov/snp/?term={{ variant.variant_id }}&SITE=NcbiHome&submit=Go">dbSNP</a>
+			<a href="https://www.ncbi.nlm.nih.gov/clinvar/?term={{ variant.variant_id }}">Clinvar</a>
+			</td>
+			{% endif %} <td>{{ variant.pos }}</td>
+			<td>{{ variant.qual }}</td>
+			<td>{{ variant.ref|truncatechars:5 }}</td>
+			<td>{{ variant.alt|truncatechars:5 }}</td>
+			<td>{{ variant.filter }}</td>
+			<td>{{ variant.genotype }}</td>
+			<td>{{ variant.read_depth }}</td>
+
+			<td>{{ variant.snpeff_effect }}</td>
+			<td>{{ variant.snpeff_impact }}</td>
+			<td>{{ variant.snpeff_func_class }}</td>
+			
+			<td>{{ variant.genomes1k_maf|floatformat:5|intcomma }}</td>
+			<td>{{ variant.dbsnp_maf|floatformat:5|intcomma }}</td>
+			<td>{{ variant.esp_maf|floatformat:5|intcomma }}</td>
+			
+			<td>{{ variant.sift|floatformat:2 }}</td>
+			<td>{{ variant.polyphen2|floatformat:2 }}</td>
+			<td>{{ variant.cadd|floatformat:2 }}</td>
+			<td>{{ variant.mcap_score|floatformat:2 }} {{ variant.mcap_rankscore }} {{ variant.mcap_pred }} </td>
+			<td> {{ variant.clinvar_rs }} {{ variant.clinvar_clnsig }} {{ variant.clinvar_trait }} {{ variant.clinvar_golden_stars }} </td>
+			<td> {{variant.hi_index_str}}</td>
+			
+			<!-- <td>{{ variant.rf_score|floatformat:2 }}</td>
+			<td>{{ variant.ada_score|floatformat:2 }}</td> -->
+
+		</tr>
+		{% endfor %}
+		{% endfor %}<!-- end grouping -->
+	</tbody>
+</table>

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{analysis.name}}</h1>
+
+<a href="{% url 'analysis-update' analysis.id %}">Edit Analysis</a>
+<a href="{% url 'analysis-run' analysis.id %}">Run Analysis</a>
+
+<div class="row">
+<div class="col-md-12">
+          <!-- Custom Tabs -->
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_1" data-toggle="tab">Summary</a></li>
+              <li><a href="#tab_2" data-toggle="tab">Tasks</a></li>
+              <li><a href="#tab_3" data-toggle="tab">Output Files</a></li>
+              <li><a href="#tab_4" data-toggle="tab">Files</a></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  Dropdown <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Input Files</a></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Output Files</a></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Tasks</a></li>
+                  <li role="presentation" class="divider"></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+                </ul>
+              </li>
+              <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_1">
+              {% include 'analyses/analysis_summary.html' %}
+              </div>
+              <div class="tab-pane" id="tab_2">
+				      {% include 'tasks/task_list.html' %}
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_3">
+                
+                {% with output_files as files %}     
+                  {% include 'files/file_list.html' %}
+                {% endwith %}
+
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_3">
+                {% include 'files/file_list.html' %}
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- nav-tabs-custom -->
+        </div>
+
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#files_select_all").change(function() {
+  $(".files:checkbox").attr('checked', this.checked);
+});
+$("#tasks_select_all").change(function() {
+  $(".tasks:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+       
+       // document.project_files.elements["action"].value = action;
+       document.getElementById("action").value = action;
+       document.getElementById("tasks_form").submit();
+
+  
+    }
+</script>
+
+{% endblock %}

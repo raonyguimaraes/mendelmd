@@ -1,31 +1,30 @@
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
-from django.http import HttpResponse
-
-from django.utils.text import slugify
-
-from django.views.generic import DeleteView
-from django.contrib import messages
-
-
-from django.contrib.auth.decorators import login_required
-
-from individuals.forms import *
-from individuals.models import *
-from variants.models import *
-
-from individuals.tasks import *
-
-from django.db.models import Count, Sum, Avg, Min, Max
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.template import RequestContext
-from django.db.models import Q
+import gzip
+import json
+import os
 
 from django.conf import settings
-
-import os
-import json
-import gzip
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
+from django.db.models import Avg
+from django.db.models import Count
+from django.db.models import Max
+from django.db.models import Min
+from django.db.models import Q
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.template import RequestContext
+from django.utils.text import slugify
+from django.views.generic import DeleteView
+from individuals.forms import IndividualForm, ComparisonForm, GroupForm, BrowserForm
+from individuals.models import Individual, Group
+from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
+from variants.models import Variant
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
@@ -40,22 +39,22 @@ class JSONResponse(HttpResponse):
         content = json.dumps(obj,**json_opts)
         super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
 
-# Create your views here.
 def create(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
-        # print('entrou no create!')
+        
         if form.is_valid():
             
-            # print('form is valid!')
-
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
                 individual = Individual.objects.create(user=None, status='new')
 
             individual.vcf_file= request.FILES.get('file')
-            #request.FILES.get('file')
+            
+            print('file')
+            print(request.FILES.get('file'))
+
             filename = individual.vcf_file.name.split('.')
             new_filename = [] 
             for tag in filename:
@@ -63,12 +62,14 @@ def create(request):
 
             individual.vcf_file.name = ".".join(new_filename)
 
-            # print('filename ', filename)
+            print('filename ', filename)
 
             #get name from inside vcf file
             individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
 
-            individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+            # individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+
+            individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
             
             individual.save()
             
@@ -77,14 +78,13 @@ def create(request):
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, individual.user), 0777)
 
-            if request.user.is_authenticated():
+            #if request.user.is_authenticated:
 
-                os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
-            else:
-                os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
+            #    os.chmod("%s/genomes/%s/%s" % (settings.BASE_DIR, slugify(individual.user), individual.id), 0o777)
+            #else:
+            #    os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             # AnnotateVariants.delay(individual.id)
-            
             VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
@@ -318,10 +318,11 @@ def browse(request, individual_id):
        # If page is out of range (e.g. 9999), deliver last page of results.
        variants = paginator.page(paginator.num_pages)
     
-    return render(request, 'variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string})
+    return render(request, 'variants/variants.html', {'individual': individual, 'variants':variants, 'form':form, 'query_string':query_string})
 
 @login_required
 def list(request):
+
     if request.method == 'POST':
         individuals = request.POST.getlist('individuals')
         print(individuals) 
@@ -375,23 +376,27 @@ def list(request):
     args = []
     # groups = Groups.objects.filter(user=request.user, shared_with_users=).order_by("-id")
     args.append(Q(user=request.user) | Q(shared_with_users=request.user) | Q(shared_with_groups__members=request.user))
-    individuals = Individual.objects.filter(*args).order_by("-id")
+    
+    if request.user.is_staff:
+        individuals = Individual.objects.all()
+    else:
+        individuals = Individual.objects.filter(*args).order_by("-id")
     
     ind_featured = Individual.objects.filter(is_featured= True).order_by("id")
-    paginator = Paginator(individuals, 25) # Show 25 contacts per page
+    # paginator = Paginator(individuals, 25) # Show 25 contacts per page
            
-    try:
-       page = int(request.GET.get('page', '1'))
-    except ValueError:
-       page = 1
-    try:
-       individuals = paginator.page(page)
-    except PageNotAnInteger:
-       # If page is not an integer, deliver first page.
-       individuals = paginator.page(1)
-    except EmptyPage:
-       # If page is out of range (e.g. 9999), deliver last page of results.
-       individuals = paginator.page(paginator.num_pages)
+    # try:
+    #    page = int(request.GET.get('page', '1'))
+    # except ValueError:
+    #    page = 1
+    # try:
+    #    individuals = paginator.page(page)
+    # except PageNotAnInteger:
+    #    # If page is not an integer, deliver first page.
+    #    individuals = paginator.page(1)
+    # except EmptyPage:
+    #    # If page is out of range (e.g. 9999), deliver last page of results.
+    #    individuals = paginator.page(paginator.num_pages)
 
 
 
@@ -407,7 +412,7 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    AnnotateVariants.delay(individual.id)
+    VerifyVCF.delay(individual.id)
     individual.save()
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
@@ -524,7 +529,6 @@ class GroupDeleteView(DeleteView):
 
 
 def comparison(request):
-#    group = get_object_or_404(Group, pk=group_id)
     query = {}
     summary = {}
     variants = []

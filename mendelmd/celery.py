@@ -15,16 +15,18 @@ app = Celery('mendelmd')
 # pickle the object when using Windows.
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+# app.conf.broker_transport_options = {'visibility_timeout': 43200}
 
-
-app.conf.update(
-    CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
-)
+# app.conf.update(
+#     CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
+# )
 
 app.conf.update(
     CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend',
 )
+app.conf.timezone = 'UTC'
 
 @app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
+

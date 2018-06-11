@@ -1,7 +1,25 @@
-{% extends "dashboard.html" %}
+{% extends "base.html" %}
+{% load static i18n %}
+{% load pagination_tags %}
+
 
 {% block content %}
-<h1 class="page-header">Dashboard</h1>
+<!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Dashboard
+        <small>Control panel</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- Small boxes (Stat box) -->
+      <div class="row">
 
 <a href="{% url 'individual_create' %}">
     <button type="button" class="btn btn-lg btn-primary">Upload VCF File</button>
@@ -37,6 +55,11 @@
 
     <h2 class="sub-header">Individuals</h2>
     Showing {{ n_individuals }} individuals
+    <br>
+    {% with objects=individuals %}
+    {% include  "pagination.html" %}
+    {% endwith %}
+
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -109,6 +132,14 @@
 
             </tbody>
         </table>
+
+        {% with objects=individuals %}
+        {% include  "pagination.html" %}
+        {% endwith %}
 </form>
 
+
+    </section>
+    <!-- /.content -->
 {% endblock %}
+

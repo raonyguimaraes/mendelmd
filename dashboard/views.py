@@ -24,14 +24,14 @@ def index(request):
             individuals = Individual.objects.filter(status=status).order_by('-id')
         else:
             individuals = Individual.objects.all().order_by('-id')
-    elif request.user.is_authenticated():
+    elif request.user.is_authenticated:
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
         individuals = Individual.objects.filter(user=None).order_by('-id')
 
     n_individuals = individuals.count()
 
-    paginator = Paginator(individuals, 25) # Show 25 contacts per page
+    paginator = Paginator(individuals, 1000) # Show 25 contacts per page
 
     page = request.GET.get('page')
 

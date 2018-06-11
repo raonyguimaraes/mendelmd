@@ -12,17 +12,20 @@ from django.views.generic import CreateView, DeleteView
 
 from individuals.models import Individual
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
 @login_required
 def cases_list(request):
-    print('Hello')
-    cases = Case.objects.all().order_by('id')
 
-    # latest_cases_list = Question.objects.all().order_by('-pub_date')[:5]
+    if request.user.is_staff:
+        cases = Case.objects.all().order_by('id')
+    else:
+        cases = Case.objects.filter(user=request.user).order_by('id')
+
     context = {'cases': cases}
 
     return render(request, 'cases/list.html', context)
@@ -32,8 +35,7 @@ def cases_list(request):
 def create_case(request):
     if request.method == 'POST':
         form = CaseForm(request.POST, request.FILES)        
-        if form.is_valid():
-            # form.save()
+        if form.is_valid():            
             case = form.save(commit=False)
             case.user = request.user
             case.save()
@@ -42,13 +44,20 @@ def create_case(request):
     else:
         form = CaseForm()
     return render(request, 'cases/new.html', {'form': form})
+
 @login_required
 def view_case(request, case_id):
-    case = get_object_or_404(Case, pk=case_id)
+
+    if request.user.is_staff:
+        case = get_object_or_404(Case, pk=case_id)
+    else:
+        case = get_object_or_404(Case, pk=case_id, user=request.user)
+
     return render(request, 'cases/view.html', {'case': case})
 
 
-class CaseDeleteView(DeleteView):
+class CaseDeleteView(LoginRequiredMixin, DeleteView):
+
     model = Case
 
     def delete(self, request, *args, **kwargs):
@@ -58,18 +67,25 @@ class CaseDeleteView(DeleteView):
         """
         self.object = self.get_object()
         
-        #username = self.object.user.username
-        
         self.object.delete()
         messages.add_message(request, messages.INFO, "Case deleted with success!")
         return redirect('cases_list')
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return self.model.objects.filter(user=self.request.user)
+        else:
+            return self.model.objects
 
 
     
 @login_required
 def edit(request, case_id):
     
-    case = get_object_or_404(Case, pk=case_id)
+    if request.user.is_staff:
+        case = get_object_or_404(Case, pk=case_id)
+    else:
+        case = get_object_or_404(Case, pk=case_id, user=request.user)
+
         
     if request.method == 'POST':
         form = CaseForm(request.POST, request.FILES, instance=case)        
@@ -93,9 +109,14 @@ def edit(request, case_id):
         form = CaseForm(instance=case)
     return render(request, 'cases/edit.html', {'form': form})
 
+@login_required
 def analysis(request, case_id, analysis, inheritance):
     
-    case = get_object_or_404(Case, pk=case_id)
+    if request.user.is_staff:
+        case = get_object_or_404(Case, pk=case_id)
+    else:
+        case = get_object_or_404(Case, pk=case_id, user=request.user)
+        
     query_string = []
     query_string.append('variants_per_gene=')
 
@@ -187,19 +208,3 @@ def analysis(request, case_id, analysis, inheritance):
         url_redirect = 'pathway_filter_analysis'
     
     return redirect(reverse(url_redirect)+'?'+filterstring)
-
-
-    
-
-            #oFormObject.elements["mutation_type"][1].selected = true;
-            # oFormObject.elements["genes_in_common"].checked = true;
-            # oFormObject.elements["read_depth_option"][1].selected = true;
-            # oFormObject.elements["read_depth"].value = '10';
-            # oFormObject.elements["impact"][1].selected = true;
-            # oFormObject.elements["impact"][0].selected = true;
-            # oFormObject.elements["dbsnp_option"].value = '>';
-            # oFormObject.elements["dbsnp_build"].value = '130';
-            # oFormObject.elements["genomes1000"].value = '0 - 0.005';
-            # oFormObject.elements["dbsnp_frequency"].value = '0 - 0.005';
-            # oFormObject.elements["esp_frequency"].value = '0 - 0.005';
-

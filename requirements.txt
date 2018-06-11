@@ -1,5 +1,6 @@
+wheel
 Django
-psycopg2
+psycopg2-binary
 django-allauth
 django-debug-toolbar
 django-crispy-forms
@@ -9,8 +10,13 @@ Fabric3
 pysam
 pynnotator
 pyvcf
-celery<4.0
-django-celery>=3.1.15
+celery
+django-celery
+django-celery-results
 django-appconf
 gunicorn
 boto3
+django-formtools
+dj-database-url
+django-gravatar2
+django-storages
