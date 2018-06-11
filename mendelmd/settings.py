@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     'cases',
     'filter_analysis',
     'pathway_analysis',
-    'statistics',
+    # 'statistics',
     'databases',
     'projects',
     'files',
