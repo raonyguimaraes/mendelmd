@@ -35,7 +35,7 @@ import vcf
 
 from datetime import timedelta
 from django.template.defaultfilters import slugify
-
+import pandas as pd
 
 @shared_task()
 def clean_individuals():
@@ -234,7 +234,7 @@ Now we need to insert this data to the database.
 
         #zip, and delete annotation folder
 
-        command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
+        command = 'zip annotation.final.csv.zip ann_sample/annotation.final.csv'
         os.system(command)
 
         PopulateVariants.delay(individual.id)
@@ -618,9 +618,9 @@ def PopulateVariants(individual_id):
 
     #delete variants from individual before inserting
     individual = get_object_or_404(Individual, pk=individual_id)
-    Variant.objects.filter(individual=individual).delete()
-    #SnpeffAnnotation.objects.filter(individual=individual).delete()
-    #VEPAnnotation.objects.filter(individual=individual).delete()
+    # Variant.objects.filter(individual=individual).delete()
+    # SnpeffAnnotation.objects.filter(individual=individual).delete()
+    # VEPAnnotation.objects.filter(individual=individual).delete()
 
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
@@ -633,9 +633,9 @@ def PopulateVariants(individual_id):
     #gzip. and .gz
     # data = open('%s/%s/ann_sample/annotation.final.vcf' % (path, filepath), 'r')
 
-    z = zipfile.ZipFile('%s/annotation.final.vcf.zip' % (filepath), 'r')
-    data = z.open('ann_sample/annotation.final.vcf', 'r')
-
+    # z = zipfile.ZipFile('%s/annotation.final.csv.zip' % (filepath), 'r')
+    # data = z.open('ann_sample/annotation.final.csv', 'r')
+    data = pd.read_csv('%s/annotation.final.csv.zip' % (filepath))
     #print 'Populating from file %s.fullannotation.vcf' % (basename)
 
 
@@ -649,217 +649,257 @@ def PopulateVariants(individual_id):
     snpeff_dict = {}
     vep_dict = {}
 
-    for line in data:
-        # print(line)
-        line = line.decode("utf-8", "ignore")
+    indexes = []
+
+    for index, row in data.iterrows():
+
+        variant = {}
+        variant['genotype_col'] = row[-1].split(':')
+
+        variant['genotype'] = variant['genotype_col'][0]
+        
+        # print(index, row)
+        genotype_list = []
+        genotype_list.append(row['REF'])
+        for item in row['ALT'].split(','):
+            genotype_list.append(item)
+
+        #create individual genotype list
+        ind_genotype_list = []
+        if len(variant['genotype']) > 1:
+            if variant['genotype'][0] != '.':
+                ind_genotype_list.append(genotype_list[int(variant['genotype'][0])])
+            else:
+                ind_genotype_list.append(genotype_list[0])
+            if variant['genotype'][-1] != '.':
+                ind_genotype_list.append(genotype_list[int(variant['genotype'][-1])])
+            else:
+                ind_genotype_list.append(genotype_list[1])
+
+        else:
+            ind_genotype_list.append(genotype_list[0])
+        ind_genotype_list = sorted(ind_genotype_list)
+
+        index = '%s-%s-%s' % (row['#CHROM'], row['POS'], "-".join(ind_genotype_list))
+        indexes.append(index)
+
+    print(len(indexes))
+    variant_indexes = Variant.objects.filter(index_b37__in=indexes).values_list('index_b37', flat=True)
+    print(variant_indexes)
+    differences = set(indexes).difference(set(variant_indexes))
+    for index in differences: 
+        variant = Variant(index_b37=index)
+
+        # die()
+        # line = line.decode("utf-8", "ignore")
         # print(line)
         # print('Hello')
-        if line != '':
-            if not line.startswith('#'):
+        # if line != '':
+        #     if not line.startswith('#'):
 
-                count += 1
-                count2 += 1
+                # count += 1
+                # count2 += 1
 
-                #bulk insert variants objects
-                if count == 10000:
-                    # print "Inserting %s " % (count2),
-                    Variant.objects.bulk_create(variants)
-                    # print ' Done!'
-                    count = 0
-                    variants = []
+                # #bulk insert variants objects
+                # if count == 10000:
+                #     # print "Inserting %s " % (count2),
+                #     Variant.objects.bulk_create(variants)
+                #     # print ' Done!'
+                #     count = 0
+                #     variants = []
 
                 #now parse
-                variant = parse_vcf(line)
+                # variant = parse_vcf(line)
                 #print(variant)
                 #variant_dict['individual_id'] = individual.id
                 # print 'index', variant
                 # variant.snpeff.add(snpeff)
-                variant_obj = Variant(
-                individual=individual,
-                index=variant['index'],
-                pos_index=variant['pos_index'],
-                chr=variant['chr'],
-                pos=variant['pos'],
-                variant_id=variant['variant_id'],
-                ref=variant['ref'],
-                alt=variant['alt'],
-                qual=variant['qual'],
-                filter=variant['filter'],
-                info=variant['info'],
-                genotype=variant['genotype'],
-                genotype_col=variant['genotype_col'],
-                format=variant['format'],
-                read_depth=variant['read_depth'],
-                gene=variant['gene'],
-                mutation_type=variant['mutation_type'],
-                vartype=variant['vartype'],
-                genomes1k_maf=variant['1000Gp3_AF'],
-                dbsnp_maf=variant['dbsnp.MAF'],
-                esp_maf=variant['esp6500.MAF'],
-                dbsnp_build=variant['dbsnp_build'],
-                sift=variant['sift'],
-                sift_pred=variant['sift_pred'],
-                polyphen2=variant['polyphen2'],
-                polyphen2_pred=variant['polyphen2_pred'],
-                # condel=variant['condel'],
-                # condel_pred=variant['condel_pred'],
-                cadd=variant['cadd'],
-                # dann=variant['dann'],
-                is_at_omim=variant['is_at_omim'],
-                is_at_hgmd=variant['is_at_hgmd'],
-                hgmd_entries=variant['hgmd_entries'],
-                hi_index_str=variant['hi_index_str'],
-                )
+                # variant_obj = Variant(
+                # individual=individual,
+                # index=variant['index'],
+                # pos_index=variant['pos_index'],
+                # chr=variant['chr'],
+                # pos=variant['pos'],
+                # variant_id=variant['variant_id'],
+                # ref=variant['ref'],
+                # alt=variant['alt'],
+                # qual=variant['qual'],
+                # filter=variant['filter'],
+                # info=variant['info'],
+                # genotype=variant['genotype'],
+                # genotype_col=variant['genotype_col'],
+                # format=variant['format'],
+                # read_depth=variant['read_depth'],
+                # gene=variant['gene'],
+                # mutation_type=variant['mutation_type'],
+                # vartype=variant['vartype'],
+                # genomes1k_maf=variant['1000Gp3_AF'],
+                # dbsnp_maf=variant['dbsnp.MAF'],
+                # esp_maf=variant['esp6500.MAF'],
+                # dbsnp_build=variant['dbsnp_build'],
+                # sift=variant['sift'],
+                # sift_pred=variant['sift_pred'],
+                # polyphen2=variant['polyphen2'],
+                # polyphen2_pred=variant['polyphen2_pred'],
+                # # condel=variant['condel'],
+                # # condel_pred=variant['condel_pred'],
+                # cadd=variant['cadd'],
+                # # dann=variant['dann'],
+                # is_at_omim=variant['is_at_omim'],
+                # is_at_hgmd=variant['is_at_hgmd'],
+                # hgmd_entries=variant['hgmd_entries'],
+                # hi_index_str=variant['hi_index_str'],
+                # )
 
-                # print variant['index']
-                # variant_obj.save()
-                #parse snpeff
+                # # print variant['index']
+                # # variant_obj.save()
+                # #parse snpeff
 
-                if 'snpeff' in variant:
-                    #for snpeff in variant['snpeff']:
-                        #snpeff = SnpeffAnnotation(
-                    variant_obj.snpeff_allele = variant['snpeff'][0]['snpeff_allele']
-                    variant_obj.snpeff_effect = variant['snpeff'][0]['snpeff_effect']
-                    variant_obj.snpeff_impact = variant['snpeff'][0]['snpeff_impact']
-                    variant_obj.snpeff_gene_name = variant['snpeff'][0]['snpeff_gene_name']
-                    variant_obj.snpeff_gene_id = variant['snpeff'][0]['snpeff_gene_id']
-                    variant_obj.snpeff_feature_type = variant['snpeff'][0]['snpeff_feature_type']
-                    variant_obj.snpeff_feature_id = variant['snpeff'][0]['snpeff_feature_id']
-                    variant_obj.snpeff_transcript_biotype = variant['snpeff'][0]['snpeff_transcript_biotype']
-                    variant_obj.snpeff_rank = variant['snpeff'][0]['snpeff_rank']
-                    variant_obj.snpeff_hgvs_c = variant['snpeff'][0]['snpeff_hgvs_c']
-                    variant_obj.snpeff_hgvs_p = variant['snpeff'][0]['snpeff_hgvs_p']
-                    variant_obj.snpeff_cdna_pos_cdna_len = variant['snpeff'][0]['snpeff_cdna_pos_cdna_len']
-                    variant_obj.snpeff_aa_pos_aa_len = variant['snpeff'][0]['snpeff_aa_pos_aa_len']
-                    variant_obj.snpeff_distance = variant['snpeff'][0]['snpeff_distance']
-                    variant_obj.snpeff_errors_warnings_info = variant['snpeff'][0]['snpeff_errors_warnings_info']
+                # if 'snpeff' in variant:
+                #     #for snpeff in variant['snpeff']:
+                #         #snpeff = SnpeffAnnotation(
+                #     variant_obj.snpeff_allele = variant['snpeff'][0]['snpeff_allele']
+                #     variant_obj.snpeff_effect = variant['snpeff'][0]['snpeff_effect']
+                #     variant_obj.snpeff_impact = variant['snpeff'][0]['snpeff_impact']
+                #     variant_obj.snpeff_gene_name = variant['snpeff'][0]['snpeff_gene_name']
+                #     variant_obj.snpeff_gene_id = variant['snpeff'][0]['snpeff_gene_id']
+                #     variant_obj.snpeff_feature_type = variant['snpeff'][0]['snpeff_feature_type']
+                #     variant_obj.snpeff_feature_id = variant['snpeff'][0]['snpeff_feature_id']
+                #     variant_obj.snpeff_transcript_biotype = variant['snpeff'][0]['snpeff_transcript_biotype']
+                #     variant_obj.snpeff_rank = variant['snpeff'][0]['snpeff_rank']
+                #     variant_obj.snpeff_hgvs_c = variant['snpeff'][0]['snpeff_hgvs_c']
+                #     variant_obj.snpeff_hgvs_p = variant['snpeff'][0]['snpeff_hgvs_p']
+                #     variant_obj.snpeff_cdna_pos_cdna_len = variant['snpeff'][0]['snpeff_cdna_pos_cdna_len']
+                #     variant_obj.snpeff_aa_pos_aa_len = variant['snpeff'][0]['snpeff_aa_pos_aa_len']
+                #     variant_obj.snpeff_distance = variant['snpeff'][0]['snpeff_distance']
+                #     variant_obj.snpeff_errors_warnings_info = variant['snpeff'][0]['snpeff_errors_warnings_info']
 
-                    #snpeff_dict[variant['index']] = snpeff
+                #     #snpeff_dict[variant['index']] = snpeff
 
-                #parse vep
-                if 'vep' in variant:
-                    #vep = VEPAnnotation(
-                    variant_obj.vep_allele=variant['vep']['Allele']
-                    variant_obj.vep_gene=variant['vep']['Gene']
-                    variant_obj.vep_feature=variant['vep']['Feature']
-                    variant_obj.vep_feature_type=variant['vep']['Feature_type']
-                    variant_obj.vep_consequence=variant['vep']['Consequence']
-                    variant_obj.vep_cdna_position=variant['vep']['cDNA_position']
-                    variant_obj.vep_cds_position=variant['vep']['CDS_position']
-                    variant_obj.vep_protein_position=variant['vep']['Protein_position']
-                    variant_obj.vep_amino_acids=variant['vep']['Amino_acids']
-                    variant_obj.vep_codons=variant['vep']['Codons']
-                    variant_obj.vep_existing_variation=variant['vep']['Existing_variation']
-                    variant_obj.vep_distance=variant['vep']['DISTANCE']
-                    variant_obj.vep_strand=variant['vep']['STRAND']
-                    variant_obj.vep_symbol=variant['vep']['SYMBOL']
-                    variant_obj.vep_symbol_source=variant['vep']['SYMBOL_SOURCE']
-                    variant_obj.vep_sift=variant['vep']['sift']
-                    variant_obj.vep_polyphen=variant['vep']['polyphen2']
-                    # variant_obj.vep_condel=variant['vep']['condel']
-                    # variant_obj.rf_score=variant['vep']['rf_score']
-                    # variant_obj.ada_score=variant['vep']['ada_score']
+                # #parse vep
+                # if 'vep' in variant:
+                #     #vep = VEPAnnotation(
+                #     variant_obj.vep_allele=variant['vep']['Allele']
+                #     variant_obj.vep_gene=variant['vep']['Gene']
+                #     variant_obj.vep_feature=variant['vep']['Feature']
+                #     variant_obj.vep_feature_type=variant['vep']['Feature_type']
+                #     variant_obj.vep_consequence=variant['vep']['Consequence']
+                #     variant_obj.vep_cdna_position=variant['vep']['cDNA_position']
+                #     variant_obj.vep_cds_position=variant['vep']['CDS_position']
+                #     variant_obj.vep_protein_position=variant['vep']['Protein_position']
+                #     variant_obj.vep_amino_acids=variant['vep']['Amino_acids']
+                #     variant_obj.vep_codons=variant['vep']['Codons']
+                #     variant_obj.vep_existing_variation=variant['vep']['Existing_variation']
+                #     variant_obj.vep_distance=variant['vep']['DISTANCE']
+                #     variant_obj.vep_strand=variant['vep']['STRAND']
+                #     variant_obj.vep_symbol=variant['vep']['SYMBOL']
+                #     variant_obj.vep_symbol_source=variant['vep']['SYMBOL_SOURCE']
+                #     variant_obj.vep_sift=variant['vep']['sift']
+                #     variant_obj.vep_polyphen=variant['vep']['polyphen2']
+                #     # variant_obj.vep_condel=variant['vep']['condel']
+                #     # variant_obj.rf_score=variant['vep']['rf_score']
+                #     # variant_obj.ada_score=variant['vep']['ada_score']
 
-                    #)
-                    #vep_dict[variant['index']] = vep
+                #     #)
+                #     #vep_dict[variant['index']] = vep
 
-                if 'dbNSFP' in variant:
+                # if 'dbNSFP' in variant:
 
-                    variant_obj.SIFT_score = variant['dbNSFP']['dbNSFP_SIFT_score']
-                    variant_obj.SIFT_converted_rankscore = variant['dbNSFP']['dbNSFP_SIFT_converted_rankscore']
-                    variant_obj.SIFT_pred = variant['dbNSFP']['dbNSFP_SIFT_pred']
-                    variant_obj.Uniprot_acc_Polyphen2 = variant['dbNSFP']['dbNSFP_Uniprot_acc_Polyphen2']
-                    variant_obj.Uniprot_id_Polyphen2 = variant['dbNSFP']['dbNSFP_Uniprot_id_Polyphen2']
-                    variant_obj.Uniprot_aapos_Polyphen2 = variant['dbNSFP']['dbNSFP_Uniprot_aapos_Polyphen2']
-                    variant_obj.Polyphen2_HDIV_score = variant['dbNSFP']['dbNSFP_Polyphen2_HDIV_score']
-                    variant_obj.Polyphen2_HDIV_rankscore = variant['dbNSFP']['dbNSFP_Polyphen2_HDIV_rankscore']
-                    variant_obj.Polyphen2_HDIV_pred = variant['dbNSFP']['dbNSFP_Polyphen2_HDIV_pred']
-                    variant_obj.Polyphen2_HVAR_score = variant['dbNSFP']['dbNSFP_Polyphen2_HVAR_score']
-                    variant_obj.Polyphen2_HVAR_rankscore = variant['dbNSFP']['dbNSFP_Polyphen2_HVAR_rankscore']
-                    variant_obj.Polyphen2_HVAR_pred = variant['dbNSFP']['dbNSFP_Polyphen2_HVAR_pred']
-                    variant_obj.LRT_score = variant['dbNSFP']['dbNSFP_LRT_score']
-                    variant_obj.LRT_converted_rankscore = variant['dbNSFP']['dbNSFP_LRT_converted_rankscore']
-                    variant_obj.LRT_pred = variant['dbNSFP']['dbNSFP_LRT_pred']
-                    variant_obj.LRT_Omega = variant['dbNSFP']['dbNSFP_LRT_Omega']
-                    variant_obj.MutationTaster_score = variant['dbNSFP']['dbNSFP_MutationTaster_score']
-                    variant_obj.MutationTaster_converted_rankscore = variant['dbNSFP']['dbNSFP_MutationTaster_converted_rankscore']
-                    variant_obj.MutationTaster_pred = variant['dbNSFP']['dbNSFP_MutationTaster_pred']
-                    variant_obj.MutationTaster_model = variant['dbNSFP']['dbNSFP_MutationTaster_model']
-                    variant_obj.MutationTaster_AAE = variant['dbNSFP']['dbNSFP_MutationTaster_AAE']
-                    variant_obj.MutationAssessor_UniprotID = variant['dbNSFP']['dbNSFP_MutationAssessor_UniprotID']
-                    variant_obj.MutationAssessor_variant = variant['dbNSFP']['dbNSFP_MutationAssessor_variant']
-                    variant_obj.MutationAssessor_score = variant['dbNSFP']['dbNSFP_MutationAssessor_score']
-                    variant_obj.MutationAssessor_rankscore = variant['dbNSFP']['dbNSFP_MutationAssessor_rankscore']
-                    variant_obj.MutationAssessor_pred = variant['dbNSFP']['dbNSFP_MutationAssessor_pred']
-                    variant_obj.FATHMM_score = variant['dbNSFP']['dbNSFP_FATHMM_score']
-                    variant_obj.FATHMM_converted_rankscore = variant['dbNSFP']['dbNSFP_FATHMM_converted_rankscore']
-                    variant_obj.FATHMM_pred = variant['dbNSFP']['dbNSFP_FATHMM_pred']
-                    variant_obj.PROVEAN_score = variant['dbNSFP']['dbNSFP_PROVEAN_score']
-                    variant_obj.PROVEAN_converted_rankscore = variant['dbNSFP']['dbNSFP_PROVEAN_converted_rankscore']
-                    variant_obj.PROVEAN_pred = variant['dbNSFP']['dbNSFP_PROVEAN_pred']
-                    variant_obj.Transcript_id_VEST3 = variant['dbNSFP']['dbNSFP_Transcript_id_VEST3']
-                    variant_obj.Transcript_var_VEST3 = variant['dbNSFP']['dbNSFP_Transcript_var_VEST3']
-                    variant_obj.VEST3_score = variant['dbNSFP']['dbNSFP_VEST3_score']
-                    variant_obj.VEST3_rankscore = variant['dbNSFP']['dbNSFP_VEST3_rankscore']
-                    variant_obj.MetaSVM_score = variant['dbNSFP']['dbNSFP_MetaSVM_score']
-                    variant_obj.MetaSVM_rankscore = variant['dbNSFP']['dbNSFP_MetaSVM_rankscore']
-                    variant_obj.MetaSVM_pred = variant['dbNSFP']['dbNSFP_MetaSVM_pred']
-                    variant_obj.MetaLR_score = variant['dbNSFP']['dbNSFP_MetaLR_score']
-                    variant_obj.MetaLR_rankscore = variant['dbNSFP']['dbNSFP_MetaLR_rankscore']
-                    variant_obj.MetaLR_pred = variant['dbNSFP']['dbNSFP_MetaLR_pred']
-                    variant_obj.Reliability_index = variant['dbNSFP']['dbNSFP_Reliability_index']
-                    variant_obj.CADD_raw = variant['dbNSFP']['dbNSFP_CADD_raw']
-                    variant_obj.CADD_raw_rankscore = variant['dbNSFP']['dbNSFP_CADD_raw_rankscore']
-                    variant_obj.CADD_phred = variant['dbNSFP']['dbNSFP_CADD_phred']
-                    variant_obj.DANN_score = variant['dbNSFP']['dbNSFP_DANN_score']
-                    variant_obj.DANN_rankscore = variant['dbNSFP']['dbNSFP_DANN_rankscore']
-                    variant_obj.fathmm_MKL_coding_score = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_score']
-                    variant_obj.fathmm_MKL_coding_rankscore = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_rankscore']
-                    variant_obj.fathmm_MKL_coding_pred = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_pred']
-                    variant_obj.fathmm_MKL_coding_group = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_group']
-                    variant_obj.Eigen_raw = variant['dbNSFP']['dbNSFP_Eigen-raw']
-                    variant_obj.Eigen_phred = variant['dbNSFP']['dbNSFP_Eigen-phred']
-                    # variant_obj.Eigen_raw_rankscore = variant['dbNSFP']['dbNSFP_Eigen-raw_rankscore']
-                    variant_obj.Eigen_PC_raw = variant['dbNSFP']['dbNSFP_Eigen-PC-raw']
-                    variant_obj.Eigen_PC_raw_rankscore = variant['dbNSFP']['dbNSFP_Eigen-PC-raw_rankscore']
-                    variant_obj.GenoCanyon_score = variant['dbNSFP']['dbNSFP_GenoCanyon_score']
-                    variant_obj.GenoCanyon_score_rankscore = variant['dbNSFP']['dbNSFP_GenoCanyon_score_rankscore']
-                    variant_obj.integrated_fitCons_score = variant['dbNSFP']['dbNSFP_integrated_fitCons_score']
-                    variant_obj.integrated_fitCons_rankscore = variant['dbNSFP']['dbNSFP_integrated_fitCons_rankscore']
-                    variant_obj.integrated_confidence_value = variant['dbNSFP']['dbNSFP_integrated_confidence_value']
-                    variant_obj.GM12878_fitCons_score = variant['dbNSFP']['dbNSFP_GM12878_fitCons_score']
-                    variant_obj.GM12878_fitCons_rankscore = variant['dbNSFP']['dbNSFP_GM12878_fitCons_rankscore']
-                    variant_obj.GM12878_confidence_value = variant['dbNSFP']['dbNSFP_GM12878_confidence_value']
-                    variant_obj.H1_hESC_fitCons_score = variant['dbNSFP']['dbNSFP_H1-hESC_fitCons_score']
-                    variant_obj.H1_hESC_fitCons_rankscore = variant['dbNSFP']['dbNSFP_H1-hESC_fitCons_rankscore']
-                    variant_obj.H1_hESC_confidence_value = variant['dbNSFP']['dbNSFP_H1-hESC_confidence_value']
-                    variant_obj.HUVEC_fitCons_score = variant['dbNSFP']['dbNSFP_HUVEC_fitCons_score']
-                    variant_obj.HUVEC_fitCons_rankscore = variant['dbNSFP']['dbNSFP_HUVEC_fitCons_rankscore']
-                    # variant_obj.HUVEC_confidence_value = variant['dbNSFP']['dbNSFP_HUVEC_confidence_value']
-                    # variant_obj.GERP_NR = variant['dbNSFP']['dbNSFP_GERP++_NR']
-                    # variant_obj.GERP_RS = variant['dbNSFP']['dbNSFP_GERP++_RS']
-                    # variant_obj.GERP_RS_rankscore = variant['dbNSFP']['dbNSFP_GERP++_RS_rankscore']
-                    # variant_obj.phyloP100way_vertebrate = variant['dbNSFP']['dbNSFP_phyloP100way_vertebrate']
-                    # variant_obj.phyloP100way_vertebrate_rankscore = variant['dbNSFP']['dbNSFP_phyloP100way_vertebrate_rankscore']
-                    # variant_obj.phyloP20way_mammalian = variant['dbNSFP']['dbNSFP_phyloP20way_mammalian']
-                    # variant_obj.phyloP20way_mammalian_rankscore = variant['dbNSFP']['dbNSFP_phyloP20way_mammalian_rankscore']
-                    # variant_obj.phastCons100way_vertebrate = variant['dbNSFP']['dbNSFP_phastCons100way_vertebrate']
-                    # variant_obj.phastCons100way_vertebrate_rankscore = variant['dbNSFP']['dbNSFP_phastCons100way_vertebrate_rankscore']
-                    # variant_obj.phastCons20way_mammalian = variant['dbNSFP']['dbNSFP_phastCons20way_mammalian']
-                    # variant_obj.phastCons20way_mammalian_rankscore = variant['dbNSFP']['dbNSFP_phastCons20way_mammalian_rankscore']
-                    # variant_obj.SiPhy_29way_pi = variant['dbNSFP']['dbNSFP_SiPhy_29way_pi']
-                    # variant_obj.SiPhy_29way_logOdds = variant['dbNSFP']['dbNSFP_SiPhy_29way_logOdds']
-                    # variant_obj.SiPhy_29way_logOdds_rankscore = variant['dbNSFP']['dbNSFP_SiPhy_29way_logOdds_rankscore']
-                    variant_obj.clinvar_rs = variant['dbNSFP']['dbNSFP_clinvar_rs']
-                    variant_obj.clinvar_clnsig = variant['dbNSFP']['dbNSFP_clinvar_clnsig']
-                    variant_obj.clinvar_trait = variant['dbNSFP']['dbNSFP_clinvar_trait']
-                    variant_obj.clinvar_golden_stars = variant['dbNSFP']['dbNSFP_clinvar_golden_stars']
-                    variant_obj.mcap_score = variant['mcap']
-                    variant_obj.mcap_rankscore = variant['dbNSFP']['dbNSFP_M-CAP_rankscore']
-                    variant_obj.mcap_pred = variant['dbNSFP']['dbNSFP_M-CAP_pred']
-                    variant_obj.revel_score = variant['dbNSFP']['dbNSFP_REVEL_score']
+                #     variant_obj.SIFT_score = variant['dbNSFP']['dbNSFP_SIFT_score']
+                #     variant_obj.SIFT_converted_rankscore = variant['dbNSFP']['dbNSFP_SIFT_converted_rankscore']
+                #     variant_obj.SIFT_pred = variant['dbNSFP']['dbNSFP_SIFT_pred']
+                #     variant_obj.Uniprot_acc_Polyphen2 = variant['dbNSFP']['dbNSFP_Uniprot_acc_Polyphen2']
+                #     variant_obj.Uniprot_id_Polyphen2 = variant['dbNSFP']['dbNSFP_Uniprot_id_Polyphen2']
+                #     variant_obj.Uniprot_aapos_Polyphen2 = variant['dbNSFP']['dbNSFP_Uniprot_aapos_Polyphen2']
+                #     variant_obj.Polyphen2_HDIV_score = variant['dbNSFP']['dbNSFP_Polyphen2_HDIV_score']
+                #     variant_obj.Polyphen2_HDIV_rankscore = variant['dbNSFP']['dbNSFP_Polyphen2_HDIV_rankscore']
+                #     variant_obj.Polyphen2_HDIV_pred = variant['dbNSFP']['dbNSFP_Polyphen2_HDIV_pred']
+                #     variant_obj.Polyphen2_HVAR_score = variant['dbNSFP']['dbNSFP_Polyphen2_HVAR_score']
+                #     variant_obj.Polyphen2_HVAR_rankscore = variant['dbNSFP']['dbNSFP_Polyphen2_HVAR_rankscore']
+                #     variant_obj.Polyphen2_HVAR_pred = variant['dbNSFP']['dbNSFP_Polyphen2_HVAR_pred']
+                #     variant_obj.LRT_score = variant['dbNSFP']['dbNSFP_LRT_score']
+                #     variant_obj.LRT_converted_rankscore = variant['dbNSFP']['dbNSFP_LRT_converted_rankscore']
+                #     variant_obj.LRT_pred = variant['dbNSFP']['dbNSFP_LRT_pred']
+                #     variant_obj.LRT_Omega = variant['dbNSFP']['dbNSFP_LRT_Omega']
+                #     variant_obj.MutationTaster_score = variant['dbNSFP']['dbNSFP_MutationTaster_score']
+                #     variant_obj.MutationTaster_converted_rankscore = variant['dbNSFP']['dbNSFP_MutationTaster_converted_rankscore']
+                #     variant_obj.MutationTaster_pred = variant['dbNSFP']['dbNSFP_MutationTaster_pred']
+                #     variant_obj.MutationTaster_model = variant['dbNSFP']['dbNSFP_MutationTaster_model']
+                #     variant_obj.MutationTaster_AAE = variant['dbNSFP']['dbNSFP_MutationTaster_AAE']
+                #     variant_obj.MutationAssessor_UniprotID = variant['dbNSFP']['dbNSFP_MutationAssessor_UniprotID']
+                #     variant_obj.MutationAssessor_variant = variant['dbNSFP']['dbNSFP_MutationAssessor_variant']
+                #     variant_obj.MutationAssessor_score = variant['dbNSFP']['dbNSFP_MutationAssessor_score']
+                #     variant_obj.MutationAssessor_rankscore = variant['dbNSFP']['dbNSFP_MutationAssessor_rankscore']
+                #     variant_obj.MutationAssessor_pred = variant['dbNSFP']['dbNSFP_MutationAssessor_pred']
+                #     variant_obj.FATHMM_score = variant['dbNSFP']['dbNSFP_FATHMM_score']
+                #     variant_obj.FATHMM_converted_rankscore = variant['dbNSFP']['dbNSFP_FATHMM_converted_rankscore']
+                #     variant_obj.FATHMM_pred = variant['dbNSFP']['dbNSFP_FATHMM_pred']
+                #     variant_obj.PROVEAN_score = variant['dbNSFP']['dbNSFP_PROVEAN_score']
+                #     variant_obj.PROVEAN_converted_rankscore = variant['dbNSFP']['dbNSFP_PROVEAN_converted_rankscore']
+                #     variant_obj.PROVEAN_pred = variant['dbNSFP']['dbNSFP_PROVEAN_pred']
+                #     variant_obj.Transcript_id_VEST3 = variant['dbNSFP']['dbNSFP_Transcript_id_VEST3']
+                #     variant_obj.Transcript_var_VEST3 = variant['dbNSFP']['dbNSFP_Transcript_var_VEST3']
+                #     variant_obj.VEST3_score = variant['dbNSFP']['dbNSFP_VEST3_score']
+                #     variant_obj.VEST3_rankscore = variant['dbNSFP']['dbNSFP_VEST3_rankscore']
+                #     variant_obj.MetaSVM_score = variant['dbNSFP']['dbNSFP_MetaSVM_score']
+                #     variant_obj.MetaSVM_rankscore = variant['dbNSFP']['dbNSFP_MetaSVM_rankscore']
+                #     variant_obj.MetaSVM_pred = variant['dbNSFP']['dbNSFP_MetaSVM_pred']
+                #     variant_obj.MetaLR_score = variant['dbNSFP']['dbNSFP_MetaLR_score']
+                #     variant_obj.MetaLR_rankscore = variant['dbNSFP']['dbNSFP_MetaLR_rankscore']
+                #     variant_obj.MetaLR_pred = variant['dbNSFP']['dbNSFP_MetaLR_pred']
+                #     variant_obj.Reliability_index = variant['dbNSFP']['dbNSFP_Reliability_index']
+                #     variant_obj.CADD_raw = variant['dbNSFP']['dbNSFP_CADD_raw']
+                #     variant_obj.CADD_raw_rankscore = variant['dbNSFP']['dbNSFP_CADD_raw_rankscore']
+                #     variant_obj.CADD_phred = variant['dbNSFP']['dbNSFP_CADD_phred']
+                #     variant_obj.DANN_score = variant['dbNSFP']['dbNSFP_DANN_score']
+                #     variant_obj.DANN_rankscore = variant['dbNSFP']['dbNSFP_DANN_rankscore']
+                #     variant_obj.fathmm_MKL_coding_score = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_score']
+                #     variant_obj.fathmm_MKL_coding_rankscore = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_rankscore']
+                #     variant_obj.fathmm_MKL_coding_pred = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_pred']
+                #     variant_obj.fathmm_MKL_coding_group = variant['dbNSFP']['dbNSFP_fathmm-MKL_coding_group']
+                #     variant_obj.Eigen_raw = variant['dbNSFP']['dbNSFP_Eigen-raw']
+                #     variant_obj.Eigen_phred = variant['dbNSFP']['dbNSFP_Eigen-phred']
+                #     # variant_obj.Eigen_raw_rankscore = variant['dbNSFP']['dbNSFP_Eigen-raw_rankscore']
+                #     variant_obj.Eigen_PC_raw = variant['dbNSFP']['dbNSFP_Eigen-PC-raw']
+                #     variant_obj.Eigen_PC_raw_rankscore = variant['dbNSFP']['dbNSFP_Eigen-PC-raw_rankscore']
+                #     variant_obj.GenoCanyon_score = variant['dbNSFP']['dbNSFP_GenoCanyon_score']
+                #     variant_obj.GenoCanyon_score_rankscore = variant['dbNSFP']['dbNSFP_GenoCanyon_score_rankscore']
+                #     variant_obj.integrated_fitCons_score = variant['dbNSFP']['dbNSFP_integrated_fitCons_score']
+                #     variant_obj.integrated_fitCons_rankscore = variant['dbNSFP']['dbNSFP_integrated_fitCons_rankscore']
+                #     variant_obj.integrated_confidence_value = variant['dbNSFP']['dbNSFP_integrated_confidence_value']
+                #     variant_obj.GM12878_fitCons_score = variant['dbNSFP']['dbNSFP_GM12878_fitCons_score']
+                #     variant_obj.GM12878_fitCons_rankscore = variant['dbNSFP']['dbNSFP_GM12878_fitCons_rankscore']
+                #     variant_obj.GM12878_confidence_value = variant['dbNSFP']['dbNSFP_GM12878_confidence_value']
+                #     variant_obj.H1_hESC_fitCons_score = variant['dbNSFP']['dbNSFP_H1-hESC_fitCons_score']
+                #     variant_obj.H1_hESC_fitCons_rankscore = variant['dbNSFP']['dbNSFP_H1-hESC_fitCons_rankscore']
+                #     variant_obj.H1_hESC_confidence_value = variant['dbNSFP']['dbNSFP_H1-hESC_confidence_value']
+                #     variant_obj.HUVEC_fitCons_score = variant['dbNSFP']['dbNSFP_HUVEC_fitCons_score']
+                #     variant_obj.HUVEC_fitCons_rankscore = variant['dbNSFP']['dbNSFP_HUVEC_fitCons_rankscore']
+                #     # variant_obj.HUVEC_confidence_value = variant['dbNSFP']['dbNSFP_HUVEC_confidence_value']
+                #     # variant_obj.GERP_NR = variant['dbNSFP']['dbNSFP_GERP++_NR']
+                #     # variant_obj.GERP_RS = variant['dbNSFP']['dbNSFP_GERP++_RS']
+                #     # variant_obj.GERP_RS_rankscore = variant['dbNSFP']['dbNSFP_GERP++_RS_rankscore']
+                #     # variant_obj.phyloP100way_vertebrate = variant['dbNSFP']['dbNSFP_phyloP100way_vertebrate']
+                #     # variant_obj.phyloP100way_vertebrate_rankscore = variant['dbNSFP']['dbNSFP_phyloP100way_vertebrate_rankscore']
+                #     # variant_obj.phyloP20way_mammalian = variant['dbNSFP']['dbNSFP_phyloP20way_mammalian']
+                #     # variant_obj.phyloP20way_mammalian_rankscore = variant['dbNSFP']['dbNSFP_phyloP20way_mammalian_rankscore']
+                #     # variant_obj.phastCons100way_vertebrate = variant['dbNSFP']['dbNSFP_phastCons100way_vertebrate']
+                #     # variant_obj.phastCons100way_vertebrate_rankscore = variant['dbNSFP']['dbNSFP_phastCons100way_vertebrate_rankscore']
+                #     # variant_obj.phastCons20way_mammalian = variant['dbNSFP']['dbNSFP_phastCons20way_mammalian']
+                #     # variant_obj.phastCons20way_mammalian_rankscore = variant['dbNSFP']['dbNSFP_phastCons20way_mammalian_rankscore']
+                #     # variant_obj.SiPhy_29way_pi = variant['dbNSFP']['dbNSFP_SiPhy_29way_pi']
+                #     # variant_obj.SiPhy_29way_logOdds = variant['dbNSFP']['dbNSFP_SiPhy_29way_logOdds']
+                #     # variant_obj.SiPhy_29way_logOdds_rankscore = variant['dbNSFP']['dbNSFP_SiPhy_29way_logOdds_rankscore']
+                #     variant_obj.clinvar_rs = variant['dbNSFP']['dbNSFP_clinvar_rs']
+                #     variant_obj.clinvar_clnsig = variant['dbNSFP']['dbNSFP_clinvar_clnsig']
+                #     variant_obj.clinvar_trait = variant['dbNSFP']['dbNSFP_clinvar_trait']
+                #     variant_obj.clinvar_golden_stars = variant['dbNSFP']['dbNSFP_clinvar_golden_stars']
+                #     variant_obj.mcap_score = variant['mcap']
+                #     variant_obj.mcap_rankscore = variant['dbNSFP']['dbNSFP_M-CAP_rankscore']
+                #     variant_obj.mcap_pred = variant['dbNSFP']['dbNSFP_M-CAP_pred']
+                #     variant_obj.revel_score = variant['dbNSFP']['dbNSFP_REVEL_score']
 
-                variants.append(variant_obj)
+        variants.append(variant)
                 # print 'query', variant_obj.query
                 # print(variant['chr'], variant['pos'])
                 # variant_obj.save()

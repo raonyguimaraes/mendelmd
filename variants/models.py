@@ -3,8 +3,9 @@ from samples.models import Sample
 
 class Variant(models.Model):
 
-    pos_index = models.TextField(db_index=True)#ex. 1-326754756
-    index = models.TextField(db_index=True)#ex. 1-326754756-326754756-G-T
+    index_b37 = models.TextField(db_index=True)#ex. 1-326754756-326754756-G-T
+    index_b38 = models.TextField(db_index=True)#ex. 1-326754756-326754756-G-T
+
     chr = models.TextField(verbose_name="Chr", db_index=True)
     start = models.IntegerField(db_index=True)
     end = models.IntegerField(db_index=True)
@@ -18,6 +19,8 @@ class Variant(models.Model):
 
     genotype_col = models.TextField(null=True, blank=True, db_index=True)
     genotype = models.TextField(db_index=True)
+
+    #end of vcf fields
 
     #metrics from genotype_info DP field
     read_depth = models.IntegerField()
