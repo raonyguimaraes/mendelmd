@@ -105,10 +105,16 @@ ROOT_URLCONF = 'mendelmd.urls'
 
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'mendelmd',
+#    }
+#}
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mendelmd',
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': 'mendelmd.db',
     }
 }
 
