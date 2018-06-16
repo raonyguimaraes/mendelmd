@@ -4,7 +4,7 @@ sudo apt install -y nginx build-essential gcc git htop libbz2-dev libcurl4-opens
 liblzma-dev libssl-dev libxml2-dev make python-dev python-lxml python3 python3-dev python3-venv python3-wheel \
 sudo zip zlib1g zlib1g-dev zlibc
 
-mkdir /projects
+sudo mkdir /projects
 cd /projects
 sudo chown $USER .
 
@@ -18,8 +18,8 @@ sudo -u postgres psql --file=/tmp/create_user.sql
 createdb mendelmd
 cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
 
-python3 -m venv /projects/mendelmdenv
-source /projects/mendelmdenv/bin/activate
+python3 -m venv /projects/venv
+source /projects/venv/bin/activate
 pip install wheel
 pip install -r requirements.txt
 pynnotator install
@@ -55,7 +55,7 @@ After=network.target
 User=raony
 Group=www-data
 WorkingDirectory=/projects/mendelmd/
-ExecStart=/projects/mendelmd/mendelmdenv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd.sock mendelmd.wsgi:application
+ExecStart=/projects/venv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd.sock mendelmd.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
