@@ -26,5 +26,5 @@ ADD requirements.txt /code/
 RUN pip3 install -r requirements.txt
 RUN service rabbitmq-server start
 #ADD . /code/
-#RUN pip3 install pynnotator
-#RUN pynnotator install
+RUN pip3 install pynnotator
+RUN pynnotator install
