@@ -2,7 +2,7 @@ sudo apt update
 
 sudo apt install -y nginx build-essential gcc git htop libbz2-dev libcurl4-openssl-dev libffi-dev \
 liblzma-dev libssl-dev libxml2-dev make python-dev python-lxml python3 python3-dev python3-venv python3-wheel \
-sudo zip zlib1g zlib1g-dev zlibc
+sudo zip zlib1g zlib1g-dev zlibc rabbitmq-server
 
 sudo mkdir /projects
 cd /projects
@@ -10,6 +10,7 @@ sudo chown $USER .
 
 git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/
+git checkout development
 
 #set up database
 sudo apt-get install -y libpq-dev postgresql
