@@ -13,8 +13,8 @@ duplicated_usernames = []
 empty_usernames = []
 email_username = []
 
-db1 = json.load(open('../fixtures/mendelmdorg/fixtures/users.json'))
-db2 = json.load(open('../fixtures/ufmg/fixtures/users.json'))
+db1 = json.load(open('fixtures/mendelmdorg/fixtures/users.json'))
+db2 = json.load(open('fixtures/ufmg/fixtures/users.json'))
 
 # print(db1[0].keys())
 # print(len(db1))
@@ -38,13 +38,12 @@ for db in dbs:
 			username = item['fields']['username']
 
 			#this ignores the user the it's already found in the previous model
-			if (username not in users):# and (email not in emails):
+			if (username not in users) and (email not in emails):
 				users[username] = {}
 				# users[username]['auth'] = item
 				users[username]['model'] = item
-
 			emails.append(email)
-			usernames.append(username)
+			# usernames.append(username)
 		# elif item['model'] == 'account.emailaddress':
 
 		# 	email = item['fields']['email']
@@ -83,7 +82,7 @@ for user in users:
 		emailaddress_count+=1
 
 
-obj = open('../fixtures/merged_users.json', 'w')
+obj = open('fixtures/merged_users.json', 'w')
 json.dump(user_list, obj, indent=4)
 # json.dump(emailaddress_list, obj, indent=4)
 obj.close
