@@ -38,12 +38,12 @@ for db in dbs:
 			username = item['fields']['username']
 
 			#this ignores the user the it's already found in the previous model
-			if (username not in usernames) and (email not in emails):
+			if (username not in users):# and (email not in emails):
 				users[username] = {}
 				# users[username]['auth'] = item
 				users[username]['model'] = item
 
-			emails.append(email)	
+			emails.append(email)
 			usernames.append(username)
 		# elif item['model'] == 'account.emailaddress':
 
