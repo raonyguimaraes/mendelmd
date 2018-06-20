@@ -38,11 +38,18 @@ for db in dbs:
 			username = item['fields']['username']
 
 			#this ignores the user the it's already found in the previous model
-			if (username not in users) and (email not in emails):
-				users[username] = {}
-				# users[username]['auth'] = item
-				users[username]['model'] = item
-			emails.append(email)
+			if email != '':
+				if (username not in users) and (email not in emails):
+					users[username] = {}
+					# users[username]['auth'] = item
+					users[username]['model'] = item
+				emails.append(email)
+			else:
+				if (username not in users):
+					users[username] = {}
+					# users[username]['auth'] = item
+					users[username]['model'] = item
+
 			# usernames.append(username)
 		# elif item['model'] == 'account.emailaddress':
 
@@ -80,6 +87,7 @@ for user in users:
 		}
 		user_list.append(email_object)
 		emailaddress_count+=1
+
 
 
 obj = open('fixtures/merged_users.json', 'w')

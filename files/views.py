@@ -24,7 +24,7 @@ import os
 from django.conf import settings
 import json
 
-from .forms import FileForm
+# from .forms import FileForm
 
 
 @login_required
@@ -35,14 +35,15 @@ def index(request):
 
     if request.method == 'POST':
 
-        form = FileForm(request.POST)
-        if form.is_valid():
-            pass
+        # form = FileForm(request.POST)
+        # if form.is_valid():
+        #     pass
 
         # print(request.POST)
         files = request.POST.getlist('files')
         action = request.POST['action']
         query = request.POST['query']
+        order_string ='sample'
         # print('query', query)
         if action == 'analysis':
             request.session['files'] = files
@@ -93,10 +94,10 @@ def index(request):
         print('args', args)
 
     else:
-        form = FileForm()
+        # form = FileForm()
         print(request.GET)
         if 'orderby' in request.GET:
-            orderby = request.GET['orderby'][0]
+            orderby = request.GET['orderby']
             order = request.GET['order'][0]
             if order == 'desc':
                 order_string = '-{}'.format(orderby)
@@ -104,23 +105,36 @@ def index(request):
                 order_string = orderby
         else:
             order_string = 'name'
+
+    # print(order_string, 'order_string')
     
     if request.user.is_staff:#status='scheduled' size=0
-        files = File.objects.filter(location__icontains=query, *args).order_by('sample')#size
+        # files = File.objects.filter(location__icontains=query, *args).order_by(order_string)#size
+        files = File.objects.filter(location__regex=query, *args).order_by(order_string)#size
+        
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
     #sample__isnull=True
-    files = File.objects.filter(*args).order_by('-id')
+    # files = File.objects.filter(*args).order_by('-id')
 
     files_summary = {}
     files_summary['status'] = dict(Counter(files.values_list('status', flat=True)))
     files_summary['file_type'] = dict(Counter(files.values_list('file_type', flat=True)))
     files_summary['extension'] = dict(Counter(files.values_list('extension', flat=True)))
     # files_summary['total_size'] = sum(files.values_list('size', flat=True))
-    files_summary = 0
+    # files_summary = 0
+    filetypes = []
+    n_files = []
+    for filetype in files_summary['extension']:
+        # print(filetype, files_summary['extension'][filetype])
+        filetypes.append(filetype)
+        n_files.append(files_summary['extension'][filetype])
+    files_summary['filetypes'] = filetypes
+    files_summary['n_files'] = n_files
+
 
     context = {
-        'form': form,
+        # 'form': form,
         'query':query,
         'files':files,
         'n_files':len(files),

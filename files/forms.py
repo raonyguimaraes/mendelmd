@@ -10,10 +10,10 @@ class UploadForm(ModelForm):
         model = File
         fields = '__all__'
 
-class FileForm(forms.Form):
-    OPTIONS = (
-                ("fastq", "fastq"),
-                ("bam", "bam"),
-                ("vcf", "vcf"),
-                )
-    extension = forms.MultipleChoiceField(choices=OPTIONS)
+# class FileForm(forms.Form):
+#     OPTIONS = (
+#                 ("fastq", "fastq"),
+#                 ("bam", "bam"),
+#                 ("vcf", "vcf"),
+#                 )
+    # extension = forms.MultipleChoiceField(choices=OPTIONS, required=False)

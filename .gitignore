@@ -41,3 +41,4 @@ venv/
 celerybeat-schedule
 __pycache__
 media/
+scripts/merge_folders.py
