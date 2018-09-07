@@ -17,3 +17,4 @@ gunicorn
 boto3
 django-formtools
 dj-database-url
+django-storages[google]
