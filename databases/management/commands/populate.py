@@ -110,54 +110,56 @@ def populate_diseases():
 
     Gene.objects.all().delete()
     Disease.objects.all().delete()
-    
-    morbidmap = open('data/omim/morbidmap.txt', 'r')
-    for line in morbidmap:
-        # print(line)
-        if not line.startswith('#'):
-            line = line.strip().split('\t')
-            name = line[0]
-            omim_id = line[2]
-            chr_location = line[3]
-            gene_names = line[1]
-            disease = Disease.objects.create(name=name, omim_id=omim_id, chr_location=chr_location, gene_names=gene_names)
-            disease.save()
-            genes = line[1].split(',')
-            
-            
-            gene_officialname = genes[0].strip()
-            
-            chr_candidate = line[3].split('q')[0]
-            chr_candidate2 = line[3].split('p')[0]
-            if len(chr_candidate) < len(chr_candidate2):
-                chromossome = chr_candidate
-            else:
-                chromossome = chr_candidate2
-            #add gene relation with disease
-            if gene_names != '':
-                #check if gene exists otherwise create gene
-                try:
-                    gene = Gene.objects.get(names=gene_names, official_name=gene_officialname, chromossome=chromossome)
-                    gene.diseases.add(disease)
-                    gene.save()
-                except Gene.DoesNotExist:
-                    gene = Gene.objects.create(names=gene_names, official_name=gene_officialname, chromossome=chromossome)
-                    gene.save()
-                    gene.diseases.add(disease)
-                    gene.save()
-                    
-             
-                #same for genes_Gene
-                #check if gene exists for each alternative name of gene
-                gene_names = gene_names.strip().split(',')
-                try:
-                    gene = Gene2.objects.get(symbol=gene_officialname)
-                    gene.diseases.add(disease)
-                    gene.save()
-                except Gene2.DoesNotExist:
-                    pass
-                    
-    morbidmap.close()
+   
+    if os.path.isfile('data/omim/morbidmap.txt'):
+
+        morbidmap = open('data/omim/morbidmap.txt', 'r')
+        for line in morbidmap:
+            # print(line)
+            if not line.startswith('#'):
+                line = line.strip().split('\t')
+                name = line[0]
+                omim_id = line[2]
+                chr_location = line[3]
+                gene_names = line[1]
+                disease = Disease.objects.create(name=name, omim_id=omim_id, chr_location=chr_location, gene_names=gene_names)
+                disease.save()
+                genes = line[1].split(',')
+                
+                
+                gene_officialname = genes[0].strip()
+                
+                chr_candidate = line[3].split('q')[0]
+                chr_candidate2 = line[3].split('p')[0]
+                if len(chr_candidate) < len(chr_candidate2):
+                    chromossome = chr_candidate
+                else:
+                    chromossome = chr_candidate2
+                #add gene relation with disease
+                if gene_names != '':
+                    #check if gene exists otherwise create gene
+                    try:
+                        gene = Gene.objects.get(names=gene_names, official_name=gene_officialname, chromossome=chromossome)
+                        gene.diseases.add(disease)
+                        gene.save()
+                    except Gene.DoesNotExist:
+                        gene = Gene.objects.create(names=gene_names, official_name=gene_officialname, chromossome=chromossome)
+                        gene.save()
+                        gene.diseases.add(disease)
+                        gene.save()
+                        
+                 
+                    #same for genes_Gene
+                    #check if gene exists for each alternative name of gene
+                    gene_names = gene_names.strip().split(',')
+                    try:
+                        gene = Gene2.objects.get(symbol=gene_officialname)
+                        gene.diseases.add(disease)
+                        gene.save()
+                    except Gene2.DoesNotExist:
+                        pass
+                        
+        morbidmap.close()
 
 def populate_CGD():
 

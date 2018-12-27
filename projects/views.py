@@ -14,7 +14,8 @@ from django.contrib.auth.decorators import login_required
 
 from django.urls import reverse_lazy
 
-from tasks.tasks import check_file, run_qc
+from tasks.tasks import run_qc
+from files.tasks import check_file
 
 from .tasks import import_project_files_task
 

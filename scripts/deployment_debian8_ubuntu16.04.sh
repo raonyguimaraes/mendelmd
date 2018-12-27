@@ -2,7 +2,7 @@ sudo apt update
 
 sudo apt install -y nginx build-essential gcc git htop libbz2-dev libcurl4-openssl-dev libffi-dev \
 liblzma-dev libssl-dev libxml2-dev make python-dev python-lxml python3 python3-dev python3-venv python3-wheel \
-sudo zip zlib1g zlib1g-dev zlibc
+sudo zip zlib1g zlib1g-dev zlibc rabbitmq-server
 
 sudo mkdir /projects
 cd /projects
@@ -10,6 +10,7 @@ sudo chown $USER .
 
 git clone https://github.com/raonyguimaraes/mendelmd
 cd mendelmd/
+git checkout development
 
 #set up database
 sudo apt-get install -y libpq-dev postgresql
@@ -18,8 +19,8 @@ sudo -u postgres psql --file=/tmp/create_user.sql
 createdb mendelmd
 cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
 
-python3 -m venv /projects/mendelmdenv
-source /projects/mendelmdenv/bin/activate
+python3 -m venv /projects/venv
+source /projects/venv/bin/activate
 pip install wheel
 pip install -r requirements.txt
 #pynnotator install
@@ -55,7 +56,11 @@ After=network.target
 User=raony
 Group=www-data
 WorkingDirectory=/projects/mendelmd/
+<<<<<<< HEAD
 ExecStart=/projects/mendelmdenv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd.sock mendelmd.wsgi:application
+=======
+ExecStart=/projects/venv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd.sock mendelmd.wsgi:application
+>>>>>>> origin/development
 
 [Install]
 WantedBy=multi-user.target

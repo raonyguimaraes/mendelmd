@@ -1,0 +1,59 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    	<meta charset="utf-8">
+		<title>Mendel,MD - Cloud Based Genome Analysis</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="keywords" content="Biocloud, Bioinformatics, Cloud, Online Services">
+		<meta name="description" content="Cloud Services for Bioinformatics">
+
+		<!-- animate css -->
+		<link rel="stylesheet" href="{% static "css/animate.min.css" %}">
+		<!-- bootstrap css -->
+		<link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+		<!-- font-awesome -->
+		<link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
+		<!-- google font -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700,800' rel='stylesheet' type='text/css'>
+
+		<!-- custom css -->
+		<link rel="stylesheet" href="{% static "css/templatemo-style.css" %}">
+
+	</head>
+	<body>
+
+		{% include "navbar.html" %}
+        {% block content %}
+        {% endblock %}
+
+		<!-- start divider -->
+		<section id="divider">
+			<div class="container">
+				<div class="row">
+
+
+				</div>
+			</div>
+		</section>
+		<!-- end divider -->
+
+		<!-- start footer -->
+		<footer>
+			<div class="container">
+				<div class="row">
+					<p>Copyright © 2016 <a href="https://www.torchmed.com">TorchMed</a></p>
+				</div>
+			</div>
+		</footer>
+		<!-- end footer -->
+        
+		<script src="{% static "js/jquery.js" %}"></script>
+		<script src="{% static "js/bootstrap.min.js" %}"></script>
+		<script src="{% static "js/wow.min.js" %}"></script>
+		<script src="{% static "js/jquery.singlePageNav.min.js" %}"></script>
+		<script src="{% static "js/custom.js" %}"></script>
+	</body>
+</html>

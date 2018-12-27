@@ -59,7 +59,7 @@ class FamilyFilter(ModelForm):
 
 
 #GENE_GROUPS= [(x.id, x.name) for x in GeneGroup.objects.all()]
-FIELDS = Variant().get_fields()
+FIELDS = Variant()._meta.get_fields()
 
 class FilterAnalysisForm(forms.Form):
 #    snp_id = forms.CharField(max_length=50, required=False)

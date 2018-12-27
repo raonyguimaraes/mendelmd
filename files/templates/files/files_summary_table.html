@@ -1,6 +1,41 @@
 
-
 <div class="row">
+<div class='col-md-6'>
+<div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+  <script>
+    <!-- JAVASCRIPT CODE GOES HERE -->
+    var data = [{
+      values: {{files_summary.n_files}},
+      labels: ['{{files_summary.filetypes|safeseq|join:"', '" }}'],
+      name: 'File Types',
+      hoverinfo: 'label+percent+name',
+      hole: .4,
+      type: 'pie',
+      textinfo: 'none'
+
+    }];
+
+var layout = {
+  title: 'File Types',
+  annotations: [
+    {
+      font: {
+        size: 20
+      },
+      showarrow: false,
+      text: 'Files',
+    }
+  ],
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',    
+  height: 600,
+  width: 600
+};
+
+Plotly.newPlot('myDiv', data, layout);
+
+  </script>
+</div>
 <div class='col-md-6'>
 <table class="table">
     <thead>

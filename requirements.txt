@@ -1,3 +1,4 @@
+wheel
 Django
 psycopg2-binary
 django-allauth
@@ -17,4 +18,5 @@ gunicorn
 boto3
 django-formtools
 dj-database-url
-django-storages[google]
+django-gravatar2
+pandas

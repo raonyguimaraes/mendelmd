@@ -1,4 +1,5 @@
 {% include 'files/files_navbar.html' %}
+
 <br>
 Total Size: {{files_summary.total_size|filesizeformat}}
 
@@ -7,6 +8,7 @@ Total Size: {{files_summary.total_size|filesizeformat}}
 <div class="row">
 <div class='col-md-6'>    
 
+{{ form }}
 <div class="input-group input-group-sm">
 <input class="form-control" type="text" name="query">
     <span class="input-group-btn">
@@ -17,8 +19,7 @@ Total Size: {{files_summary.total_size|filesizeformat}}
 </div>
 </div>
 <input type="hidden" id="action" name="action" value="">
-
-
+<div style="overflow: auto;">
 <table class="table">
 <thead>
 <tr>
@@ -62,7 +63,7 @@ Total Size: {{files_summary.total_size|filesizeformat}}
     <td>{{ file.status }}</td>
     <td>{{ file.md5 }}</td>    
     <td>{#{ file.params }#}</td>
-    <td><pre>{{ file.last_output|linebreaks }}</pre></td>
+    <td><pre>{#{ file.last_output|linebreaks }#}</pre></td>
     <td>{{ file.file_type }}</td>
     <td>{{ file.extension }}</td>
     <td>{{ file.size|filesizeformat }}</td>
@@ -76,3 +77,4 @@ Total Size: {{files_summary.total_size|filesizeformat}}
 {% endfor %}
 </tbody>
 </table>
+</div>

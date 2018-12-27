@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    
+    'allauth.socialaccount.providers.google',
     'crispy_forms',
     'django_select2',
 
@@ -71,7 +73,7 @@ INSTALLED_APPS = [
     'cases',
     'filter_analysis',
     'pathway_analysis',
-    'statistics',
+    # 'statistics',
     'databases',
     'projects',
     'files',
@@ -83,6 +85,7 @@ INSTALLED_APPS = [
     'analyses',
     'formtools',
     'mapps',
+    'django_gravatar',    
     'storages',
 ]
 
@@ -102,10 +105,16 @@ ROOT_URLCONF = 'mendelmd.urls'
 
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'mendelmd',
+#    }
+#}
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mendelmd',
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': 'mendelmd.db',
     }
 }
 
@@ -131,11 +140,11 @@ STATIC_URL = '/static/'
 
 #STATIC_ROOT = os.path.join(BASE_DIR,'static/')
 
-STATIC_ROOT = '/var/www/static/'
+#STATIC_ROOT = '/var/www/static/'
 
-#STATICFILES_DIRS = [
-#    os.path.join(BASE_DIR, "static"),
-#]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 
 TEMPLATES = [
@@ -151,12 +160,15 @@ TEMPLATES = [
                 # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
                 # list if you haven't customized them:
                 'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                # Required by allauth template tags
+                
             ],
 
         },
@@ -210,3 +222,10 @@ from datetime import timedelta
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
+# ALL AUTH
+ACCOUNT_EMAIL_REQUIRED=True
+ACCOUNT_AUTHENTICATION_METHOD="username_email"
+ACCOUNT_SESSION_REMEMBER=True
+# ACCOUNT_UNIQUE_EMAIL=False
+SOCIALACCOUNT_AUTO_SIGNUP=True
+SOCIALACCOUNT_QUERY_EMAIL=True
