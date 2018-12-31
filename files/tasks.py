@@ -76,25 +76,65 @@ def check_file(task_id):
         # print(os.path.getsize(file.location))
         file.size = int(os.path.getsize(file.location))
 
+    elif file.location.startswith('s3://'):
+
+        # print('s3')
+        # print(file.location)
+
+     
+        file.name = os.path.basename(file.location)
+
+        clean_path = file.location.replace('s3://', '')
+        split_path = clean_path.split('/', 1)
+        bucket_name = split_path[0]
+        prefix = split_path[1]
+        # print(bucket_name,prefix)
+        s3credentials = S3Credential.objects.all()
+
+        for s3credential in s3credentials:
+            # if clean_path.startswith(s3credential.buckets):
+            if bucket_name in s3credential.buckets:
+                #get all files from path
+                session = boto3.Session(
+                    aws_access_key_id=s3credential.access_key,
+                    aws_secret_access_key=s3credential.secret_key
+                )
+                s3 = session.resource('s3')
+                bucket = s3.Bucket(bucket_name)
+                # print(bucket)
+                # print('prefix',prefix)
+                for key in bucket.objects.filter(Prefix=prefix):
+                    if key.key == prefix:
+                        file_name, file_extension = os.path.splitext(key.key)
+                        if file_extension == '.gz':
+                            file_name, file_extension = os.path.splitext(file_name)
+                        
+                        basename = os.path.basename(file_name)
+                        file.name=basename
+                        # print('key.size',key.size)
+                        file.size=int(key.size)
+                        file.last_modified=str(key.last_modified)
+                        file.extension=file_extension.replace('.', '')
+
     print('File Name', file.name)
     file.status = 'checked'
     file.save()
 
-    if file.extension == '.vcf.gz' or file.extension == '.vcf':
+    # if file.extension == '.vcf.gz' or file.extension == '.vcf':
 
-        task_manifest = {}
-        task_manifest['file'] = file.id
-        task_manifest['action'] = 'import_vcf'
+    #     task_manifest = {}
+    #     task_manifest['file'] = file.id
+    #     task_manifest['action'] = 'import_vcf'
         
-        import_task = Task()
-        import_task.manifest = task_manifest
-        import_task.status = 'new'
-        import_task.action = 'import_vcf'
-        import_task.save()
-        import_vcf.delay(task.id)
+    #     import_task = Task()
+    #     import_task.manifest = task_manifest
+    #     import_task.status = 'new'
+    #     import_task.action = 'import_vcf'
+    #     import_task.save()
+    #     import_vcf.delay(task.id)
 
-    task.status = 'done'
-    task.save()
+    # task.status = 'done'
+    # task.save()
 
 
 @shared_task()

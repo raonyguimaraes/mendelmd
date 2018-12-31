@@ -91,9 +91,8 @@ def view(request, project_id):
         'n_samples':n_samples,
         # 'total_file_size':total_file_size,
     }
-    
-    return render(request, 'projects/view.html', context)
 
+    return render(request, 'projects/view.html', context)
 
 @login_required
 def project_files(request, project_id):
@@ -123,7 +122,7 @@ def import_files(request, project_id):
     form = ImportForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            paths = form.cleaned_data['paths']
+            # paths = form.cleaned_data['paths']
 
             for file in form.cleaned_data['file_list'].splitlines():
                 
@@ -134,46 +133,46 @@ def import_files(request, project_id):
                     obj.save()
                     project.files.add(obj)
 
-            for path in form.cleaned_data['paths'].splitlines():
+            # for path in form.cleaned_data['paths'].splitlines():
                 
-                clean_path = path.strip().replace('s3://', '')
-                split_path = clean_path.split('/', 1)
-                bucket_name = split_path[0]
-                prefix = split_path[1]
+            #     clean_path = path.strip().replace('s3://', '')
+            #     split_path = clean_path.split('/', 1)
+            #     bucket_name = split_path[0]
+            #     prefix = split_path[1]
 
-                s3credentials = S3Credential.objects.all()
-                for s3credential in s3credentials:
-                    if clean_path.startswith(s3credential.buckets):
-                        #get all files from path
-                        session = boto3.Session(
-                            aws_access_key_id=s3credential.access_key,
-                            aws_secret_access_key=s3credential.secret_key
-                        )
-                        s3 = session.resource('s3')
-                        bucket = s3.Bucket(bucket_name)
-                        print(bucket)
-                        for key in bucket.objects.filter(Prefix=prefix):
+            #     s3credentials = S3Credential.objects.all()
+            #     for s3credential in s3credentials:
+            #         if clean_path.startswith(s3credential.buckets):
+            #             #get all files from path
+            #             session = boto3.Session(
+            #                 aws_access_key_id=s3credential.access_key,
+            #                 aws_secret_access_key=s3credential.secret_key
+            #             )
+            #             s3 = session.resource('s3')
+            #             bucket = s3.Bucket(bucket_name)
+            #             print(bucket)
+            #             for key in bucket.objects.filter(Prefix=prefix):
                             
 
-                            if not key.key.endswith('/'):
-                                file_name, file_extension = os.path.splitext(key.key)
-                                if file_extension == '.gz':
-                                    file_name, file_extension = os.path.splitext(file_name)
+            #                 if not key.key.endswith('/'):
+            #                     file_name, file_extension = os.path.splitext(key.key)
+            #                     if file_extension == '.gz':
+            #                         file_name, file_extension = os.path.splitext(file_name)
                                 
-                                basename = os.path.basename(file_name)
-                                location = 's3://'+bucket_name+'/'+key.key
+            #                     basename = os.path.basename(file_name)
+            #                     location = 's3://'+bucket_name+'/'+key.key
 
-                                file_obj = ProjectFile(
-                                    project = project,
-                                    name=basename,
-                                    size=str(key.size),
-                                    last_modified=str(key.last_modified),
-                                    file_type=file_extension.replace('.', ''),
-                                    location=location,
-                                    user=request.user
-                                )
+            #                     file_obj = ProjectFile(
+            #                         project = project,
+            #                         name=basename,
+            #                         size=str(key.size),
+            #                         last_modified=str(key.last_modified),
+            #                         file_type=file_extension.replace('.', ''),
+            #                         location=location,
+            #                         user=request.user
+            #                     )
 
-                                file_obj.save()
+            #                     file_obj.save()
 
             for sample_info in form.data['samples'].splitlines():
                 sample_info = sample_info.split('\t')
@@ -222,7 +221,7 @@ def bulk_action(request, project_id):
         
         action = request.POST['action']
 
-        print('POST', request.POST)
+        # print('POST', request.POST)
 
         model = request.POST['model']
 
