@@ -86,7 +86,7 @@ INSTALLED_APPS = [
     'formtools',
     'mapps',
     'django_gravatar',    
-    'storages',
+    #'storages',
 ]
 
 MIDDLEWARE = [
