@@ -61,7 +61,6 @@ def launch_worker():
         worker.provider = 'SCW'
         worker.type = ''
 
-
     worker.ip = worker_result['ip']
     worker.worker_id = worker_result['id']
     worker.save()

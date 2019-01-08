@@ -16,9 +16,11 @@ class AWS:
 
         worker = {}
 
-        ec2 = boto3.resource('ec2', region_name=config['region_name'])
+        session = boto3.Session(profile_name=config['profile_name'])
+
+        ec2 = session.resource('ec2', region_name=config['region_name'])
         print('Create instance')
-        client = boto3.client('ec2', region_name=config['region_name'])
+        client = session.client('ec2', region_name=config['region_name'])
 
         response = client.request_spot_instances(
             DryRun=False,
@@ -37,9 +39,9 @@ class AWS:
                 'SecurityGroupIds': [
                     config['SecurityGroupIds'],
                 ],
-                'IamInstanceProfile': {
-                    'Name': config['IamInstanceProfile'],
-                }
+                #'IamInstanceProfile': {
+                #    'Name': config['IamInstanceProfile'],
+                #}
             }
         )
 
@@ -112,9 +114,6 @@ class AWS:
         command = "scp -o StrictHostKeyChecking=no ~/.ssh/config ubuntu@%s:~/.ssh" % (ip)
         run(command, shell=True)
 
-        command = "scp -o StrictHostKeyChecking=no scripts/install_worker_aws.sh ubuntu@%s:~/" % (ip)
-        run(command, shell=True)
-        
         command = "scp -o StrictHostKeyChecking=no scripts/install_worker_aws.sh ubuntu@%s:~/" % (ip)
         run(command, shell=True)
 

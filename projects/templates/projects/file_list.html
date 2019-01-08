@@ -60,6 +60,7 @@ Number of files: {{n_files}}
     <th>#<input type="checkbox" id="select_all_files"></th>
     <th>Name</th>
     <th>Sample</th>
+    <th>Bytes</th>
     <th>Size</th>
     <th>Location</th>
     <th>Status</th>
@@ -101,6 +102,7 @@ Number of files: {{n_files}}
       {% endfor %}
 
     </td>
+    <td>{{ file.size }}</td>
     <td>{{ file.size|filesizeformat }}</td>
     <td>{{ file.location }}</td>
     <td>{{ file.status }}</td>
