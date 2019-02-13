@@ -1,4 +1,7 @@
 sudo apt update
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 sudo locale-gen en_US.UTF-8
 
 sudo apt install -y nginx build-essential gcc git htop libbz2-dev libcurl4-openssl-dev libffi-dev \
