@@ -14,7 +14,7 @@ cd mendelmd/
 
 #set up database
 sudo apt-get install -y libpq-dev postgresql
-echo "create user $USER password ''; alter user $USER with createdb; CREATE ROLE $USER superuser; ALTER ROLE $USER WITH LOGIN;" > /tmp/create_user.sql
+echo "create user $USER password ''; alter user $USER with createdb; ALTER ROLE $USER WITH LOGIN;" > /tmp/create_user.sql
 sudo -u postgres psql --file=/tmp/create_user.sql
 createdb mendelmd
 cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
