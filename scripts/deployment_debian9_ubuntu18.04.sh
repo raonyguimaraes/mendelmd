@@ -15,7 +15,7 @@ cd mendelmd/
 
 #set up database
 sudo apt-get install -y libpq-dev postgresql
-echo "create user $USER password ''; CREATE ROLE $USER superuser; alter user $USER with createdb; ALTER ROLE $USER WITH LOGIN;" > /tmp/create_user.sql
+echo "create user $USER password ''; CREATE ROLE $USER superuser;" > /tmp/create_user.sql
 sudo -u postgres psql --file=/tmp/create_user.sql
 createdb mendelmd
 cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
@@ -48,7 +48,7 @@ server {
 }
 EOF'
 
-sudo bash -c 'cat << EOF > /etc/systemd/system/mendelmd.service
+bash -c 'cat << EOF > /tmp/mendelmd.service
 [Unit]
 Description=gunicorn daemon
 After=network.target
@@ -62,6 +62,7 @@ ExecStart=/projects/venv/bin/gunicorn --access-logfile - --workers 4 --timeout 9
 [Install]
 WantedBy=multi-user.target
 EOF'
+sudo cp /tmp/mendelmd.service /etc/systemd/system/mendelmd.service
 
 sudo systemctl enable mendelmd
 sudo systemctl start mendelmd
