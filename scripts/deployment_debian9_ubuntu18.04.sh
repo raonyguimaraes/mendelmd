@@ -27,7 +27,7 @@ python3 -m venv /projects/venv
 source /projects/venv/bin/activate
 pip install wheel
 pip install -r requirements.txt
-#pynnotator install
+pynnotator install
 
 python manage.py migrate
 python manage.py populate
