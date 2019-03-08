@@ -1,11 +1,13 @@
+export DEBIAN_FRONTEND=noninteractive
+apt install -y -o Dpkg::Options::=--force-confnew sudo
+
 sudo apt update
 
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-sudo locale-gen en_US.UTF-8
 
-export DEBIAN_FRONTEND=noninteractive
+sudo locale-gen en_US.UTF-8
 
 sudo apt install -y nginx build-essential gcc git htop libbz2-dev libcurl4-openssl-dev libffi-dev \
 liblzma-dev libssl-dev libxml2-dev make python-dev python-lxml python3 python3-dev python3-venv python3-wheel \
