@@ -193,7 +193,7 @@ def view(request, individual_id):
     # print 'individual.snp_eff', individual.snp_eff
     # variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
     #
-    #individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
+    individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
     individual.impact_variants = variant_list.values('snpeff_impact').annotate(Count('snpeff_impact')).order_by('snpeff_impact')
 
     individual.filter_variants = variant_list.values('filter').annotate(Count('filter')).order_by('filter')
