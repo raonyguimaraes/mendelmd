@@ -68,7 +68,7 @@ class Variant(models.Model):
     #snpeff annotation
     snpeff_effect = models.TextField(null=True, blank=True, db_index=True)
     snpeff_impact = models.TextField(null=True, blank=True, db_index=True)
-    # snpeff_func_class = models.TextField(null=True, blank=True, db_index=True)
+    snpeff_func_class = models.TextField(null=True, blank=True, db_index=True)
     snpeff_codon_change = models.TextField(null=True, blank=True, db_index=True)
     snpeff_aa_change = models.TextField(null=True, blank=True, db_index=True)
     # snpeff_aa_len = models.TextField(null=True, blank=True)
