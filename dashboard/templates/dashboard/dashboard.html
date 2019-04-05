@@ -69,6 +69,7 @@
                     <input type="checkbox" id="select_all"></th>
                 <th>ID</th>
                 <th style="width: 10px;">Name</th>
+                <th>File</th>
                 {% if user.is_staff %}
                 <th>Options</th>
                 {% endif %}
@@ -96,6 +97,7 @@
                 <td>
                     <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
                 </td>
+                <td>{{individual.vcf_file}}</td>
                 {% if user.is_staff %}
                 <td>
                     <ul>

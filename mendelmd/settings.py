@@ -61,9 +61,7 @@ INSTALLED_APPS = [
     # 'kombu.transport.django',
     # 'django_celery_results',
     # 'django_celery_beat',
-
     #private apps
-
     'dashboard',
     'individuals',
     'variants',
