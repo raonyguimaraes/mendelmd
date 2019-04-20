@@ -1,0 +1,32 @@
+{% extends 'ecommerce_app/base.html' %}
+
+{% block title %}
+    Checkout |
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+
+            <h2>Checkout</h2>
+
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+
+
+            <form action="" method="post">
+                <table>
+                    {% csrf_token %}
+                    {{ form.as_table }}
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Place Order"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

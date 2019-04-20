@@ -20,3 +20,5 @@ django-formtools
 dj-database-url
 django-gravatar2
 pandas
+django-paypal
+pillow

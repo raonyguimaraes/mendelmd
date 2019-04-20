@@ -10,6 +10,8 @@ from django.conf import settings
 
 from django.conf.urls.static import static
 
+from django.urls import path
+
 from . import views
 
 import files.views
@@ -47,6 +49,8 @@ urlpatterns = [
     url(r'^workers/', include('workers.urls')),
     url(r'^analyses/', include('analyses.urls')),
     url(r'^apps/', include('mapps.urls')),
+    path('ecommerce/', include('ecommerce_app.urls')),
+    path('paypal/', include('paypal.standard.ipn.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
