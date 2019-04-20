@@ -89,6 +89,7 @@ def checkout(request):
 def process_payment(request):
     order_id = request.session.get('order_id')
     order = get_object_or_404(Order, id=order_id)
+    line_items = order.lineitem_set.all()
     host = request.get_host()
  
     paypal_dict = {
@@ -107,7 +108,9 @@ def process_payment(request):
     }
  
     form = PayPalPaymentsForm(initial=paypal_dict)
-    return render(request, 'ecommerce_app/process_payment.html', {'order': order, 'form': form})
+    return render(request, 'ecommerce_app/process_payment.html', {'order': order,
+                                                                  'line_itens': line_items,
+                                                                  'form': form})
 
 
 @csrf_exempt
