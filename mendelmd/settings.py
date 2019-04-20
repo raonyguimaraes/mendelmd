@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.humanize',
 
-    #external libs
+    # external libs
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     # 'kombu.transport.django',
     # 'django_celery_results',
     # 'django_celery_beat',
+
+    # paypal integration
+    'paypal.standard.ipn',
     #private apps
     'dashboard',
     'individuals',
@@ -83,8 +86,9 @@ INSTALLED_APPS = [
     'analyses',
     'formtools',
     'mapps',
-    'django_gravatar',    
+    'django_gravatar',
     #'storages',
+    'ecommerce_app',
 ]
 
 MIDDLEWARE = [
@@ -96,8 +100,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-
 
 ROOT_URLCONF = 'mendelmd.urls'
 
@@ -136,9 +138,9 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-#STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 
-#STATIC_ROOT = '/var/www/static/'
+# STATIC_ROOT = '/var/www/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
@@ -165,8 +167,8 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                # Required by allauth template tags
-                
+                # Required by allauth template tags,
+                'ecommerce_app.context_processor.cart_item_count',
             ],
 
         },
@@ -190,7 +192,7 @@ LOGIN_REDIRECT_URL = 'dashboard'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-#this prevents crash when loading filter_analysis forms.py
+# this prevents crash when loading filter_analysis forms.py
 # DEBUG_TOOLBAR_PATCH_SETTINGS = True
 
 INTERNAL_IPS = ['127.0.0.1']
@@ -221,9 +223,13 @@ from datetime import timedelta
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
 # ALL AUTH
-ACCOUNT_EMAIL_REQUIRED=True
-ACCOUNT_AUTHENTICATION_METHOD="username_email"
-ACCOUNT_SESSION_REMEMBER=True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_SESSION_REMEMBER = True
 # ACCOUNT_UNIQUE_EMAIL=False
-SOCIALACCOUNT_AUTO_SIGNUP=True
-SOCIALACCOUNT_QUERY_EMAIL=True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+
+# PAYPAL SETTINGS
+PAYPAL_RECEIVER_EMAIL = 'tiagoslg-facilitator@empiriclogic.com'
+PAYPAL_TEST = True

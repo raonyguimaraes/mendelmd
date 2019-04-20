@@ -8,6 +8,8 @@ from django.conf import settings
 
 from django.conf.urls.static import static
 
+from django.urls import path
+
 from . import views
 
 import files.views
@@ -47,6 +49,8 @@ urlpatterns = [
     path(r'^workers/', include('workers.paths')),
     path(r'^analyses/', include('analyses.paths')),
     path(r'^apps/', include('mapps.urls')),
+    path('ecommerce/', include('ecommerce_app.urls')),
+    path('paypal/', include('paypal.standard.ipn.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

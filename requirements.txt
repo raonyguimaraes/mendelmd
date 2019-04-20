@@ -22,3 +22,5 @@ django-gravatar2
 pandas
 django-utils-six
 cyvcf2
+django-paypal
+pillow
