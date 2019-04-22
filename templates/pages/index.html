@@ -114,7 +114,7 @@
                       <small class="text-lowercase">monthly</small>
                     </div>
                     <ul>
-                        <li>{{ plan.description }}</li>
+                        <li>{{ plan.description|safe }}</li>
                     </ul>
                   </div>
                   <a class="btn btn-primary text-uppercase" href="{% url 'process_subscription' plan.id %}">Sign up</a>
