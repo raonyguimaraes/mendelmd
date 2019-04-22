@@ -38,9 +38,7 @@
                       <p>${{ plan.price }}</p>
                       <small class="text-lowercase">monthly</small>
                     </div>
-                    <ul>
-                        <li>{{ plan.description|safe }}</li>
-                    </ul>
+                    {{ plan.description|safe }}
                   </div>
                   <a class="btn btn-primary text-uppercase" href="{% url 'process_subscription' plan.id %}">Sign up</a>
               </div>
