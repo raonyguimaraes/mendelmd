@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Product(models.Model):
@@ -7,6 +8,7 @@ class Product(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     image = models.ImageField(upload_to='products_images/', blank=True)
+    is_subscription = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -31,15 +33,12 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
-    name = models.CharField(max_length=191)
-    email = models.EmailField()
-    postal_code = models.IntegerField()
-    address = models.CharField(max_length=191)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return "{}:{}".format(self.id, self.email)
+        return "{}:{}".format(self.id, self.user.email)
 
     def total_cost(self):
         return sum([li.cost() for li in self.lineitem_set.all()])
