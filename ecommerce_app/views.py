@@ -138,6 +138,7 @@ def process_subscription(request, product_id):
         'sra': "1",  # reattempt payment on payment error
         'no_note': "1",  # remove extra notes (optional)
         'item_name': product.slug,
+        'invoice': str(order.id),
         'notify_url': 'http://{}{}'.format(host,
                                            reverse('paypal-ipn')),
         'return_url': 'http://{}{}'.format(host,

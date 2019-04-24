@@ -9,7 +9,11 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'date', 'paid']
+    list_display = ['id', 'user', 'date', 'total_cost', 'paid']
+
+    def get_total_cost(self, obj):
+        return obj.total_cost()
+    get_total_cost.short_description = 'Total Cost'
 
 
 class OrderItemAdmin(admin.ModelAdmin):
