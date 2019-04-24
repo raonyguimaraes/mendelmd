@@ -1,5 +1,32 @@
+from enum import Enum
 from django.db import models
 from django.contrib.auth.models import User
+
+
+class OrderType(Enum):
+    SUBSCRIPTION = 'Subscription'
+    PRODUCT = 'Product'
+
+    def __str__(self):
+        return str(self.value)
+
+    @classmethod
+    def choices(cls):
+        return [(x.value, x.name) for x in cls]
+
+
+class PaymentStatus(Enum):
+    PROCESSING = 'Processing'
+    PAID = 'Paid'
+    REFUSED = 'Refused'
+    CANCELED = 'Canceled'
+
+    def __str__(self):
+        return str(self.value)
+
+    @classmethod
+    def choices(cls):
+        return [(x.value, x.name) for x in cls]
 
 
 class Product(models.Model):
@@ -36,9 +63,15 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
+    payment_status = models.CharField(max_length=20,
+                                      choices=PaymentStatus.choices(),
+                                      default=PaymentStatus.PROCESSING.__str__())
+    order_type = models.CharField(max_length=20,
+                                  choices=OrderType.choices(),
+                                  default=OrderType.SUBSCRIPTION.__str__())
 
     def __str__(self):
-        return "{}:{}".format(self.id, self.user.email)
+        return "{}:{}:{}".format(self.id, self.order_type, self.user.email)
 
     def total_cost(self):
         return sum([li.cost() for li in self.lineitem_set.all()])
