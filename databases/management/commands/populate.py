@@ -117,10 +117,10 @@ def populate_diseases():
         for line in morbidmap:
             # print(line)
             if not line.startswith('#'):
-                line = line.strip().split('\t')
+                line = line.split('\t')
                 name = line[0]
                 omim_id = line[2]
-                chr_location = line[3]
+                chr_location = line[3].strip()
                 gene_names = line[1]
                 disease = Disease.objects.create(name=name, omim_id=omim_id, chr_location=chr_location, gene_names=gene_names)
                 disease.save()
