@@ -21,5 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_products, remove_products)
+        # migrations.RunPython(add_products, remove_products)
     ]

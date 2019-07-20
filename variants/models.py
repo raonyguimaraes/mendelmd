@@ -1,14 +1,16 @@
 from django.db import models
 from individuals.models import Individual
+from .search import VariantIndex
+
 
 class Variant(models.Model):
 
     individual = models.ForeignKey(Individual, on_delete=models.CASCADE)
 
-    index = models.TextField(db_index=True)#ex. 1-2387623-G-T
-    pos_index = models.TextField(db_index=True)#ex. 1-326754756
+    index = models.TextField(db_index=True)  # ex. 1-2387623-G-T
+    pos_index = models.TextField(db_index=True)  # ex. 1-326754756
 
-    #First save all 9 VCF columns
+    # First save all 9 VCF columns
     chr = models.TextField(verbose_name="Chr", db_index=True)
     pos = models.IntegerField(db_index=True)
     variant_id = models.TextField(verbose_name="ID", db_index=True)
@@ -22,25 +24,25 @@ class Variant(models.Model):
     genotype_col = models.TextField(null=True, blank=True, db_index=True)
     genotype = models.TextField(db_index=True)
 
-    #metrics from genotype_info DP field
+    # metrics from genotype_info DP field
     read_depth = models.IntegerField()
 
     gene = models.TextField(null=True, blank=True, db_index=True)
     mutation_type = models.TextField(null=True, db_index=True)
     vartype = models.TextField(null=True, db_index=True)
 
-    #Annotation From 1000genomes
+    # Annotation From 1000genomes
     genomes1k_maf = models.FloatField(null=True, blank=True, verbose_name="1000 Genomes Frequency", db_index=True)
     dbsnp_maf = models.FloatField(null=True, blank=True, verbose_name="dbSNP Frequency", db_index=True)
     esp_maf = models.FloatField(null=True, blank=True, verbose_name="ESP6500 Frequency", db_index=True)
     
 
-    #dbsnp
+    # dbsnp
     # dbsnp_pm = models.TextField(null=True, blank=True)
     # dbsnp_clnsig = models.TextField(null=True, blank=True)
     dbsnp_build = models.IntegerField(null=True, db_index=True)
 
-    #VEP
+    # VEP
     sift = models.FloatField(null=True, blank=True, db_index=True)
     sift_pred = models.TextField(null=True, blank=True, db_index=True)
 
@@ -53,19 +55,19 @@ class Variant(models.Model):
     dann = models.FloatField(null=True, blank=True, db_index=True)
     cadd = models.FloatField(null=True, blank=True, db_index=True)
 
-    #hi_index
+    # hi_index
     hi_index_str = models.TextField(null=True, blank=True, db_index=True)
     hi_index = models.FloatField(null=True, blank=True, db_index=True)
     hi_index_perc = models.FloatField(null=True, blank=True, db_index=True)
 
-    #OMIM
+    # OMIM
     is_at_omim = models.BooleanField(default=False, db_index=True)
 
-    #HGMD
+    # HGMD
     is_at_hgmd = models.BooleanField(default=False, db_index=True)
     hgmd_entries = models.TextField(null=True, blank=True, db_index=True)
 
-    #snpeff annotation
+    # snpeff annotation
     snpeff_effect = models.TextField(null=True, blank=True, db_index=True)
     snpeff_impact = models.TextField(null=True, blank=True, db_index=True)
     snpeff_func_class = models.TextField(null=True, blank=True, db_index=True)
@@ -79,7 +81,7 @@ class Variant(models.Model):
     snpeff_exon_rank = models.TextField(null=True, blank=True, db_index=True)
     # snpeff_genotype_number = models.TextField(null=True, blank=True)
 
-    #vep annotation
+    # vep annotation
     vep_allele = models.TextField(null=True, blank=True, db_index=True)
     vep_gene = models.TextField(null=True, blank=True, db_index=True)
     vep_feature = models.TextField(null=True, blank=True, db_index=True)
@@ -99,15 +101,15 @@ class Variant(models.Model):
     vep_polyphen = models.TextField(null=True, blank=True, db_index=True)
     vep_condel = models.TextField(null=True, blank=True, db_index=True)
 
-    #new annotations
+    # new annotations
     ensembl_clin_HGMD = models.BooleanField(default=False, db_index=True)
     ensembl_clin_HGMD = models.BooleanField(default=False, db_index=True)
     clinvar_CLNSRC = models.TextField(null=True, blank=True, db_index=True)
     # ensembl_phen.CLIN_pathogenic
-    #ensembl_phen.CLIN_likely_pathogenic
+    # ensembl_phen.CLIN_likely_pathogenic
     # ensembl_clin.CLIN_pathogenic
 
-    #DBNFSP
+    # DBNFSP
     SIFT_score = models.TextField(null=True, blank=True, db_index=True)
     SIFT_converted_rankscore = models.TextField(null=True, blank=True, db_index=True)
     # SIFT_pred = models.TextField(null=True, blank=True)
@@ -202,7 +204,19 @@ class Variant(models.Model):
     mcap_pred = models.TextField(null=True, blank=True, db_index=True)
     revel_score = models.TextField(null=True, blank=True, db_index=True)
 
-
     def get_fields(self):
-    	return [(field.name, field.verbose_name.title().replace('_', ' ')) for field in Variant._meta.fields]
+        return [(field.name, field.verbose_name.title().replace('_', ' ')) for field in Variant._meta.fields]
 
+    # Add indexing method to BlogPost
+    def indexing(self):
+        obj = VariantIndex(
+            meta={'id': self.id},
+            pos_index=self.pos_index,
+            chr=self.chr,
+            pos=self.pos,
+            variant_id=self.variant_id,
+            ref=self.ref,
+            alt=self.alt
+        )
+        obj.save(index='variant-index')
+        return obj.to_dict(include_meta=True)

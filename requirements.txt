@@ -22,3 +22,4 @@ django-gravatar2
 pandas
 django-paypal
 pillow
+elasticsearch-dsl

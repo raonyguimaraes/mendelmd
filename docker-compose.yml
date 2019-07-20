@@ -17,6 +17,8 @@ services:
     volumes:
       - ./data/postgresql_data:/var/lib/postgresql/data/
     restart: always
+    networks:
+      - esnet
 
   web:
     build: .
@@ -28,6 +30,8 @@ services:
     depends_on:
       - db
       - es01
+    networks:
+      - esnet
 
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
@@ -49,25 +53,6 @@ services:
       - 9200:9200
     networks:
       - esnet
-  es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
-    container_name: es02
-    environment:
-      - node.name=es02
-      - discovery.seed_hosts=es01
-      - cluster.initial_master_nodes=es01,es02
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata02:/usr/share/elasticsearch/data
-    networks:
-      - esnet
-     
     
  # annotator:
  #  build: ./compose/annotator
