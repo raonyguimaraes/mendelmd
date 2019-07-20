@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms.models import model_to_dict
 from individuals.models import Individual
 from .search import VariantIndex
 
@@ -35,7 +36,6 @@ class Variant(models.Model):
     genomes1k_maf = models.FloatField(null=True, blank=True, verbose_name="1000 Genomes Frequency", db_index=True)
     dbsnp_maf = models.FloatField(null=True, blank=True, verbose_name="dbSNP Frequency", db_index=True)
     esp_maf = models.FloatField(null=True, blank=True, verbose_name="ESP6500 Frequency", db_index=True)
-    
 
     # dbsnp
     # dbsnp_pm = models.TextField(null=True, blank=True)
@@ -209,14 +209,7 @@ class Variant(models.Model):
 
     # Add indexing method to BlogPost
     def indexing(self):
-        obj = VariantIndex(
-            meta={'id': self.id},
-            pos_index=self.pos_index,
-            chr=self.chr,
-            pos=self.pos,
-            variant_id=self.variant_id,
-            ref=self.ref,
-            alt=self.alt
-        )
+        variant_dict = model_to_dict(self)
+        obj = VariantIndex(meta={'id': self.id}, **variant_dict)
         obj.save(index='variant-index')
         return obj.to_dict(include_meta=True)
