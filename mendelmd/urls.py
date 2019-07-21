@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^cases/', include('cases.urls')),
     url(r'^filter_analysis/', include('filter_analysis.urls')),
     # url(r'^pathway_analysis/', include('apps.pathway_analysis.urls')),
-    # url(r'^statistics/', include('statistics.urls')),
+    url(r'^statistics/', include('stats.urls')),
     url(r'^databases/', include('databases.urls')),
     url(r'^projects/', include('projects.urls')),
     url(r'^select2/', include('django_select2.urls')),
