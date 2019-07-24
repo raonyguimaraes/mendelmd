@@ -4,36 +4,23 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
-# from celery.task import Task
-# from celery.registry import tasks
-from django.db import transaction
-from django.core.files import File
-# from celery import task
-
 from individuals.models import *
 
 from variants.models import *
 
-# from mysql_bulk_insert import bulk_insert
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 import os
 import datetime
 from django.core.mail import send_mail
-# from snpedia.models import *
-from diseases.models import HGMDMutation
 from django.conf import settings
 
 import zipfile
-import gzip
-import pickle
 import tarfile
 from collections import OrderedDict
-
 
 import json
 import vcf
 
-from datetime import timedelta
 from django.template.defaultfilters import slugify
 
 
@@ -44,9 +31,10 @@ def clean_individuals():
     for individual in individuals:
         time_difference = datetime.datetime.now()-individual.creation_date
         if time_difference.days > 0:
-            #delete individuals
-            os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
+            # delete individuals
+            os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual.id))
             individual.delete()
+
 
 @shared_task()
 def VerifyVCF(individual_id):
@@ -57,9 +45,9 @@ def VerifyVCF(individual_id):
     filename = str(individual.vcf_file.name.split('/')[-1])
 
     if individual.user:
-        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR, slugify(individual.user.username), individual.id)
+        path = '%s/genomes/%s/%s' % (settings.BASE_DIR, slugify(individual.user.username), individual.id)
     else:
-        path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
+        path = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
 
     new_path = '/'.join(path.split('/')[:-1])
     
@@ -70,47 +58,46 @@ def VerifyVCF(individual_id):
     print('filename', filename)
 
     if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
+        command = 'cp %s sample.vcf' % filename
         os.system(command)
     elif filename.endswith('.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
+        command = 'gunzip -c -d %s > sample.vcf' % filename
         os.system(command)
     elif filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
+        command = 'unzip -p %s > sample.vcf' % filename
         os.system(command)
     elif filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
+        command = 'unrar e %s' % filename
         os.system(command)
-        #now change filename to sample.vcf
+        # now change filename to sample.vcf
         command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
         os.system(command)
-
 
     vcf_reader = vcf.Reader(open('sample.vcf', 'r'))
     n_samples = len(vcf_reader.samples)
     print('n_samples', n_samples)
 
     if n_samples > 1:
-        #extract individuals and create new users
+        # extract individuals and create new users
         for sample in vcf_reader.samples:
             print(sample)
             command = "bcftools view -c 1 -s %s sample.vcf  > %s.vcf" % (sample, sample)
             print(command)
             os.system(command)
-        #now rename original sample
+        # now rename original sample
         first_sample = vcf_reader.samples[0]
         original_name = individual.name
-        individual.name += ' %s' % (first_sample)
+        individual.name += ' %s' % first_sample
         individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, first_sample)
         # individual.save()
         AnnotateVariants.delay(individual.id)
-        #create other samples
+        # create other samples
         for sample in vcf_reader.samples[1:]:
             print(sample)
             new_individual = Individual.objects.create(user=individual.user, status='new')
-            new_individual.name = original_name + ' %s' % (sample)
+            new_individual.name = original_name + ' %s' % sample
             # new_individual.save()
-            output_folder = '../%s' % (new_individual.id)
+            output_folder = '../%s' % new_individual.id
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
                 os.chmod(output_folder, 0o777)
@@ -121,9 +108,10 @@ def VerifyVCF(individual_id):
             # AnnotateVariants.delay(new_individual.id)
     else:
         AnnotateVariants.delay(individual_id)
-    #check if VCF is multisample
-    #if so extract individuals and create other individual models
-    #if not send it to be annotated
+    # check if VCF is multisample
+    # if so extract individuals and create other individual models
+    # if not send it to be annotated
+
 
 @shared_task()
 def AnnotateVariants(individual_id):
@@ -135,39 +123,34 @@ def AnnotateVariants(individual_id):
 
     individual.status = 'running'
     individual.save()
-    
 
-    #chdir into folder
-    # print 'individual.vcf_file.name'
-    # print individual.vcf_file.name
+    # chdir into folder
     if individual.user:
-        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR,  slugify(individual.user.username), individual.id)
+        path = '%s/genomes/%s/%s' % (settings.BASE_DIR,  slugify(individual.user.username), individual.id)
         email = individual.user.email
     else:
-        path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
+        path = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
         email = 'raonyguimaraes@gmail.com'
     orig_path = os.getcwd()
-    #change to path for the individual folder
+    # change to path for the individual folder
     os.chdir(path)
-    # print(os.getcwd())
 
-    #delete annotation folder before start annotating
+    # delete annotation folder before start annotating
     command = 'rm -rf ann_*'
     os.system(command)
 
     filename = str(individual.vcf_file.name.split('/')[-1])
     print(filename)
-    #deal with different types of compressed files
-    #ex. zip, vcf, gz, rar
-    #check if user uploaded a compressed vcf
+    # deal with different types of compressed files
+    # ex. zip, vcf, gz, rar
+    # check if user uploaded a compressed vcf
     if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
+        command = 'cp %s sample.vcf' % filename
         os.system(command)
     elif filename.endswith('.tar.gz'):
         print('targz')
         tar = tarfile.open(filename, "r:gz")
         for tarinfo in tar:
-            #print(tarinfo.name, "is", tarinfo.size, "bytes in size and is", end="")
             if tarinfo.name.endswith('.vcf'):
                 if not os.path.exists('outdir'):
                     os.mkdir('outdir')
@@ -178,38 +161,31 @@ def AnnotateVariants(individual_id):
                 os.system(command)
     
     if filename.endswith('.vcf.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
+        command = 'gunzip -c -d %s > sample.vcf' % filename
         os.system(command)
     if filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
+        command = 'unzip -p %s > sample.vcf' % filename
         os.system(command)
     if filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
+        command = 'unrar e %s' % filename
         os.system(command)
-        #now change filename to sample.vcf
+        # now change filename to sample.vcf
         command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
         os.system(command)
 
-
-    #     individual.vcf_file.name = individual.vcf_file.name.replace('.zip', '.vcf')
-
-
-    # print(os.getcwd())
     if os.path.exists('sample.vcf'):
         command = 'pynnotator -i sample.vcf'
         os.system(command)
 
-    #get sample name using pyvcf
-
+    # get sample name using pyvcf
     vcf_filename = os.path.splitext(os.path.basename(str(filename)))[0]
 
     # create a folder for the annotation if it doesn't exists,
     # or delete and create if the folder already exists
 
-    #first check if annotation succedded
+    # first check if annotation succedded
     annotation_final_file = 'ann_sample/annotation.final.vcf'
 
-    # print('checking destination ', annotation_final_file)
     stop = datetime.datetime.now()
     elapsed = stop - start
 
@@ -218,21 +194,22 @@ def AnnotateVariants(individual_id):
     if os.path.exists(annotation_final_file):
 
         individual.status = 'annotated'
-        #send email
-        message = """The file %s was annotated with success!\n
-It took %s to execute. \n
-Now we need to insert this data to the database.
-                """ % (individual.name, elapsed)
+        # send email
+        message = """
+            The file %s was annotated with success!\n
+            It took %s to execute. \n
+            Now we need to insert this data to the database.
+            """ % (individual.name, elapsed)
         send_mail('[Mendel,MD] Annotation Completed!', message, 'mendelmd1@gmail.com',
                   ['raonyguimaraes@gmail.com', email], fail_silently=False)
-        #delete ann folder
+        # delete ann folder
         command = 'rm -rf ann_*'
         # os.system(command)
-        #delete sample
+        # delete sample
         command = 'rm -rf sample.vcf'
         os.system(command)
 
-        #zip, and delete annotation folder
+        # zip, and delete annotation folder
 
         command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
         os.system(command)
@@ -240,20 +217,22 @@ Now we need to insert this data to the database.
         PopulateVariants.delay(individual.id)
 
         if individual.vcf_file.name.endswith(".vcf"):
-            command = 'bgzip %s' % (filename)
+            command = 'bgzip %s' % filename
             os.system(command)
-            individual.vcf_file.name = '%s.gz' % (individual.vcf_file.name)
+            individual.vcf_file.name = '%s.gz' % individual.vcf_file.name
 
     else:
         individual.status = 'failed'
-        message = """The Individual %s failed to be annotated!\n
-                It took %s to execute.
-                """ % (individual.name, elapsed)
+        message = """
+            The Individual %s failed to be annotated!\n
+            It took %s to execute.
+            """ % (individual.name, elapsed)
         send_mail('[Mendel,MD] Annotation Failed!', message, 'mendelmd1@gmail.com',
                   ['raonyguimaraes@gmail.com'], fail_silently=False)
 
     individual.save()
     os.chdir(settings.BASE_DIR)
+
 
 def treat_float_max(float_string):
     max_value = -100
@@ -265,6 +244,7 @@ def treat_float_max(float_string):
                 max_value = float_value
     return max_value
 
+
 def treat_float_min(float_string):
     minimum_value = 1
     values = float_string.split(',')
@@ -275,8 +255,8 @@ def treat_float_min(float_string):
                 minimum_value = float_value
     return minimum_value
 
-def parse_vcf(line):
 
+def parse_vcf(line):
     """
     This function is responsible for parsing the VCF file that is generated by our annotator pipeline and
     return a dictionary with the fields to be included in the database
@@ -285,23 +265,21 @@ def parse_vcf(line):
     """
 
     variant = OrderedDict()
-    #parse first VCF Lines
+    # parse first VCF Lines
     variant_line = line.strip().split('\t')
-    # print(variant_line)
-
 
     variant['chr'] = variant_line[0]
 
-    #treat vcfs with chr on the begining of chromossome names
+    # treat vcfs with chr on the begining of chromossome names
     if variant['chr'].startswith('chr'):
-      variant['chr'] = variant['chr'].replace('chr', '')
+        variant['chr'] = variant['chr'].replace('chr', '')
 
     variant['pos'] = variant_line[1]
     variant['variant_id'] = variant_line[2]
     variant['ref'] = variant_line[3]
     variant['alt'] = variant_line[4]
 
-    #this is form strange vcfs without qual values
+    # this is form strange vcfs without qual values
     if variant_line[5] == "-1" or variant_line[5] == ".":
         variant['qual'] = 0.0
     else:
@@ -315,59 +293,52 @@ def parse_vcf(line):
 
     variant['genotype'] = variant['genotype_col'][0]
 
-    # print 'genotype', variant['genotype_col'], variant['genotype']
-
     if variant['genotype'] != './.':
-        #fix because of isaac variant caller, there is no DP
+        # fix because of isaac variant caller, there is no DP
         if 'DP' in variant['format']:
             value = variant['genotype_col'][variant['format'].index('DP')]
             if value.isdigit():
                 variant['read_depth'] = int(value)
             else:
-                # print('not an integer', value, variant['pos'])
                 variant['read_depth'] = 0
         else:
             variant['read_depth'] = 0
     else:
         variant['read_depth'] = 0
 
-    #annotations
+    # annotations
     info = variant_line[7]
     string = info.split(';')
 
-    #create a dict with all annotations at INFO field
+    # create a dict with all annotations at INFO field
     information = {}
-    # dbnfsp_fields = []
     for element in string:
-      #get all tags from line
-      element = element.split('=')
-      tag = element[0]
-      if len(element) > 1:
-        information[tag] = element[1]#.decode("utf-8", "ignore")
-      else:
-        information[tag] = tag
-        # if element[0].startswith('dbNSFP'):
-        #     dbnfsp_fields.append(element)
-    if 'HET' in  information:
+        # get all tags from line
+        element = element.split('=')
+        tag = element[0]
+        if len(element) > 1:
+            information[tag] = element[1]
+        else:
+            information[tag] = tag
+    if 'HET' in information:
         variant['mutation_type'] = 'HET'
-    elif 'HOM' in  information:
+    elif 'HOM' in information:
         variant['mutation_type'] = 'HOM'
     else:
         variant['mutation_type'] = None
 
-    if 'VARTYPE' in  information:
+    if 'VARTYPE' in information:
         variant['vartype'] = information['VARTYPE']
     else:
         variant['vartype'] = None
 
-    #serialize object with pickle
-    variant['info'] = json.dumps(information)#.decode("utf-8", "ignore")
+    # serialize object with pickle
+    variant['info'] = json.dumps(information)
 
-    # print 'information dict'
-    # print information
-
-    #parse VEP
-    #Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|SIFT|PolyPhen
+    # parse VEP
+    # Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position
+    # |CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID
+    # |SIFT|PolyPhen
 
     if 'CSQ' in information:
         vep = OrderedDict()
@@ -401,37 +372,34 @@ def parse_vcf(line):
         vep['sift'] = vep_list[23]
         vep['polyphen2'] = vep_list[24]
 
-
-        # print vep
         variant['vep'] = vep
         variant['gene'] = vep['SYMBOL']
 
     else:
         variant['gene'] = None
 
-    #treat vep sift, polyphen
+    # treat vep sift, polyphen
     csq_list = ['sift', 'polyphen2']
     for tag in csq_list:
-        tag_pred = '%s_pred' % (tag)
+        tag_pred = '%s_pred' % tag
 
-        variant[tag]=None
-        variant[tag_pred]=None
+        variant[tag] = None
+        variant[tag_pred] = None
 
         if 'vep' in variant:
             if vep[tag] != '':
-                # print('veptag', tag, vep[tag])
                 value = vep[tag].split('(')
-                variant[tag] = float(value[1].replace(')',''))
+                variant[tag] = float(value[1].replace(')', ''))
                 variant[tag_pred] = value[0]
 
-    #parse SNPEFF
-    ##INFO=<ID=EFF,Number=.,Type=String,Description="Predicted effects for this variant.Format: 'Effect ( Effect_Impact | Functional_Class | Codon_Change | Amino_Acid_Change| Amino_Acid_length | Gene_Name | Transcript_BioType | Gene_Coding | Transcript_ID | Exon_Rank  | Genotype_Number [ | ERRORS | WARNINGS ] )' ">
+    # parse SNPEFF
+    # #INFO=<ID=EFF,Number=.,Type=String,Description="Predicted effects for this variant.Format:
+    # 'Effect ( Effect_Impact | Functional_Class | Codon_Change | Amino_Acid_Change| Amino_Acid_length | Gene_Name |
+    # Transcript_BioType | Gene_Coding | Transcript_ID | Exon_Rank  | Genotype_Number [ | ERRORS | WARNINGS ] )' ">
 
     if 'EFF' in information:
-        # print information['EFF']
         variant['snpeff'] = []
         effects = information['EFF'].split(',')
-        # print len(effects), effects
         for ann in effects:
             snpeff = OrderedDict()
 
@@ -439,7 +407,10 @@ def parse_vcf(line):
 
             eff_str_list = eff_str.split('(')
             effects = eff_str_list[1].split('|')
-            #EFF,Number=.,Type=String,Description="Predicted effects for this variant.Format: 'Effect ( Effect_Impact | Functional_Class | Codon_Change | Amino_Acid_Change| Amino_Acid_length | Gene_Name | Transcript_BioType | Gene_Coding | Transcript_ID | Exon_Rank  | Genotype [ | ERRORS | WARNINGS ] )' ">
+            # EFF,Number=.,Type=String,Description="Predicted effects for this variant.Format:
+            # 'Effect ( Effect_Impact | Functional_Class | Codon_Change | Amino_Acid_Change| Amino_Acid_length |
+            # Gene_Name | Transcript_BioType | Gene_Coding | Transcript_ID | Exon_Rank  | Genotype [ | ERRORS |
+            # WARNINGS ] )' ">
             snpeff['effect'] = eff_str_list[0]
             snpeff['impact'] = effects[0]
             snpeff['func_class'] = effects[1]
@@ -459,26 +430,24 @@ def parse_vcf(line):
         if tag in information:
             variant[tag] = treat_float_min(information[tag])
         else:
-             variant[tag] = None
+            variant[tag] = None
 
-    #Special TAG FROM ESP6500
+    # Special TAG FROM ESP6500
     try:
-      variant['esp6500.MAF'] = float(information['esp6500.MAF'].split(',')[-1]) / 100.0
-    except (KeyError):
-      variant['esp6500.MAF'] = None
-    #dbsnp CAF
+        variant['esp6500.MAF'] = float(information['esp6500.MAF'].split(',')[-1]) / 100.0
+    except KeyError:
+        variant['esp6500.MAF'] = None
+    # dbsnp CAF
     try:
         caf = information['dbsnp.CAF']
         caf = caf.replace('[', '').replace(']', '').split(',')
-        # print 'caf', caf
         floats = []
         for x in caf:
             if x != '.':
                 floats.append(float(x))
-        # print sorted(floats, key=float, reverse=True)
-        #get always second element from this list
+        # get always second element from this list
         variant['dbsnp.MAF'] = floats[1]
-    except (KeyError):
+    except KeyError:
         variant['dbsnp.MAF'] = None
 
     if 'dbsnp.dbSNPBuildID' in information:
@@ -487,7 +456,35 @@ def parse_vcf(line):
     else:
         variant['dbsnp_build'] = None
 
-    dbnfsp_fields = ['dbNSFP_SIFT_score', 'dbNSFP_SIFT_converted_rankscore', 'dbNSFP_SIFT_pred', 'dbNSFP_Uniprot_acc_Polyphen2', 'dbNSFP_Uniprot_id_Polyphen2', 'dbNSFP_Uniprot_aapos_Polyphen2', 'dbNSFP_Polyphen2_HDIV_score', 'dbNSFP_Polyphen2_HDIV_rankscore', 'dbNSFP_Polyphen2_HDIV_pred', 'dbNSFP_Polyphen2_HVAR_score', 'dbNSFP_Polyphen2_HVAR_rankscore', 'dbNSFP_Polyphen2_HVAR_pred', 'dbNSFP_LRT_score', 'dbNSFP_LRT_converted_rankscore', 'dbNSFP_LRT_pred', 'dbNSFP_LRT_Omega', 'dbNSFP_MutationTaster_score', 'dbNSFP_MutationTaster_converted_rankscore', 'dbNSFP_MutationTaster_pred', 'dbNSFP_MutationTaster_model', 'dbNSFP_MutationTaster_AAE', 'dbNSFP_MutationAssessor_UniprotID', 'dbNSFP_MutationAssessor_variant', 'dbNSFP_MutationAssessor_score', 'dbNSFP_MutationAssessor_rankscore', 'dbNSFP_MutationAssessor_pred', 'dbNSFP_FATHMM_score', 'dbNSFP_FATHMM_converted_rankscore', 'dbNSFP_FATHMM_pred', 'dbNSFP_PROVEAN_score', 'dbNSFP_PROVEAN_converted_rankscore', 'dbNSFP_PROVEAN_pred', 'dbNSFP_Transcript_id_VEST3', 'dbNSFP_Transcript_var_VEST3', 'dbNSFP_VEST3_score', 'dbNSFP_VEST3_rankscore', 'dbNSFP_MetaSVM_score', 'dbNSFP_MetaSVM_rankscore', 'dbNSFP_MetaSVM_pred', 'dbNSFP_MetaLR_score', 'dbNSFP_MetaLR_rankscore', 'dbNSFP_MetaLR_pred', 'dbNSFP_Reliability_index', 'dbNSFP_M-CAP_score', 'dbNSFP_M-CAP_rankscore', 'dbNSFP_M-CAP_pred', 'dbNSFP_REVEL_score', 'dbNSFP_REVEL_rankscore', 'dbNSFP_MutPred_score', 'dbNSFP_MutPred_rankscore', 'dbNSFP_MutPred_protID', 'dbNSFP_MutPred_AAchange', 'dbNSFP_MutPred_Top5features', 'dbNSFP_CADD_raw', 'dbNSFP_CADD_raw_rankscore', 'dbNSFP_CADD_phred', 'dbNSFP_DANN_score', 'dbNSFP_DANN_rankscore', 'dbNSFP_fathmm-MKL_coding_score', 'dbNSFP_fathmm-MKL_coding_rankscore', 'dbNSFP_fathmm-MKL_coding_pred', 'dbNSFP_fathmm-MKL_coding_group', 'dbNSFP_Eigen_coding_or_noncoding', 'dbNSFP_Eigen-raw', 'dbNSFP_Eigen-phred', 'dbNSFP_Eigen-PC-raw', 'dbNSFP_Eigen-PC-phred', 'dbNSFP_Eigen-PC-raw_rankscore', 'dbNSFP_GenoCanyon_score', 'dbNSFP_GenoCanyon_score_rankscore', 'dbNSFP_integrated_fitCons_score', 'dbNSFP_integrated_fitCons_rankscore', 'dbNSFP_integrated_confidence_value', 'dbNSFP_GM12878_fitCons_score', 'dbNSFP_GM12878_fitCons_rankscore', 'dbNSFP_GM12878_confidence_value', 'dbNSFP_H1-hESC_fitCons_score', 'dbNSFP_H1-hESC_fitCons_rankscore', 'dbNSFP_H1-hESC_confidence_value', 'dbNSFP_HUVEC_fitCons_score', 'dbNSFP_HUVEC_fitCons_rankscore', 'dbNSFP_clinvar_rs', 'dbNSFP_clinvar_clnsig', 'dbNSFP_clinvar_trait', 'dbNSFP_clinvar_golden_stars']
+    dbnfsp_fields = ['dbNSFP_SIFT_score', 'dbNSFP_SIFT_converted_rankscore', 'dbNSFP_SIFT_pred',
+                     'dbNSFP_Uniprot_acc_Polyphen2', 'dbNSFP_Uniprot_id_Polyphen2', 'dbNSFP_Uniprot_aapos_Polyphen2',
+                     'dbNSFP_Polyphen2_HDIV_score', 'dbNSFP_Polyphen2_HDIV_rankscore', 'dbNSFP_Polyphen2_HDIV_pred',
+                     'dbNSFP_Polyphen2_HVAR_score', 'dbNSFP_Polyphen2_HVAR_rankscore', 'dbNSFP_Polyphen2_HVAR_pred',
+                     'dbNSFP_LRT_score', 'dbNSFP_LRT_converted_rankscore', 'dbNSFP_LRT_pred', 'dbNSFP_LRT_Omega',
+                     'dbNSFP_MutationTaster_score', 'dbNSFP_MutationTaster_converted_rankscore',
+                     'dbNSFP_MutationTaster_pred', 'dbNSFP_MutationTaster_model', 'dbNSFP_MutationTaster_AAE',
+                     'dbNSFP_MutationAssessor_UniprotID', 'dbNSFP_MutationAssessor_variant',
+                     'dbNSFP_MutationAssessor_score', 'dbNSFP_MutationAssessor_rankscore',
+                     'dbNSFP_MutationAssessor_pred', 'dbNSFP_FATHMM_score', 'dbNSFP_FATHMM_converted_rankscore',
+                     'dbNSFP_FATHMM_pred', 'dbNSFP_PROVEAN_score', 'dbNSFP_PROVEAN_converted_rankscore',
+                     'dbNSFP_PROVEAN_pred', 'dbNSFP_Transcript_id_VEST3', 'dbNSFP_Transcript_var_VEST3',
+                     'dbNSFP_VEST3_score', 'dbNSFP_VEST3_rankscore', 'dbNSFP_MetaSVM_score', 'dbNSFP_MetaSVM_rankscore',
+                     'dbNSFP_MetaSVM_pred', 'dbNSFP_MetaLR_score', 'dbNSFP_MetaLR_rankscore', 'dbNSFP_MetaLR_pred',
+                     'dbNSFP_Reliability_index', 'dbNSFP_M-CAP_score', 'dbNSFP_M-CAP_rankscore', 'dbNSFP_M-CAP_pred',
+                     'dbNSFP_REVEL_score', 'dbNSFP_REVEL_rankscore', 'dbNSFP_MutPred_score', 'dbNSFP_MutPred_rankscore',
+                     'dbNSFP_MutPred_protID', 'dbNSFP_MutPred_AAchange', 'dbNSFP_MutPred_Top5features',
+                     'dbNSFP_CADD_raw', 'dbNSFP_CADD_raw_rankscore', 'dbNSFP_CADD_phred', 'dbNSFP_DANN_score',
+                     'dbNSFP_DANN_rankscore', 'dbNSFP_fathmm-MKL_coding_score', 'dbNSFP_fathmm-MKL_coding_rankscore',
+                     'dbNSFP_fathmm-MKL_coding_pred', 'dbNSFP_fathmm-MKL_coding_group',
+                     'dbNSFP_Eigen_coding_or_noncoding', 'dbNSFP_Eigen-raw', 'dbNSFP_Eigen-phred',
+                     'dbNSFP_Eigen-PC-raw', 'dbNSFP_Eigen-PC-phred', 'dbNSFP_Eigen-PC-raw_rankscore',
+                     'dbNSFP_GenoCanyon_score', 'dbNSFP_GenoCanyon_score_rankscore', 'dbNSFP_integrated_fitCons_score',
+                     'dbNSFP_integrated_fitCons_rankscore', 'dbNSFP_integrated_confidence_value',
+                     'dbNSFP_GM12878_fitCons_score', 'dbNSFP_GM12878_fitCons_rankscore',
+                     'dbNSFP_GM12878_confidence_value', 'dbNSFP_H1-hESC_fitCons_score',
+                     'dbNSFP_H1-hESC_fitCons_rankscore', 'dbNSFP_H1-hESC_confidence_value',
+                     'dbNSFP_HUVEC_fitCons_score', 'dbNSFP_HUVEC_fitCons_rankscore', 'dbNSFP_clinvar_rs',
+                     'dbNSFP_clinvar_clnsig', 'dbNSFP_clinvar_trait', 'dbNSFP_clinvar_golden_stars']
     dbnfsp = {}
 
     for field in dbnfsp_fields:
@@ -495,30 +492,27 @@ def parse_vcf(line):
             dbnfsp[field] = information[field]
         else:
             dbnfsp[field] = None
-    # print(dbnfsp)
 
     variant['dbNSFP'] = dbnfsp
 
-    # #cadd
+    # cadd
     if 'dbNSFP_CADD_raw' in information:
         variant['cadd'] = treat_float_max(dbnfsp['dbNSFP_CADD_raw'])
     else:
-        variant['cadd']=None
+        variant['cadd'] = None
 
     if 'dbNSFP_M-CAP_score' in information:
         variant['mcap'] = treat_float_max(dbnfsp['dbNSFP_M-CAP_score'])
     else:
-        variant['mcap']=None
+        variant['mcap'] = None
 
-
-
-
-    #is at OMIM
+    # is at OMIM
     if 'clinvar.OM' in information:
         variant['is_at_omim'] = True
     else:
         variant['is_at_omim'] = False
-    #is at HGMD
+
+    # is at HGMD
     if 'HGMD' in information:
         variant['is_at_hgmd'] = True
         variant['hgmd_entries'] = information['HGMD']
@@ -531,14 +525,13 @@ def parse_vcf(line):
     else:
         variant['hi_index_str'] = None
 
-    #create unique index for each chr-pos-genotype
-    #genotype, ref and alt
-    genotype_list = []
-    genotype_list.append(variant['ref'])
+    # create unique index for each chr-pos-genotype
+    # genotype, ref and alt
+    genotype_list = [variant['ref']]
     for item in variant['alt'].split(','):
         genotype_list.append(item)
 
-    #create individual genotype list
+    # create individual genotype list
     ind_genotype_list = []
     if len(variant['genotype']) > 1:
         if variant['genotype'][0] != '.':
@@ -557,36 +550,28 @@ def parse_vcf(line):
     variant['index'] = '%s-%s-%s' % (variant['chr'], variant['pos'], "-".join(ind_genotype_list))
     variant['pos_index'] = '%s-%s' % (variant['chr'], variant['pos'])
 
-    # print index
-    # print(variant)
     return variant
+
 
 @shared_task()
 def PopulateVariants(individual_id):
-    # print os.getcwd()
 
-    #delete variants from individual before inserting
+    # delete variants from individual before inserting
     individual = get_object_or_404(Individual, pk=individual_id)
     Variant.objects.filter(individual=individual).delete()
-    #SnpeffAnnotation.objects.filter(individual=individual).delete()
-    #VEPAnnotation.objects.filter(individual=individual).delete()
+    # SnpeffAnnotation.objects.filter(individual=individual).delete()
+    # VEPAnnotation.objects.filter(individual=individual).delete()
 
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
 
     print('Populating %s %s' % (individual.id, filename))
-    os.system('echo "Populating Individual %s"' % (individual.name))
-    # print filepath
-    # print filename
-    #print basename
-    #gzip. and .gz
+    os.system('echo "Populating Individual %s"' % individual.name)
+    # gzip. and .gz
     # data = open('%s/%s/ann_sample/annotation.final.vcf' % (path, filepath), 'r')
 
-    z = zipfile.ZipFile('%s/annotation.final.vcf.zip' % (filepath), 'r')
+    z = zipfile.ZipFile('%s/annotation.final.vcf.zip' % filepath, 'r')
     data = z.open('ann_sample/annotation.final.vcf', 'r')
-
-    #print 'Populating from file %s.fullannotation.vcf' % (basename)
-
 
     start = datetime.datetime.now()
 
@@ -599,115 +584,105 @@ def PopulateVariants(individual_id):
     vep_dict = {}
 
     for line in data:
-        # print(line)
         line = line.decode("utf-8", "ignore")
-        # print(line)
-        # print('Hello')
         if line != '':
             if not line.startswith('#'):
-
                 count += 1
                 count2 += 1
-
-                #bulk insert variants objects
+                # bulk insert variants objects
                 if count == 10000:
-                    # print "Inserting %s " % (count2),
                     Variant.objects.bulk_create(variants)
-                    # print ' Done!'
                     count = 0
                     variants = []
 
-                #now parse
+                # now parse
                 variant = parse_vcf(line)
-                #print(variant)
-                #variant_dict['individual_id'] = individual.id
-                # print 'index', variant
+                # variant_dict['individual_id'] = individual.id
                 # variant.snpeff.add(snpeff)
                 variant_obj = Variant(
-                individual=individual,
-                index=variant['index'],
-                pos_index=variant['pos_index'],
-                chr=variant['chr'],
-                pos=variant['pos'],
-                variant_id=variant['variant_id'],
-                ref=variant['ref'],
-                alt=variant['alt'],
-                qual=variant['qual'],
-                filter=variant['filter'],
-                info=variant['info'],
-                genotype=variant['genotype'],
-                genotype_col=variant['genotype_col'],
-                format=variant['format'],
-                read_depth=variant['read_depth'],
-                gene=variant['gene'],
-                mutation_type=variant['mutation_type'],
-                vartype=variant['vartype'],
-                genomes1k_maf=variant['genomes1k.AF'],
-                dbsnp_maf=variant['dbsnp.MAF'],
-                esp_maf=variant['esp6500.MAF'],
-                dbsnp_build=variant['dbsnp_build'],
-                sift=variant['sift'],
-                sift_pred=variant['sift_pred'],
-                polyphen2=variant['polyphen2'],
-                polyphen2_pred=variant['polyphen2_pred'],
-                # condel=variant['condel'],
-                # condel_pred=variant['condel_pred'],
-                cadd=variant['cadd'],
-                # dann=variant['dann'],
-                is_at_omim=variant['is_at_omim'],
-                is_at_hgmd=variant['is_at_hgmd'],
-                hgmd_entries=variant['hgmd_entries'],
-                hi_index_str=variant['hi_index_str'],
+                    individual=individual,
+                    index=variant['index'],
+                    pos_index=variant['pos_index'],
+                    chr=variant['chr'],
+                    pos=variant['pos'],
+                    variant_id=variant['variant_id'],
+                    ref=variant['ref'],
+                    alt=variant['alt'],
+                    qual=variant['qual'],
+                    filter=variant['filter'],
+                    info=variant['info'],
+                    genotype=variant['genotype'],
+                    genotype_col=variant['genotype_col'],
+                    format=variant['format'],
+                    read_depth=variant['read_depth'],
+                    gene=variant['gene'],
+                    mutation_type=variant['mutation_type'],
+                    vartype=variant['vartype'],
+                    genomes1k_maf=variant['genomes1k.AF'],
+                    dbsnp_maf=variant['dbsnp.MAF'],
+                    esp_maf=variant['esp6500.MAF'],
+                    dbsnp_build=variant['dbsnp_build'],
+                    sift=variant['sift'],
+                    sift_pred=variant['sift_pred'],
+                    polyphen2=variant['polyphen2'],
+                    polyphen2_pred=variant['polyphen2_pred'],
+                    # condel=variant['condel'],
+                    # condel_pred=variant['condel_pred'],
+                    cadd=variant['cadd'],
+                    # dann=variant['dann'],
+                    is_at_omim=variant['is_at_omim'],
+                    is_at_hgmd=variant['is_at_hgmd'],
+                    hgmd_entries=variant['hgmd_entries'],
+                    hi_index_str=variant['hi_index_str'],
                 )
 
-                # print variant['index']
                 # variant_obj.save()
-                #parse snpeff
+                # parse snpeff
 
                 if 'snpeff' in variant:
-                    #for snpeff in variant['snpeff']:
-                        #snpeff = SnpeffAnnotation(
-                    variant_obj.snpeff_effect=variant['snpeff'][0]['effect']
-                    variant_obj.snpeff_impact=variant['snpeff'][0]['impact']
-                    variant_obj.snpeff_func_class=variant['snpeff'][0]['func_class']
-                    variant_obj.snpeff_codon_change=variant['snpeff'][0]['codon_change']
-                    variant_obj.snpeff_aa_change=variant['snpeff'][0]['aa_change']
-                    # variant_obj.snpeff_aa_len=variant['snpeff'][0]['aa_len']
-                    variant_obj.snpeff_gene_name=variant['snpeff'][0]['gene_name']
-                    variant_obj.snpeff_biotype=variant['snpeff'][0]['biotype']
-                    variant_obj.snpeff_gene_coding=variant['snpeff'][0]['gene_coding']
-                    variant_obj.snpeff_transcript_id=variant['snpeff'][0]['transcript_id']
-                    variant_obj.snpeff_exon_rank=variant['snpeff'][0]['exon_rank']
-                    # variant_obj.snpeff_genotype_number=variant['snpeff'][0]['genotype_number']
-                    #)
-                    #snpeff_dict[variant['index']] = snpeff
+                    variant_snpeff = variant['snpeff'][0]
+                    # for snpeff in variant['snpeff']:
+                    # snpeff = SnpeffAnnotation(
+                    variant_obj.snpeff_effect = variant_snpeff['effect']
+                    variant_obj.snpeff_impact = variant_snpeff['impact']
+                    variant_obj.snpeff_func_class = variant_snpeff['func_class']
+                    variant_obj.snpeff_codon_change = variant_snpeff['codon_change']
+                    variant_obj.snpeff_aa_change = variant_snpeff['aa_change']
+                    # variant_obj.snpeff_aa_len=variant_snpeff['aa_len']
+                    variant_obj.snpeff_gene_name = variant_snpeff['gene_name']
+                    variant_obj.snpeff_biotype = variant_snpeff['biotype']
+                    variant_obj.snpeff_gene_coding = variant_snpeff['gene_coding']
+                    variant_obj.snpeff_transcript_id = variant_snpeff['transcript_id']
+                    variant_obj.snpeff_exon_rank = variant_snpeff['exon_rank']
+                    # variant_obj.snpeff_genotype_number = variant_snpeff['genotype_number']
+                    # )
+                    # snpeff_dict[variant['index']] = snpeff
 
-                #parse vep
+                # parse vep
                 if 'vep' in variant:
-                    #vep = VEPAnnotation(
-                    variant_obj.vep_allele=variant['vep']['Allele']
-                    variant_obj.vep_gene=variant['vep']['Gene']
-                    variant_obj.vep_feature=variant['vep']['Feature']
-                    variant_obj.vep_feature_type=variant['vep']['Feature_type']
-                    variant_obj.vep_consequence=variant['vep']['Consequence']
-                    variant_obj.vep_cdna_position=variant['vep']['cDNA_position']
-                    variant_obj.vep_cds_position=variant['vep']['CDS_position']
-                    variant_obj.vep_protein_position=variant['vep']['Protein_position']
-                    variant_obj.vep_amino_acids=variant['vep']['Amino_acids']
-                    variant_obj.vep_codons=variant['vep']['Codons']
-                    variant_obj.vep_existing_variation=variant['vep']['Existing_variation']
-                    variant_obj.vep_distance=variant['vep']['DISTANCE']
-                    variant_obj.vep_strand=variant['vep']['STRAND']
-                    variant_obj.vep_symbol=variant['vep']['SYMBOL']
-                    variant_obj.vep_symbol_source=variant['vep']['SYMBOL_SOURCE']
-                    variant_obj.vep_sift=variant['vep']['sift']
-                    variant_obj.vep_polyphen=variant['vep']['polyphen2']
-                    # variant_obj.vep_condel=variant['vep']['condel']
-                    # variant_obj.rf_score=variant['vep']['rf_score']
-                    # variant_obj.ada_score=variant['vep']['ada_score']
-
-                    #)
-                    #vep_dict[variant['index']] = vep
+                    # vep = VEPAnnotation(
+                    variant_obj.vep_allele = variant['vep']['Allele']
+                    variant_obj.vep_gene = variant['vep']['Gene']
+                    variant_obj.vep_feature = variant['vep']['Feature']
+                    variant_obj.vep_feature_type = variant['vep']['Feature_type']
+                    variant_obj.vep_consequence = variant['vep']['Consequence']
+                    variant_obj.vep_cdna_position = variant['vep']['cDNA_position']
+                    variant_obj.vep_cds_position = variant['vep']['CDS_position']
+                    variant_obj.vep_protein_position = variant['vep']['Protein_position']
+                    variant_obj.vep_amino_acids = variant['vep']['Amino_acids']
+                    variant_obj.vep_codons = variant['vep']['Codons']
+                    variant_obj.vep_existing_variation = variant['vep']['Existing_variation']
+                    variant_obj.vep_distance = variant['vep']['DISTANCE']
+                    variant_obj.vep_strand = variant['vep']['STRAND']
+                    variant_obj.vep_symbol = variant['vep']['SYMBOL']
+                    variant_obj.vep_symbol_source = variant['vep']['SYMBOL_SOURCE']
+                    variant_obj.vep_sift = variant['vep']['sift']
+                    variant_obj.vep_polyphen = variant['vep']['polyphen2']
+                    # variant_obj.vep_condel = variant['vep']['condel']
+                    # variant_obj.rf_score = variant['vep']['rf_score']
+                    # variant_obj.ada_score = variant['vep']['ada_score']
+                    # )
+                    # vep_dict[variant['index']] = vep
 
                 if 'dbNSFP' in variant:
 
@@ -728,7 +703,8 @@ def PopulateVariants(individual_id):
                     variant_obj.LRT_pred = variant['dbNSFP']['dbNSFP_LRT_pred']
                     variant_obj.LRT_Omega = variant['dbNSFP']['dbNSFP_LRT_Omega']
                     variant_obj.MutationTaster_score = variant['dbNSFP']['dbNSFP_MutationTaster_score']
-                    variant_obj.MutationTaster_converted_rankscore = variant['dbNSFP']['dbNSFP_MutationTaster_converted_rankscore']
+                    variant_obj.MutationTaster_converted_rankscore = variant['dbNSFP'][
+                        'dbNSFP_MutationTaster_converted_rankscore']
                     variant_obj.MutationTaster_pred = variant['dbNSFP']['dbNSFP_MutationTaster_pred']
                     variant_obj.MutationTaster_model = variant['dbNSFP']['dbNSFP_MutationTaster_model']
                     variant_obj.MutationTaster_AAE = variant['dbNSFP']['dbNSFP_MutationTaster_AAE']
@@ -786,16 +762,21 @@ def PopulateVariants(individual_id):
                     # variant_obj.GERP_RS = variant['dbNSFP']['dbNSFP_GERP++_RS']
                     # variant_obj.GERP_RS_rankscore = variant['dbNSFP']['dbNSFP_GERP++_RS_rankscore']
                     # variant_obj.phyloP100way_vertebrate = variant['dbNSFP']['dbNSFP_phyloP100way_vertebrate']
-                    # variant_obj.phyloP100way_vertebrate_rankscore = variant['dbNSFP']['dbNSFP_phyloP100way_vertebrate_rankscore']
+                    # variant_obj.phyloP100way_vertebrate_rankscore = variant['dbNSFP'][
+                    # 'dbNSFP_phyloP100way_vertebrate_rankscore']
                     # variant_obj.phyloP20way_mammalian = variant['dbNSFP']['dbNSFP_phyloP20way_mammalian']
-                    # variant_obj.phyloP20way_mammalian_rankscore = variant['dbNSFP']['dbNSFP_phyloP20way_mammalian_rankscore']
+                    # variant_obj.phyloP20way_mammalian_rankscore = variant['dbNSFP'][
+                    # 'dbNSFP_phyloP20way_mammalian_rankscore']
                     # variant_obj.phastCons100way_vertebrate = variant['dbNSFP']['dbNSFP_phastCons100way_vertebrate']
-                    # variant_obj.phastCons100way_vertebrate_rankscore = variant['dbNSFP']['dbNSFP_phastCons100way_vertebrate_rankscore']
+                    # variant_obj.phastCons100way_vertebrate_rankscore = variant['dbNSFP'][
+                    # 'dbNSFP_phastCons100way_vertebrate_rankscore']
                     # variant_obj.phastCons20way_mammalian = variant['dbNSFP']['dbNSFP_phastCons20way_mammalian']
-                    # variant_obj.phastCons20way_mammalian_rankscore = variant['dbNSFP']['dbNSFP_phastCons20way_mammalian_rankscore']
+                    # variant_obj.phastCons20way_mammalian_rankscore = variant['dbNSFP'][
+                    # 'dbNSFP_phastCons20way_mammalian_rankscore']
                     # variant_obj.SiPhy_29way_pi = variant['dbNSFP']['dbNSFP_SiPhy_29way_pi']
                     # variant_obj.SiPhy_29way_logOdds = variant['dbNSFP']['dbNSFP_SiPhy_29way_logOdds']
-                    # variant_obj.SiPhy_29way_logOdds_rankscore = variant['dbNSFP']['dbNSFP_SiPhy_29way_logOdds_rankscore']
+                    # variant_obj.SiPhy_29way_logOdds_rankscore = variant['dbNSFP'][
+                    # 'dbNSFP_SiPhy_29way_logOdds_rankscore']
                     variant_obj.clinvar_rs = variant['dbNSFP']['dbNSFP_clinvar_rs']
                     variant_obj.clinvar_clnsig = variant['dbNSFP']['dbNSFP_clinvar_clnsig']
                     variant_obj.clinvar_trait = variant['dbNSFP']['dbNSFP_clinvar_trait']
@@ -806,8 +787,6 @@ def PopulateVariants(individual_id):
                     variant_obj.revel_score = variant['dbNSFP']['dbNSFP_REVEL_score']
 
                 variants.append(variant_obj)
-                # print 'query', variant_obj.query
-                # print(variant['chr'], variant['pos'])
                 # variant_obj.save()
     Variant.objects.bulk_create(variants)
 
@@ -816,29 +795,27 @@ def PopulateVariants(individual_id):
 
     individual.insertion_time = elapsed
 
-
     individual.status = 'populated'
     individual.n_lines = count2
     individual.save()
 
-
     message = """
-            The individual %s was inserted to the database with success!
-            Now you can check the variants on the link: \n
-            http://mendelmd.org/individuals/view/%s
-                """ % (individual.name, individual.id)
+        The individual %s was inserted to the database with success!
+        Now you can check the variants on the link: \n
+        http://mendelmd.org/individuals/view/%s
+        """ % (individual.name, individual.id)
 
     if individual.user:
         send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
-              ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)
+                  ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)
     else:
         send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
-              ['raonyguimaraes@gmail.com'], fail_silently=False)
-    print('Individual %s Populated!' % (individual.id))
+                  ['raonyguimaraes@gmail.com'], fail_silently=False)
+    print('Individual %s Populated!' % individual.id)
 
     os.system('echo "Individual %s Populated! %s"' % (individual.name, individual.insertion_time))
 
-    command = 'rm -rf %s/ann_sample' % (filepath)
+    command = 'rm -rf %s/ann_sample' % filepath
     os.system(command)
 
     # Find_Medical_Conditions_and_Medicines.delay(individual.id)
