@@ -27,6 +27,6 @@ RUN pip3 install -r requirements.txt
 RUN service rabbitmq-server start
 #ADD . /code/
 #RUN pip3 install pynnotator
-RUN git clone https://github.com/raonyguimaraes/pynnotator.git
-RUN cd /code/pynnotator && python3 setup.py develop
+#RUN git clone https://github.com/raonyguimaraes/pynnotator.git
+#RUN cd /code/pynnotator && python3 setup.py develop
 #RUN pynnotator install
