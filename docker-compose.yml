@@ -7,6 +7,8 @@ volumes:
     driver: local
   esdata02:
     driver: local
+  dbdata:
+    driver: local
 
 networks:
   esnet:
@@ -15,7 +17,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./data/postgresql_data:/var/lib/postgresql/data/
+      - dbdata:/var/lib/postgresql/data/
     restart: always
     networks:
       - esnet

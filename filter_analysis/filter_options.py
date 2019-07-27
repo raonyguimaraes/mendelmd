@@ -1,4 +1,5 @@
 from django.db.models import Q
+from elasticsearch_dsl import Q as EQ
 from diseases.models import *
 from diseases.models import Gene as GeneDisease
 from genes.models import *
@@ -141,10 +142,13 @@ def filter_positions_in_common(request, query, args, exclude):
         positions_in_common_list = set.intersection(*individual_positions_list)                    
         query['pos__in'] = positions_in_common_list#genes_in_common_list
 
+
 def filter_chr(request, query):
     chr = request.GET.get('chr', '')
     if chr != '':
         query['chr'] = chr
+        # EQ('match', chr=chr)
+
 
 def filter_pos(request, query):
     pos = request.GET.get('pos', '')
@@ -152,9 +156,12 @@ def filter_pos(request, query):
         pos = pos.split('-')
         if len(pos) == 2:
             query['pos__range'] = (pos[0], pos[1])
+            # EQ("range", pos={"lte": pos[0], "gte": pos[1]})
         else:
             query['pos'] = pos[0]
-       
+            # EQ('match', pos=pos[0])
+
+
 def filter_snp_list(request, query, exclude):
     snp_list = request.GET.get('snp_list', '')
     snp_list = snp_list.split('\r\n')

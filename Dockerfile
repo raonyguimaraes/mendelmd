@@ -29,6 +29,7 @@ RUN service rabbitmq-server start
 #RUN pip3 install pynnotator
 RUN git clone https://github.com/raonyguimaraes/pynnotator.git
 WORKDIR pynnotator
+RUN git checkout development
 RUN python3 setup.py develop
 #RUN pynnotator install
 WORKDIR /code

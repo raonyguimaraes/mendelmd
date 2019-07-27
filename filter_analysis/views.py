@@ -34,6 +34,9 @@ import json
 
 from django.shortcuts import render
 
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search
+
 # import django_tables2 as tables
 # from django_tables2 import RequestConfig
 
@@ -228,7 +231,7 @@ def filter_analysis_table(request):
     return render(request, 'filter_analysis/table.html', {'table': table})
 
 
-def filter_analysis(request,query, args, exclude):
+def filter_analysis(request, query, args, exclude):
     """
     This function receives request and returns a dictionary with the variants
     """
@@ -376,6 +379,16 @@ def index(request):
             # print('exclude keys', list(exclude.keys()))
             # last call to the DATABASE Finally!!!!!!
             variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
+
+            # args[0] = Search(using=client, index="variant-index").query(
+            #     Q("range", genomes1k_maf={"lte": 0.01, "gte": 0.0}) | ~Q("exists", field='genomes1k_maf')).execute()
+            # args[1] = Search(using=client, index="variant-index").query(
+            #     Q("range", dbsnp_maf={"lte": 0.01, "gte": 0.0}) | ~Q("exists", field='dbsnp_maf')).execute()
+            # args[2] = Search(using=client, index="variant-index").query(
+            #     Q("range", esp_maf={"lte": 0.01, "gte": 0.0}) | ~Q("exists", field='esp_maf')).execute()
+            # args[3] = Search(using=client, index="variant-index").query(
+            #     Q("range", dbsnp_build={"gte": 130}) | ~Q("exists", field='dbsnp_build')).execute()
+            # args[4] = Search(using=client, index="variant-index").query(Q("range", read_depth={"gte": 10})).execute()
             
             # export_to_csv(request, variants)
             export = request.GET.get('export', '')
