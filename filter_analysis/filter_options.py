@@ -15,10 +15,9 @@ import pickle
 from databases.models import VariSNP
 
 
-
-#HERE THE FILTERS STARTS  
+# HERE THE FILTERS STARTS
 def filter_individuals_variants(request, query, args, exclude):
-    #INDIVIDUALS
+    # INDIVIDUALS
     individuals = request.GET.getlist('individuals')
     
     groups = request.GET.getlist('groups')
@@ -33,12 +32,11 @@ def filter_individuals_variants(request, query, args, exclude):
     individuals_list = individuals_list + individuals
     print('individuals_list', individuals_list)
 
-
-    #EXCLUDE individuals
+    # EXCLUDE individuals
     exclude_individuals = request.GET.getlist('exclude_individuals')
 #            print exclude_individuals
     
-    #exclude groups append to individuals
+    # exclude groups append to individuals
     exclude_groups = request.GET.getlist('exclude_groups')
 #            print exclude_groups
     exclude_individuals_list = []
@@ -52,14 +50,14 @@ def filter_individuals_variants(request, query, args, exclude):
     print('exclude_individuals_list', exclude_individuals_list)
             
     exclude_individuals_list = exclude_individuals_list + exclude_individuals
-#            print exclude_individuals_list
     exclude_individuals_variants = {}
-    #exclude variants from individuals
+    # exclude variants from individuals
     if len(exclude_individuals_list) > 0:
         exclude_indexes = Variant.objects.filter(individual__id__in=exclude_individuals_list, *args, **query).exclude(**exclude).values_list('index', flat=True)
         exclude['index__in'] = exclude_indexes
     # print 'return individual list, exxclue', exclude['index__in']
     return individuals_list
+
 
 def filter_variants_per_gene(request, query, args, exclude):
     # OPTION variants per gene
@@ -78,11 +76,8 @@ def filter_variants_per_gene(request, query, args, exclude):
 
         genes_exclude_list = []
         genes_only_list = []
-        #this works for 2 indivuduals in list and will show only genes with variants in both option on
+        # this works for 2 indivuduals in list and will show only genes with variants in both option on
         for individual in query['individual_id__in']:
-#                        print individual
-#                        print query
-#                        print exclude
             print('get list of all genes for each individual')
             individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values('gene').exclude(gene="").annotate(count=Count('gene')).distinct() #.aggregate(Count('gene', distinct=True))
             print(len(individual_genes))
@@ -108,17 +103,18 @@ def filter_variants_per_gene(request, query, args, exclude):
                     else:
                         # if genes_in_common == 'on':
                         genes_exclude_list.append(gene['gene'])
-        #remove variants without gene name                    
+        # remove variants without gene name
         args.append(Q(gene__in=genes_only_list))
         args.append(~Q(gene__in=genes_exclude_list))
-    
+
+
 def filter_genes_in_common(request, query, args, exclude):
-    #option GENES in COMMON
+    # option GENES in COMMON
     print('genes in common')
 
     genes_in_common = request.GET.get('genes_in_common', '')
     if genes_in_common == 'on':
-        #get all genes from individual
+        # get all genes from individual
         individual_gene_list = []
         for individual in query['individual_id__in']:
             individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
@@ -128,19 +124,20 @@ def filter_genes_in_common(request, query, args, exclude):
         genes_in_common_list = set.intersection(*individual_gene_list)                    
         query['gene__in'] = genes_in_common_list#genes_in_common_list
 
+
 def filter_positions_in_common(request, query, args, exclude):
     print('positions in common')
     positions_in_common = request.GET.get('positions_in_common', '')
     if positions_in_common == 'on':
-        #get all genes from individual
+        # get all genes from individual
         individual_positions_list = []
         for individual in query['individual_id__in']:
-            #should be done with an index ex. 1-2835763-C-T 'DONE :)'
+            # should be done with an index ex. 1-2835763-C-T 'DONE :)'
             individual_positions = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('pos', flat=True).distinct()
             individual_positions = set(list(individual_positions))
             individual_positions_list.append(individual_positions)
         positions_in_common_list = set.intersection(*individual_positions_list)                    
-        query['pos__in'] = positions_in_common_list#genes_in_common_list
+        query['pos__in'] = positions_in_common_list  # genes_in_common_list
 
 
 def filter_chr(request, query):
@@ -173,7 +170,9 @@ def filter_snp_list(request, query, exclude):
             for item in row:
                 safe_snp_list.append(item.strip())
         query['variant_id__in'] = safe_snp_list
-    #exclude snp_list
+        # EQ("match", variant_id=str(safe_snp_list))
+
+    # exclude snp_list
     exclude_snp_list = request.GET.get('exclude_snp_list', '')
     exclude_snp_list = exclude_snp_list.split('\r\n')
     if exclude_snp_list[0] != '':
@@ -182,13 +181,15 @@ def filter_snp_list(request, query, exclude):
             row = row.split(',')
             for item in row:
                 safe_exclude_snp_list.append(item.strip())
-        exclude['variant_id__in']=safe_exclude_snp_list#args.append(~Q(variant_id__in=safe_snp_list))
+        exclude['variant_id__in'] = safe_exclude_snp_list  # args.append(~Q(variant_id__in=safe_snp_list))
+        # ~EQ("match", variant_id=str(safe_exclude_snp_list))
+
 
 def filter_gene_list(request, query, args):
-    #Gene List
+    # Gene List
     gene_list = request.GET.get('gene_list', '')
     gene_list = gene_list.split('\r\n')
-#    print 'gene_list'
+    # print 'gene_list'
     if gene_list[0] != '':
         safe_gene_list = []
         for row in gene_list:
@@ -197,6 +198,7 @@ def filter_gene_list(request, query, args):
                 safe_gene_list.append(item.strip().upper())
         print(safe_gene_list)
         query['gene__in'] = safe_gene_list
+        # EQ("match", gene=str(safe_gene_list))
     
     exclude_gene_list = request.GET.get('exclude_gene_list', '')
     exclude_gene_list = exclude_gene_list.split('\r\n')
@@ -208,7 +210,9 @@ def filter_gene_list(request, query, args):
                 safe_gene_list.append(item.strip().upper())
         print(safe_gene_list)
         args.append(~Q(gene__in=safe_gene_list))
-    
+        # ~EQ("match", gene=str(safe_gene_list))
+
+
 def filter_mutation_type(request, args):
 
     genotype = request.GET.get('genotype', '')
@@ -216,15 +220,18 @@ def filter_mutation_type(request, args):
     if genotype != '':
         print('genotype', genotype)
         args.append(Q(genotype=genotype))
-
+        # EQ("match_phrase", genotype=genotype)
 
     mutation_type = request.GET.get('mutation_type', '')
     if mutation_type == 'homozygous':
         # genotypes = ['0/0', './.', '0/1', '1/0', '0/2', '2/0']
         args.append(Q(mutation_type='HOM'))
+        # EQ("match_phrase", mutation_type='HOM')
     elif mutation_type == 'heterozygous':
-        #genotypes = ['0/0', './.', '1/1', '2/1', '1/2', '2/2']
+        # genotypes = ['0/0', './.', '1/1', '2/1', '1/2', '2/2']
         args.append(Q(mutation_type='HET'))
+        # EQ("match_phrase", mutation_type='HET')
+
 
 def filter_effect(request, query):
     effect = request.GET.getlist('effect')
@@ -232,78 +239,82 @@ def filter_effect(request, query):
         # query['snp_eff__in'] = variant_type
         print('effect', effect)
         query['snpeff_effect__in'] = effect
+        # EQ("match", snpeff_effect=str(effect))
 
 
 def filter_dbsnp(request, query):
     dbsnp = request.GET.get('dbsnp', '')
     if dbsnp == 'on':
         query['variant_id'] = "."
+        # EQ("match_phrase", variant_id='.')
+
 
 def filter_varisnp(request, query, exclude):
 
     exclude_varisnp = request.GET.get('exclude_varisnp', '')
     if exclude_varisnp == 'on':
-
         snp_list = VariSNP.objects.all().values_list('dbsnp_id', flat=True)
-        
-        # safe_snp_list = []
-        # for snp in snp_list:
-        #     safe_snp_list.append(str(snp))
-        # print 'snp_list', len(snp_list), snp_list[:5]
-        # snp_list = list(snp_list)
-        # print 'snp_list depois', len(snp_list), snp_list[:5]
 
+        safe_snp_list = [str(snp) for snp in snp_list]
 
         if 'variant_id__in' in exclude:
-            # print 'varisnp variant_id__in ja existe!'
-            # print snp_list
             exclude['variant_id__in'].extend(safe_snp_list)
         else:
             exclude['variant_id__in'] = safe_snp_list
+        # ~EQ("match", variant_id=str(safe_snp_list))
+
 
 def filter_by_1000g(request, args):
     genomes1000_exclude = request.GET.get('genomes1000_exclude', '')
     if genomes1000_exclude == 'on':
         args.append(Q(genomes1k_maf__isnull=True))
+        # ~EQ("exists", field='genomes1k_maf')
     else:
         genomes1000 = request.GET.get('genomes1000', '')
         if genomes1000 != '':
             genomes1000 = genomes1000.split(' - ')
+            min = max = 0
             if len(genomes1000) == 2:
                 min = float(genomes1000[0]) 
                 max = float(genomes1000[1])
-                args.append((Q(genomes1k_maf__lte=max) & Q(genomes1k_maf__gte=min)) | Q(genomes1k_maf__isnull=True))
             if len(genomes1000) == 1:
                 max = float(genomes1000[0])
-                args.append((Q(genomes1k_maf__lte=max) & Q(genomes1k_maf__gte=0)) | Q(genomes1k_maf__isnull=True))
+            args.append((Q(genomes1k_maf__lte=max) & Q(genomes1k_maf__gte=min)) | Q(genomes1k_maf__isnull=True))
+            # EQ("range", genomes1k_maf={"lte": max, "gte": min}) | ~EQ("exists", field='genomes1k_maf')
+
 
 def filter_by_dbsnp(request, args):
     dbsnp_exclude = request.GET.get('dbsnp_exclude', '')
     if dbsnp_exclude == 'on':
         args.append(Q(dbsnp_maf__isnull=True))
+        # ~EQ("exists", field='dbsnp_maf')
     else:
         dbsnp = request.GET.get('dbsnp_frequency', '')
         if dbsnp != '':
             dbsnp = dbsnp.split(' - ')
+            min = max = 0
             if len(dbsnp) == 2:
                 min = float(dbsnp[0]) 
                 max = float(dbsnp[1])
-                args.append((Q(dbsnp_maf__lte=max) & Q(dbsnp_maf__gte=min)) | Q(dbsnp_maf__isnull=True))    
             if len(dbsnp) == 1:
                 max = float(dbsnp[0])
-                args.append((Q(dbsnp_maf__lte=max) & Q(dbsnp_maf__gte=0)) | Q(dbsnp_maf__isnull=True))    
+            args.append((Q(dbsnp_maf__lte=max) & Q(dbsnp_maf__gte=min)) | Q(dbsnp_maf__isnull=True))
+            # EQ("range", dbsnp_maf={"lte": max, "gte": min}) | ~EQ("exists", field='dbsnp_maf')
+
 
 def filter_by_esp(request, args):
     esp_exclude = request.GET.get('esp_exclude', '')
     if esp_exclude == 'on':
         args.append(Q(esp_maf__isnull=True))
+        # ~EQ("exists", field='esp_maf')
     else:
         esp = request.GET.get('esp_frequency', '')
         if esp != '':
             esp = esp.split(' - ')
             min = float(esp[0]) 
             max = float(esp[1])
-            args.append((Q(esp_maf__lte=max) & Q(esp_maf__gte=min)) | Q(esp_maf__isnull=True))     
+            args.append((Q(esp_maf__lte=max) & Q(esp_maf__gte=min)) | Q(esp_maf__isnull=True))
+            # EQ("range", esp_maf={"lte": max, "gte": min}) | ~EQ("exists", field='esp_maf')
                
 # def filter_genomes1000(request, args):
 #     #1000genomes
@@ -342,7 +353,8 @@ def filter_by_esp(request, args):
 
 
 def filter_by_individuals(request, args, query, exclude):
-    #INDIVIDUALS
+    # ToDo: Refactor this method before change it to ElasticSearch
+    # INDIVIDUALS
     individuals = request.GET.getlist('individuals')
     
     groups = request.GET.getlist('groups')
@@ -357,14 +369,12 @@ def filter_by_individuals(request, args, query, exclude):
     individuals_list = individuals_list + individuals
     print('individuals_list', individuals_list)
 
-
-    #EXCLUDE individuals
+    # EXCLUDE individuals
     exclude_individuals = request.GET.getlist('exclude_individuals')
-#            print exclude_individuals
-    
-    #exclude groups append to individuals
+
+    # exclude groups append to individuals
     exclude_groups = request.GET.getlist('exclude_groups')
-#            print exclude_groups
+
     exclude_individuals_list = []
     if len(exclude_groups) > 0:
         for group_id in exclude_groups:
@@ -376,20 +386,18 @@ def filter_by_individuals(request, args, query, exclude):
     print('exclude_individuals_list', exclude_individuals_list)
             
     exclude_individuals_list = exclude_individuals_list + exclude_individuals
-#            print exclude_individuals_list
     exclude_individuals_variants = {}
-    #exclude variants from individuals
+    # exclude variants from individuals
     if len(exclude_individuals_list) > 0:
         exclude_indexes = Variant.objects.filter(individual__id__in=exclude_individuals_list, *args, **query).exclude(**exclude).values_list('index', flat=True)
         exclude['index__in'] = exclude_indexes
 
-
     if len(individuals_list) > 0:
-        #only add to query after filtering the indexes 
+        # only add to query after filtering the indexes
         query['individual_id__in'] = individuals_list
         # OPTION variants per gene
         variants_per_gene = request.GET.get('variants_per_gene')
-        #option GENES in COMMON
+        # option GENES in COMMON
         genes_in_common = request.GET.get('genes_in_common', '')
 
         print('variants per gene')
@@ -406,11 +414,8 @@ def filter_by_individuals(request, args, query, exclude):
 
             genes_exclude_list = []
             genes_only_list = []
-            #this works for 2 indivuduals in list and with show only genes with variants in both option on
+            # this works for 2 indivuduals in list and with show only genes with variants in both option on
             for individual in individuals_list:
-#                        print individual
-#                        print query
-#                        print exclude
                 print('get list of all genes for each individual')
                 individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values('gene').exclude(gene="").annotate(count=Count('gene')).distinct() #.aggregate(Count('gene', distinct=True))
                 print(len(individual_genes))
@@ -436,38 +441,31 @@ def filter_by_individuals(request, args, query, exclude):
                         else:
                             # if genes_in_common == 'on':
                             genes_exclude_list.append(gene['gene'])
-            #remove variants without gene name                    
+            # remove variants without gene name
             args.append(Q(gene__in=genes_only_list))
             args.append(~Q(gene__in=genes_exclude_list))
         
         if genes_in_common == 'on':
-            #get all genes from individual
+            # get all genes from individual
             individual_gene_list = []
             for individual in individuals_list:
                 individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
                 individual_genes = set(list(individual_genes))
                 individual_gene_list.append(individual_genes)
             genes_in_common_list = set.intersection(*individual_gene_list)                    
-            query['gene__in'] = genes_in_common_list#genes_in_common_list
-
+            query['gene__in'] = genes_in_common_list  # genes_in_common_list
         
         positions_in_common = request.GET.get('positions_in_common', '')
         if positions_in_common == 'on':
-            #get all genes from individual
+            # get all genes from individual
             individual_positions_list = []
             for individual in individuals_list:
-                #should be done with an index ex. 1-2835763-C-T 'DONE :)'
+                # should be done with an index ex. 1-2835763-C-T 'DONE :)'
                 individual_positions = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('pos', flat=True).distinct()
                 individual_positions = set(list(individual_positions))
                 individual_positions_list.append(individual_positions)
             positions_in_common_list = set.intersection(*individual_positions_list)                    
-            query['pos__in'] = positions_in_common_list#genes_in_common_list
-
-    
-
-
-    
-    
+            query['pos__in'] = positions_in_common_list  # genes_in_common_list
 
 
 def filter_qual(request, args):
@@ -476,16 +474,21 @@ def filter_qual(request, args):
         qual_option = request.GET.get('qual_option', '')
         if qual_option == '<':
             args.append(Q(qual__lte=float(qual)))
+            # EQ("range", qual={"lte": float(qual)})
         elif qual_option == '>':
             args.append(Q(qual__gte=float(qual)))
+            # EQ("range", qual={"gte": float(qual)})
         elif qual_option == '=':
             args.append(Q(qual=float(qual)))
+            # EQ("match", qual=float(qual))
 
 
 def filter_filter(request, query):     
     filter = request.GET.getlist('filter')
     if len(filter) > 0:
         query['filter__in'] = filter
+        # EQ("match", filter=str(filter))
+
 
 def filter_by_sift(request, args):
     sift = request.GET.get('sift', '')
@@ -500,25 +503,30 @@ def filter_by_sift(request, args):
         sift_max = float(sift[1])
         if sift_flag:
             args.append(Q(sift__lte=sift_max) & Q(sift__gte=sift_min))
+            # EQ("range", shift={"lte": sift_max, "gte": sift_min})
         else:
             args.append((Q(sift__lte=sift_max) & Q(sift__gte=sift_min)) | Q(sift__isnull=True))
+            # EQ("range", shift={"lte": sift_max, "gte": sift_min}) | ~EQ("exists", field='shift')
+
+
 def filter_by_cadd(request, args):
     cadd = request.GET.get('cadd', '')
     if cadd != '':
         cadd_exclude = request.GET.get('cadd_exclude', '')
         if cadd_exclude == 'on':
             cadd_flag = True
-            # print('CADD Flag on')
         else:
             cadd_flag = False
         cadd = cadd.split(' - ')
         cadd_min = float(cadd[0]) 
         cadd_max = float(cadd[1])
-        # print('CADD', cadd_min, cadd_max)
         if cadd_flag:
             args.append(Q(cadd__lte=cadd_max) & Q(cadd__gte=cadd_min))
+            # EQ("range", cadd={"lte": cadd_max, "gte": cadd_min})
         else:
             args.append((Q(cadd__lte=cadd_max) & Q(cadd__gte=cadd_min)) | Q(cadd__isnull=True))
+            # EQ("range", cadd={"lte": cadd_max, "gte": cadd_min}) | ~EQ("exists", field='cadd')
+
 
 def filter_by_mcap(request, args):
     mcap = request.GET.get('mcap', '')
@@ -535,8 +543,11 @@ def filter_by_mcap(request, args):
         # print('CADD', cadd_min, cadd_max)
         if mcap_flag:
             args.append(Q(mcap_score__lte=mcap_max) & Q(mcap_score__gte=mcap_min))
+            # EQ("range", mcap_score={"lte": mcap_max, "gte": mcap_min})
         else:
             args.append((Q(mcap_score__lte=mcap_max) & Q(mcap_score__gte=mcap_min)) | Q(mcap_score__isnull=True))
+            # EQ("range", mcap_score={"lte": mcap_max, "gte": mcap_min}) | ~EQ("exists", field='mcap_score')
+
                    
 def filter_by_rf_score(request, args):
     rf_score = request.GET.get('rf_score', '')
@@ -551,8 +562,12 @@ def filter_by_rf_score(request, args):
         rf_max = float(rf[1])
         if rf_flag:
             args.append(Q(rf_score__lte=rf_max) & Q(rf_score__gte=rf_min))
+            # EQ("range", rf_score={"lte": rf_max, "gte": rf_min})
         else:
-            args.append((Q(rf_score__lte=rf_max) & Q(rf_score__gte=rf_min)) | Q(rf_score__isnull=True))            
+            args.append((Q(rf_score__lte=rf_max) & Q(rf_score__gte=rf_min)) | Q(rf_score__isnull=True))
+            # EQ("range", rf_score={"lte": rf_max, "gte": rf_min}) | ~EQ("exists", field='rf_score')
+
+
 def filter_by_ada_score(request, args):
     ada_score = request.GET.get('ada_score', '')
     if ada_score != '':
@@ -566,9 +581,12 @@ def filter_by_ada_score(request, args):
         ada_max = float(ada[1])
         if ada_flag:
             args.append(Q(ada_score__lte=ada_max) & Q(ada_score__gte=ada_min))
+            # EQ("range", ada_score={"lte": ada_max, "gte": ada_min})
         else:
-            args.append((Q(ada_score__lte=ada_max) & Q(ada_score__gte=ada_min)) | Q(ada_score__isnull=True))            
-            
+            args.append((Q(ada_score__lte=ada_max) & Q(ada_score__gte=ada_min)) | Q(ada_score__isnull=True))
+            # EQ("range", ada_score={"lte": ada_max, "gte": ada_min}) | ~EQ("exists", field='ada_score')
+
+
 def filter_by_pp2(request, args):
     polyphen = request.GET.get('polyphen', '')
     if polyphen != '':
@@ -582,8 +600,10 @@ def filter_by_pp2(request, args):
         polyphen_max = float(polyphen[1])
         if polyphen_flag:
             args.append(Q(polyphen2__lte=polyphen_max) & Q(polyphen2__gte=polyphen_min))
+            # EQ("range", polyphen2={"lte": polyphen_max, "gte": polyphen_min})
         else:
             args.append((Q(polyphen2__lte=polyphen_max) & Q(polyphen2__gte=polyphen_min)) | Q(polyphen2__isnull=True))
+            # EQ("range", polyphen2={"lte": polyphen_max, "gte": polyphen_min}) | ~EQ("exists", field='polyphen2')
 
 
 # def filter_by_hi_score(request, args):
@@ -598,11 +618,8 @@ def filter_by_pp2(request, args):
 #         max = float(hi[1])
 #         args.append((Q(hi_score_perc__lte=max) & Q(hi_score_perc__gte=min)))
 #         #| Q(hi_score_perc__isnull=True)
-
-
-
-
 def filter_by_segdup(request, args):
+    # ToDo: this is being used?
     exclude_segdup = request.GET.get('exclude_segdup', '')
     if exclude_segdup == 'on':
         args.append(Q(segdup=''))
@@ -612,16 +629,15 @@ def filter_cgd(request, args):
     cgdmanifestation = request.GET.getlist('cgdmanifestation')
     # interventions = request.GET.getlist('interventions')
     conditions = request.GET.getlist('cgd')
-    # print 'FILTER BY CGD'
-    # print manifestations, interventions
     if len(cgdmanifestation) > 0:
         if cgdmanifestation[0] != '':
-            #get a list of CGDENTRY
+            # get a list of CGDENTRY
             cgdentries = CGDEntry.objects.filter(MANIFESTATION_CATEGORIES__in=cgdmanifestation)
             gene_list = []
             for gene in cgdentries:
                 gene_list.append(gene.GENE)
             args.append(Q(gene__in=gene_list))
+            # EQ("match", gene=str(gene_list))
     if len(conditions) > 0:
         if conditions[0] != '':
             cgdentries = CGDEntry.objects.filter(CONDITIONS__in=conditions)
@@ -629,14 +645,12 @@ def filter_cgd(request, args):
             for gene in cgdentries:
                 gene_list.append(gene.GENE)
             args.append(Q(gene__in=gene_list))
-
+            # EQ("match", gene=str(gene_list))
 
 
 def filter_omim(request, args):
     omim = request.GET.getlist('omim')
     print('omim', omim)
-    # print 'FILTER BY CGD'
-    # print manifestations, interventions
     print('FILTER OMIM')
     if len(omim) > 0:
         if omim[0] != '':
@@ -649,13 +663,11 @@ def filter_omim(request, args):
             for gene in genes:
                 gene_list.append(gene.official_name)
             args.append(Q(gene__in=gene_list))
+            # EQ("match", gene=str(gene_list))
+
 
 def filter_hgmd(request, args):
     hgmd = request.GET.getlist('hgmd')
-    # print 'omim', omim
-    # print 'FILTER BY CGD'
-    # print manifestations, interventions
-    # print 'FILTER OMIM'
     if len(hgmd) > 0:
         if hgmd[0] != '':
             hgmdentries = HGMDPhenotype.objects.filter(id__in=hgmd)
@@ -666,6 +678,8 @@ def filter_hgmd(request, args):
             for gene in genes:
                 gene_list.append(gene.symbol)
             args.append(Q(gene__in=gene_list))
+            # EQ("match", gene=str(gene_list))
+
 
 def filter_genelists(request, query, args, exclude):
     genelists = request.GET.getlist('genelists')
@@ -675,27 +689,12 @@ def filter_genelists(request, query, args, exclude):
         
         for genelist_id in genelists:
             genelist_obj = GeneList.objects.get(pk=genelist_id)
-            # print 'genelist'
-            # print genelist_obj.genes
             gene_list = genelist_obj.genes.split(',')
             for gene in gene_list:
                 if gene not in safe_gene_list:
                     safe_gene_list.append(gene.upper())
         query['gene__in'] = safe_gene_list
-
-
-        # gene_list = gene_list.split('\r\n')
-        # # print 'gene_list'
-        # if gene_list[0] != u'':
-            
-        #     for row in gene_list:
-        #         row = row.split(',')
-        #         for item in row:
-        #             gene = item.strip()
-        #             if (gene != ' ' and gene != ''):
-        #                 if gene not in safe_gene_list:
-        #                     safe_gene_list.append(item.strip())
-    
+        # EQ("match", gene=str(safe_gene_list))
 
     exclude_genelists = request.GET.getlist('exclude_genelists')
     if len(exclude_genelists) > 0:
@@ -709,41 +708,16 @@ def filter_genelists(request, query, args, exclude):
                         exclude_safe_gene_list.append(gene)
         if len(exclude_safe_gene_list) > 0:
             exclude['gene__in'] = exclude_safe_gene_list
-
-        # # print 'genelist'
-        # # print genelist_obj.genes
-        # gene_list = genelist_obj.genes
-
-        # gene_list = gene_list.split('\r\n')
-        # # print 'gene_list'
-        # if gene_list[0] != u'':
-            
-        #     for row in gene_list:
-        #         row = row.split(',')
-        #         for item in row:
-        #             gene = item.strip()
-        #             if (gene != ' ' and gene != ''):
-        #                 if gene not in exclude_safe_gene_list:
-        #                     exclude_safe_gene_list.append(item.strip())
-    # query['gene__nin'] = safe_gene_list
+            # ~EQ("match", gene=str(exclude_safe_gene_list))
 
 
-    # print 'safe_gene_list'
-    # print len(safe_gene_list)
-    # print safe_gene_list
-    # query['gene__in'] = safe_gene_list
-
-    # args.append(Q(gene__in=safe_gene_list))
-
-
-
-#HERE STARTS FILTER FOR FAMILY ANALYSIS
+# HERE STARTS FILTER FOR FAMILY ANALYSIS
 def filter_inheritance_option(request):
     inheritance_option = request.GET.get('inheritance_option', '')
 
     if inheritance_option == '3':
-        request.GET.__setitem__('variants_per_gene','2')
-        request.GET.__setitem__('variants_per_gene_option','>')
+        request.GET.__setitem__('variants_per_gene', '2')
+        request.GET.__setitem__('variants_per_gene_option', '>')
         print(request.GET)
         
 
@@ -758,13 +732,17 @@ def filter_inheritance_option_exclude_individuals(request):
             request.GET.appendlist('exclude_individuals', father)
         if mother not in exclude_individuals:
             request.GET.appendlist('exclude_individuals', mother)
-            
+
+
 def filter_inheritance_option_mutation_type(request, args):
     inheritance_option = request.GET.get('inheritance_option', '')
-    #by exclusion of genotypes
+    # by exclusion of genotypes
     if inheritance_option == '1':
         genotypes = ['0/0', './.', '0/1', '1/0', '0/2', '2/0']
         args.append(~Q(genotype__in=genotypes))
+        # should_list = [Q("match_phrase", genotype=genotype) for genotype in genotypes]
+        # EQ('bool', should=should_list, minimum_should_match=1)
+
 
 def filter_sift(request, args):
     sift = request.GET.get('sift', '')
@@ -791,6 +769,7 @@ def filter_sift(request, args):
             else:
                 args.append(Q(sift=float(sift)) | Q(sift__isnull=True))
 
+
 def filter_polyphen2(request, args):
     polyphen = request.GET.get('polyphen', '')
     if polyphen != '':
@@ -804,18 +783,26 @@ def filter_polyphen2(request, args):
         if polyphen_option == '<':
             if polyphen_flag:
                 args.append(Q(polyphen2__lte=float(polyphen)))
+                # EQ("range", polyphen2={"lte": float(polyphen)})
             else:
                 args.append(Q(polyphen2__lte=float(polyphen)) | Q(polyphen2__isnull=True))
+                # EQ("range", polyphen2={"lte": float(polyphen)}) | ~EQ("exists", field='polyphen2')
         elif polyphen_option == '>':
             if polyphen_flag:
                 args.append(Q(polyphen2__gte=float(polyphen)))
+                # EQ("range", polyphen2={"gte": float(polyphen)})
             else:
                 args.append(Q(polyphen2__gte=float(polyphen)) | Q(polyphen2__isnull=True))
+                EQ("range", polyphen2={"gte": float(polyphen)}) | ~EQ("exists", field='polyphen2')
         elif polyphen_option == '=':
             if polyphen_flag:
                 args.append(Q(polyphen2=float(polyphen)))
+                # EQ("match", polyphen2=float(polyphen))
             else:
                 args.append(Q(polyphen2=float(polyphen)) | Q(polyphen2__isnull=True))
+                # EQ("match", polyphen2=float(polyphen)) | ~EQ("exists", field='polyphen2')
+
+
 def filter_dbsnp_build(request, args):
     dbsnp_build = request.GET.get('dbsnp_build', '')
     if dbsnp_build != '':
@@ -826,12 +813,15 @@ def filter_dbsnp_build(request, args):
             # T2.append('')
             # query['dbsnp_build__in'] = #T2
             args.append(Q(dbsnp_build__lte=int(dbsnp_build)) | Q(dbsnp_build__isnull=True))
+            # EQ("range", dbsnp_build={"lte": int(dbsnp_build)}) | ~EQ("exists", field='dbsnp_build')
         elif dbsnp_option == '>':
             # build_list = range(int(dbsnp_build), 138)
             # T2 = [str(x) for x in build_list]
             # T2.append('')
             # query['dbsnp_build__in'] = T2
             args.append(Q(dbsnp_build__gte=int(dbsnp_build)) | Q(dbsnp_build__isnull=True))
+            # EQ("range", dbsnp_build={"gte": int(dbsnp_build)}) | ~EQ("exists", field='dbsnp_build')
+
 
 def filter_read_depth(request, args):
     read_depth = request.GET.get('read_depth', '')
@@ -839,39 +829,50 @@ def filter_read_depth(request, args):
         read_depth_option = request.GET.get('read_depth_option', '')
         if read_depth_option == '<':
             args.append(Q(read_depth__lte=int(read_depth)))
+            # EQ("range", read_depth={"lte": int(read_depth)})
         elif read_depth_option == '>':
             args.append(Q(read_depth__gte=int(read_depth)))
+            # EQ("range", read_depth={"gte": int(read_depth)})
         elif read_depth_option == '=':
             args.append(Q(read_depth=int(read_depth)))
+            # EQ("match", read_depth=int(read_depth))
 
                         
 def filter_func_class(request, query):
     func_class = request.GET.getlist('func_class')
     if len(func_class) > 0:
         query['snpeff_func_class__in'] = func_class
-        # query['effect__in'] = variant_type
+        # should_list = [Q("match_phrase", snpeff_func_class=func_) for func_ in func_class]
+        # EQ('bool', should=should_list, minimum_should_match=1)
+
 
 def filter_impact(request, query):     
     impact = request.GET.getlist('impact')
     if len(impact) > 0:
         # query['snpeff__impact__in'] = impact
         query['snpeff_impact__in'] = impact
+        # should_list = [Q("match_phrase", snpeff_impact=impact_) for impact_ in impact]
+        # EQ('bool', should=should_list, minimum_should_match=1)
+
+
 def filter_is_at_hgmd(request, query):     
     # hgmd = request.GET.getlist('is_at_hgmd')
     hgmd = request.GET.get('is_at_hgmd', '')
     if hgmd == 'on':
         query['is_at_hgmd'] = True
+        # EQ("match", is_at_hgmd=True)
+
 
 def filter_clnsig(request, query):     
     # hgmd = request.GET.getlist('is_at_hgmd')
     clnsig = request.GET.get('clnsig', '')
     if clnsig != '':
         query['clinvar_clnsig'] = clnsig
-
+        # EQ("match", clinvar_clnsig=clnsig)
 
 
 def export_to_csv(request, variants):
-    #export to csv
+    # export to csv
     export = request.GET.get('export', '')
     if export != '':
         if export == 'csv':

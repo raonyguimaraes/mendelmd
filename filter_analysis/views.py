@@ -379,6 +379,7 @@ def index(request):
             # print('exclude keys', list(exclude.keys()))
             # last call to the DATABASE Finally!!!!!!
             variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
+            Search().query()
 
             # args[0] = Search(using=client, index="variant-index").query(
             #     Q("range", genomes1k_maf={"lte": 0.01, "gte": 0.0}) | ~Q("exists", field='genomes1k_maf')).execute()
