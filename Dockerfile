@@ -31,5 +31,5 @@ RUN git clone https://github.com/raonyguimaraes/pynnotator.git
 WORKDIR pynnotator
 RUN git checkout development
 RUN python3 setup.py develop
-#RUN pynnotator install
+RUN pynnotator install
 WORKDIR /code
