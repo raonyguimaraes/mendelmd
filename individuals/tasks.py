@@ -36,7 +36,7 @@ def clean_individuals():
             individual.delete()
 
 
-@shared_task()
+# @shared_task
 def VerifyVCF(individual_id):
     print('Verify VCF...')
 
@@ -107,13 +107,13 @@ def VerifyVCF(individual_id):
             # new_individual.save()
             # AnnotateVariants.delay(new_individual.id)
     else:
-        AnnotateVariants.delay(individual_id)
+        AnnotateVariants(individual_id)
     # check if VCF is multisample
     # if so extract individuals and create other individual models
     # if not send it to be annotated
 
 
-@shared_task()
+# @shared_task()
 def AnnotateVariants(individual_id):
 
     print('Annotation Started!!!')
@@ -214,7 +214,7 @@ def AnnotateVariants(individual_id):
         command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
         os.system(command)
 
-        PopulateVariants.delay(individual.id)
+        PopulateVariants(individual.id)
 
         if individual.vcf_file.name.endswith(".vcf"):
             command = 'bgzip %s' % filename
@@ -553,7 +553,7 @@ def parse_vcf(line):
     return variant
 
 
-@shared_task()
+# @shared_task()
 def PopulateVariants(individual_id):
 
     # delete variants from individual before inserting

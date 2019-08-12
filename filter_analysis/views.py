@@ -36,10 +36,12 @@ from django.shortcuts import render
 
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
+from elasticsearch_dsl import Q as EQ
 
 # import django_tables2 as tables
 # from django_tables2 import RequestConfig
 
+ES = Elasticsearch(hosts=[{'host': 'es01', 'port': 9200}])
 
 # a method to integrate all different filters
 # should return an object with all the results
@@ -321,9 +323,11 @@ def get_genes(summary):
 # This is the most important function
 def index(request):
     query = {}
+    query_es = {}
     exclude = {}
     summary = {}
     args = []
+    args_es = []
 
     # this removes page from QUERY_STRING
     query_string = request.META['QUERY_STRING']
@@ -332,9 +336,6 @@ def index(request):
         if not item.startswith('page'):
             new_query_string.append(item)
     query_string = "&".join(new_query_string)
-    
-    # print 'query string'
-    # print query_string 
     
     filteranalysis = FilterAnalysis.objects.all().prefetch_related('user')
     filterconfigs = FilterConfig.objects.all().prefetch_related('user')
@@ -371,15 +372,16 @@ def index(request):
             if len(individuals_list) > 0:
                 # only add to query after filtering the indexes
                 query['individual_id__in'] = individuals_list
+                args_es.append(EQ('terms', individual=individuals_list))
 
-                filter_variants_per_gene(request, query, args, exclude)
-                filter_genes_in_common(request, query, args, exclude)
-                filter_positions_in_common(request, query, args, exclude)
+                filter_variants_per_gene(request, query, args, exclude, query_es, args_es)
+                filter_genes_in_common(request, query, args, exclude, query_es, args_es)
+                filter_positions_in_common(request, query, args, exclude, query_es, args_es)
             
             # print('exclude keys', list(exclude.keys()))
             # last call to the DATABASE Finally!!!!!!
             variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
-            Search().query()
+            var2 = Search(using=ES, index="variant-index").query(EQ('bool', must=args_es)).execute()
 
             # args[0] = Search(using=client, index="variant-index").query(
             #     Q("range", genomes1k_maf={"lte": 0.01, "gte": 0.0}) | ~Q("exists", field='genomes1k_maf')).execute()

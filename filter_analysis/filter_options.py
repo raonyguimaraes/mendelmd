@@ -14,6 +14,10 @@ import pickle
 
 from databases.models import VariSNP
 
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search
+
+ES = Elasticsearch(hosts=[{'host': 'es01', 'port': 9200}])
 
 # HERE THE FILTERS STARTS
 def filter_individuals_variants(request, query, args, exclude):
@@ -59,7 +63,7 @@ def filter_individuals_variants(request, query, args, exclude):
     return individuals_list
 
 
-def filter_variants_per_gene(request, query, args, exclude):
+def filter_variants_per_gene(request, query, args, exclude, query_es, args_es):
     # OPTION variants per gene
     variants_per_gene = request.GET.get('variants_per_gene', '')
     
@@ -108,7 +112,7 @@ def filter_variants_per_gene(request, query, args, exclude):
         args.append(~Q(gene__in=genes_exclude_list))
 
 
-def filter_genes_in_common(request, query, args, exclude):
+def filter_genes_in_common(request, query, args, exclude, query_es, args_es):
     # option GENES in COMMON
     print('genes in common')
 
@@ -116,16 +120,22 @@ def filter_genes_in_common(request, query, args, exclude):
     if genes_in_common == 'on':
         # get all genes from individual
         individual_gene_list = []
+        individual_gene_list_es = []
         for individual in query['individual_id__in']:
             individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
+            individual_genes_es = Search(using=ES, index="variant-index").filter(EQ('match', individual=individual)).query(*args_es, **query_es).execute()
+            list_genes_es = [indi_genes.gene for indi_genes in individual_genes_es]
             # print 'genes finished query', len()
             individual_genes = set(list(individual_genes))
             individual_gene_list.append(individual_genes)
-        genes_in_common_list = set.intersection(*individual_gene_list)                    
+            individual_gene_list_es.extend(list_genes_es)
+        genes_in_common_list = set.intersection(*individual_gene_list)
         query['gene__in'] = genes_in_common_list#genes_in_common_list
+        should_list = [EQ("match_phrase", gene=gene_) for gene_ in individual_gene_list_es]
+        args_es.append(EQ('bool', should=should_list, minimum_should_match=1))
 
 
-def filter_positions_in_common(request, query, args, exclude):
+def filter_positions_in_common(request, query, args, exclude, query_es, args_es):
     print('positions in common')
     positions_in_common = request.GET.get('positions_in_common', '')
     if positions_in_common == 'on':

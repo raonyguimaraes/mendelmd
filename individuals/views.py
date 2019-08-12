@@ -329,10 +329,11 @@ def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
     individual.status = 'new'
     individual.n_lines = 0
-    VerifyVCF.delay(individual.id)
     individual.save()
+    VerifyVCF(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
+
 
 @login_required
 def populate(request, individual_id):
