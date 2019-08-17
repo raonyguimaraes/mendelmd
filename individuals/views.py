@@ -82,7 +82,7 @@ def create(request):
             f = individual.vcf_file
             
             # AnnotateVariants.delay(individual.id)
-            VerifyVCF.delay(individual.id)
+            VerifyVCF(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 

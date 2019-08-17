@@ -105,18 +105,18 @@ ROOT_URLCONF = 'mendelmd.urls'
 
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'mendelmd',
-#    }
-#}
 DATABASES = {
-    'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': 'mendelmd.db',
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME': 'mendelmd',
+   }
 }
+# DATABASES = {
+#     'default': {
+#          'ENGINE': 'django.db.backends.sqlite3',
+#          'NAME': 'mendelmd.db',
+#     }
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -199,9 +199,9 @@ INTERNAL_IPS = ['127.0.0.1']
 
 # new celery 4 config
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_BACKEND = 'django-cache'
+# CELERY_RESULT_BACKEND = 'django-cache'
 
-CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks','individuals.tasks')
+CELERY_IMPORTS = ('analyses.tasks', 'tasks.tasks', 'workers.tasks', 'individuals.tasks')
 
 CELERYBEAT_SCHEDULE = {
     'check_queue': {
@@ -210,7 +210,7 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
 try:
     from .local_settings import *

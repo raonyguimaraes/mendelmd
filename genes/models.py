@@ -97,7 +97,6 @@ class GoTerm(models.Model):
         return self.name
 
 
-
 class Manifestation(models.Model):
     name = models.TextField(blank=True)
 
@@ -141,6 +140,7 @@ class CGDEntry(models.Model):
 
     def __str__(self):
         return self.GENE
+
 
 class GeneList(models.Model):
     name = models.CharField(max_length=255, blank=True)

@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
 class Disease(models.Model):
     name = models.CharField(max_length=255)
     omim_id = models.CharField(max_length=255)
@@ -9,6 +9,7 @@ class Disease(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Gene(models.Model):
     official_name = models.CharField(max_length=255)
@@ -28,6 +29,7 @@ class Gene(models.Model):
 
 class HGMDPhenotype(models.Model):
     name = models.CharField(max_length=255)
+
     def __str__(self):
         return self.name
  
@@ -42,8 +44,8 @@ class HGMDGene(models.Model):
     diseases = models.ManyToManyField(HGMDPhenotype)
 
 
-#missense/nonsense   splicing    regulatory  small deletions small insertions    small indels    
-#gross deletions gross insertions    complex rearrangements  repeat variations
+# missense/nonsense   splicing    regulatory  small deletions small insertions    small indels
+# gross deletions gross insertions    complex rearrangements  repeat variations
 
 
 

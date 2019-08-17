@@ -10,6 +10,7 @@ from django.conf import settings
 
 from django.template.defaultfilters import slugify
 
+
 # Subclass AbstractUser
 class UserGroup(models.Model):
     name = models.CharField(max_length=600)
@@ -63,6 +64,7 @@ class Individual(models.Model):
     # def delete(self, *args, **kwargs):
     #     super(Individual, self).delete(*args, **kwargs)
 
+
 class Group(models.Model):
     name = models.CharField(max_length=128)
     members = models.ManyToManyField(Individual,
@@ -70,7 +72,8 @@ class Group(models.Model):
     def __str__(self):
         return self.name
 
-#from individuals.tasks import PopulateControls
+# from individuals.tasks import PopulateControls
+
 
 class ControlGroup(models.Model):
     def get_upload_path(self, filename):
