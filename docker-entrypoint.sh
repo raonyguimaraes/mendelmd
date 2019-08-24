@@ -25,7 +25,7 @@ fi
 export C_FORCE_ROOT='true'
 # Start server
 # echo "Starting annotator"
-python3 manage.py celery &
+python3 manage.py celery
 # celery -A mendelmd beat &
 # celery -A mendelmd worker -l debug -c 4 &
 

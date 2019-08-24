@@ -11,7 +11,7 @@ RUN	apt-get install -y \
 	libcurl4-openssl-dev libffi-dev liblocal-lib-perl liblzma-dev libpq-dev libssl-dev libxml2-dev make \
 	pkg-config python-dev python-lxml python python-dev python-pip python3 python3-dev python3-pip python3-setuptools python3-venv rabbitmq-server dh-python \
 	python3-wheel software-properties-common sudo tabix unzip vcftools vim virtualenvwrapper wget zip zlib1g \
-	zlib1g-dev zlibc \
+	zlib1g-dev zlibc default-jre \
     && apt-get autoremove -y \
 	&& apt-get clean
 RUN pip3 install -U pip
@@ -25,10 +25,5 @@ ENV LC_ALL en_US.UTF-8
 ADD requirements.txt /code/
 RUN pip3 install -r requirements.txt
 RUN service rabbitmq-server start
-#ADD . /code/
-#RUN pip3 install pynnotator
-RUN git clone https://github.com/raonyguimaraes/pynnotator.git
-WORKDIR /code/pynnotator
-RUN python3 setup.py develop
+ADD . /code/
 RUN pynnotator install
-WORKDIR /code
