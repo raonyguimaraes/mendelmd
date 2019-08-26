@@ -4,7 +4,7 @@ from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
 from . import models
 
-connections.create_connection(hosts=['es01:9200'])
+connections.create_connection(hosts=['es01:9200'], timeout=60)
 
 
 class VariantIndex(DocType):
@@ -206,5 +206,5 @@ class VariantIndex(DocType):
 
 def bulk_indexing():
     VariantIndex.init('variant-indexing')
-    es = Elasticsearch(hosts=[{'host': 'es01', 'port': 9200}])
+    es = Elasticsearch(hosts=[{'host': 'es01', 'port': 9200}], timeout=60)
     bulk(client=es, actions=(b.indexing() for b in models.Variant.objects.all().iterator()))

@@ -7,10 +7,9 @@ from django.db.models import Q
 from django.db.models import Count, Sum, Avg, Min, Max
 from django.core import serializers
 from django.views.generic import UpdateView, DeleteView
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
-#from django.contrib.formtools.wizard import FormWizard
-from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 
 from .forms import FilterWiZardForm1, FilterWiZardForm2, FilterWiZardForm3, FamilyAnalysisForm
 from datetime import datetime
@@ -30,11 +29,7 @@ from diseases.models import Disease, HGMDGene, HGMDPhenotype
 from diseases.models import Gene as GeneDisease
 
 
-
-import django_tables2 as tables
-from django_tables2 import RequestConfig
-
-#This is the most important function
+# This is the most important function
 @login_required
 def family_analysis(request):
     query = {}

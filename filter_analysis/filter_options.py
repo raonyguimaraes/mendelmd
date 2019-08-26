@@ -130,13 +130,15 @@ def filter_genes_in_common(request, query: dict, args: list, exclude: dict, args
         individual_gene_list = []
         individual_gene_list_es = []
         for individual in query['individual_id__in']:
+            print(f"ARGS_ES: {args_es}")
             individual_genes = Variant.objects.filter(
                 individual__id=individual, *args, **query
             ).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
             individual_genes_es = Search(
                 using=ES, index="variant-index"
             ).filter(
-                EQ('match', individual=individual)).query(*args_es).execute()
+                EQ('match', individual=individual)
+            ).query(EQ('bool', must=args_es)).execute()
             list_genes_es = [indi_genes.gene for indi_genes in individual_genes_es]
             # print 'genes finished query', len()
             individual_genes = set(list(individual_genes))
@@ -843,7 +845,7 @@ def filter_func_class(request, query, args_es):
     func_class = request.GET.getlist('func_class')
     if len(func_class) > 0:
         query['snpeff_func_class__in'] = func_class
-        should_list = [Q("match_phrase", snpeff_func_class=func_) for func_ in func_class]
+        should_list = [EQ("match_phrase", snpeff_func_class=func_) for func_ in func_class]
         args_es.append(EQ('bool', should=should_list, minimum_should_match=1))
 
 
@@ -852,7 +854,7 @@ def filter_impact(request, query, args_es):
     if len(impact) > 0:
         # query['snpeff__impact__in'] = impact
         query['snpeff_impact__in'] = impact
-        should_list = [Q("match_phrase", snpeff_impact=impact_) for impact_ in impact]
+        should_list = [EQ("match_phrase", snpeff_impact=impact_) for impact_ in impact]
         args_es.append(EQ('bool', should=should_list, minimum_should_match=1))
 
 
