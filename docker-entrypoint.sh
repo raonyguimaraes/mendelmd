@@ -1,7 +1,7 @@
 #!/bin/bash
 
-service rabbitmq-server start
-sleep 5
+#service rabbitmq-server start
+#sleep 5
 pwd
 cp configs/settings.py /usr/local/lib/python3.6/dist-packages/pynnotator/
 
@@ -23,9 +23,7 @@ fi
 
 
 export C_FORCE_ROOT='true'
-# Start server
-# echo "Starting annotator"
-python3 manage.py celery
+#celery -A mendelmd worker -l info
 # celery -A mendelmd beat &
 # celery -A mendelmd worker -l debug -c 4 &
 

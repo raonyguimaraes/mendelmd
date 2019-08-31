@@ -1,11 +1,9 @@
 # To load elastic search as a docker container set vm.maxmap_count in local machine:
 # sysctl -w vm.max_map_count=262144
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode
-version: '2'
+version: '3'
 volumes:
   esdata01:
-    driver: local
-  esdata02:
     driver: local
   dbdata:
     driver: local
@@ -23,7 +21,9 @@ services:
       - esnet
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: containers/web/Dockerfile
     command: bash docker-entrypoint.sh
     volumes:
       - .:/code
@@ -55,6 +55,25 @@ services:
       - 9200:9200
     networks:
       - esnet
-    
- # annotator:
- #  build: ./compose/annotator
+
+  queues:
+    restart: unless-stopped
+    image: "rabbitmq:3-management"
+    networks:
+      - esnet
+    ports:
+      - "8083:15672"
+      - "5672:5672"
+  tasks:
+    build:
+      context: .
+      dockerfile: containers/tasks/Dockerfile
+    command: celery -A mendelmd worker -l info --broker=amqp://guest:guest@queues:5672//
+    volumes:
+      - .:/app
+    networks:
+      - esnet
+    depends_on:
+      - web
+      - db
+      - queues

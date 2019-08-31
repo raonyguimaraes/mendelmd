@@ -1,7 +1,4 @@
-from __future__ import absolute_import
-
 import os
-
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
@@ -13,20 +10,19 @@ app = Celery('mendelmd')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
-app.config_from_object('django.conf:settings')
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
-# app.conf.broker_transport_options = {'visibility_timeout': 43200}
-
-# app.conf.update(
-#     CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
-# )
+app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.update(
-    CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend',
+    result_backend='djcelery.backends.cache:CacheBackend',
+    task_always_eager=False,
+    task_ignore_result=False,
+    broker_url='amqp://guest:guest@queues:5672//'
 )
 app.conf.timezone = 'UTC'
+
+app.autodiscover_tasks()
+
 
 @app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
-
