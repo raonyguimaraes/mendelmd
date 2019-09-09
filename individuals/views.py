@@ -297,18 +297,18 @@ def list(request):
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
-                PopulateVariants.delay(individual.id)
+                PopulateVariants(individual.id)
             
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
-                AnnotateVariants.delay(individual.id)
+                AnnotateVariants(individual.id)
         # if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
         #     for individual_id in individuals:
         #         individual = get_object_or_404(Individual, pk=individual_id)
         #         Find_Medical_Conditions_and_Medicines.delay(individual.id)
 
-    args = list(Q(user=request.user) | Q(shared_with_users=request.user) | Q(shared_with_groups__members=request.user))
+    args = [Q(user=request.user) | Q(shared_with_users=request.user) | Q(shared_with_groups__members=request.user)]
     # groups = Groups.objects.filter(user=request.user, shared_with_users=).order_by("-id")
     
     if request.user.is_staff:
@@ -338,7 +338,7 @@ def annotate(request, individual_id):
 @login_required
 def populate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
-    PopulateVariants.delay(individual.id)
+    PopulateVariants(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being populated.")
 
     return redirect('dashboard')

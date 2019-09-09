@@ -30,7 +30,7 @@ from diseases.models import Disease, HGMDGene, HGMDPhenotype
 from diseases.models import Gene as GeneDisease
 
 #pathwya imports
-from SOAPpy import WSDL
+#from SOAPpy import WSDL
 #REST
 import urllib.request, urllib.error, urllib.parse
 

@@ -210,7 +210,7 @@ def filter_snp_list(request, query, exclude, args_es):
             for item in row:
                 safe_exclude_snp_list.append(item.strip())
         exclude['variant_id__in'] = safe_exclude_snp_list  # args.append(~Q(variant_id__in=safe_snp_list))
-        # ~EQ("match", variant_id=str(safe_exclude_snp_list))
+        args_es.append(~EQ("match", variant_id=str(safe_exclude_snp_list)))
 
 
 def filter_gene_list(request, query, args, args_es):
@@ -238,7 +238,7 @@ def filter_gene_list(request, query, args, args_es):
                 safe_gene_list.append(item.strip().upper())
         print(safe_gene_list)
         args.append(~Q(gene__in=safe_gene_list))
-        # ~EQ("match", gene=str(safe_gene_list))
+        args_es.append(~EQ("match", gene=str(safe_gene_list)))
 
 
 def filter_mutation_type(request, args, args_es):
@@ -263,7 +263,6 @@ def filter_mutation_type(request, args, args_es):
 def filter_effect(request, query, args_es):
     effect = request.GET.getlist('effect')
     if len(effect) > 0:
-        # query['snp_eff__in'] = variant_type
         print('effect', effect)
         query['snpeff_effect__in'] = effect
         should_list = [EQ("match_phrase", snpeff_effect=item_) for item_ in effect]
@@ -271,13 +270,14 @@ def filter_effect(request, query, args_es):
 
 
 def filter_dbsnp(request, query, args_es):
+    # ToDo: Can't findo '.' character have to analyse the index steps
     dbsnp = request.GET.get('dbsnp', '')
     if dbsnp == 'on':
         query['variant_id'] = "."
         args_es.append(EQ("match_phrase", variant_id='.'))
 
 
-def filter_varisnp(request, query, exclude):
+def filter_varisnp(request, query, exclude, args_es):
     exclude_varisnp = request.GET.get('exclude_varisnp', '')
     if exclude_varisnp == 'on':
         snp_list = VariSNP.objects.all().values_list('dbsnp_id', flat=True)
@@ -288,7 +288,7 @@ def filter_varisnp(request, query, exclude):
             exclude['variant_id__in'].extend(safe_snp_list)
         else:
             exclude['variant_id__in'] = safe_snp_list
-        # ~EQ("match", variant_id=str(safe_snp_list))
+        args_es.append(~EQ("match", variant_id=str(safe_snp_list)))
 
 
 def filter_by_1000g(request, args, args_es):

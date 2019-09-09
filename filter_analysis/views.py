@@ -232,7 +232,7 @@ def filter_analysis(request, query, args, exclude, args_es):
     # Exclude variants at dbsnp
     filter_dbsnp(request, query, args_es)
 
-    filter_varisnp(request, query, exclude)
+    filter_varisnp(request, query, exclude, args_es)
     # print 'exclude debug1', exclude
 
     # 1000genomes

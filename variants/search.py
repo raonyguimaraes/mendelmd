@@ -204,7 +204,14 @@ class VariantIndex(DocType):
         index = 'variant-index'
 
 
+def generate_data(queryset):
+    for variant in queryset:
+        yield variant.indexing()
+
+
 def bulk_indexing():
-    VariantIndex.init('variant-indexing')
+    VariantIndex.init('variant-index')
     es = Elasticsearch(hosts=[{'host': 'es01', 'port': 9200}], timeout=60)
     bulk(client=es, actions=(b.indexing() for b in models.Variant.objects.all().iterator()))
+    import threading
+    threading.Thread()
