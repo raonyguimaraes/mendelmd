@@ -34,21 +34,21 @@ def launch(request):
 @login_required
 def terminate(request, pk):
     worker=Worker.objects.get(pk=pk)
-    terminate_worker.delay(worker.id)
+    terminate_worker(worker.id)
     messages.success(request, 'Worker is being terminated.')
     return redirect('worker-list')
 
 @login_required
 def install(request, pk):
     worker=Worker.objects.get(pk=pk)
-    install_worker.delay(worker.id)
+    install_worker(worker.id)
     messages.success(request, 'Worker is being installed.')
     return redirect('worker-list')
 
 @login_required
 def update(request, pk):
     worker=Worker.objects.get(pk=pk)
-    update_worker.delay(worker.id)
+    update_worker(worker.id)
     messages.success(request, 'Worker is being updated!')
     return redirect('worker-list')
 

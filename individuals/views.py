@@ -82,7 +82,7 @@ def create(request):
             f = individual.vcf_file
             
             # AnnotateVariants.delay(individual.id)
-            VerifyVCF(individual.id)
+            VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 
@@ -297,12 +297,12 @@ def list(request):
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
-                PopulateVariants(individual.id)
+                PopulateVariants.delay(individual.id)
             
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
-                AnnotateVariants(individual.id)
+                AnnotateVariants.delay(individual.id)
         # if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
         #     for individual_id in individuals:
         #         individual = get_object_or_404(Individual, pk=individual_id)
@@ -330,7 +330,7 @@ def annotate(request, individual_id):
     individual.status = 'new'
     individual.n_lines = 0
     individual.save()
-    VerifyVCF(individual.id)
+    VerifyVCF.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
     return redirect('dashboard')
 
@@ -338,7 +338,7 @@ def annotate(request, individual_id):
 @login_required
 def populate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
-    PopulateVariants(individual.id)
+    PopulateVariants.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being populated.")
 
     return redirect('dashboard')

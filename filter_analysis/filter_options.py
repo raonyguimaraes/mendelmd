@@ -319,14 +319,14 @@ def filter_by_dbsnp(request, args, args_es):
         dbsnp = request.GET.get('dbsnp_frequency', '')
         if dbsnp != '':
             dbsnp = dbsnp.split(' - ')
-            min = max = 0
+            min_ = max_ = 0
             if len(dbsnp) == 2:
-                min = float(dbsnp[0])
-                max = float(dbsnp[1])
+                min_ = float(dbsnp[0])
+                max_ = float(dbsnp[1])
             if len(dbsnp) == 1:
-                max = float(dbsnp[0])
-            args.append((Q(dbsnp_maf__lte=max) & Q(dbsnp_maf__gte=min)) | Q(dbsnp_maf__isnull=True))
-            args_es.append(EQ("range", dbsnp_maf={"lte": max, "gte": min}) | ~EQ("exists", field='dbsnp_maf'))
+                max_ = float(dbsnp[0])
+            args.append((Q(dbsnp_maf__lte=max_) & Q(dbsnp_maf__gte=min_)) | Q(dbsnp_maf__isnull=True))
+            args_es.append(EQ("range", dbsnp_maf={"lte": max_, "gte": min_}) | ~EQ("exists", field='dbsnp_maf'))
 
 
 def filter_by_esp(request, args, args_es):
@@ -338,10 +338,10 @@ def filter_by_esp(request, args, args_es):
         esp = request.GET.get('esp_frequency', '')
         if esp != '':
             esp = esp.split(' - ')
-            min = float(esp[0])
-            max = float(esp[1])
-            args.append((Q(esp_maf__lte=max) & Q(esp_maf__gte=min)) | Q(esp_maf__isnull=True))
-            args_es.append(EQ("range", esp_maf={"lte": max, "gte": min}) | ~EQ("exists", field='esp_maf'))
+            min_ = float(esp[0])
+            max_ = float(esp[1])
+            args.append((Q(esp_maf__lte=max_) & Q(esp_maf__gte=min_)) | Q(esp_maf__isnull=True))
+            args_es.append(EQ("range", esp_maf={"lte": max_, "gte": min_}) | ~EQ("exists", field='esp_maf'))
 
 
 def filter_by_individuals(request, args, query, exclude):
@@ -620,7 +620,6 @@ def filter_by_segdup(request, args):
 
 def filter_cgd(request, args, args_es):
     cgdmanifestation = request.GET.getlist('cgdmanifestation')
-    # interventions = request.GET.getlist('interventions')
     conditions = request.GET.getlist('cgd')
     if len(cgdmanifestation) > 0:
         if cgdmanifestation[0] != '':
@@ -723,7 +722,6 @@ def filter_inheritance_option_exclude_individuals(request):
     exclude_individuals = request.GET.getlist('exclude_individuals')
     father = request.GET.get('father', '')
     mother = request.GET.get('mother', '')
-    parents = [father, mother]
     if inheritance_option == '1' or inheritance_option == '2':
         if father not in exclude_individuals:
             request.GET.appendlist('exclude_individuals', father)
@@ -738,7 +736,7 @@ def filter_inheritance_option_mutation_type(request, args, args_es):
         genotypes = ['0/0', './.', '0/1', '1/0', '0/2', '2/0']
         args.append(~Q(genotype__in=genotypes))
         should_list = [Q("match_phrase", genotype=genotype) for genotype in genotypes]
-        args_es.append(EQ('bool', should=should_list, minimum_should_match=1))
+        args_es.append(~EQ('bool', should=should_list, minimum_should_match=1))
 
 
 def filter_sift(request, args, args_es):
@@ -811,17 +809,9 @@ def filter_dbsnp_build(request, args, args_es):
     if dbsnp_build != '':
         dbsnp_option = request.GET.get('dbsnp_option', '')
         if dbsnp_option == '<':
-            # build_list = range(1, int(dbsnp_build))
-            # T2 = [str(x) for x in build_list]
-            # T2.append('')
-            # query['dbsnp_build__in'] = #T2
             args.append(Q(dbsnp_build__lte=int(dbsnp_build)) | Q(dbsnp_build__isnull=True))
             args_es.append(EQ("range", dbsnp_build={"lte": int(dbsnp_build)}) | ~EQ("exists", field='dbsnp_build'))
         elif dbsnp_option == '>':
-            # build_list = range(int(dbsnp_build), 138)
-            # T2 = [str(x) for x in build_list]
-            # T2.append('')
-            # query['dbsnp_build__in'] = T2
             args.append(Q(dbsnp_build__gte=int(dbsnp_build)) | Q(dbsnp_build__isnull=True))
             args_es.append(EQ("range", dbsnp_build={"gte": int(dbsnp_build)}) | ~EQ("exists", field='dbsnp_build'))
 
@@ -852,14 +842,12 @@ def filter_func_class(request, query, args_es):
 def filter_impact(request, query, args_es):
     impact = request.GET.getlist('impact')
     if len(impact) > 0:
-        # query['snpeff__impact__in'] = impact
         query['snpeff_impact__in'] = impact
         should_list = [EQ("match_phrase", snpeff_impact=impact_) for impact_ in impact]
         args_es.append(EQ('bool', should=should_list, minimum_should_match=1))
 
 
 def filter_is_at_hgmd(request, query, args_es):
-    # hgmd = request.GET.getlist('is_at_hgmd')
     hgmd = request.GET.get('is_at_hgmd', '')
     if hgmd == 'on':
         query['is_at_hgmd'] = True
@@ -867,7 +855,6 @@ def filter_is_at_hgmd(request, query, args_es):
 
 
 def filter_clnsig(request, query, args_es):
-    # hgmd = request.GET.getlist('is_at_hgmd')
     clnsig = request.GET.get('clnsig', '')
     if clnsig != '':
         query['clinvar_clnsig'] = clnsig

@@ -362,7 +362,9 @@ def index(request):
             # last call to the DATABASE Finally!!!!!!
             variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related(
                 'individual').order_by(order_by)
-            variants_es = Search(using=ES, index="variant-index").query(EQ('bool', must=args_es)).execute()
+            variants_es = Search(using=ES, index="variant-index").query(EQ('bool', must=args_es))
+
+            assert variants.count() == variants_es.count()
 
             # export_to_csv(request, variants)
             export = request.GET.get('export', '')

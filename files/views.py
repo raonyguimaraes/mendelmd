@@ -17,7 +17,7 @@ from collections import Counter
 from django.db.models import Q
 
 from django.http import HttpResponse
-#for upload
+# for upload
 from .forms import UploadForm
 from django.utils.text import slugify
 import os
@@ -132,7 +132,6 @@ def index(request):
     files_summary['filetypes'] = filetypes
     files_summary['n_files'] = n_files
 
-
     context = {
         # 'form': form,
         'query':query,
@@ -142,6 +141,7 @@ def index(request):
     }
 
     return render(request, 'files/index.html', context)
+
 
 @login_required
 def view(request, file_id):
@@ -157,11 +157,9 @@ def view(request, file_id):
 @login_required
 def import_files(request):
     print('Hello World')
-    
-    # 
-
 
     return redirect('files-index')
+
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
@@ -175,6 +173,7 @@ class JSONResponse(HttpResponse):
     def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
         content = json.dumps(obj,**json_opts)
         super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
+
 
 def upload(request):
     if request.method == 'POST':
@@ -237,7 +236,7 @@ def upload(request):
             task.action = 'check'
             task.save()
 
-            check_file.delay(task.id)
+            check_file(task.id)
 
             file.status = 'scheduled'
             file.save()
@@ -266,6 +265,7 @@ class FileUpdate(LoginRequiredMixin, UpdateView):
         else:
             return self.model.objects
 
+
 class FileDelete(LoginRequiredMixin, DeleteView):
     model = File
     success_url = reverse_lazy('files-index')
@@ -275,6 +275,7 @@ class FileDelete(LoginRequiredMixin, DeleteView):
         else:
             return self.model.objects
 
+
 @login_required
 def bulk_action(request):
 
@@ -283,7 +284,6 @@ def bulk_action(request):
         action = request.POST['action']
 
         for file_id in files:
-
 
             # file = File.objects.get(pk=file_id)
             if request.user.is_staff:
@@ -306,12 +306,13 @@ def bulk_action(request):
                 task.user = request.user
                 task.save()
 
-                check_file.delay(task.id)
+                check_file(task.id)
 
                 file.status = 'scheduled'
                 file.save()
 
     return redirect('files-index')
+
 
 @login_required
 def run_task(request):
@@ -335,12 +336,13 @@ def run_task(request):
                 task.user = request.user
                 task.save()
 
-                check_file.delay(task.id)
+                check_file(task.id)
 
                 file.status = 'scheduled'
                 file.save()
             
     return redirect('files-index')
+
 
 @login_required
 def run_task(request):

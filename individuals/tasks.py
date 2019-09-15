@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-
 # Create your tasks here
-from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
-from individuals.models import *
+from individuals.models import Individual
 
-from variants.models import *
+from variants.models import Variant
 
 from django.shortcuts import get_object_or_404
 import os
@@ -22,6 +19,16 @@ import json
 import vcf
 
 from django.template.defaultfilters import slugify
+import asyncio
+import threading
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import parallel_bulk
+from elasticsearch_dsl import Search
+from elasticsearch_dsl import Q as EQ
+from collections import deque
+
+ES = Elasticsearch(hosts=[{'host': 'es01', 'port': 9200}], timeout=60)
+MAX_INDEX = 1000
 
 
 @shared_task()
@@ -36,7 +43,7 @@ def clean_individuals():
             individual.delete()
 
 
-# @shared_task
+@shared_task
 def VerifyVCF(individual_id):
     print('Verify VCF...')
 
@@ -107,13 +114,13 @@ def VerifyVCF(individual_id):
             # new_individual.save()
             # AnnotateVariants.delay(new_individual.id)
     else:
-        AnnotateVariants(individual_id)
+        AnnotateVariants.delay(individual_id)
     # check if VCF is multisample
     # if so extract individuals and create other individual models
     # if not send it to be annotated
 
 
-# @shared_task()
+@shared_task
 def AnnotateVariants(individual_id):
 
     print('Annotation Started!!!')
@@ -214,7 +221,7 @@ def AnnotateVariants(individual_id):
         command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
         os.system(command)
 
-        PopulateVariants(individual.id)
+        PopulateVariants.delay(individual.id)
 
         if individual.vcf_file.name.endswith(".vcf"):
             command = 'bgzip %s' % filename
@@ -553,12 +560,14 @@ def parse_vcf(line):
     return variant
 
 
-# @shared_task()
+@shared_task()
 def PopulateVariants(individual_id):
 
     # delete variants from individual before inserting
     individual = get_object_or_404(Individual, pk=individual_id)
     Variant.objects.filter(individual=individual).delete()
+    Search(using=ES, index="variant-index").filter(EQ('match', individual=individual_id)).delete()
+
     # SnpeffAnnotation.objects.filter(individual=individual).delete()
     # VEPAnnotation.objects.filter(individual=individual).delete()
 
@@ -579,6 +588,7 @@ def PopulateVariants(individual_id):
 
     variants = []
     count2 = 0
+    index_threads = []
 
     snpeff_dict = {}
     vep_dict = {}
@@ -590,8 +600,13 @@ def PopulateVariants(individual_id):
                 count += 1
                 count2 += 1
                 # bulk insert variants objects
-                if count == 10000:
-                    Variant.objects.bulk_create(variants)
+                if count == MAX_INDEX:
+                    created_variants = Variant.objects.bulk_create(variants)
+                    variant_ids = [variant_.id for variant_ in created_variants]
+                    process_thread = threading.Thread(target=variant_index, args=(variant_ids,), daemon=True)
+                    process_thread.start()
+                    index_threads.append(process_thread)
+                    # parallel_indexing(created_variants)
                     count = 0
                     variants = []
 
@@ -788,7 +803,13 @@ def PopulateVariants(individual_id):
 
                 variants.append(variant_obj)
                 # variant_obj.save()
-    Variant.objects.bulk_create(variants)
+    created_variants = Variant.objects.bulk_create(variants)
+    variant_ids = [variant_.id for variant_ in created_variants]
+    process_thread = threading.Thread(target=variant_index, args=(variant_ids,), daemon=True)
+    process_thread.start()
+    index_threads.append(process_thread)
+    for thread in index_threads:
+        thread.join()
 
     stop = datetime.datetime.now()
     elapsed = stop - start
@@ -819,3 +840,32 @@ def PopulateVariants(individual_id):
     os.system(command)
 
     # Find_Medical_Conditions_and_Medicines.delay(individual.id)
+
+
+async def parallel_index(variant_ids, sem):
+    print(f"START: {len(variant_ids)}")
+    async with sem:
+        if len(variant_ids) > 0:
+            idx_ = variant_ids.pop(0)
+            asyncio.ensure_future(parallel_index(variant_ids, sem))
+            variant = Variant.objects.get(id=idx_)
+            variant.indexing()
+        else:
+            print("ACABOU")
+            asyncio.get_event_loop().stop()
+
+
+def variant_index(variant_ids):
+    loop_ = asyncio.new_event_loop()
+    sem = asyncio.Semaphore(MAX_INDEX, loop=loop_)
+    asyncio.set_event_loop(loop_)
+    asyncio.ensure_future(parallel_index(variant_ids, sem))
+    try:
+        loop_.run_forever()
+    finally:
+        active_tasks = [task for task in asyncio.Task.all_tasks() if not task.done()]
+        print('Active tasks count: ', len(active_tasks))
+        for task in active_tasks:
+            loop_.run_until_complete(task)
+        loop_.run_until_complete(loop_.shutdown_asyncgens())
+        loop_.close()

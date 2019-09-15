@@ -31,6 +31,7 @@ from django.utils.decorators import method_decorator
 
 from django.core import serializers
 
+
 @login_required
 def index(request):
 
@@ -41,6 +42,7 @@ def index(request):
 
     context = {'projects':projects}
     return render(request, 'projects/index.html', context)
+
 
 @login_required
 def create(request):
@@ -59,6 +61,7 @@ def create(request):
     context = {'form': form}
     return render(request, 'projects/create.html', context)
 
+
 @method_decorator(login_required, name='dispatch')
 class ProjectUpdate(UpdateView):
     model = Project
@@ -69,6 +72,7 @@ class ProjectUpdate(UpdateView):
             return self.model.objects.filter(user=self.request.user)
         else:
             return self.model.objects
+
 
 @login_required
 def view(request, project_id):
@@ -94,6 +98,7 @@ def view(request, project_id):
 
     return render(request, 'projects/view.html', context)
 
+
 @login_required
 def project_files(request, project_id):
 
@@ -106,7 +111,7 @@ def project_files(request, project_id):
 
     context = {
         'project': project,
-        'n_files':n_files
+        'n_files': n_files
     }
     
     return render(request, 'projects/project_files.html', context)
@@ -190,6 +195,7 @@ def import_files(request, project_id):
     context = {'form': form, 'project': project}
     return render(request, 'projects/import_files.html', context)
 
+
 @method_decorator(login_required, name='dispatch')
 class ProjectDelete(DeleteView):
     model = Project
@@ -200,6 +206,7 @@ class ProjectDelete(DeleteView):
             return self.model.objects.filter(user=self.request.user)
         else:
             return self.model.objects
+
 
 @login_required
 def import_project_files(request, project_id):
@@ -225,11 +232,9 @@ def bulk_action(request, project_id):
 
         model = request.POST['model']
 
-
         if model == 'files':
     
             files = request.POST.getlist('files')
-
 
             if action == 'analysis':
 
@@ -237,7 +242,6 @@ def bulk_action(request, project_id):
                 request.session['project_id'] = project_id
                 
                 return redirect('analysis-create')
-
 
             for file_id in files:
                 file = File.objects.get(pk=file_id)
@@ -272,12 +276,6 @@ def bulk_action(request, project_id):
                    file.status = 'scheduled'
                    file.save()
 
-
-
-
-
-
-
         if model == 'samples':
             samples = request.POST.getlist('samples')
             for sample_id in samples:
@@ -285,5 +283,4 @@ def bulk_action(request, project_id):
                 if action == "delete":
                     sample.delete()
 
-            
     return redirect('projects-view', project_id=project_id)

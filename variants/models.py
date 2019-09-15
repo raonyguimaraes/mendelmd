@@ -207,7 +207,6 @@ class Variant(models.Model):
     def get_fields(self):
         return [(field.name, field.verbose_name.title().replace('_', ' ')) for field in Variant._meta.fields]
 
-    # Add indexing method to BlogPost
     def indexing(self):
         variant_dict = model_to_dict(self)
         obj = VariantIndex(meta={'id': self.id}, **variant_dict)

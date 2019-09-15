@@ -70,7 +70,7 @@ services:
       dockerfile: containers/tasks/Dockerfile
     command: celery -A mendelmd worker -l info --broker=amqp://guest:guest@queues:5672//
     volumes:
-      - .:/app
+      - .:/code
     networks:
       - esnet
     depends_on:

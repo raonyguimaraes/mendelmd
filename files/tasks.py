@@ -6,6 +6,7 @@ from .models import File
 from subprocess import check_output
 import os
 
+
 @shared_task()
 def check_file(task_id):
     task = Task.objects.get(pk=task_id)
@@ -34,8 +35,6 @@ def check_file(task_id):
 
         file.size = int(size)
         # file.human_size = human_size(file.size)
-
-
 
     elif file.location.startswith('http'):
         link = file.location
@@ -81,7 +80,6 @@ def check_file(task_id):
         # print('s3')
         # print(file.location)
 
-     
         file.name = os.path.basename(file.location)
 
         clean_path = file.location.replace('s3://', '')

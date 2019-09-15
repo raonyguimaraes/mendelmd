@@ -90,10 +90,10 @@ def get_file(file):
             output = check_output(command, shell=True)
             print(output.decode('utf-8'))
 
-
     return(file)
     # file = File.objects.get(pk=project_file_id)
     # link = file.location
+
 
 def calculate_md5(path):
     md5_dict = {}
@@ -104,6 +104,7 @@ def calculate_md5(path):
         file_md5 = output
         md5_dict[file_md5] = file
     return(md5_dict)
+
 
 @shared_task()
 def task_run_task(task_id):
@@ -232,6 +233,7 @@ def task_run_task(task_id):
     worker.save()
     print('Finished Task %s' % (task.name))
 
+
 @app.task(queue="qc")
 def run_qc(task_id):
 
@@ -286,13 +288,10 @@ def run_qc(task_id):
     print('Finished QC %s' % (task.name))
 
 
-@shared_task()
-def import_project_files_task(project_id):
-    print('Import Files on ', project_id)
-
 def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
     """ Returns a human readable string reprentation of bytes"""
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
+
 
 @shared_task()
 def compress_file(task_id):
@@ -323,6 +322,7 @@ def compress_file(task_id):
 
     task.status = 'done'
     task.save()
+
 
 @app.task(queue="annotation")
 def annotate_vcf(task_id):
@@ -397,12 +397,13 @@ def annotate_vcf(task_id):
         command = 'rm -rf %s' % (task_location)
         run(command, shell=True)
         #add insertion task
-        insert_vcf.delay(task.id)
+        insert_vcf(task.id)
     else:
         task.status = 'failed'
         task.retry += 1
         task.save()
-        annotate_vcf.delay(task.id)
+        annotate_vcf(task.id)
+
 
 @app.task(queue="insertion")
 def insert_vcf(task_id):

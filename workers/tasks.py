@@ -21,9 +21,10 @@ from helpers.aws_wrapper import AWS
 
 from settings.models import Provider
 
+
 @app.task(queue="master")
 def check_queue():
-    #check tasks and launch workers if necessary
+    # check tasks and launch workers if necessary
     print('Check Queue')
     max_workers = 50
     tasks = Task.objects.filter(status='scheduled')
@@ -31,16 +32,17 @@ def check_queue():
     n_tasks = len(tasks)
     n_workers = len(workers)
     print(n_tasks, n_workers)
-    #if more tasks than workers, launch more workers
+    # if more tasks than workers, launch more workers
     if n_tasks > n_workers and n_workers < max_workers:
         n_workers_to_launch = min(n_tasks, max_workers - n_workers)
         print('Launch Workers', n_workers_to_launch)
         for i in range(0,n_workers_to_launch):
             launch_worker.delay()
-    #if more workers than tasks, terminate workers
+    # if more workers than tasks, terminate workers
     if n_tasks < n_workers:
         print('Terminate Workers')
         terminate_workers()
+
 
 @app.task(queue="master")
 def launch_worker():
@@ -69,7 +71,7 @@ def launch_worker():
 
 @app.task(queue="master")
 def launch_workers(n_workers, type):
-    #create workers
+    # create workers
     workers = []
     for i in range(0, int(n_workers)):
         worker = Worker()
@@ -88,6 +90,7 @@ def launch_workers(n_workers, type):
         worker.save()
         install_worker.delay(worker.id)
 
+
 @app.task(queue="master")
 def terminate_workers():
     idle_workers = Worker.objects.filter(status='idle')
@@ -98,6 +101,7 @@ def terminate_workers():
         worker.status = 'terminated'
         worker.save()
 
+
 @app.task(queue="master")
 def terminate_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
@@ -107,12 +111,14 @@ def terminate_worker(worker_id):
     worker.status = 'terminated'
     worker.save()
 
+
 @app.task(queue="master")
 def install_worker(worker_id):
     worker = Worker.objects.get(id=worker_id)
     print('Install Worker', worker.id)
     if settings.DEFAULT_PROVIDER == 'AWS':
         AWS().install(worker.ip)
+
 
 @app.task(queue="master")
 def update_worker(worker_id):
@@ -122,6 +128,7 @@ def update_worker(worker_id):
         AWS().update(worker.ip)
 
     # command = 'rsync -avz {} root@%s:/projects/mendelmd'.format(settings.BASE_DIR, worker.ip)
+
 
 @app.task(queue="master")
 def check_workers():
