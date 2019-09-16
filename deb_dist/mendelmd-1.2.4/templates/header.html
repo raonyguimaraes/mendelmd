@@ -1,0 +1,369 @@
+{% load gravatar %}
+{% load static i18n %}
+
+<header class="main-header">
+    <!-- Logo -->
+    <a href="{% url 'dashboard' %}" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><img src="{% static "img/Gregor_Mendel_small.png" %}"></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><img src="{% static "img/Gregor_Mendel_small.png" %}">Mendel,MD</span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+
+      <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+
+          <ul class="nav navbar-nav">
+            <!-- <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li> -->
+            <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
+            <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
+    	    <!--
+	    <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
+            <li><a href="{% url 'sample_index' %}"><i class="fa fa-users"></i> Samples</a></li>
+            <li class="dropdown">
+
+              <a href="{% url 'analyses-index' %}" class="dropdown-toggle"><i class="fa analysis-icon"></i> 
+                <span>Analyses </span>
+              </a>
+              
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Ancestry Analysis</a></li>
+                <li><a href="#">Assembly Pipeline</a></li>
+                <li><a href="#">Bcbio</a></li>
+                <li><a href="#">Vg</a></li>
+                <li><a href="#">BWA</a></li>
+                <li><a href="#">CNV Identification</a></li>
+                <li><a href="#">Deep Variant</a></li>
+                <li><a href="#">Freebayes</a></li>
+                <li><a href="#">GATK Pipeline</a></li>
+                <li><a href="#">Genome Reports</a></li>
+                <li><a href="#">Graphtyper</a></li>
+                <li><a href="#">HLA-Typing</a></li>
+                <li><a href="#">MultiQC</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'files-index' %}"><i class="fa fa-files-o"></i> Files</a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Tasks</a></li>
+            <li><a href="{% url 'worker-list' %}"><i class="fa fa-briefcase"></i> Workers</a></li>
+	    -->
+            
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
+                <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
+                <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
+                <li><a href="#">Browser</a></li>
+                <li><a href="#">Data Query</a></li> 
+                <!-- <li class="divider"></li> -->
+                <!-- <li><a href="#">Separated link</a></li> -->
+                <!-- <li class="divider"></li> -->
+                <!-- <li><a href="#">One more separated link</a></li> -->
+              </ul>
+            </li>
+            
+            <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
+            <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
+            {% if user.is_staff %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                  <li><a href="{#% url 'statistics_index' %#}">{% trans "Statistics" %}</a></li>
+                  <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
+                  <li><a href="{% url "admin:index" %}" target="_blank">{% trans "Admin" %}</a></li>
+              </ul>
+            </li>
+                  
+            {% endif %}
+            <li>
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="X8R874MNN8YBY">
+                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                </form>
+
+            </li>
+
+          </ul>
+          
+          <!-- <form class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+              <input type="text" class="form-control" id="navbar-search-input" placeholder="Search">
+            </div>
+          </form> -->
+        </div>
+
+      {% if user.is_authenticated %}
+
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- Messages: style can be found in dropdown.less-->
+          <!-- <li class="dropdown messages-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-envelope-o"></i>
+              <span class="label label-success">4</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">You have 4 messages</li>
+              <li>
+                <ul class="menu">
+                  <li>
+                    <a href="#">
+                      <div class="pull-left">
+                        <img src="https://pbs.twimg.com/profile_images/709136133100208128/hKXmBrER_400x400.jpg" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        Support Team
+                        <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                      </h4>
+                      <p>Why not buy a new awesome theme?</p>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <div class="pull-left">
+                        <img src="{% static "adminlte/dist/img/user3-128x128.jpg" %}" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        AdminLTE Design Team
+                        <small><i class="fa fa-clock-o"></i> 2 hours</small>
+                      </h4>
+                      <p>Why not buy a new awesome theme?</p>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <div class="pull-left">
+                        <img src="{% static "adminlte/dist/img/user4-128x128.jpg" %}" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        Developers
+                        <small><i class="fa fa-clock-o"></i> Today</small>
+                      </h4>
+                      <p>Why not buy a new awesome theme?</p>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <div class="pull-left">
+                        <img src="{% static "adminlte/dist/img/user3-128x128.jpg" %}" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        Sales Department
+                        <small><i class="fa fa-clock-o"></i> Yesterday</small>
+                      </h4>
+                      <p>Why not buy a new awesome theme?</p>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <div class="pull-left">
+                        <img src="{% static "adminlte/dist/img/user4-128x128.jpg" %}" class="img-circle" alt="User Image">
+                      </div>
+                      <h4>
+                        Reviewers
+                        <small><i class="fa fa-clock-o"></i> 2 days</small>
+                      </h4>
+                      <p>Why not buy a new awesome theme?</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="footer"><a href="#">See All Messages</a></li>
+            </ul>
+          </li> -->
+          <!-- Notifications: style can be found in dropdown.less -->
+          <!-- <li class="dropdown notifications-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-bell-o"></i>
+              <span class="label label-warning">10</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">You have 10 notifications</li>
+              <li>
+                <ul class="menu">
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
+                      page and may cause design problems
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-users text-red"></i> 5 new members joined
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-shopping-cart text-green"></i> 25 sales made
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">
+                      <i class="fa fa-user text-red"></i> You changed your username
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="footer"><a href="#">View all</a></li>
+            </ul>
+          </li>
+          <li class="dropdown tasks-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-flag-o"></i>
+              <span class="label label-danger">9</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="header">You have 9 tasks</li>
+              <li>
+                
+                <ul class="menu">
+                  <li>
+                    <a href="#">
+                      <h3>
+                        Design some buttons
+                        <small class="pull-right">20%</small>
+                      </h3>
+                      <div class="progress xs">
+                        <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar"
+                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                          <span class="sr-only">20% Complete</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                  
+                  <li>
+                    <a href="#">
+                      <h3>
+                        Create a nice theme
+                        <small class="pull-right">40%</small>
+                      </h3>
+                      <div class="progress xs">
+                        <div class="progress-bar progress-bar-green" style="width: 40%" role="progressbar"
+                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                          <span class="sr-only">40% Complete</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="#">
+                      <h3>
+                        Some task I need to do
+                        <small class="pull-right">60%</small>
+                      </h3>
+                      <div class="progress xs">
+                        <div class="progress-bar progress-bar-red" style="width: 60%" role="progressbar"
+                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                          <span class="sr-only">60% Complete</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a href="#">
+                      <h3>
+                        Make beautiful transitions
+                        <small class="pull-right">80%</small>
+                      </h3>
+                      <div class="progress xs">
+                        <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar"
+                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                          <span class="sr-only">80% Complete</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="footer">
+                <a href="#">View all tasks</a>
+              </li>
+            </ul>
+          </li> -->
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <img src="{% gravatar_url user.email 150 %}" class="user-image" alt="User Image">
+
+              <span class="hidden-xs">{{ user.username }}</span>
+            </a>
+            <ul class="dropdown-menu">
+              <!-- User image -->
+              <li class="user-header">
+                <img src="{% gravatar_url user.email 400 %}" class="img-circle" alt="User Image">
+                <p>
+                  {{ user.username }}
+                  <!-- <small>Member since Nov. 2012</small> -->
+                </p>
+              </li>
+              <!-- Menu Body -->
+              <!-- <li class="user-body">
+                <div class="row">
+                  <div class="col-xs-4 text-center">
+                    <a href="#">Followers</a>
+                  </div>
+                  <div class="col-xs-4 text-center">
+                    <a href="#">Sales</a>
+                  </div>
+                  <div class="col-xs-4 text-center">
+                    <a href="#">Friends</a>
+                  </div>
+                </div>
+                
+              </li> -->
+              <!-- Menu Footer-->
+              <li class="user-footer">
+                <div class="pull-left">
+                  <!-- <a href="#" class="btn btn-default btn-flat">Profile</a><br> -->
+                  <a href="{% url 'settings-index' %}">Settings</a><br>
+                  <a href="{% url 'account_change_password' %}">Change Password</a><br>
+                  <a href="{% url 'account_email' %}">Change E-mail</a><br>
+                </div>
+                <div class="pull-right">
+                  <a href="{% url 'account_logout' %}" class="btn btn-default btn-flat">Sign out</a>
+                </div>
+              </li>
+            </ul>
+          </li>
+          <!-- Control Sidebar Toggle Button -->
+          <li>
+            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+          </li>
+        </ul>
+      </div>
+      {% else %}
+          <form class="navbar-form navbar-right" role="form" method="POST" action="{% url 'account_login' %}">  {% csrf_token %}
+
+            <div class="form-group">
+              <input type="text" placeholder="Login" name="login" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+            <!-- <font color="white">or</font>
+            <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a>
+      -->
+          </form>
+
+      {% endif %}
+    </nav>
+  </header>
+  </header>
