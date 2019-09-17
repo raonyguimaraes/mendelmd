@@ -16,4 +16,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print('Starting celery worker with autoreload...')
-        autoreload.main(restart_celery)
+        try:
+            #autoreload.main(inner_run)
+            from django.utils.autoreload import run_with_reloader
+            run_with_reloader(restart_celery)
+        except ImportError:
+            from django.utils import autoreload
+            autoreload.main(restart_celery)
+        #autoreload.main(restart_celery)
