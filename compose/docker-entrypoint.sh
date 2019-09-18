@@ -3,7 +3,7 @@
 service rabbitmq-server start
 sleep 5
 pwd
-cp configs/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
+cp configs/settings.py /usr/local/lib/python3.6/dist-packages/pynnotator/
 
 cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
 
