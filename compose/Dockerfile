@@ -23,7 +23,8 @@ ENV LC_ALL en_US.UTF-8
 RUN git clone https://github.com/raonyguimaraes/mendelmd.git
 WORKDIR /mendelmd
 RUN pip3 install -r requirements.txt
-RUN pip3 install pynnotator
-#RUN git clone https://github.com/raonyguimaraes/pynnotator.git
-#RUN cd /code/pynnotator && python3 setup.py develop
+#RUN pip3 install pynnotator
+RUN git clone https://github.com/raonyguimaraes/pynnotator.git
+RUN cd /mendelmd/pynnotator && python3 setup.py install
+VOLUME /home/raony/mendelmd/compose/data /usr/local/lib/python3.6/dist-packages/pynnotator/data
 RUN pynnotator install_docker

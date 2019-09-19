@@ -11,7 +11,7 @@ services:
    command: bash docker-entrypoint.sh
    volumes:
      #- .:/code
-     - ./data:/usr/local/lib/python3.6/dist-packages/pynnotator/pynnotator/data
+     - ./data:/mendelmd/pynnotator/pynnotator/data
    ports:
      - "8000:8000"
    depends_on:
