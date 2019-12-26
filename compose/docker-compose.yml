@@ -7,10 +7,11 @@ services:
    restart: always
 
  web:
-   build: .
+   image: raonyguimaraes/mendelmd
    command: bash docker-entrypoint.sh
    volumes:
-     - .:/code
+     #- .:/code
+     - ./data:/mendelmd/pynnotator/pynnotator/data
    ports:
      - "8000:8000"
    depends_on:
