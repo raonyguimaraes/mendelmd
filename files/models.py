@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.template.defaultfilters import slugify
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 
 # Create your models here.
 class File(models.Model):
