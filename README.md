@@ -4,6 +4,7 @@
 [![BSD License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Read The Docs](https://readthedocs.org/projects/mendelmd/badge/?version=latest)](http://mendelmd.readthedocs.io/en/latest/)
 [![Django](https://www.djangoproject.com/m/img/badges/djangopowered126x54.gif)](https://www.djangoproject.com)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fraonyguimaraes%2Fmendelmd.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fraonyguimaraes%2Fmendelmd?ref=badge_shield)
 
 This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
 
@@ -65,3 +66,7 @@ OR
 * Docker
 * Docker Compose
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fraonyguimaraes%2Fmendelmd.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fraonyguimaraes%2Fmendelmd?ref=badge_large)
