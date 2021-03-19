@@ -1,0 +1,23 @@
+version: '2'
+services:
+ db:
+   image: postgres
+   volumes:
+     - ./data/postgresql_data:/var/lib/postgresql/data/
+   restart: always
+
+ web:
+   build: .
+   #image: raonyguimaraes/mendelmd
+   command: bash docker-entrypoint.sh
+   volumes:
+     - .:/mendelmd
+     - ./data:/mendelmd/pynnotator/pynnotator/data
+   ports:
+     - "8000:8000"
+   depends_on:
+     - db
+     
+    
+ # annotator:
+ #  build: ./compose/annotator
