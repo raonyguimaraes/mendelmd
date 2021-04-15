@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@500&family=Roboto:wght@500&display=swap');
+
+body { margin: 0; padding: 0;  box-sizing: border-box; font-family: roboto; font-size: 14px; font-weight: 400; }
+a:hover { text-decoration: none; }
+
+
+
+.header { background-image: url('../assets/Group.png'); background-position: center; background-size: cover; }
+.container-fluid { padding: 0 82px; }
+
+.navbar { padding: 26px 0;  }
+.header .navbar-nav .nav-item { margin: 0; }
+.header .navbar-nav .nav-link { font-family: Roboto; font-style: normal; padding-right: 32px; text-transform: capitalize; font-weight: 500; font-size: 16px; line-height: 19px; color: #FFFFFF; }
+.header .navbar-nav .nav-link:hover { text-decoration: none; color: #fff; }
+.header .navbar-nav .login-btn { display: inline-block; color: #01579B; background: #FFFFFF; padding: 8px 18px; border-radius: 5px; }
+.navbar-light .navbar-nav .show>.nav-link { color: #fff; }
+.navbar-light .navbar-nav .nav-link:focus{ color: #fff; }
+.navbar-light .navbar-toggler { border:none; color: #fff; }
+.navbar-light .navbar-toggler-icon { background-image: none; }
+
+
+
+.banner { padding: 100px 0 200px 0; }
+.banner h1 { font-family: Raleway; font-style: normal; font-weight: 600; font-size: 92px; line-height: 108px; text-align: center; letter-spacing: 0.15em; text-transform: capitalize; color: #FFFFFF; }
+.banner p { margin-bottom: 48px; font-family: Roboto; font-style: normal; font-weight: 400; font-size: 20px; line-height: 167.4%; text-align: center; letter-spacing: 0.1em; text-transform: capitalize; color: #FFFFFF; }
+.banner .signup-btn { border: 1px solid #FFFFFF; padding: 16px 28px; margin-right: 28px; box-sizing: border-box; border-radius: 5px;font-family: Roboto; font-style: normal; font-weight: 500; font-size: 18px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #FFFFFF; }
+.banner .upload-btn { background: #FFFFFF; padding: 16px 28px; border-radius: 5px; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 18px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #01579B; }
+
+
+.pricing { padding: 70px 0; }
+.pricing .title { margin-bottom: 48px; }
+.pricing .title h4 { font-family: Roboto; font-style: normal; font-weight: 500; font-size: 20px; line-height: 167.4%; letter-spacing: 0.1em; text-transform: uppercase; color: #0091EA; } 
+.pricing .title h2 { font-family: Roboto; font-style: normal; font-weight: normal; font-size: 44px; line-height: 147.4%; letter-spacing: 0.08em; text-transform: uppercase; color: #121212; } 
+.pricing .price-box { background: #FFFFFF; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2); padding: 30px; border-top: 6px solid #93B2C4; border-radius: 6px; }
+.pricing .price-box2 { background: #93B2C4; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2); padding: 30px; border-top: 6px solid #FF9900; border-radius: 6px; }
+.pricing .price-box h2 { font-family: Roboto; font-style: normal; font-weight: bold; font-size: 28px; line-height: 167.4%; letter-spacing: 0.1em; text-transform: uppercase; color: #242424; }
+.pricing .price-box ul li { display: block; margin-bottom: 10px; font-family: Roboto; font-style: normal; font-weight: normal; font-size: 20px; line-height: 137.4%; letter-spacing: 0.05em; text-transform: capitalize; color: #242424; }
+.pricing .price-box h1 { display: inline-block; margin-right: 8px; margin-bottom: 18px; font-family: Roboto; font-style: normal; font-weight: bold; font-size: 42px; line-height: 167.4%; letter-spacing: 0.1em; text-transform: uppercase; color: #01579B; }
+.pricing .price-box span { font-family: Roboto; font-style: normal; font-weight: normal; font-size: 16px; line-height: 137.4%; letter-spacing: 0.05em; text-transform: capitalize; color: #242424; }
+.pricing .price-box .try-btn { display: inline-block; background: #242424; padding: 10px 78px; border-radius: 5px; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 18px; line-height: 137.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #FFFFFF; }
+
+
+
+.footer { padding: 100px 0; background-color: #121212; }
+.footer p { font-family: Roboto; font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #FFFFFF; }
+.footer .footer-logo { margin-bottom: 40px; }
+.footer ul li a { font-family: Roboto; font-style: normal; padding-right: 32px; text-transform: capitalize; font-weight: 500; font-size: 16px; line-height: 19px; color: #FFFFFF; }
+.footer .social-icon { margin-bottom: 60px; }
+.footer .social-icon ul li { margin: 0 15px;  border: 1px solid #93B2C4; box-sizing: border-box; padding: 4px; border-radius: 29px; }
+
+
+
+
+
+
+
+
+
+
+
+.dashboard .sidebar { padding: 0 20px; }
+.dashboard .sidebar span { margin-top: 20px; display: inline-block; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #00477E; }
+.dashboard .sidebar ul li a { font-family: Roboto; font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #526484; }	
