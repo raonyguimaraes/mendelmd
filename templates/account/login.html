@@ -3,18 +3,17 @@
 {% load i18n %}
 {% load static %}
 {% load account %}
+{% load crispy_forms_tags %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
 
-<div class='row'>
-    <div class="col s6 offset-m3">
-
+<section class="pricing">
+    <div class="container" style="max-width: 500px">
         <h1>{% trans "Sign In" %}</h1>
-
         <a id="google_login" href="/accounts/google/login">
-          <img src="{% static "img/btn_google_signin_small.png" %}">
+          <img style="margin-bottom: 18px" src="{% static "img/btn_google_signin_small.png" %}">
         </a>
 
     {% if socialaccount.providers  %}
@@ -23,13 +22,10 @@
         for a {{site_name}} account and sign in below:{% endblocktrans %}</p>
 
         <div class="socialaccount_ballot">
-
           <ul class="socialaccount_providers">
             {% include "socialaccount/snippets/provider_list.html" with process="login" %}
           </ul>
-
           <div class="login-or">{% trans 'or' %}</div>
-
         </div>
 
         {% include "socialaccount/snippets/login_extra.html" %}
@@ -41,16 +37,16 @@
 
         <form class="login" method="POST" action="{% url 'account_login' %}">
           {% csrf_token %}
-          {{ form.as_p }}
+          {{ form|crispy }}
           {% if redirect_field_value %}
-          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
           {% endif %}
           <p>
-              <button class="btn waves-effect waves-light" type="submit">{% trans "Sign In" %}</button>
-              <a class="btn grey darken-1" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+              <button type="submit" class="btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+              <a type="button" class="btn btn-secondary" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
           </p>
         </form>
     </div>
-</div>
+</section>
 
 {% endblock %}
