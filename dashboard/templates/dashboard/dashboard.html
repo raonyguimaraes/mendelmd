@@ -10,7 +10,7 @@
 				<h2 class="d-inline-block">dashboard</h2>
 				<span>control panel</span>
 			</div>
-            <a href="javascript:" class="upload-btn" style="background: #01579B; color: #fff;"><img src="{% static 'assets/white-cloud.svg' %}" class="mr-2">upload a vcf</a>
+            <a href="{% url 'individual_create' %}" class="upload-btn" style="background: #01579B; color: #fff;"><img src="{% static 'assets/white-cloud.svg' %}" class="mr-2">upload a vcf</a>
 			<div class="upload-VCF">
 				<div class="form-group">
 					<select class="form-control" id="sel1">

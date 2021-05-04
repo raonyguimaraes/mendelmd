@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <style>INPUT:-webkit-autofill,SELECT:-webkit-autofill,TEXTAREA:-webkit-autofill{animation-name:onautofillstart}INPUT:not(:-webkit-autofill),SELECT:not(:-webkit-autofill),TEXTAREA:not(:-webkit-autofill){animation-name:onautofillcancel}@keyframes onautofillstart{from{}}@keyframes onautofillcancel{from{}}
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 	<div class="dashboard">
@@ -64,8 +65,8 @@
 
 	<div class="mobile_nav_items">
 		<span class="heading">Main</span>
-		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-cloud-upload mr-2" aria-hidden="true"></i><span>Upload/import files</span></a>
-		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-tachometer mr-2" aria-hidden="true"></i><span>dashboard</span></a>
+        <a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload mr-2" aria-hidden="true"></i><span>Upload/import files</span></a>
+        <a href="{% url 'dashboard' %}"><i class="fa fa-tachometer mr-2" aria-hidden="true"></i><span>dashboard</span></a>
 		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-magic mr-2" aria-hidden="true"></i><span>1-click</span></a>
 		<span><div style="background-color: #b0b0b0; width: 100%; height: 1px;"></div></span>
 		<span class="heading">Other</span>
@@ -79,8 +80,8 @@
 <!--sidebar start-->
 <div class="sidebar">
 	<span class="heading">Main</span>
-	<a href="file:///home/raphael/Downloads/Mendel-MD/upload-VCF%20file.html"><i class="fa fa-cloud-upload mr-2" aria-hidden="true"></i><span>Upload/import files</span></a>
-	<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html" class="active"><i class="fa fa-tachometer mr-2" aria-hidden="true"></i><span>dashboard</span></a>
+	<a href="{% url 'individual_create' %}" {% if '/individuals/create' in request.path %}class="active"{%endif%}><i class="fa fa-cloud-upload mr-2" aria-hidden="true"></i><span>Upload/import files</span></a>
+    <a href="{% url 'dashboard' %}" {% if '/dashboard/' in request.path %}class="active"{%endif%}><i class="fa fa-tachometer mr-2" aria-hidden="true"></i><span>dashboard</span></a>
 	<a href="file:///home/raphael/Downloads/Mendel-MD/1-click.html"><i class="fa fa-magic mr-2" aria-hidden="true"></i><span>1-click</span></a>
 	<span><div style="background-color: #b0b0b0; width: 100%; height: 1px;" class="mb-3"></div></span>
 	<span class="heading">Other</span>
@@ -123,16 +124,19 @@
 	</div>
 </div>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
-<script src="js/bootstrap.min.js"></script> 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js" ></script>
-<script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
-<script src="{% static '/js/dashboard_custom.js' %}"></script>
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('.nav_btn').click(function(){
-			$('.mobile_nav_items').toggleClass('active');
-		});
-	});
-</script>
+{% block js %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script src="{{STATIC_URL}}js/bootstrap.min.js"></script> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js" ></script>
+    <script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+    <script src="{% static '/js/dashboard_custom.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.nav_btn').click(function(){
+                $('.mobile_nav_items').toggleClass('active');
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+{% endblock %}
 </body></html>
