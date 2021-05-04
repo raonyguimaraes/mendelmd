@@ -1,0 +1,138 @@
+{% load static i18n %}
+{% load pagination_tags %}
+
+<!DOCTYPE html>
+<!-- saved from url=(0055)file:///home/raphael/Downloads/Mendel-MD/dashboard.html -->
+<html lang="en" dir="ltr">
+<head>
+    <title>Mendel,MD - Cloud Based Genome Analysis</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Mendel,MD an online tool for diagnosing patients with Mendelian Disorders">
+    <meta name="author" content="Raony Guimaraes">
+    <link rel="icon" href="{{ STATIC_URL }}/img/favicon.ico">
+
+    <meta property="og:url"           content="https://mendelmd.org" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="Mendel,MD - Cloud Based Genome Analysis" />
+    <meta property="og:description"   content="Mendel,MD an online tool for diagnosing patients with Mendelian Disorders" />
+    <meta property="og:image"         content="https://mendelmd.org/static/img/Gregor_Mendel_small.png" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <style>INPUT:-webkit-autofill,SELECT:-webkit-autofill,TEXTAREA:-webkit-autofill{animation-name:onautofillstart}INPUT:not(:-webkit-autofill),SELECT:not(:-webkit-autofill),TEXTAREA:not(:-webkit-autofill){animation-name:onautofillcancel}@keyframes onautofillstart{from{}}@keyframes onautofillcancel{from{}}
+    </style>
+</head>
+<body>
+	<div class="dashboard">
+		<input type="checkbox" id="check">
+		<!--header area start-->
+
+		<div class="nav nav-1">
+			<div class="container-fluid">
+                <img src="{% static '/assets/blue-logo (2).svg' %}" class="logo">
+				<div class="menu d-inline-block">
+					<label for="check" class="hamburger">
+						<i class="fa fa-bars" aria-hidden="true" id="sidebar_btn"></i>
+					</label>
+					<div class="search-box d-inline-block">
+                        <img src="{% static '/assets/search.svg' %}" class="mr-2">
+						<input type="search" id="search" name="search" placeholder="Search">
+					</div>
+					<!-- Search form -->
+				</div>
+				<nav class="navbar navbar-expand-lg navbar-light p-0 d-inline-block">
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"><i class="fa fa-bars" aria-hidden="true"></i></span>
+					</button>
+				</nav>
+				<div class="float-right">
+					<ul class="list-inline m-0">
+                        <li class="nav-item ml-5">
+                            <img src="{% static 'assets/user.png' %}">
+                        </li>
+                    </ul>
+                </div>
+        </div>
+    </div>
+<!--header area end-->
+<!--mobile navigation bar start-->
+<div class="mobile_nav">
+
+	<div class="mobile_nav_items">
+		<span class="heading">Main</span>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-cloud-upload mr-2" aria-hidden="true"></i><span>Upload/import files</span></a>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-tachometer mr-2" aria-hidden="true"></i><span>dashboard</span></a>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-magic mr-2" aria-hidden="true"></i><span>1-click</span></a>
+		<span><div style="background-color: #b0b0b0; width: 100%; height: 1px;"></div></span>
+		<span class="heading">Other</span>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-files-o mr-2" aria-hidden="true"></i><span>models</span></a>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-th mr-2" aria-hidden="true"></i><span>tools</span></a>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-users mr-2" aria-hidden="true"></i><span>cases</span></a>
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-caret-down mr-2" aria-hidden="true"></i><span>models</span></a>
+	</div>
+</div>
+<!--mobile navigation bar end-->
+<!--sidebar start-->
+<div class="sidebar">
+	<span class="heading">Main</span>
+	<a href="file:///home/raphael/Downloads/Mendel-MD/upload-VCF%20file.html"><i class="fa fa-cloud-upload mr-2" aria-hidden="true"></i><span>Upload/import files</span></a>
+	<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html" class="active"><i class="fa fa-tachometer mr-2" aria-hidden="true"></i><span>dashboard</span></a>
+	<a href="file:///home/raphael/Downloads/Mendel-MD/1-click.html"><i class="fa fa-magic mr-2" aria-hidden="true"></i><span>1-click</span></a>
+	<span><div style="background-color: #b0b0b0; width: 100%; height: 1px;" class="mb-3"></div></span>
+	<span class="heading">Other</span>
+	<div class="collapse-box">
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-files-o mr-2" aria-hidden="true"></i><span>models</span></a>
+		<div class="collpase-body hovered">
+			<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Individuals</span></a>
+			<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Diseases</span></a>
+			<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Genes</span></a>
+		</div>
+	</div>
+	<div class="collapse-box">
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-th mr-2" aria-hidden="true"></i><span>tools</span></a>
+		<div class="collpase-body">
+			<a href="file:///home/raphael/Downloads/Mendel-MD/filter-analysis.html"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Filter Analysis</span></a>
+			<a href="file:///home/raphael/Downloads/Mendel-MD/family-analysis.html"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Family Analysis</span></a>
+			<a href="file:///home/raphael/Downloads/Mendel-MD/comparison.html"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Comparison</span></a>
+		</div>
+	</div>
+	<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-users mr-2" aria-hidden="true"></i><span>cases</span></a>
+	<div class="collapse-box">
+		<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-caret-down mr-2" aria-hidden="true"></i><span>models</span></a>	
+		<div class="collpase-body">
+			<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Individuals</span></a>
+			<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Diseases</span></a>
+			<a href="file:///home/raphael/Downloads/Mendel-MD/dashboard.html#"><i class="fa fa-circle mr-2" aria-hidden="true" style="font-size: 8px;"></i><span>Genes</span></a>
+		</div>
+	</div>
+</div>
+<!--sidebar end-->
+
+<div class="content">
+	<div class="dash-body">
+        {% block content %}{% endblock %}
+	</div>
+</div>
+<div class="dash-footer ">
+	<div class="container"> 
+		<p>Copyright © 2018 Raony Guimaraes. All rights reserved.</p>
+	</div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script src="js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js" ></script>
+<script src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1569006273/BBBootstrap/choices.min.js?version=7.0.0"></script>
+<script src="{% static '/js/dashboard_custom.js' %}"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.nav_btn').click(function(){
+			$('.mobile_nav_items').toggleClass('active');
+		});
+	});
+</script>
+</body></html>

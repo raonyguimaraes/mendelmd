@@ -1,145 +1,124 @@
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 {% load static i18n %}
 {% load pagination_tags %}
 
 
 {% block content %}
 <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <h1>
-        Dashboard
-        <small>Control panel</small>
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
-      </ol>
-    </section>
-
+<div class="top-body">
+			<div>
+				<h2 class="d-inline-block">dashboard</h2>
+				<span>control panel</span>
+			</div>
+            <a href="javascript:" class="upload-btn" style="background: #01579B; color: #fff;"><img src="{% static 'assets/white-cloud.svg' %}" class="mr-2">upload a vcf</a>
+			<div class="upload-VCF">
+				<div class="form-group">
+					<select class="form-control" id="sel1">
+						<option>New</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+					</select>
+				</div>
+				<a href="javascript:" class="submit-btn">Submit</a>
+				<hr style="height: 22px; width: 2px; display: inline-block; background-color: #888888; margin: 0 36px 0 36px;">
+				<div class="form-group">
+					<select class="form-control" id="sel1">
+						<option>Show on Grid</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+					</select>
+				</div>
+				<a href="javascript:" class="submit-btn">Submit</a>
+			</div>
+		</div>
     <!-- Main content -->
-    <section class="content">
-      <!-- Small boxes (Stat box) -->
-      <div class="row">
-
-<a href="{% url 'individual_create' %}">
-    <button type="button" class="btn btn-lg btn-primary">Upload VCF File</button>
-</a>
-<br><br>
-{% if user.is_staff %}
-<form action="." method="post">
-{% csrf_token %}
-    {% if user.is_staff %}
-    <select name="status">
-        <option value="new">New</option>
-        <option value="failed">Failed</option>
-        <option value="annotated">Annotated</option>
-        <option value="populated">Populated</option>        
-    </select>
-    <input type="submit" value="Submit"/>
-    {% endif %}
-{% endif %}
-</form>
 
 <form action="{% url 'bulk_action' %}" method="post">
-    {% csrf_token %}
-    {% if user.is_staff %}
-    <select name="selectionField">
-        <option value="Show">Show on Grid</option>
-        <option value="Hide">Hide on Grid</option>
-        <option value="Delete">Delete</option>
-        <option value="Populate">Populate</option>
-        <option value="Annotate">Annotate</option>
-    </select>
-    <input type="submit" value="Submit"/>
-    {% endif %}
-
-    <h2 class="sub-header">Individuals</h2>
-    Showing {{ n_individuals }} individuals
-    <br>
-    {% with objects=individuals %}
-    {% include  "pagination.html" %}
-    {% endwith %}
-
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th style="width: 3%">
-                    #
-                    <input type="checkbox" id="select_all"></th>
-                <th>ID</th>
-                <th style="width: 10px;">Name</th>
-                {% if user.is_staff %}
-                <th>Options</th>
-                {% endif %}
-                <th>Uploaded By</th>
-                <th>Nº Lines</th>
-                <th>Created on</th>
-                <th>Modified on</th>
-                <th>Annotation Time</th>
-                <th>Insertion Time</th>
-                <th>Status</th>
-                {% if user.is_staff %}
-                <th>Operations</th>
-                {% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for individual in individuals %}
-            <tr>
-                <td>
-                    <input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}"
-                           value="{{individual.id}}"/>
-                </td>
-                <td>{{ individual.id }}</td>
-
-                <td>
-                    <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
-                </td>
-                {% if user.is_staff %}
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{% url 'individual_edit' individual.id %}">Edit</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'individual_delete' individual.id %}">Delete</a>
-                        </li>
-                    </ul>
-                </td>
-                {% endif %}
-                <td>{{ individual.user.username }}</td>
-                <td>{{ individual.n_lines }}</td>
-                <td>{{ individual.creation_date }}</td>
-                <td>{{ individual.modified_date }}</td>
-                <td>{{ individual.annotation_time }}</td>
-                <td>{{ individual.insertion_time }}</td>
-
-                <td>{{ individual.status }}</td>
-                {% if user.is_staff %}
-                <td>
-                    <a href="{% url 'individual_annotate' individual.id %}">
-                        <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
-                    </a>
-                    <a href="{% url 'individual_populate' individual.id %}">
-                        <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i>
-                        </button>
-                    </a>
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-
-            </tbody>
-        </table>
-
+    <div class="individuals">
+        <h2 class="sub-header">Individuals</h2>
+        Showing {{ n_individuals }} individuals
         {% with objects=individuals %}
         {% include  "pagination.html" %}
         {% endwith %}
+
+        <div class="table-bg">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th style="width: 3%">
+                        #
+                        <input type="checkbox" id="select_all"></th>
+                    <th>ID</th>
+                    <th style="width: 10px;">Name</th>
+                    {% if user.is_staff %}
+                    <th>Options</th>
+                    {% endif %}
+                    <th>Uploaded By</th>
+                    <th>Nº Lines</th>
+                    <th>Created on</th>
+                    <th>Modified on</th>
+                    <th>Annotation Time</th>
+                    <th>Insertion Time</th>
+                    <th>Status</th>
+                    {% if user.is_staff %}
+                    <th>Operations</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for individual in individuals %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}"
+                               value="{{individual.id}}"/>
+                    </td>
+                    <td>{{ individual.id }}</td>
+
+                    <td>
+                        <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
+                    </td>
+                    {% if user.is_staff %}
+                    <td>
+                        <ul>
+                            <li>
+                                <a href="{% url 'individual_edit' individual.id %}">Edit</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'individual_delete' individual.id %}">Delete</a>
+                            </li>
+                        </ul>
+                    </td>
+                    {% endif %}
+                    <td>{{ individual.user.username }}</td>
+                    <td>{{ individual.n_lines }}</td>
+                    <td>{{ individual.creation_date }}</td>
+                    <td>{{ individual.modified_date }}</td>
+                    <td>{{ individual.annotation_time }}</td>
+                    <td>{{ individual.insertion_time }}</td>
+
+                    <td>{{ individual.status }}</td>
+                    {% if user.is_staff %}
+                    <td>
+                        <a href="{% url 'individual_annotate' individual.id %}">
+                            <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
+                        </a>
+                        <a href="{% url 'individual_populate' individual.id %}">
+                            <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i>
+                            </button>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% with objects=individuals %}
+            {% include  "pagination.html" %}
+            {% endwith %}
+        </div>
+    </div>
 </form>
-
-
-    </section>
-    <!-- /.content -->
 {% endblock %}
 
