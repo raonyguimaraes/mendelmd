@@ -2,6 +2,13 @@
 {% load static i18n %}
 {% load pagination_tags %}
 
+{% block extra_css %}
+<style>
+    td i { padding-right: 3px }
+    .table-bg > table td { font-size: 12px }
+</style>
+{% endblock %}
+
 
 {% block content %}
 <!-- Content Header (Page header) -->
@@ -102,10 +109,10 @@
                     {% if user.is_staff %}
                     <td>
                         <a href="{% url 'individual_annotate' individual.id %}">
-                            <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
+                            <button type="button" class="btn btn-light btn-sm"><i class="bi-arrow-clockwise"></i>Reannotate</button>
                         </a>
                         <a href="{% url 'individual_populate' individual.id %}">
-                            <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i>
+                            <button type="button" class="btn btn-light btn-sm"><i class="bi-file-earmark-bar-graph"></i>Repopulate
                             </button>
                         </a>
                     </td>
