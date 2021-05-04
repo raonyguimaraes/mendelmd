@@ -39,37 +39,7 @@
                                 <a class="nav-link" href="{% url 'individual_create' %}">upload a VCF</a>
 							</li>
 							<li class="nav-item">
-                                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-							</li>
-							<li class="nav-item">
                                 <a class="nav-link" href="{% url 'oneclick' %}">1-click</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="https://mendelmd.readthedocs.io/en/latest/">docs</a>
-							</li>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								options 
-								</a>
-								<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="{% url 'individuals_list' %}">Individuals</a>
-									<a class="dropdown-item" href="{% url 'diseases_list' %}">Diseases</a>
-									<a class="dropdown-item" href="{% url 'genes_list' %}">Genes</a>
-								</div>
-							</li>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								tools 
-								</a>
-								<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-									<a class="dropdown-item" href="{% url 'oneclick' %}">1-click</a>
-									<a class="dropdown-item" href="{% url 'filter_analysis' %}">Filter Analysis</a>
-									<a class="dropdown-item" href="{% url 'family_analysis' %}">Family Analysis</a>
-									<a class="dropdown-item" href="{% url 'comparison' %}">Comparison</a>
-								</div>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="https://forum.mendelmd.org/">forum</a>
 							</li>
                             {% if not user.is_authenticated %}
                                 <li class="list-inline-item"><a href="{% url 'account_login' %}" class="login-btn">log In</a></li>

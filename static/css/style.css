@@ -1,12 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@500&family=Roboto:wght@500&display=swap');
 
-body { margin: 0; padding: 0;  box-sizing: border-box; font-family: roboto; font-size: 14px; font-weight: 400; }
+body { margin: 0; padding: 0;  box-sizing: border-box; font-family: roboto; font-size: 14px; font-weight: 500; }
 a:hover { text-decoration: none; }
+::placeholder {
+	color: white;
+	opacity: 1; /* Firefox */
+}
 
 
 
 .header { background-image: url('../assets/Group.png'); background-position: center; background-size: cover; }
-.container-fluid { padding: 0 82px; }
+.header .container-fluid { padding: 0 82px; }
+.nav .container-fluid { padding: 0 58px; }
 
 .navbar { padding: 26px 0;  }
 .header .navbar-nav .nav-item { margin: 0; }
@@ -24,7 +29,7 @@ a:hover { text-decoration: none; }
 .banner h1 { font-family: Raleway; font-style: normal; font-weight: 600; font-size: 92px; line-height: 108px; text-align: center; letter-spacing: 0.15em; text-transform: capitalize; color: #FFFFFF; }
 .banner p { margin-bottom: 48px; font-family: Roboto; font-style: normal; font-weight: 400; font-size: 20px; line-height: 167.4%; text-align: center; letter-spacing: 0.1em; text-transform: capitalize; color: #FFFFFF; }
 .banner .signup-btn { border: 1px solid #FFFFFF; padding: 16px 28px; margin-right: 28px; box-sizing: border-box; border-radius: 5px;font-family: Roboto; font-style: normal; font-weight: 500; font-size: 18px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #FFFFFF; }
-.banner .upload-btn { background: #FFFFFF; padding: 16px 28px; border-radius: 5px; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 18px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #01579B; }
+.upload-btn { display: inline-block; background: #FFFFFF; padding: 16px 28px; border-radius: 5px; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 18px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #01579B; }
 
 
 .pricing { padding: 70px 0; }
@@ -48,6 +53,106 @@ a:hover { text-decoration: none; }
 .footer .social-icon { margin-bottom: 60px; }
 .footer .social-icon ul li { margin: 0 15px;  border: 1px solid #93B2C4; box-sizing: border-box; padding: 4px; border-radius: 29px; }
 
+/*********************************LOG IN*******************************/
+
+.login-form { position: absolute; top: 20%; left: 35%; padding: 40px; box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.2); background-color: #fff; border-top: 8px solid #01579B; }
+.login-form h2 {font-style: normal; font-weight: 500; font-size: 32px; line-height: 37px; text-transform: capitalize; color: #01579B; }
+.login-form .login-btn { display: inline-block; filter: drop-shadow(0px 2px 11px rgba(0, 0, 0, 0.1)); margin: 38px; background: #FFFFFF; padding: 16px 85px; border-radius: 5px; font-style: normal; font-weight: 500; font-size: 18px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #01579B; }
+
+
+
+
+
+
+
+
+.dashboard .nav-1 { padding: 20px 0; background-color: #01579B; position: fixed; width: 100%; z-index: 1;}
+.dashboard .nav-1 .search-box { margin-right: 40px; cursor: pointer; background: #00477E; padding: 8px; border-radius: 5px; }
+.dashboard .nav-1 .search-box input { background-color: #00477E; border:none; color: #FFFFFF;}
+.dashboard .nav-1 .hamburger { margin-right: 35px; margin-bottom: 15px; }
+.dashboard .nav-1 .logo { margin-right: 56px; }
+.dashboard .nav-1 .search-box input:focus-visible { outline: none; }
+.dashboard .nav-1 .nav-link { padding: 8px 16px; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #FFFFFF; }
+.dashboard .navbar-nav .nav-link:hover { text-decoration: none; color: #fff; }
+
+/*.sidebar .sidebar-menu span {font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #00477E; }
+.sidebar .sidebar-menu ul li span {font-size: 20px;}
+.sidebar .sidebar-menu ul li a { padding: 10px 8px; margin-bottom: 10px; display: inline-block; font-style: normal; font-weight: 500; font-size: 14px; line-height: 16px; text-transform: capitalize;  color: #526484;}
+.sidebar .sidebar-menu ul li a:hover { padding: 10px 8px; display: inline-block; background: #EBEEF2; border-radius: 5px; width: 100%; color: #01579B;}
+*/
+.dashboard .dash-body .top-body { padding: 80px 20px 50px 20px; background-color: #E3E9ED; }
+.dashboard .dash-body h2 { margin-bottom: 40px; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 34px; line-height: 40px; text-transform: capitalize; color: #01579B; } 
+.dashboard .dash-body span { font-size: 15px; line-height: 18px; text-transform: capitalize; color: #B0B0B0;} 
+.dashboard .dash-body .upload-btn { margin-bottom: 42px; } 
+.dashboard .dash-body .upload-VCF .form-group .form-control { width: 15%; display: inline-block; background-color: #E3E9ED; color: #121212;} 
+.dashboard .dash-body .form-group { display: inline; margin-right: 40px;} 
+.dashboard .dash-body .submit-btn { display: inline-block; padding: 8px 26px; background: #01579B; border-radius: 5px; font-size: 15px; line-height: 151.4%; letter-spacing: 0.15em; text-transform: uppercase; color: #FFFFFF; } 
+.dashboard .dash-body .individuals { padding: 18px 22px; background-color: #fff; }
+.dashboard .dash-body .individuals span { font-style: normal; font-weight: normal; font-size: 13px; line-height: 15px; text-transform: capitalize; color: #121212; } 
+.dashboard .dash-body .individuals table th { font-style: normal; font-weight: normal; font-size: 12px; line-height: 14px; text-transform: capitalize; color: #121212; } 
+.dashboard .table-bg { overflow: scroll; padding: 12px 12px 26px 12px; background-color: #fff; margin-top: 22px; box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.14); } 
+.table>:not(caption)>*>* { padding: 10px; }
+.dashboard .dash-body .individuals .pagination .page-link { border-radius: 30px; margin: 0 10px; border:none; }
+.dashboard .dash-body .individuals .pagination .page-link.active { background-color: #01579B; color: #fff; } 
+.dashboard .dash-footer { padding: 25px 0; margin-left: 250px; background: #01579B; } 
+#check:checked ~ .dash-footer {  margin-left: 60px; }
+.dashboard .dash-footer p { margin: 0; text-align: center; font-style: normal; font-weight: 500; font-size: 18px; line-height: 21px; text-transform: capitalize; color: #FFFFFF; } 
+
+
+.dash-body .upload-body p { font-style: normal; font-weight: normal; margin-bottom: 8px; font-size: 16px; line-height: 23px; text-transform: capitalize; color: #121212; }
+
+
+
+.dash-body .choose-file label { background-color: #01579B;  font-family: Roboto; font-style: normal; padding: 16px 24px; border-radius: 5px; margin-top: 80px; margin-bottom: 26px; font-weight: 500; font-size: 15px; line-height: 151.4%; letter-spacing: 0.08em; text-transform: capitalize; color: #FFFFFF; }
+.dash-body .payment-btn { display: inline-block; background-color: #01579B;  font-family: Roboto; font-style: normal; padding: 16px 24px; border-radius: 5px; margin-top: 80px; margin-bottom: 26px; font-weight: 500; font-size: 15px; line-height: 151.4%; letter-spacing: 0.08em; text-transform: capitalize; color: #FFFFFF; }
+
+#file-chosen{ font-family: Roboto; 	font-style: normal;	font-weight: normal; font-size: 15px; line-height: 23px; text-transform: capitalize; color: #121212; background: #FFFFFF; border-radius: 5px; padding: 17px; margin-left: 0.3rem; }
+
+.modal-header { border-bottom: none; margin-bottom: 40px; }
+.modal-footer { border-top: none;}
+.modal-header h5 { font-style: normal; font-weight: normal; font-size: 24px; line-height: 37px; letter-spacing: 0.06em; text-transform: capitalize; color: #121212;  }
+.modal-body { padding: 2rem; }
+.modal-body .upload-bar { width: 360px; margin: 10px 0; background: #C4C4C4; height: 4px; }
+.dashboard .dash-body .modal-body span { font-style: normal; font-weight: 500; font-size: 14px; line-height: 16px; letter-spacing: 0.06em; text-transform: capitalize; color: #01579B; }
+.dashboard .dash-body .modal-footer .pay-btn { background: #121212; padding: 15px 60px; font-style: normal; font-weight: 500; font-size: 14px; line-height: 16px; text-transform: capitalize; color: #FFFFFF; }
+.dashboard .dash-body .modal-footer .upload-modal-btn { padding: 8px 24px; font-style: normal; font-weight: 500; font-size: 14px; line-height: 151.4%; letter-spacing: 0.08em; text-transform: capitalize; color: #01579B; background: #FFFFFF; border: 1px solid #01579B; box-sizing: border-box; border-radius: 5px }
+
+
+.btn-link { font-style: normal; font-weight: normal; font-size: 20px; line-height: 23px; letter-spacing: 0.04em; text-transform: capitalize; text-decoration: none; color: #121212; } 
+
+.dash-body .accordion .card { margin-bottom: 10px; }
+.card-header { background-color: #F5F5F5; }
+
+/*************************tabs**************************/
+.card-body .nav-tabs { border-bottom: 3px solid #01579B; }
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active { color: #FFFFFF; border-color: #01579B; background-color: #01579B; border-radius: 4px 4px 0px 0px; }
+.tab-content .tab-pane h3 { display: inline-block; border-bottom: 2px solid #01579B; margin-bottom: 30px; font-style: normal; font-weight: 500; font-size: 18px; line-height: 21px; letter-spacing: 0.04em; text-transform: capitalize; color: #121212; }
+.tab-content .tab-pane .inheritance-btn { padding: 7px 18px; font-style: normal; font-weight: normal; font-size: 13px; line-height: 16px; letter-spacing: 0.04em; text-transform: capitalize; color: #FFFFFF; background: #01579B; }
+.tab-content .tab-pane .inheritance-btn:hover { background-color: #234688; }
+.tab-content .tab-pane .reset-btn { font-style: normal; font-weight: normal; font-size: 12px; line-height: 16px; letter-spacing: 0.04em; text-transform: uppercase; color: #01579B; }
+.form-outline .form-control.form-control-lg { color: #FF9900; }
+.tab-7-content p { padding: 0!important; font-style: normal; font-weight: normal; font-size: 14px; line-height: 16px; letter-spacing: 0.04em; text-transform: capitalize; color: #242424; }
+.tab-7-content h5 { font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; letter-spacing: 0.04em; text-transform: capitalize; color: #242424; }
+
+/*************************multiselect**************************/
+
+.choices__inner { background: #FFFFFF; border: 1px solid #888888; box-sizing: border-box; border-radius: 5px; } 
+.choices__input { background-color: transparent; }
+.choices__list--multiple .choices__item { background: #01579B; border-radius: 5px; }
+.tab-content label { font-style: normal; font-weight: normal; font-size: 16px; line-height: 19px; letter-spacing: 0.04em; text-transform: capitalize; color: #242424;  }
+
+
+/*************************multiselect**************************/
+
+.grey-border { background-color: #888888; width: 100%; height: 1px; margin: 38px 0 20px 0; }
+
+
+
+/*********************RANGE SLIDER*********************/
+
+.range-slider input { color: #FF9900; width: 60%; background: #FFFFFF; border: 1px solid #888888; box-sizing: border-box; border-radius: 5px; padding: 8px 12px; }
+.ui-state-default, .ui-widget-content .ui-state-default { border-radius: 10px; background-color: #01579B; border: 0.5px solid #FFFFFF; box-sizing: border-box; box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.09), inset -1px -1px 2px rgba(0, 0, 0, 0.06), inset 1px 1px 2px rgba(136, 136, 136, 0.1); }
+.ui-slider .ui-slider-range { background-color: #01579B; }
 
 
 
@@ -58,6 +163,261 @@ a:hover { text-decoration: none; }
 
 
 
-.dashboard .sidebar { padding: 0 20px; }
-.dashboard .sidebar span { margin-top: 20px; display: inline-block; font-family: Roboto; font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #00477E; }
-.dashboard .sidebar ul li a { font-family: Roboto; font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #526484; }	
+
+*********************************************Dashboard************************************
+body{
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+.dashboard .sidebar{
+  z-index: 1;
+  padding: 0 20px;
+  top: 3;
+  background: #fff;
+  margin-top: 82px;
+  padding-top: 30px;
+  position: fixed;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  transition: 0.5s;
+  transition-property: left;
+  overflow-x: unset;
+}
+
+.profile_info{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard .sidebar .profile_info .profile_image{
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+  margin-bottom: 10px;
+}
+
+.dashboard .sidebar .profile_info h4{
+  color: #ccc;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.dashboard .sidebar a{
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 50px;
+  color: #526484;
+  text-transform: capitalize;
+  display: block;
+  text-decoration: none;
+  padding-left: 14px;
+  box-sizing: border-box;
+  transition: 0.5s;
+  transition-property: background;
+}
+
+.dashboard .sidebar a:hover{
+  background: #EBEEF2;
+  border-radius: 5px;
+  color: #01579B;
+}
+.dashboard .sidebar a.active{
+  background: #EBEEF2;
+  border-radius: 5px;
+  color: #01579B;
+}
+
+ #check:checked ~ .sidebar a:hover { border-radius: 0; }
+ #check:checked ~ .sidebar a.active { border-radius: 0; }
+
+.collapse-box {position: relative;}
+    .collapse-box .collpase-body {
+      overflow: hidden;
+      height: 0;
+    }
+
+    #check:checked ~ .sidebar .collapse-box:hover .collpase-body { 
+      position: absolute;
+      height: auto;
+      left: 100%;
+      background-color: #EBEEF2;
+      border-radius: 5px;
+      height: auto!important;
+      top: 0;
+
+    }
+    #check:checked ~ .sidebar .collapse-box:hover .collpase-body a { 
+      margin: 0;
+      width: 200px;
+      white-space: nowrap;
+    }
+    #check:checked ~ .sidebar .collapse-box:hover .collpase-body span {
+      display: inline-block;
+    }
+
+
+.dashboard .sidebar .heading{ font-style: normal; font-weight: 500; font-size: 16px; line-height: 19px; text-transform: capitalize; color: #00477E; }
+
+label #sidebar_btn{
+  z-index: 1;
+  color: #fff;
+  position: fixed;
+  cursor: pointer;
+  font-size: 22px;
+  transition: 0.5s;
+  transition-property: color;
+}
+
+label #sidebar_btn:hover{
+  color: #19B3D3;
+}
+
+#check:checked ~ .sidebar{
+  left: -190px;
+  padding: 0px 0 0 27px;
+}
+
+#check:checked ~ .sidebar a span{
+  display: none;
+}
+#check:checked ~ .sidebar span div{
+  display: none;
+}
+
+#check:checked ~ .sidebar a{
+  font-size: 20px;
+  margin-left: 165px;
+}
+
+.dashboard .content{
+  background-color: #E3E9ED; padding: 110px 20px 50px 20px;
+  width: (100% - 250px);
+  margin-bottom: 70px;
+  margin-left: 250px;
+  transition: 0.5s;
+}
+
+#check:checked ~ .content{
+  margin-left: 60px;
+}
+
+#check:checked ~ .sidebar .profile_info{
+  display: none;
+}
+
+#check{
+  display: none;
+}
+
+.mobile_nav{
+  display: none;
+}
+
+.content .card p{
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Responsive CSS */
+
+@media screen and (max-width: 780px){
+  .sidebar{
+    display: none;
+  }
+
+  #sidebar_btn{
+    display: none;
+  }
+
+  .content{
+    margin-left: 0;
+    margin-top: 0;
+    padding: 10px 20px;
+    transition: 0s;
+  }
+
+  #check:checked ~ .content{
+    margin-left: 0;
+  }
+
+  .mobile_nav{
+    display: block;
+    width: calc(100% - 0%);
+  }
+
+  .nav_bar{
+    background: #222;
+    width: (100% - 0px);
+    margin-top: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .nav_bar .mobile_profile_image{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  .nav_bar .nav_btn{
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.5s;
+    transition-property: color;
+  }
+
+  .nav_bar .nav_btn:hover{
+    color: #19B3D3;
+  }
+
+  .mobile_nav_items{
+    background: #2F323A;
+    display: none;
+  }
+
+  .mobile_nav_items a{
+    color: #fff;
+    display: block;
+    text-align: center;
+    letter-spacing: 1px;
+    line-height: 60px;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: 0.5s;
+    transition-property: background;
+  }
+
+  .mobile_nav_items a:hover{
+    background: #19B3D3;
+  }
+
+  .mobile_nav_items i{
+    padding-right: 10px;
+  }
+
+  .active{
+    display: block;
+  }
+
+  
+
+  /*************************************Tab 2*****************************/
+
+  .form-outline input { color: #FF9900!important; }
+
+
+
+  
