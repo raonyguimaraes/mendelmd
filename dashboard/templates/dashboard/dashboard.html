@@ -6,6 +6,7 @@
 <style>
     td i { padding-right: 3px }
     .table-bg > table td { font-size: 12px }
+    .operations button {margin-bottom: 4px }
 </style>
 {% endblock %}
 
@@ -93,7 +94,7 @@
                                 <a href="{% url 'individual_edit' individual.id %}">Edit</a>
                             </li>
                             <li>
-                                <a href="{% url 'individual_delete' individual.id %}">Delete</a>
+                                <a href="{% url 'individual_delete' individual.id %}" class="link-danger">Delete</a>
                             </li>
                         </ul>
                     </td>
@@ -107,7 +108,7 @@
 
                     <td>{{ individual.status }}</td>
                     {% if user.is_staff %}
-                    <td>
+                    <td class="operations">
                         <a href="{% url 'individual_annotate' individual.id %}">
                             <button type="button" class="btn btn-light btn-sm"><i class="bi-arrow-clockwise"></i>Reannotate</button>
                         </a>
