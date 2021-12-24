@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% load account i18n static %}
+
+{% block header %}
+		<div class="banner text-center">
+			<h1 class="mb-2">welcome  to<br> mendel,mD</h1>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nisl<br> bibendum in elementum venenatis, sed enim. Lorem tellus massa<br> turpis at amet, nibh eu sit vel. In vitae nunc et fames risus. <br>Blandit ultrices malesuada euismod amet sapien lacus sit.</p>
+            <a href="{% url 'account_signup' %}" class="signup-btn">sign up <img src="{% static 'assets/Arrow 1.svg' %}"></a>
+            <a href="{% url 'individual_create' %}" class="upload-btn"><img src="{% static 'assets/cloud_up.svg' %}" class="mr-2">upload a vcf</a>
+		</div>
+{% endblock %}
+{% block content %}
+	<section class="pricing">
+		<div class="container">
+			<div class="title">
+				<h4 class="mb-0">smart pricing</h4>
+				<hr style=" margin:0; background-color: #1B5E20; width: 45px; height: 2px; margin-bottom: 22px;" >
+				<h2>Pricing built for businesses<br>of all sizes</h2>
+			</div>
+			<div class="row justify-content-center align-items-center">
+				<div class="col-lg-4 col-md-4 col-sm-10">
+					<div class="price-box" style="padding-bottom: 100px;">
+						<h2 class="mb-3 text-center">Silver</h2>
+						<ul class="m-0 p-0">
+							<li class="list-inline-item">
+                                <img src="{% static 'assets/circle_check.svg' %}" class="pr-2">48h support
+							</li>
+							<li class="list-inline-item">
+                                <img src="{% static 'assets/circle_check.svg' %}" class="pr-2">3rd Priority for Genome Annotation
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">5 BAMs
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Storage 1TB
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Analysis
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Quality Control
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">3 Months updates
+							</li>
+						</ul>
+						<h1>$20.00</h1>
+						<span>month</span>
+						<div class="text-center">
+							<a href="javascript:" class="try-btn">try</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-4 col-sm-10">
+					<div class="price-box2 price-box">
+						<h2 class="mb-3 text-center">platinum</h2>
+						<ul class="m-0 p-0">
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">30min support
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">1st Priority for Genome Annotation
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">50 BAMs
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Storage 10TB
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Analysis
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Quality Control
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Genome Alignment
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Variant Calling, CNV, Svs
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Ancestry Analysis
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Imputation and Phasing
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Weekly Updates for the Genomes
+							</li>
+						</ul>
+						<h1>$100.00</h1>
+						<span>month</span>
+						<div class="text-center">
+							<a href="javascript:" class="try-btn">try</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-4 col-sm-10">
+					<div class="price-box">
+						<h2 class="mb-3 text-center">Gold</h2>
+						<ul class="m-0 p-0">
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">24h support
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">2nd Priority for Genome Annotation
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">10 BAMs
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Storage 2TB
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Analysis
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Quality Control
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Genome Alignment
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Variant Calling
+							</li>
+							<li class="list-inline-item">
+								<img src="{% static 'assets/circle_check.svg' %}" class="pr-2">Monthly Updates
+							</li>
+						</ul>
+						<h1>$50.00</h1>
+						<span>month</span>
+						<div class="text-center">
+							<a href="javascript:" class="try-btn">try</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+

@@ -1,47 +1,43 @@
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 {% load i18n %}
 {% load upload_tags %}
 
 {% block extra_css %}
-    <!-- Generic page styles -->
-
     <!-- blueimp Gallery styles -->
     <link rel="stylesheet" href="{{ STATIC_URL }}jquery-fileupload/css/blueimp-gallery.min.css">
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
     <link rel="stylesheet" href="{{ STATIC_URL }}jquery-fileupload/css/jquery.fileupload-ui.css">
     <!-- CSS adjustments for browsers with JavaScript disabled -->
     <noscript><link rel="stylesheet" href="{{ STATIC_URL }}jquery-fileupload/css/jquery.fileupload-ui-noscript.css"></noscript>
-    <script src="{{ STATIC_URL }}jquery-1.7.2.min.js"></script>
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-
+    <style>
+        form#fileupload { padding: 0px 20px }
+        form#fileupload span { color: white; font-weight: 400 }
+    </style>
 {% endblock %}
 
 
 {% block content %}
 
-    <div class="page-header">
-        <h1>Upload your VCF Files</h1>
-        You will receive an e-mail as soon this process finishes with the link to start analysing your individuals.</p> You can take this time to read our <a href="{% url 'docs' %}" target="_blank">Documentation</a> about how to filter your variants.
+    <div class="top-body">
+        <h2>Upload your VCF Files</h2>
+        <p>You will receive an e-mail as soon this process finishes with the link to start analysing your individuals. You can take this time to read our <a href="{% url 'docs' %}" target="_blank">Documentation</a> about how to filter your variants.</p>
     </div>
-    <form id="fileupload" method="post" action="." enctype="multipart/form-data">{% csrf_token %}
-        
-        
+    <form id="fileupload" method="post" action="" enctype="multipart/form-data">{% csrf_token %}
         <input name="name" id="id_name" type="hidden" value="1">
-
         <input id="id_description" type="hidden" name="description" value=" " />
-        
-        <div class="row fileupload-buttonbar">
-            <div class="col-lg-7">
+        <div class="choose-file fileupload-buttonbar">
+            <label>
                 <!-- The fileinput-button span is used to style the file input field as button -->
-                <span class="btn btn-success fileinput-button">
-                    <i class="glyphicon glyphicon-plus"></i>
-                    <span>Please, Select your VCF files...</span>
+                <span class="fileinput-button">
+                    <i class="bi-cloud-plus align-middle" style="font-size: 23px"></i>
+                    <span class="align-middle">Please, Select your VCF files...</span>
                     <input id="id_variants_file" type="file" name="file" multiple>
                 </span>
                 <!-- The loading indicator is shown during file processing -->
                 <span class="fileupload-loading"></span>
-            </div>
+            </label>
             <!-- The global progress information -->
             <div class="col-lg-5 fileupload-progress fade">
                 <!-- The global progress bar -->
@@ -61,18 +57,81 @@
         </span>
         </a>
     </form>
+    {% verbatim %}
+     <!-- The template to display files available for upload -->
+    <script id="template-upload" type="text/x-tmpl">
+      {% for (var i=0, file; file=o.files[i]; i++) { %}
+          <tr style="background: white">
+              <td>
+                  <span class="preview"></span>
+              </td>
+              <td>
+                  <p class="name">{%=file.name%}</p>
+                  <strong class="error text-danger"></strong>
+              </td>
+              <td>
+                  <p class="size">Processing...</p>
+                  <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+              </td>
+          </tr>
+      {% } %}
+    </script>
+    <!-- The template to display files available for download -->
+    <script id="template-download" type="text/x-tmpl">
+      {% for (var i=0, file; file=o.files[i]; i++) { %}
+          <tr class="template-download fade{%=file.thumbnailUrl?' image':''%}">
+              <td>
+                  <span class="preview">
+                      {% if (file.thumbnailUrl) { %}
+                          <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                      {% } %}
+                  </span>
+              </td>
+              <td>
+                  <p class="name">
+                      {% if (file.url) { %}
+                          <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                      {% } else { %}
+                          <span>{%=file.name%}</span>
+                      {% } %}
+                  </p>
+                  {% if (file.error) { %}
+                      <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+                  {% } %}
+              </td>
+              <td>
+                  <span class="size">{%=o.formatFileSize(file.size)%}</span>
+              </td>
+              <td>
+                  {% if (file.deleteUrl) { %}
+                      <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                          <i class="glyphicon glyphicon-trash"></i>
+                          <span>Delete</span>
+                      </button>
+                      <input type="checkbox" name="delete" value="1" class="toggle">
+                  {% } else { %}
+                      <button class="btn btn-warning cancel">
+                          <i class="glyphicon glyphicon-ban-circle"></i>
+                          <span>Cancel</span>
+                      </button>
+                  {% } %}
+              </td>
+          </tr>
+      {% } %}
+    </script>
+    {% endverbatim %}
 
-{% upload_js %}
+{% endblock %}
 
+{% block extra_js %}
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="{{ STATIC_URL }}jquery-fileupload/js/vendor/jquery.ui.widget.js"></script>
 <!-- The Templates plugin is included to render the upload/download listings -->
-<script src="{{ STATIC_URL }}jquery-fileupload/js/tmpl.min.js"></script>
+<script src="https://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
 <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-<script src="{{ STATIC_URL }}jquery-fileupload/js/load-image.min.js"></script>
-<!-- The Canvas to Blob plugin is included for image resizing functionality -->
-<script src="{{ STATIC_URL }}jquery-fileupload/js/canvas-to-blob.min.js"></script>
-<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+<script src="https://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+<!-- blueimp Gallery script -->
+<script src="https://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
 <script src="{{ STATIC_URL }}jquery-fileupload/js/bootstrap.min.js"></script>
 <!-- blueimp Gallery script -->
 <script src="{{ STATIC_URL }}jquery-fileupload/js/jquery.blueimp-gallery.min.js"></script>
@@ -101,26 +160,11 @@
 <script src="{{ STATIC_URL }}jquery-fileupload/js/cors/jquery.xdr-transport.js"></script>
 <![endif]-->
 <script>
-$('#fileupload').fileupload({
-    autoUpload: true,
-    sequentialUploads: true
-});
+$(document).ready(function() {
+    $('#fileupload').fileupload({
+        autoUpload: true,
+        sequentialUploads: true
+    });
+})
 </script>
-
-<script>
-    $(document).ready(function() { $("#id_shared_with_groups").select2(
-        { width: 'off',
-        placeholder: "Select your Groups", }
-        ); });
-</script>
-
-{% endblock %}
-
-{% block javascript %}
-<!-- Latest compiled and minified JavaScript -->
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-
-<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/jquery-ui-1.9.0.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui-bootstrap/js/init-ui.js"></script>
-
 {% endblock %}

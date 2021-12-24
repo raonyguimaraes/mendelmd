@@ -19,9 +19,10 @@ urlpatterns = [
     # Examples:
     # url(r'^$', 'mendelmd.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    path(r'^$', views.index, name='index'),
+    path(r'^$', views.new_index, name='new_index'),
+                  # url(r'^$', views.new_index, name='new_index'),
 
-    path(r'^docs/$', views.docs, name="docs"),
+                  path(r'^docs/$', views.docs, name="docs"),
 
     path('admin/', admin.site.urls),
 
