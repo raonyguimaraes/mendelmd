@@ -24,3 +24,4 @@ django-utils-six
 cyvcf2
 django-paypal
 pillow
+django-select2
