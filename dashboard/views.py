@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-
-
 import os
 # Create your views here.
 from individuals.models import Individual
@@ -12,6 +10,7 @@ from django.utils.text import slugify
 from individuals.tasks import *
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 def index(request):
     if request.method == 'POST':
@@ -31,7 +30,7 @@ def index(request):
 
     n_individuals = individuals.count()
 
-    paginator = Paginator(individuals, 1000) # Show 25 contacts per page
+    paginator = Paginator(individuals, 1000)  # Show 25 contacts per page
 
     page = request.GET.get('page')
 
@@ -44,10 +43,9 @@ def index(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         individuals = paginator.page(paginator.num_pages)
 
-
     context = {
-    'n_individuals': n_individuals,
-    'individuals':individuals
+        'n_individuals': n_individuals,
+        'individuals':individuals
     }
     return render(request, 'dashboard/dashboard.html', context)
 

@@ -1,0 +1,27 @@
+{% extends 'ecommerce_app/base.html' %}
+ 
+{% block title %}Make Payment{% endblock %}
+
+{% block nav %}
+    <a href="{% url 'index' %}">Cancel shopping</a>
+{% endblock %}
+ 
+{% block content %}
+    <p>
+    <b>Order:</b> {{ order.id }}<br />
+    </p>
+    <p>
+    <b>Name:</b> {{ order.name }}<br />
+    <b>E-mail:</b> {{ order.email }}<br />
+    <b>Postal Code:</b> {{ order.postal_code }}<br />
+    <b>Address:</b> {{ order.address }}<br />
+    </p>
+    <p>
+    <b>Items:</b><br />
+    {% for item in line_itens %}
+        {{ item.product }} - {{ item.price }} - {{ item.quantity }}<br />
+    {% endfor %}
+    </p>
+    <h4>Pay with PayPal</h4>
+    {{ form.render }}
+{% endblock %}

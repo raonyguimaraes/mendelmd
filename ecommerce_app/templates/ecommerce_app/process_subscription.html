@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="content-header">
+      <h1>
+        Confirm Subscription
+      </h1>
+    </section>
+    <p>
+    <b>Order:</b> {{ order.id }}<br />
+    </p>
+    <p>
+    <b>Name:</b> {{ order.user.username }}<br />
+    <b>E-mail:</b> {{ order.user.email }}<br />
+    </p>
+    <p>
+    <b>Items:</b><br />
+    {% for item in line_items %}
+        {{ item.product }} - {{ item.price }} - {{ item.quantity }}<br />
+    {% endfor %}
+    </p>
+    <h4>Pay with PayPal</h4>
+    {{ form.render }}
+{% endblock %}
