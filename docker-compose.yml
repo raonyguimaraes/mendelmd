@@ -5,6 +5,8 @@ services:
    volumes:
      - ./data/postgresql_data:/var/lib/postgresql/data/
    restart: always
+   environment:
+      POSTGRES_PASSWORD: mendelmd 
 
  web:
    build: .
