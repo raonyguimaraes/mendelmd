@@ -31,7 +31,10 @@ from collections import OrderedDict
 
 
 import json
-import vcf
+# import vcf
+#from cyvcf2 import VCF
+from pysam import VariantFile
+
 
 from datetime import timedelta
 from django.template.defaultfilters import slugify
@@ -86,26 +89,26 @@ def VerifyVCF(individual_id):
         os.system(command)
 
 
-    vcf_reader = vcf.Reader(open('sample.vcf', 'r'))
-    n_samples = len(vcf_reader.samples)
+    vcf_reader = VariantFile('sample.vcf')
+    n_samples = len(vcf_reader.header.samples)
     print('n_samples', n_samples)
 
     if n_samples > 1:
         #extract individuals and create new users
-        for sample in vcf_reader.samples:
+        for sample in vcf_reader.header.samples:
             print(sample)
             command = "bcftools view -c 1 -s %s sample.vcf  > %s.vcf" % (sample, sample)
             print(command)
             os.system(command)
         #now rename original sample
-        first_sample = vcf_reader.samples[0]
+        first_sample = vcf_reader.header.samples[0]
         original_name = individual.name
         individual.name += ' %s' % (first_sample)
         individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, first_sample)
         # individual.save()
         AnnotateVariants.delay(individual.id)
         #create other samples
-        for sample in vcf_reader.samples[1:]:
+        for sample in vcf_reader.header.samples[1:]:
             print(sample)
             new_individual = Individual.objects.create(user=individual.user, status='new')
             new_individual.name = original_name + ' %s' % (sample)

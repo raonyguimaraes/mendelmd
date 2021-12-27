@@ -9,7 +9,7 @@ Sphinx
 Fabric3
 pysam
 pynnotator
-pyvcf
+#pyvcf
 celery
 django-celery
 django-celery-results
@@ -21,3 +21,4 @@ dj-database-url
 django-gravatar2
 pandas
 django-utils-six
+cyvcf2
