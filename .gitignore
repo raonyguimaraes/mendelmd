@@ -43,4 +43,4 @@ __pycache__
 media/
 scripts/merge_folders.py
 compose/data
-
+staticfiles/
