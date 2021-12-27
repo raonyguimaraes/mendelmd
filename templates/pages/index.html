@@ -23,6 +23,28 @@
             <p><a href="{% url 'account_signup' %}" class="btn btn-primary btn-large">Sign Up »</a> or <a href="{% url 'individual_create' %}" class="btn btn-primary btn-large">Upload a VCF</a></p>
           </div>
          </div>
+    <!-- start pricing -->
+    <section id="pricing">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 wow bounceIn">
+            <h2 class="text-uppercase">Our Pricing</h2>
+          </div>
+          {% for plan in plans %}
+              <div class="col-md-4 wow fadeIn" data-wow-delay="0.6s">
+                  <div class="pricing text-uppercase">
+                    <div class="pricing-title">
+                      <h4>{{ plan.name }}</h4>
+                      <p>${{ plan.price }}</p>
+                      <small class="text-lowercase">monthly</small>
+                    </div>
+                    <ul>
+                        <li>{{ plan.description }}</li>
+                    </ul>
+                  </div>
+                  <a class="btn btn-primary text-uppercase" href="{% url 'process_subscription' plan.id %}">Sign up</a>
+              </div>
+          {% endfor %}
         </div>
         <div class="col-md-6">
 

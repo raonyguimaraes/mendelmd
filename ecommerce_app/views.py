@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect, \
     get_object_or_404, reverse
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from decimal import Decimal
@@ -111,6 +112,48 @@ def process_payment(request):
     return render(request, 'ecommerce_app/process_payment.html', {'order': order,
                                                                   'line_itens': line_items,
                                                                   'form': form})
+
+
+@login_required
+def process_subscription(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if not product.is_subscription:
+        return redirect('index')
+    user = request.user
+    order = Order.objects.create(user=user)
+    line_item = LineItem.objects.create(product_id=product.id,
+                                        price=product.price,
+                                        quantity=1,
+                                        order_id=order.id)
+    host = request.get_host()
+
+    paypal_dict = {
+        'cmd': '_xclick-subscriptions',
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'a3': '%.2f' % order.total_cost().quantize(
+            Decimal('.01')),  # monthly price
+        'p3': 1,  # duration of each unit (depends on unit)
+        't3': "M",  # duration unit ("M for Month")
+        'src': "1",  # make payments recur
+        'sra': "1",  # reattempt payment on payment error
+        'no_note': "1",  # remove extra notes (optional)
+        'item_name': product.slug,
+        'notify_url': 'http://{}{}'.format(host,
+                                           reverse('paypal-ipn')),
+        'return_url': 'http://{}{}'.format(host,
+                                           reverse('payment_done')),
+        'cancel_return': 'http://{}{}'.format(host,
+                                              reverse('payment_cancelled')),
+    }
+
+    # Create the instance.
+    form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
+
+    # Output the button.
+    return render(request, 'ecommerce_app/process_subscription.html', {'order': order,
+                                                                       'line_items': order.lineitem_set.all(),
+                                                                       'user': request.user,
+                                                                       'form': form})
 
 
 @csrf_exempt
