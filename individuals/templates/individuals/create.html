@@ -124,14 +124,17 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="node_modules/blueimp-file-upload/js/jquery.fileupload.js"></script>
+
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-<script src="{{ STATIC_URL }}jquery-fileupload/js/vendor/jquery.ui.widget.js"></script>
+<script src="node_modules/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
 <!-- The Templates plugin is included to render the upload/download listings -->
 <script src="https://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
 <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
 <script src="https://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
 <!-- blueimp Gallery script -->
 <script src="https://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
+
 <script src="{{ STATIC_URL }}jquery-fileupload/js/bootstrap.min.js"></script>
 <!-- blueimp Gallery script -->
 <script src="{{ STATIC_URL }}jquery-fileupload/js/jquery.blueimp-gallery.min.js"></script>

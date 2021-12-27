@@ -85,7 +85,7 @@ def create(request):
             #    os.chmod("%s/genomes/public/%s" % (settings.BASE_DIR, individual.id), 0o777)
 
             # AnnotateVariants.delay(individual.id)
-            VerifyVCF.delay(individual.id)
+            # VerifyVCF.delay(individual.id)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 

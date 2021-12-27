@@ -21,9 +21,9 @@ class UserGroup(models.Model):
 class Individual(models.Model):
     def get_upload_path(self, filename):
         if self.user != None:
-            string = "%s/genomes/%s/%s/%s" % (settings.BASE_DIR, slugify(self.user.username), self.id, filename)#.replace(' ', '_')
+            string = "genomes/%s/%s/%s" % (slugify(self.user.username), self.id, filename)#.replace(' ', '_')
         else:
-            string = "%s/genomes/public/%s/%s" % (settings.BASE_DIR, self.id, filename)#.replace(' ', '_')
+            string = "genomes/public/%s/%s" % (self.id, filename)#.replace(' ', '_')
             print('string',string)
         return string
     user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
