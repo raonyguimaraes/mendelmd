@@ -14,17 +14,17 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 
 urlpatterns = [
-    path(r"populate/", views.populate, name="diseases_populate"),
-    path(r"populate_genes/", views.populate_genes, name="populate_genes"),
+    path('populate/', views.populate, name='diseases_populate'),
+    path('populate_genes/', views.populate_genes, name='populate_genes'),
 
-    path(r"populate_hgmd_genes/", views.populate_hgmd_genes, name="populate_hgmd_genes"),
-    path(r"populate_hgmd_mutations/", views.populate_hgmd_mutations, name="populate_hgmd_mutations"),
+    path('populate_hgmd_genes/', views.populate_hgmd_genes, name='populate_hgmd_genes'),
+    path('populate_hgmd_mutations/', views.populate_hgmd_mutations, name='populate_hgmd_mutations'),
     
-    #path(r"", 'diseases.views.list', name="diseases_list"),
+    #path('', 'diseases.views.list', name='diseases_list'),
     
-    path(r'', login_required(DiseaseListView.as_view(model=Disease)), name="diseases_list"),
+    path('', login_required(DiseaseListView.as_view(model=Disease)), name='diseases_list'),
     
 
     
-    path(r'view/(?P<disease_id>\d+)/', views.view, name='disease_view'),
+    path('view/<int:disease_id>/', views.view, name='disease_view'),
     ]

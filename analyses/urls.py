@@ -13,9 +13,9 @@ urlpatterns = [
     path(r'', views.index, name='analyses-index'),
     # path(r'create/', views.AnalysisCreate.as_view(), {}, 'analysis-create'),
     path(r'create/', views.create, {}, 'analysis-create'),
-    path(r'detail/(?P<pk>\d+)/', views.AnalysisDetailView.as_view(), name='analysis-detail'),
-    path(r'delete/(?P<pk>\d+)/', views.AnalysisDelete.as_view(), name='analysis-delete'),
-    path(r'update/(?P<pk>\d+)/', views.AnalysisUpdate.as_view(), name='analysis-update'),
-    path(r'run/(?P<analysis_id>\d+)/', views.run_analysis, name='analysis-run'),
+    path(r'detail/<int:pk>/', views.AnalysisDetailView.as_view(), name='analysis-detail'),
+    path(r'delete/<int:pk>/', views.AnalysisDelete.as_view(), name='analysis-delete'),
+    path(r'update/<int:pk>/', views.AnalysisUpdate.as_view(), name='analysis-update'),
+    path(r'run/<int:analysis_id>/', views.run_analysis, name='analysis-run'),
     path(r'contact/', ContactWizard.as_view([ContactForm1, ContactForm2])),
 ]

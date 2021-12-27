@@ -20,39 +20,45 @@ from django.urls import path
 
 urlpatterns = [
     # Examples:
+<<<<<<< HEAD
     #path(r'', views.index, name='index'),
 
     path(r'docs/', views.docs, name="docs"),
     path(r'', views.new_index, name='new_index'),
                   # url(r'($', views.new_index, name='new_index'),
+=======
+    # url('($', 'mendelmd.views.home', name='home'),
+    # url('(blog/', include('blog.urls')),
+    path('', views.new_index, name='new_index'),
+                  # url('($', views.new_index, name='new_index'),
+>>>>>>> 2ab18d8 (upgrade to Django 4)
 
-    path(r'(docs/', views.docs, name="docs"),
+    path('docs/', views.docs, name="docs"),
 
     path('admin/', admin.site.urls),
 
-    path(r'(upload/', files.views.upload, name='upload'),
+    path('upload/', files.views.upload, name='upload'),
 
     path('accounts/', include('allauth.urls')),
-    path(r'(dashboard/', include('dashboard.urls')),
-    path(r'(individuals/', include('individuals.urls')),
-    path(r'(diseases/', include('diseases.urls')),
-    path(r'(genes/', include('genes.urls')),
-    path(r'(variants/', include('variants.urls')),
-    path(r'(cases/', include('cases.urls')),
-    path(r'(filter_analysis/', include('filter_analysis.urls')),
-    # path(r'(pathway_analysis/', include('apps.pathway_analysis.urls')),
-    path(r'(statistics/', include('stats.urls')),
-    path(r'(databases/', include('databases.urls')),
-    path(r'(projects/', include('projects.urls')),
-    path(r'(select2/', include('django_select2.urls')),
-    path("select2/", include("django_select2.urls")),
-    path(r'(files/', include('files.urls')),
-    path(r'(samples/', include('samples.urls')),
-    path(r'(settings/', include('settings.urls')),
-    path(r'(tasks/', include('tasks.urls')),
-    path(r'(workers/', include('workers.urls')),
-    path(r'(analyses/', include('analyses.urls')),
-    path(r'(apps/', include('mapps.urls')),
+    path('dashboard/', include('dashboard.urls')),
+    path('individuals/', include('individuals.urls')),
+    path('diseases/', include('diseases.urls')),
+    path('genes/', include('genes.urls')),
+    path('variants/', include('variants.urls')),
+    path('cases/', include('cases.urls')),
+    path('filter_analysis/', include('filter_analysis.urls')),
+    # path('(pathway_analysis/', include('apps.pathway_analysis.urls')),
+    path('statistics/', include('stats.urls')),
+    path('databases/', include('databases.urls')),
+    path('projects/', include('projects.urls')),
+    path('select2/', include('django_select2.urls')),
+    path('files/', include('files.urls')),
+    path('samples/', include('samples.urls')),
+    path('settings/', include('settings.urls')),
+    path('tasks/', include('tasks.urls')),
+    path('workers/', include('workers.urls')),
+    path('analyses/', include('analyses.urls')),
+    path('apps/', include('mapps.urls')),
     path('ecommerce/', include('ecommerce_app.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
 
@@ -61,5 +67,5 @@ urlpatterns = [
 # if settings.DEBUG:
 #     import debug_toolbar
 #     urlpatterns += patterns('',
-#         url(r'(__debug__/', include(debug_toolbar.urls)),
+#         url('(__debug__/', include(debug_toolbar.urls)),
 #     )

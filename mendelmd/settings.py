@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     
     'allauth.socialaccount.providers.google',
     'crispy_forms',
-    'django_select2',
+    # 'django_select2',
 
     # 'djcelery',
     'celery',
@@ -233,3 +233,4 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 # PAYPAL SETTINGS
 PAYPAL_RECEIVER_EMAIL = 'tiagoslg-facilitator@empiriclogic.com'
 PAYPAL_TEST = True
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

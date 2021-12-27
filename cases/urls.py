@@ -8,13 +8,13 @@ from django.urls import include, path
 
 urlpatterns = [
 
-    path(r'', views.cases_list, name='cases_list'),
-    path(r'create/', views.create_case, name='create_case'),
-    path(r'delete/(?P<pk>\d+)', CaseDeleteView.as_view(), {}, 'delete_case'),
-    path(r'edit/(?P<case_id>\d+)/', views.edit, name='edit_case'),
-    path(r'view/(?P<case_id>\d+)/', views.view_case, name='view_case'),
-    path(r'view/(?P<case_id>\d+)/', views.view_case, name='view_case'),
-    path(r'analyze/(?P<case_id>\d+)/(?P<analysis>\w+)/(?P<inheritance>\w+)/', views.analysis, name='analyze_case'),
+    path('', views.cases_list, name='cases_list'),
+    path('create/', views.create_case, name='create_case'),
+    path('delete/<int:pk>/', CaseDeleteView.as_view(), {}, 'delete_case'),
+    path('edit/<int:case_id>/', views.edit, name='edit_case'),
+    path('view/<int:case_id>/', views.view_case, name='view_case'),
+    path('view/<int:case_id>/', views.view_case, name='view_case'),
+    path('analyze/<int:case_id>//<slug:analysis>/<slug:inheritance>/', views.analysis, name='analyze_case'),
     
 
     # path(r'new/$', IndividualCreateView.as_view(), {}, 'individual-new'),
