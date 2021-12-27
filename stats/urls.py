@@ -5,7 +5,9 @@ from django.contrib import admin
 admin.autodiscover()
 
 from . import views
+from django.urls import include, path
+
 
 urlpatterns = [
-    url(r"^$", views.index, name="statistics_index"),    
+    path(r"^$", views.index, name="statistics_index"),    
 ]
