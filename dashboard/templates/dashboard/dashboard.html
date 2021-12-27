@@ -47,6 +47,100 @@
     <div class="individuals">
         <h2 class="sub-header">Individuals</h2>
         Showing {{ n_individuals }} individuals
+    {% csrf_token %}
+    {% if user.is_staff %}
+    <select name="selectionField">
+        <option value="Show">Show on Grid</option>
+        <option value="Hide">Hide on Grid</option>
+        <option value="Delete">Delete</option>
+        <option value="Populate">Populate</option>
+        <option value="Annotate">Annotate</option>
+    </select>
+    <input type="submit" value="Submit"/>
+    {% endif %}
+
+    <h2 class="sub-header">Individuals</h2>
+    Showing {{ n_individuals }} individuals
+    <br>
+    {% with objects=individuals %}
+    {% include  "pagination.html" %}
+    {% endwith %}
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 3%">
+                    #
+                    <input type="checkbox" id="select_all"></th>
+                <th>ID</th>
+                <th style="width: 10px;">Name</th>
+                <th>File</th>
+                {% if user.is_staff %}
+                <th>Options</th>
+                {% endif %}
+                <th>Uploaded By</th>
+                <th>Nº Lines</th>
+                <th>Created on</th>
+                <th>Modified on</th>
+                <th>Annotation Time</th>
+                <th>Insertion Time</th>
+                <th>Status</th>
+                {% if user.is_staff %}
+                <th>Operations</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for individual in individuals %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}"
+                           value="{{individual.id}}"/>
+                </td>
+                <td>{{ individual.id }}</td>
+
+                <td>
+                    <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
+                </td>
+                <td>{{individual.vcf_file}}</td>
+                {% if user.is_staff %}
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{% url 'individual_edit' individual.id %}">Edit</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'individual_delete' individual.id %}">Delete</a>
+                        </li>
+                    </ul>
+                </td>
+                {% endif %}
+                <td>{{ individual.user.username }}</td>
+                <td>{{ individual.n_lines }}</td>
+                <td>{{ individual.creation_date }}</td>
+                <td>{{ individual.modified_date }}</td>
+                <td>{{ individual.annotation_time }}</td>
+                <td>{{ individual.insertion_time }}</td>
+
+                <td>{{ individual.status }}</td>
+                {% if user.is_staff %}
+                <td>
+                    <a href="{% url 'individual_annotate' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-left">Reannotate</i></button>
+                    </a>
+                    <a href="{% url 'individual_populate' individual.id %}">
+                        <button type="button" class="btn btn-primary"><i class="icon-align-center">Repopulate</i>
+                        </button>
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
         {% with objects=individuals %}
         {% include  "pagination.html" %}
         {% endwith %}

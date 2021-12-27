@@ -23,8 +23,6 @@
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
-    	    <!--
-	    <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
             <li><a href="{% url 'sample_index' %}"><i class="fa fa-users"></i> Samples</a></li>
             <li class="dropdown">
 
@@ -61,14 +59,17 @@
                 <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
                 <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
                 <li><a href="#">Browser</a></li>
-                <li><a href="#">Data Query</a></li> 
+                <li><a href="#">Data Query</a></li>  -->
+
+
+
                 <!-- <li class="divider"></li> -->
                 <!-- <li><a href="#">Separated link</a></li> -->
                 <!-- <li class="divider"></li> -->
                 <!-- <li><a href="#">One more separated link</a></li> -->
-              </ul>
+              <!-- </ul>
             </li>
-            
+             -->
             <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
             <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
             {% if user.is_staff %}
