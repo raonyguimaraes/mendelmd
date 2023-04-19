@@ -1,6 +1,8 @@
 FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED 1
+RUN mkdir /code
+WORKDIR /code
 RUN apt-get update && \
 apt-get install -y apt-utils && \
 apt-get install -y libterm-readline-gnu-perl && \
@@ -27,6 +29,10 @@ WORKDIR /mendelmd
 RUN pip3 install -r requirements.txt
 RUN service rabbitmq-server start
 #ADD . /code/
+RUN pip3 install pynnotator
+#RUN git clone https://github.com/raonyguimaraes/pynnotator.git
+#RUN cd /code/pynnotator && python3 setup.py develop
+RUN pynnotator install
 #RUN pip3 install -U pynnotator
 #RUN git clone https://github.com/raonyguimaraes/pynnotator.git
 #RUN cd /code/pynnotator && python3 setup.py develop

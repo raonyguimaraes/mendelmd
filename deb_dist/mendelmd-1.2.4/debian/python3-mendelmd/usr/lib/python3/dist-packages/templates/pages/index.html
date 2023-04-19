@@ -1,0 +1,52 @@
+{% extends "archive/base.old.html" %}
+
+{% load i18n %}
+{% load account %}
+
+{% block head_title %}{% trans "Mendel,MD" %}{% endblock %}
+
+{% block content %}
+<!-- Main jumbotron for a primary marketing message or call to action -->
+
+</div>
+
+
+    <div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-6">
+           <div class="hero-unit well">
+            <div class="span12">
+            <h1>Welcome to Mendel,MD!</h1>
+            <p>This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders. </p>
+
+            <p><a href="{% url 'account_signup' %}" class="btn btn-primary btn-large">Sign Up »</a> or <a href="{% url 'individual_create' %}" class="btn btn-primary btn-large">Upload a VCF</a></p>
+          </div>
+         </div>
+        </div>
+        <div class="col-md-6">
+
+              <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://player.vimeo.com/video/229202767' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>
+
+           <center><a href="http://mendel.medicina.ufmg.br"><img src="{{ STATIC_URL }}img/lgc2-1024x724.jpeg"></a></center>
+        </div>
+
+
+      </div>
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Filter Analysis</h2>
+          <p>With this tool, you can quickly identify candidate variants of causing Mendelian disorders in your affected individuals. By excluding variants according to different criterias such as low frequency in public databases (Ex. 1000genomes, dbSNP138 and Exome Sequencing Project) and scores of patogenicity (Ex. SIFT, POLYPHEN2 and CADD) you can quickly reduce the number of variants from your initial list from thousands to a few dozens using just a few clicks. </p>
+          <p></p>
+        </div>
+        <div class="col-md-6">
+          <h2>Family Analysis</h2>
+          <p>With this tool, you can identify mendelian variants, de novo variants and compound heterozygous variants using exome data from a famillies (Ex. trios, quartets or even more individuals). This tool helps you tremendously to reduce the number of candidate variants when investigating mendelian disorders in Families. </p>
+          <p></p>
+       </div>
+      </div>
+    </div>
+
+{% endblock %}
+
