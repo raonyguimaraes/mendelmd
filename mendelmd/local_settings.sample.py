@@ -26,3 +26,7 @@ STATICFILES_DIRS = (
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "static"),
 # ]
+# PAYPAL SETTINGS
+# PAYPAL_RECEIVER_EMAIL = 'tiagoslg-facilitator@empiriclogic.com'
+# PAYPAL_TEST = True
+# DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

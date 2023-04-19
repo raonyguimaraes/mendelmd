@@ -212,11 +212,6 @@ CELERYBEAT_SCHEDULE = {
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
-
 FILE_UPLOAD_PERMISSIONS = 0o0777
 from datetime import timedelta
 
@@ -230,7 +225,9 @@ ACCOUNT_SESSION_REMEMBER = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_QUERY_EMAIL = True
 
-# PAYPAL SETTINGS
-PAYPAL_RECEIVER_EMAIL = 'tiagoslg-facilitator@empiriclogic.com'
-PAYPAL_TEST = True
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
