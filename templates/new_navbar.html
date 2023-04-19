@@ -1,0 +1,35 @@
+<nav>
+<div class="nav-wrapper">
+
+  <ul id="dropdown1" class="dropdown-content">
+    <li><a href="{% url 'individuals_list' %}">Individuals</a></li>
+    <li><a href="{% url 'diseases_list' %}">Diseases</a></li>
+    <li><a href="{% url 'genes_list' %}">Genes</a></li>
+  </ul>
+
+  <ul id="dropdown2" class="dropdown-content">
+    <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
+    <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
+    <li><a href="{% url 'comparison' %}">Comparison</a></li>
+  </ul>
+
+  <a href="#" class="brand-logo">MendelMD</a>
+
+  <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="{% url 'individual_create' %}">Upload a VCF</a></li>
+    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+    <li><a href="{% url 'oneclick' %}">1-Click</a></li>
+    <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
+    <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
+    <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">Options<i class="material-icons right">arrow_drop_down</i></a></li>
+    <li><a class="dropdown-trigger" href="#!" data-target="dropdown2">Tools<i class="material-icons right">arrow_drop_down</i></a></li>
+    <li>
+        <a class="waves-effect waves-light btn" href="{% url 'account_login' %}">Login</a>
+    </li>
+    {% if request.user.is_staff %}
+      <li><a href="{% url 'statistics_index' %}">Statistics</a></li>
+      <li><a href="{% url 'databases_index' %}">Databases</a></li>
+    {% endif %}
+  </ul>
+</div>
+</nav>

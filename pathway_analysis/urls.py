@@ -4,11 +4,10 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView, D
 #from filter_analysis.views import FilterAnalysisUpdateView, FilterAnalysisDeleteView, FilterConfigUpdateView, FilterConfigDeleteView
 
 urlpatterns = patterns('pathway_analysis.views',
-    url(r'^$', 'index', name='pathway_analysis'),
-    url(r'^populate/$', 'populate', name='populate_pathway'),
-    url(r'^analysis/$', 'analysis', name='pathway_filter_analysis'),
-    url(r'^view/(?P<pathway_id>\d+\w+)$', 'view', name='pathway_view'),
-    
+    url('', 'index', name='pathway_analysis'),
+    url('populate/', 'populate', name='populate_pathway'),
+    url('analysis/', 'analysis', name='pathway_filter_analysis'),
+    url('view/<int:pathway_id>', 'view', name='pathway_view'),
 #    url(r'^trioanalysis/$', 'trioanalysis', name='trio_analysis'),
 #    
 #    

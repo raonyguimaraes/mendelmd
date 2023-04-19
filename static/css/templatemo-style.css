@@ -5,7 +5,7 @@ Boxer Template
 http://www.templatemo.com/tm-446-boxer
 
 */
-{% load staticfiles %}
+{% load static %}
 
 body
     {

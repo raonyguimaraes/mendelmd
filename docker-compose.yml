@@ -5,12 +5,16 @@ services:
    volumes:
      - ./data/postgresql_data:/var/lib/postgresql/data/
    restart: always
+   environment:
+      POSTGRES_PASSWORD: mendelmd 
 
  web:
    build: .
+   #image: raonyguimaraes/mendelmd
    command: bash docker-entrypoint.sh
    volumes:
-     - .:/code
+     - .:/mendelmd
+     - ./data:/mendelmd/pynnotator/pynnotator/data
    ports:
      - "8000:8000"
    depends_on:

@@ -1,18 +1,11 @@
-// preloader
-$(window).load(function(){
-    $('.preloader').fadeOut(1000); // set duration in brackets
+
+$(document).ready(function() {
+	$('.hamburger').click(function(event) {
+		$('.mobile-nav').slideToggle('400')
+	});
 });
-
-$(function() {
-    new WOW().init();
-    $('.templatemo-nav').singlePageNav({
-    	offset: 70,
-        filter: ':not(.external)'
-    });
-
-    /* Hide mobile menu after clicking on a link
-    -----------------------------------------------*/
-    $('.navbar-collapse a').click(function(){
-        $(".navbar-collapse").collapse('hide');
-    });
-})
+$(document).ready(function() {
+	$('.filter').click(function(event) {
+		$('.popup-content').fadeToggle('400')
+			});
+});

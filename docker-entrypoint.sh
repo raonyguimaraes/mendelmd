@@ -3,7 +3,7 @@
 service rabbitmq-server start
 sleep 5
 pwd
-cp configs/settings.py /usr/local/lib/python3.5/dist-packages/pynnotator/
+cp configs/settings.py /usr/local/lib/python3.*/dist-packages/pynnotator/
 
 cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
 
@@ -21,11 +21,10 @@ if [ ! -f data/omim/loaded.txt ]; then
     touch data/omim/loaded.txt
 fi
 
-
 export C_FORCE_ROOT='true'
 # Start server
-# echo "Starting annotator"
-python3 manage.py celery &
+echo "Starting annotator"
+#python3.6 manage.py celery &
 # celery -A mendelmd beat &
 # celery -A mendelmd worker -l debug -c 4 &
 

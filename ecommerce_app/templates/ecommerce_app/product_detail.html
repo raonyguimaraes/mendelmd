@@ -1,0 +1,30 @@
+{% extends 'ecommerce_app/base.html' %}
+
+{% block title %}
+    {{ product.name }} |
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+
+            <p><a href="{% url 'index' %}">All Products </a> &gt;
+                {{ product.name }}
+            </p>
+
+                <h2>{{ product.name }}</h2>
+                <p>Price ${{ product.price }}</p>
+
+                <form action="{% url 'product_detail' product.id product.slug %}" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" value="Add to cart" class="btn btn-primary" >
+                </form>
+
+        </div>
+
+    </div>
+
+{% endblock %}

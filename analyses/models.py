@@ -10,7 +10,8 @@ from files.models import File
 from mapps.models import App as Mapp
 
 from django.contrib.auth.models import User, Group
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
+
 
 class AnalysisType(models.Model):
     class Meta:
