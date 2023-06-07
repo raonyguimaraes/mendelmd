@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.urls import include, path
 
 from django.contrib import admin
 
@@ -16,42 +16,42 @@ import files.views
 
 urlpatterns = [
     # Examples:
-    # url(r'^$', 'mendelmd.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-    url(r'^$', views.index, name='index'),
+    # path("", "mendelmd.views.home", name="home"),
+    # path("blog/", include("blog.urls")),
+    path("", views.index, name="index"),
 
-    url(r'^docs/$', views.docs, name="docs"),
+    path("docs/", views.docs, name="docs"),
 
 
-    url(r'^admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
-    url(r'^upload/', files.views.upload, name='upload'),
+    path("upload/", files.views.upload, name="upload"),
 
-    url(r'^accounts/', include('allauth.urls')),
-    url(r'^dashboard/', include('dashboard.urls')),
-    url(r'^individuals/', include('individuals.urls')),
-    url(r'^diseases/', include('diseases.urls')),
-    url(r'^genes/', include('genes.urls')),
-    url(r'^variants/', include('variants.urls')),
-    url(r'^cases/', include('cases.urls')),
-    url(r'^filter_analysis/', include('filter_analysis.urls')),
-    # url(r'^pathway_analysis/', include('apps.pathway_analysis.urls')),
-    # url(r'^statistics/', include('statistics.urls')),
-    url(r'^databases/', include('databases.urls')),
-    url(r'^projects/', include('projects.urls')),
-    url(r'^select2/', include('django_select2.urls')),
-    url(r'^files/', include('files.urls')),
-    url(r'^samples/', include('samples.urls')),
-    url(r'^settings/', include('settings.urls')),
-    url(r'^tasks/', include('tasks.urls')),
-    url(r'^workers/', include('workers.urls')),
-    url(r'^analyses/', include('analyses.urls')),
-    url(r'^apps/', include('mapps.urls')),
+    path("accounts/", include("allauth.urls")),
+    path("dashboard/", include("dashboard.urls")),
+    path("individuals/", include("individuals.urls")),
+    path("diseases/", include("diseases.urls")),
+    path("genes/", include("genes.urls")),
+    path("variants/", include("variants.urls")),
+    path("cases/", include("cases.urls")),
+    path("filter_analysis/", include("filter_analysis.urls")),
+    # path("pathway_analysis/", include("apps.pathway_analysis.urls")),
+    # path("statistics/", include("statistics.urls")),
+    path("databases/", include("databases.urls")),
+    path("projects/", include("projects.urls")),
+    path("select2/", include("django_select2.urls")),
+    path("files/", include("files.urls")),
+    path("samples/", include("samples.urls")),
+    path("settings/", include("settings.urls")),
+    path("tasks/", include("tasks.urls")),
+    path("workers/", include("workers.urls")),
+    path("analyses/", include("analyses.urls")),
+    path("apps/", include("mapps.urls")),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # if settings.DEBUG:
 #     import debug_toolbar
-#     urlpatterns += patterns('',
-#         url(r'^__debug__/', include(debug_toolbar.urls)),
+#     urlpatterns += patterns("",
+#         path("__debug__/", include(debug_toolbar.urls)),
 #     )

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     
     'allauth.socialaccount.providers.google',
     'crispy_forms',
+    'crispy_bootstrap3',
     'django_select2',
 
     # 'djcelery',
@@ -190,7 +191,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_REDIRECT_URL = 'dashboard'
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
 
 #this prevents crash when loading filter_analysis forms.py
 # DEBUG_TOOLBAR_PATCH_SETTINGS = True
@@ -229,3 +233,6 @@ ACCOUNT_SESSION_REMEMBER=True
 # ACCOUNT_UNIQUE_EMAIL=False
 SOCIALACCOUNT_AUTO_SIGNUP=True
 SOCIALACCOUNT_QUERY_EMAIL=True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+

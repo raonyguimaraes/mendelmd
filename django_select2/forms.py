@@ -57,8 +57,10 @@ from django.core import signing
 from django.urls import reverse
 from django.db.models import Q
 from django.forms.models import ModelChoiceIterator
-from django.utils.encoding import force_text
-from django.utils.six.moves.cPickle import PicklingError as cPicklingError
+
+from django.utils.encoding import force_str
+
+from six.moves.cPickle import PicklingError as cPicklingError
 
 from .cache import cache
 from .conf import settings
@@ -248,8 +250,8 @@ class HeavySelect2Mixin(object):
         else:
             choices = self.choices
         output = ['<option></option>' if not self.is_required and not self.allow_multiple_selected else '']
-        selected_choices = {force_text(v) for v in selected_choices}
-        choices = [(k, v) for k, v in choices if force_text(k) in selected_choices]
+        selected_choices = {force_str(v) for v in selected_choices}
+        choices = [(k, v) for k, v in choices if force_str(k) in selected_choices]
         for option_value, option_label in choices:
             output.append(self.render_option(selected_choices, option_value, option_label))
         return '\n'.join(output)
@@ -410,7 +412,7 @@ class ModelSelect2Mixin(object):
             choices = chain(self.choices, choices)
         else:
             choices = self.choices
-        selected_choices = {force_text(v) for v in selected_choices}
+        selected_choices = {force_str(v) for v in selected_choices}
         output = ['<option></option>' if not self.is_required and not self.allow_multiple_selected else '']
         if isinstance(self.choices, ModelChoiceIterator):
             if self.queryset is None:
@@ -420,7 +422,7 @@ class ModelSelect2Mixin(object):
             choices = [(obj.pk, self.label_from_instance(obj))
                        for obj in self.choices.queryset.filter(pk__in=selected_choices)]
         else:
-            choices = [(k, v) for k, v in choices if force_text(k) in selected_choices]
+            choices = [(k, v) for k, v in choices if force_str(k) in selected_choices]
         for option_value, option_label in choices:
             output.append(self.render_option(selected_choices, option_value, option_label))
         return '\n'.join(output)
@@ -435,7 +437,7 @@ class ModelSelect2Mixin(object):
 
             class MyWidget(ModelSelect2Widget):
                 def label_from_instance(obj):
-                    return force_text(obj.title).upper()
+                    return force_str(obj.title).upper()
 
         Args:
             obj (django.db.models.Model): Instance of Django Model.
@@ -444,7 +446,7 @@ class ModelSelect2Mixin(object):
             str: Option label.
 
         """
-        return force_text(obj)
+        return force_str(obj)
 
 
 class ModelSelect2Widget(ModelSelect2Mixin, HeavySelect2Widget):
@@ -511,10 +513,10 @@ class ModelSelect2TagWidget(ModelSelect2Mixin, HeavySelect2TagWidget):
             def value_from_datadict(self, data, files, name):
                 values = super().value_from_datadict(self, data, files, name)
                 qs = self.queryset.filter(**{'pk__in': list(values)})
-                pks = set(force_text(getattr(o, pk)) for o in qs)
+                pks = set(force_str(getattr(o, pk)) for o in qs)
                 cleaned_values = []
                 for val in value:
-                    if force_text(val) not in pks:
+                    if force_str(val) not in pks:
                         val = queryset.create(title=val).pk
                     cleaned_values.append(val)
                 return cleaned_values
