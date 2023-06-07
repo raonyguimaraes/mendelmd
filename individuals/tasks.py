@@ -223,8 +223,8 @@ def AnnotateVariants(individual_id):
 It took %s to execute. \n
 Now we need to insert this data to the database.
                 """ % (individual.name, elapsed)
-        send_mail('[Mendel,MD] Annotation Completed!', message, 'mendelmd1@gmail.com',
-                  ['raonyguimaraes@gmail.com', email], fail_silently=False)
+        #send_mail('[Mendel,MD] Annotation Completed!', message, 'mendelmd@rockbio.io',
+        #          ['raonyguimaraes@gmail.com', email], fail_silently=False)
         #delete ann folder
         command = 'rm -rf ann_*'
         # os.system(command)
@@ -249,8 +249,8 @@ Now we need to insert this data to the database.
         message = """The Individual %s failed to be annotated!\n
                 It took %s to execute.
                 """ % (individual.name, elapsed)
-        send_mail('[Mendel,MD] Annotation Failed!', message, 'mendelmd1@gmail.com',
-                  ['raonyguimaraes@gmail.com'], fail_silently=False)
+        #send_mail('[Mendel,MD] Annotation Failed!', message, 'mendelmd1@gmail.com',
+        ##          ['raonyguimaraes@gmail.com'], fail_silently=False)
 
     individual.save()
     os.chdir(settings.BASE_DIR)
@@ -828,12 +828,12 @@ def PopulateVariants(individual_id):
             http://mendelmd.org/individuals/view/%s
                 """ % (individual.name, individual.id)
 
-    if individual.user:
-        send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
-              ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)
-    else:
-        send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
-              ['raonyguimaraes@gmail.com'], fail_silently=False)
+    #if individual.user:
+        #send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
+        #      ['raonyguimaraes@gmail.com', individual.user.email], fail_silently=False)
+    #else:
+    #    send_mail('[Mendel,MD] Individual Populated!', message, 'raonyguimaraes@gmail.com',
+    #          ['raonyguimaraes@gmail.com'], fail_silently=False)
     print('Individual %s Populated!' % (individual.id))
 
     os.system('echo "Individual %s Populated! %s"' % (individual.name, individual.insertion_time))
