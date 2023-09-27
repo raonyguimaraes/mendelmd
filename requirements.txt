@@ -9,9 +9,9 @@ Sphinx
 Fabric3
 pysam
 pynnotator
-pyvcf
+#pyvcf
 celery
-django-celery
+#django-celery
 django-celery-results
 django-appconf
 gunicorn
@@ -19,5 +19,5 @@ boto3
 django-formtools
 dj-database-url
 django-gravatar2
-pandas
+#pandas
 crispy-bootstrap3

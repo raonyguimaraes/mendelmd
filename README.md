@@ -1,4 +1,4 @@
-# Mendel,MD a user-friendly online program for clinical exome and genome analysis
+# Rockbio online tools for development, personalized medicine, data science and genome analysis.
 
 ![Build Status](https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master)
 [![BSD License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
@@ -13,16 +13,7 @@ http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005520
 
 https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 
-Try our new test server on https://mendelmd.org
-Or use our original server on https://mendel.medicina.ufmg.br
-
-OMIM Data
-=========
-
-You need to register at OMIM: http://omim.org/downloads and submit a download request to get a file named "morbidmap.txt".
-
-After obtaining this file you will need to put it in the folder: "data/omim/".
-
+Try our new test server on https://rockbio.io
 
 Installation of docker and docker-compose on Ubuntu 16.04 LTS
 =============================================================
@@ -51,17 +42,28 @@ Also see how to install it locally without docker-compose here:
 
 http://mendelmd.readthedocs.io/en/latest/installation.html#manual-installation
 
-Requirements
-============
+# Installation with pip (to-do)
+pip3 install rockbio
+rockbio runserver
 
-* At least 60GB of disk space
-* Python 3.4+
-* Perl 5.8+
-* Java 1.8
-* Ubuntu LTS 16.04/CentOS 7 or Red Hat 7
+# Installation with conda (to-do)
+conda install -c conda-forge rockbio
+rockbio runserver
 
-OR
+# Local development
 
-* Docker
-* Docker Compose
+git clone https://github.com/rockbio/rockbio
+cd rockbio
+python3 -m venv venv
+source venv/bin/activate
+./manage.py migrate
+./manage.py runserver
+#then on another window for running the background tasks
+./manage.py runserver
 
+# Docker Installation
+git clone https://github.com/rockbio/rockbio
+docker-compose up
+
+# Using Dockerhub
+docker run rockbio/rockbio
