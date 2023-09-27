@@ -101,8 +101,6 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-
-
 ROOT_URLCONF = 'mendelmd.urls'
 
 WSGI_APPLICATION = 'mendelmd.wsgi.application'
@@ -204,7 +202,7 @@ INTERNAL_IPS = ['127.0.0.1']
 
 # new celery 4 config
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_CACHE_BACKEND = 'django-cache'
 
 CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks','individuals.tasks')
 
@@ -237,3 +235,5 @@ SOCIALACCOUNT_QUERY_EMAIL=True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# BROKER_CONNECTION_RETRY = True
+# BROKER_CONNECTION_MAX_RETRIES = 0
