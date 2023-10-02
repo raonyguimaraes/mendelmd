@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+export DEBIAN_FRONTEND=noninteractive
 sudo apt update
 
 sudo apt install -y nginx build-essential gcc git htop libbz2-dev libcurl4-openssl-dev libffi-dev \
