@@ -9,7 +9,7 @@ Sphinx
 Fabric3
 pysam
 pynnotator
-#pyvcf
+pyvcf
 celery
 #django-celery
 django-celery-results
