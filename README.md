@@ -44,17 +44,23 @@ Installation with Curl (to-do)
     curl -Sf https://install.rockbio.io | bash
 
 # Installation using Docker
-git clone https://github.com/rockbio/rockbio
-cd rockbio
-docker-compose up
+    git clone https://github.com/rockbio/rockbio
+    cd rockbio
+    docker-compose up
 
 # Installation with pip (to-do)
-pip3 install rockbio
-rockbio runserver
+    pip3 install rockbio
+    rockbio runserver
 
 # Installation with conda (to-do)
-conda install -c conda-forge rockbio
-rockbio runserver
+    conda install -c conda-forge rockbio
+    rockbio runserver
 
 # Using Dockerhub (to-do)
-docker run rockbio/rockbio
+    docker run rockbio/rockbio
+
+# Using SNAPs
+    sudo snap install code --classic
+
+# Using APT
+    sudo apt install rockbio
