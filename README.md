@@ -1,4 +1,4 @@
-# Rockbio cloud based tools for development, personalized medicine, data science and genome analysis.
+# Rockbio - Cloud based genome analysis and tools.
 
 ![Build Status](https://travis-ci.org/rockbio/rockbio.svg?branch=master)
 [![BSD License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
@@ -7,15 +7,7 @@
 
 This is an online tool developed to help doctors and scientists to analyse NGS data and identify disease causing variants using WES and WGS sequencing data from patients with Mendelian Disorders.
 
-Rockbio is based on Mendel,MD:
-
-http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005520
-
-https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
-
-https://www.genomeweb.com/informatics/software-tool-aims-easy-quick-mendelian-disease-diagnoses-genome-data
-
-But it's got a lot more to it now, so try our servers on https://rockbio.io
+Rockbio is based on Mendel,MD, but it's got a lot more to it now, so please try our servers on https://rockbio.io
 
 Installation/Development
 ========================
@@ -29,18 +21,15 @@ Or using python3, virtualenv and pip:
     python3 -m venv venv
     source venv/bin/activate
     pip3 install -r requirements.txt
-    python3 manage.py migrate
-    python3 manage.py populate
-    python3 manage.py runserver
-
-    #Then on another window for running the background tasks with Celery
+    ./manage.py migrate
+    ./manage.py populate
+    ./manage.py runserver
+    # Then on another window for running the background tasks with Celery type:
     source venv/bin/activate
-    ./manage.py celery    
-
+    ./manage.py celery
 
 Installation with Curl (to-do)
 ==============================
-
     curl -Sf https://install.rockbio.io | bash
 
 # Installation using Docker
@@ -64,3 +53,14 @@ Installation with Curl (to-do)
 
 # Using APT
     sudo apt install rockbio
+
+Sources
+=======
+http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005520
+
+https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
+
+https://www.genomeweb.com/informatics/software-tool-aims-easy-quick-mendelian-disease-diagnoses-genome-data
+
+https://github.com/raonyguimaraes/mendelmd
+
