@@ -6,7 +6,6 @@ services:
      - ./data/postgresql_data:/var/lib/postgresql/data/
    restart: always
    environment:
-      POSTGRES_HOST_AUTH_METHOD: "trust"
       POSTGRES_PASSWORD: postgres
 
  web:
