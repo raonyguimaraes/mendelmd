@@ -15,7 +15,7 @@ https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 
 https://www.genomeweb.com/informatics/software-tool-aims-easy-quick-mendelian-disease-diagnoses-genome-data
 
-But it's got a lot more to it now, try our servers on https://rockbio.io
+But it's got a lot more to it now, so try our servers on https://rockbio.io
 
 Installation/Development
 ========================
