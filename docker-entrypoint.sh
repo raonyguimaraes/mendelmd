@@ -5,7 +5,7 @@ sleep 5
 pwd
 cp configs/settings.py /usr/local/lib/python3.10/dist-packages/pynnotator/
 
-cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
+cp rockbio/local_settings.docker.py rockbio/local_settings.py
 
 # Collect static files
 echo "Collect static files"
@@ -26,8 +26,8 @@ export C_FORCE_ROOT='true'
 # Start server
 # echo "Starting annotator"
 python3 manage.py celery &
-# celery -A mendelmd beat &
-# celery -A mendelmd worker -l debug -c 4 &
+# celery -A rockbio beat &
+# celery -A rockbio worker -l debug -c 4 &
 
 # Start server
 echo "Starting server"

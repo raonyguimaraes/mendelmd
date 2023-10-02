@@ -11,7 +11,7 @@ current_dir = os.getcwd().split('/')
 del current_dir[-1]
 proj_path = "/".join(current_dir)
 # This is so Django knows where to find stuff.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mendelmd.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rockbio.settings")
 sys.path.append(proj_path)
 
 # This is so my local_settings.py gets loaded.
@@ -42,7 +42,7 @@ user = User.objects.first()
 print(user)
 individual = Individual.objects.create(user=user, status='new')
 
-# filepath = '/home/raony/dev/mendelmd/examples/miller.vcf.gz'
+# filepath = '/home/raony/dev/rockbio/examples/miller.vcf.gz'
 filepath = args.input
 
 filename = os.path.basename(filepath)

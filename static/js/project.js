@@ -273,34 +273,34 @@ $(function () {
         $("#pp2-slider-range_wz").slider('values',[value_range[0], value_range[1]]);
     }
     //Mendel,MD Score
-    $( "#mendelmd-slider-range_wz" ).slider({
+    $( "#rockbio-slider-range_wz" ).slider({
             range: true,
             min: 0,
             max: 12,
             step: 1,
             values: [ 0, 12 ],
-            slide: function( event, ui ) {  $( "#id_2-mendelmd_score" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+            slide: function( event, ui ) {  $( "#id_2-rockbio_score" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
             }
     });
-    mendelmd_value_wz = $("#id_2-mendelmd_score").val();
-    if (mendelmd_value_wz) {
-        value_range =mendelmd_value_wz.split(" - ");
-        $("#mendelmd-slider-range_wz").slider('values',[value_range[0], value_range[1]]);
+    rockbio_value_wz = $("#id_2-rockbio_score").val();
+    if (rockbio_value_wz) {
+        value_range =rockbio_value_wz.split(" - ");
+        $("#rockbio-slider-range_wz").slider('values',[value_range[0], value_range[1]]);
     }
     //Mendel,MD Score Views
-    $( "#mendelmd-slider-range" ).slider({
+    $( "#rockbio-slider-range" ).slider({
             range: true,
             min: 0,
             max: 12,
             step: 1,
             values: [ 0, 12 ],
-            slide: function( event, ui ) {  $( "#id_mendelmd_score" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+            slide: function( event, ui ) {  $( "#id_rockbio_score" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
             }
     });
-    mendelmd_value = $("#id_mendelmd_score").val();
-    if (mendelmd_value) {
-        value_range =mendelmd_value.split(" - ");
-        $("#mendelmd-slider-range").slider('values',[value_range[0], value_range[1]]);
+    rockbio_value = $("#id_rockbio_score").val();
+    if (rockbio_value) {
+        value_range =rockbio_value.split(" - ");
+        $("#rockbio-slider-range").slider('values',[value_range[0], value_range[1]]);
     }
 
     ////////////////One Click
@@ -380,19 +380,19 @@ $(function () {
         $("#pp2-slider-range_oc").slider('values',[value_range[0], value_range[1]]);
     }
     //Mendel,MD Score
-    $( "#mendelmd-slider-range_oc" ).slider({
+    $( "#rockbio-slider-range_oc" ).slider({
             range: true,
             min: 0,
             max: 12,
             step: 1,
             values: [ 0, 12 ],
-            slide: function( event, ui ) {  $( "#id_mendelmd_score" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+            slide: function( event, ui ) {  $( "#id_rockbio_score" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
             }
     });
-    mendelmd_value_oc = $("#id_mendelmd_score").val();
-    if (mendelmd_value_oc) {
-        value_range =mendelmd_value_oc.split(" - ");
-        $("#mendelmd-slider-range_oc").slider('values',[value_range[0], value_range[1]]);
+    rockbio_value_oc = $("#id_rockbio_score").val();
+    if (rockbio_value_oc) {
+        value_range =rockbio_value_oc.split(" - ");
+        $("#rockbio-slider-range_oc").slider('values',[value_range[0], value_range[1]]);
     }
 
 

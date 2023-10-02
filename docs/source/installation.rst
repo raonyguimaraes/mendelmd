@@ -49,8 +49,8 @@ Installing PostgreSQL Database
     sudo -i -u postgres
     createuser --interactive
     exit
-    createdb mendelmd
-    cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
+    createdb rockbio
+    cp rockbio/local_settings.sample.py rockbio/local_settings.py
 
 Installation on Ubuntu 16.04 LTS (tested)
 =========================================
@@ -60,11 +60,11 @@ Installation on Ubuntu 16.04 LTS (tested)
     sudo apt-get install gcc git python3-dev virtualenvwrapper zip zlibc zlib1g zlib1g-dev build-essential \
     libssl-dev libffi-dev python-dev python3-dev python3-venv libcurl4-openssl-dev
 
-    python3 -m venv mendelmdenv
-    source mendelmdenv/bin/activate
+    python3 -m venv rockbioenv
+    source rockbioenv/bin/activate
 
-    git clone https://github.com/raonyguimaraes/mendelmd.git
-    cd mendelmd/
+    git clone https://github.com/raonyguimaraes/rockbio.git
+    cd rockbio/
 
 
 Installing Pynnotator
@@ -107,8 +107,8 @@ In another tab start the annotation process.
 
 ::
 
-    source mendelmdenv/bin/activate
-    celery -A mendelmd worker -l info -c 1
+    source rockbioenv/bin/activate
+    celery -A rockbio worker -l info -c 1
 
 
 
@@ -140,7 +140,7 @@ https://www.digitalocean.com/community/tutorials/how-to-serve-django-application
 
     sudo yum -y install wget
     wget https://data.omim.org/downloads/ADDYOURKEY/morbidmap.txt -O /tmp/morbidmap.txt
-    wget https://raw.github.com/raonyguimaraes/mendelmd/master/scripts/deployment_centos7_redhat7.sh
+    wget https://raw.github.com/raonyguimaraes/rockbio/master/scripts/deployment_centos7_redhat7.sh
     bash deployment_centos7_redhat7.sh
 
 
@@ -159,17 +159,17 @@ CELERYD_NODES="worker1"
 #CELERYD_NODES=10
 
 # Absolute or relative path to the 'celery' command:
-CELERY_BIN="/projects/mendelmdenv/bin/celery"
+CELERY_BIN="/projects/rockbioenv/bin/celery"
 #CELERY_BIN="/virtualenvs/def/bin/celery"
 
 # App instance to use
 # comment out this line if you don't use an app
-CELERY_APP="mendelmd"
+CELERY_APP="rockbio"
 # or fully qualified:
 #CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/projects/mendelmd/"
+CELERYD_CHDIR="/projects/rockbio/"
 
 # Extra command-line arguments to the worker
 CELERYD_OPTS="--time-limit=300 --concurrency=2 -Q annotation,insertion"

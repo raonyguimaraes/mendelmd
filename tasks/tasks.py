@@ -12,7 +12,7 @@ from projects.models import ProjectFile
 from django.conf import settings  # noqa
 
 from celery import Celery
-app = Celery('mendelmd')
+app = Celery('rockbio')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
@@ -70,14 +70,14 @@ def get_file(file):
 
             file.md5 = output
             #upload to b2
-            command = 'b2 upload_file mendelmd input/{} files/{}/{}'.format(basename, file.id, basename)
+            command = 'b2 upload_file rockbio input/{} files/{}/{}'.format(basename, file.id, basename)
             output = check_output(command, shell=True)
             
             print(output.decode('utf-8'))
             
             file.params = output.decode('utf-8')
             file.url = file.location
-            file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, basename)
+            file.location = 'b2://rockbio/files/{}/{}'.format(file.id, basename)
             file.save()
     elif file.location.startswith('b2://'):
 
@@ -85,8 +85,8 @@ def get_file(file):
 
         if not os.path.exists('input/{}'.format(basename)):
 
-            b2_location = file.location.replace('b2://mendelmd/','')
-            command = 'b2 download-file-by-name mendelmd {} input/{}'.format(b2_location, basename)
+            b2_location = file.location.replace('b2://rockbio/','')
+            command = 'b2 download-file-by-name rockbio {} input/{}'.format(b2_location, basename)
             output = check_output(command, shell=True)
             print(output.decode('utf-8'))
 
@@ -208,7 +208,7 @@ def task_run_task(task_id):
     #         output = b2.upload(source, dest)
             
     #         file.params = output
-    #         file.location = 'b2://mendelmd/files/{}/{}'.format(file.id, file.name)
+    #         file.location = 'b2://rockbio/files/{}/{}'.format(file.id, file.name)
     #         file.save()    
     #         # if task.analysis:
     #         #     task.analysis_set.all()[0].files.add(file)
@@ -674,7 +674,7 @@ def insert_vcf(task_id):
     # message = """
     #         The individual %s was inserted to the database with success!
     #         Now you can check the variants on the link: \n
-    #         http://mendelmd.org/individuals/view/%s
+    #         http://rockbio.org/individuals/view/%s
     #             """ % (individual.name, individual.id)
 
     print('Individual %s Populated!' % (individual.id))

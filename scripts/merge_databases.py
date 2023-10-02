@@ -13,7 +13,7 @@ duplicated_usernames = []
 empty_usernames = []
 email_username = []
 
-db1 = json.load(open('fixtures/mendelmdorg/fixtures/users.json'))
+db1 = json.load(open('fixtures/rockbioorg/fixtures/users.json'))
 db2 = json.load(open('fixtures/ufmg/fixtures/users.json'))
 
 # print(db1[0].keys())

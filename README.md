@@ -22,7 +22,6 @@ Or using python3, virtualenv and pip:
     source venv/bin/activate
     pip3 install -r requirements.txt
     ./manage.py migrate
-    ./manage.py populate
     ./manage.py runserver
     # Then on another window for running the background tasks with Celery type:
     source venv/bin/activate
@@ -62,5 +61,5 @@ https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 
 https://www.genomeweb.com/informatics/software-tool-aims-easy-quick-mendelian-disease-diagnoses-genome-data
 
-https://github.com/raonyguimaraes/mendelmd
+https://github.com/raonyguimaraes/rockbio
 

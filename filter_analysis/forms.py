@@ -188,7 +188,7 @@ class FilterAnalysisForm(forms.Form):
     ada_score = forms.CharField(max_length=50, required=False, label="ADA SCORE")
     ada_exclude = forms.BooleanField(required=False, label="EXCLUDE VARIANTS WITHOUT ADA SCORE")
     
-    mendelmd_score = forms.CharField(max_length=50, required=False, label="MENDEL,MD SCORE")
+    rockbio_score = forms.CharField(max_length=50, required=False, label="MENDEL,MD SCORE")
     
     dbsnp_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP BUILD")#initial='>',
     dbsnp_build = forms.CharField(max_length=50, required=False, label="DBSNP BUILD")#initial='130'
@@ -373,7 +373,7 @@ class FamilyAnalysisForm(forms.Form):
     ada_score = forms.CharField(max_length=50, required=False, label="ADA SCORE")
     ada_exclude = forms.BooleanField(required=False, label="EXCLUDE VARIANTS WITHOUT ADA SCORE")
     
-    mendelmd_score = forms.CharField(max_length=50, required=False, label="MENDEL,MD SCORE")
+    rockbio_score = forms.CharField(max_length=50, required=False, label="MENDEL,MD SCORE")
     
     dbsnp_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP BUILD")#initial='>',
     dbsnp_build = forms.CharField(max_length=50, required=False, label="DBSNP BUILD")#initial='130'
@@ -553,6 +553,6 @@ class FilterWiZardForm3(forms.Form):
     polyphen = forms.CharField(max_length=50, required=False, label="Polyphen2 Frequency", initial='0 - 1.0')
     polyphen_exclude = forms.BooleanField(required=False, label="Exclude variants without polyphen score", initial=False)
     
-    mendelmd_score = forms.CharField(max_length=50, required=False, label="Mendel,MD Score", initial='3 - 12')
+    rockbio_score = forms.CharField(max_length=50, required=False, label="Mendel,MD Score", initial='3 - 12')
     
     

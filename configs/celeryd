@@ -8,17 +8,17 @@ CELERYD_NODES="worker1"
 #CELERYD_NODES=10
 
 # Absolute or relative path to the 'celery' command:
-CELERY_BIN="source /projects/mendelmdenv/bin/activate && /projects/mendelmdenv/bin/celery"
+CELERY_BIN="source /projects/rockbioenv/bin/activate && /projects/rockbioenv/bin/celery"
 #CELERY_BIN="/virtualenvs/def/bin/celery"
 
 # App instance to use
 # comment out this line if you don't use an app
-CELERY_APP="mendelmd"
+CELERY_APP="rockbio"
 # or fully qualified:
 #CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/projects/mendelmd/"
+CELERYD_CHDIR="/projects/rockbio/"
 
 # Extra command-line arguments to the worker
 CELERYD_OPTS="--time-limit=300 --concurrency=2 -Q annotation,insertion"

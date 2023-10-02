@@ -74,7 +74,7 @@ class AWS:
             Tags=[
                 {
                     'Key': 'Name',
-                    'Value': 'MendelMD Worker'
+                    'Value': 'rockbio Worker'
                 }
             ]
         )

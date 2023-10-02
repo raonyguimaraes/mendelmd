@@ -166,14 +166,14 @@ ul.nav-tabs{
 a.menu:after, .dropdown-toggle:after {
   content: none;
 }
-#g1000-slider-range, #dbsnp-slider-range, #esp-slider-range, #sift-slider-range, #pp2-slider-range, #mendelmd-slider-range, #hi-slider-range, #cadd-slider-range, #mcap-slider-range, #ada-slider-range{
+#g1000-slider-range, #dbsnp-slider-range, #esp-slider-range, #sift-slider-range, #pp2-slider-range, #rockbio-slider-range, #hi-slider-range, #cadd-slider-range, #mcap-slider-range, #ada-slider-range{
   width:240px;
   margin-top: 20px;
 }
-#g1000-slider-range_wz, #dbsnp-slider-range_wz, #esp-slider-range_wz, #sift-slider-range_wz, #pp2-slider-range_wz, #mendelmd-slider-range_wz{
+#g1000-slider-range_wz, #dbsnp-slider-range_wz, #esp-slider-range_wz, #sift-slider-range_wz, #pp2-slider-range_wz, #rockbio-slider-range_wz{
   width:240px;
 }
-#g1000-slider-range_oc, #dbsnp-slider-range_oc, #esp-slider-range_oc, #sift-slider-range_oc, #pp2-slider-range_oc, #mendelmd-slider-range_oc{
+#g1000-slider-range_oc, #dbsnp-slider-range_oc, #esp-slider-range_oc, #sift-slider-range_oc, #pp2-slider-range_oc, #rockbio-slider-range_oc{
   width:240px;
 }
 select {

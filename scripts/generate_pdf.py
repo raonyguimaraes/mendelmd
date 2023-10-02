@@ -4,7 +4,7 @@ import os
 
 extensions = ['py', 'txt', 'rst', 'js', 'css', 'html']
 for ext in extensions:
-    command = 'find /home/raony/development/mendelmd_master/ -name "*.%s" > %s_files.txt' % (ext,ext)
+    command = 'find /home/raony/development/rockbio_master/ -name "*.%s" > %s_files.txt' % (ext,ext)
     os.system(command)
     file_list = open('%s_files.txt'% (ext), 'r')
     file_counter = 0

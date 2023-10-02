@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings  # noqa
 from celery import Celery
-app = Celery('mendelmd')
+app = Celery('rockbio')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
@@ -121,7 +121,7 @@ def update_worker(worker_id):
     if settings.DEFAULT_PROVIDER == 'AWS':
         AWS().update(worker.ip)
 
-    # command = 'rsync -avz {} root@%s:/projects/mendelmd'.format(settings.BASE_DIR, worker.ip)
+    # command = 'rsync -avz {} root@%s:/projects/rockbio'.format(settings.BASE_DIR, worker.ip)
 
 @app.task(queue="master")
 def check_workers():

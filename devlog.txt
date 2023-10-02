@@ -4,7 +4,7 @@ Errors
 
 Building wheels for collected packages: django-select2, SOAPpy, Fabric, pynnotator, pyvcf
   Running setup.py bdist_wheel for django-select2 ... error
-  Complete output from command /home/raony/dev/mendelmd/mendelmdenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/django-select2/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmpmv22myexpip-wheel- --python-tag cp35:
+  Complete output from command /home/raony/dev/rockbio/rockbioenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/django-select2/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmpmv22myexpip-wheel- --python-tag cp35:
   usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
      or: -c --help [cmd1 cmd2 ...]
      or: -c --help-commands
@@ -16,7 +16,7 @@ Building wheels for collected packages: django-select2, SOAPpy, Fabric, pynnotat
   Failed building wheel for django-select2
   Running setup.py clean for django-select2
   Running setup.py bdist_wheel for SOAPpy ... error
-  Complete output from command /home/raony/dev/mendelmd/mendelmdenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/SOAPpy/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmprqouw21lpip-wheel- --python-tag cp35:
+  Complete output from command /home/raony/dev/rockbio/rockbioenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/SOAPpy/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmprqouw21lpip-wheel- --python-tag cp35:
   usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
      or: -c --help [cmd1 cmd2 ...]
      or: -c --help-commands
@@ -28,7 +28,7 @@ Building wheels for collected packages: django-select2, SOAPpy, Fabric, pynnotat
   Failed building wheel for SOAPpy
   Running setup.py clean for SOAPpy
   Running setup.py bdist_wheel for Fabric ... error
-  Complete output from command /home/raony/dev/mendelmd/mendelmdenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/Fabric/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmp_7u8wurepip-wheel- --python-tag cp35:
+  Complete output from command /home/raony/dev/rockbio/rockbioenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/Fabric/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmp_7u8wurepip-wheel- --python-tag cp35:
   usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
      or: -c --help [cmd1 cmd2 ...]
      or: -c --help-commands
@@ -40,7 +40,7 @@ Building wheels for collected packages: django-select2, SOAPpy, Fabric, pynnotat
   Failed building wheel for Fabric
   Running setup.py clean for Fabric
   Running setup.py bdist_wheel for pynnotator ... error
-  Complete output from command /home/raony/dev/mendelmd/mendelmdenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/pynnotator/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmpy56355sspip-wheel- --python-tag cp35:
+  Complete output from command /home/raony/dev/rockbio/rockbioenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/pynnotator/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmpy56355sspip-wheel- --python-tag cp35:
   usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
      or: -c --help [cmd1 cmd2 ...]
      or: -c --help-commands
@@ -52,7 +52,7 @@ Building wheels for collected packages: django-select2, SOAPpy, Fabric, pynnotat
   Failed building wheel for pynnotator
   Running setup.py clean for pynnotator
   Running setup.py bdist_wheel for pyvcf ... error
-  Complete output from command /home/raony/dev/mendelmd/mendelmdenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/pyvcf/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmpytxn934opip-wheel- --python-tag cp35:
+  Complete output from command /home/raony/dev/rockbio/rockbioenv/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-build-lv6gcbnb/pyvcf/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /tmp/tmpytxn934opip-wheel- --python-tag cp35:
   usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
      or: -c --help [cmd1 cmd2 ...]
      or: -c --help-commands
@@ -122,7 +122,7 @@ tar -czvf pynnotator.data.0.4.tar.gz data/
 tar -czvf pynnotator.libs.0.4.tar.gz libs/
 
 Try to store data on google cloud. Make alternative on ScaleWay.
-gsutil cp pynnotator.data.0.4.tar.gz gs://mendelmd/
+gsutil cp pynnotator.data.0.4.tar.gz gs://rockbio/
 
 Finished updating pynnotator!!!
 
@@ -135,4 +135,4 @@ form is valid!
 filename  ['NA12878', 'recessive', 'vcf', 'gz']
 
 
-celery -A mendelmd worker -l info
+celery -A rockbio worker -l info
