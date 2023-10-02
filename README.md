@@ -53,6 +53,11 @@ Installation with Curl (to-do)
 # Using APT
     sudo apt install rockbio
 
+# Deployment
+
+    wget https://raw.github.com/rockbio/rockbio/master/scripts/deployment_ubuntu_22.04_LTS.sh
+    bash deployment_ubuntu_22.04_LTS.sh
+
 Sources
 =======
 http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005520

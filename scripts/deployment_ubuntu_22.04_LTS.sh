@@ -51,7 +51,7 @@ Description=gunicorn daemon
 After=network.target
 
 [Service]
-User=raony
+User=root
 Group=www-data
 WorkingDirectory=/projects/rockbio/
 ExecStart=/projects/venv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/rockbio/rockbio.sock rockbio.wsgi:application
