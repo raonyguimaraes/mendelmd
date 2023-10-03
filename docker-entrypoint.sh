@@ -5,7 +5,8 @@ sleep 5
 pwd
 cp configs/settings.py /usr/local/lib/python3.10/dist-packages/pynnotator/
 
-cp rockbio/local_settings.docker.py rockbio/local_settings.py
+export USE_DOCKER=yes
+#cp rockbio/local_settings.docker.py rockbio/local_settings.py
 
 # Collect static files
 echo "Collect static files"

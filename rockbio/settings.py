@@ -202,10 +202,8 @@ INTERNAL_IPS = ['127.0.0.1']
 
 # new celery 4 config
 CELERY_RESULT_BACKEND = 'django-db'
-# CELERY_RESULT_BACKEND = 'db+sqlite:///rockbio.db'
 CELERY_CACHE_BACKEND = 'django-cache'
 # CELERY_RESULT_EXTENDED = True
-
 CELERY_IMPORTS = ('analyses.tasks','tasks.tasks','workers.tasks','individuals.tasks')
 
 CELERYBEAT_SCHEDULE = {
@@ -217,10 +215,16 @@ CELERYBEAT_SCHEDULE = {
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+if 'USE_DOCKER' in os.environ:
+    try:
+        from .local_settings_docker import *
+    except ImportError:
+        pass
+else:
+    try:
+        from .local_settings import *
+    except ImportError:
+        pass
 
 FILE_UPLOAD_PERMISSIONS = 0o0777
 from datetime import timedelta

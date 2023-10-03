@@ -26,6 +26,8 @@ source /projects/venv/bin/activate
 pip install wheel
 pip install -r requirements.txt
 
+sudo mkdir -p /var/www/html/static/
+
 python manage.py migrate
 python manage.py populate
 
