@@ -1,5 +1,5 @@
-from fabric.api import *
-from fabric.api import run
+#from fabric.api import *
+from fabric.api import run,local
 #comment
 env.user  = 'raony'
 env.hosts = ['mendel']
@@ -14,8 +14,9 @@ def install():
 
 def backup_users():
     local('python3 manage.py dumpdata --indent=4 --format=json auth account allauth > fixtures/users.json')
-    local('python3 manage.py dumpdata --indent=4 --format=json individuals > fixtures/individuals.json')
-    local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
+
+    # local('python3 manage.py dumpdata --indent=4 --format=json individuals > fixtures/individuals.json')
+    # local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
 
 def reset_migrations():
@@ -57,8 +58,12 @@ def make_doc():
         local('make html')
         local('cp -rf _build/html/* /var/www/rockbio_static/docs/')
 
-#def backup():
-#    run(' mysqldump -u root -p rockbio14 | gzip > db_backup/rockbio151012.sql.gz ')
+def backup():
+    local('python3 manage.py dumpdata --indent=4 --format=json auth account allauth > fixtures/users.json')
+    local('python3 manage.py dumpdata --indent=4 --format=json keys > fixtures/keys.json')
+    # run(' mysqldump -u root -p rockbio14 | gzip > db_backup/rockbio151012.sql.gz ')
+
+
 def create_sample_data():
     #backup all users
 #    with cd('/projects/www/rockbio14'):
