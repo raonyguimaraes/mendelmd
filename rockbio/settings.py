@@ -88,6 +88,8 @@ INSTALLED_APPS = [
     'mapps',
     'django_gravatar',    
     #'storages',
+    'keys',
+    'servers',
 ]
 
 MIDDLEWARE = [

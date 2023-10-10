@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account %}
+
+{% block content %}
+
+{% if server_list %}
+<ul>
+    {% for server in server_list %}
+    <li><a href="/servers/{{ server.id }}/">{{ server.name }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No Servers are available.</p>
+{% endif %}
+
+{% endblock %}
+
