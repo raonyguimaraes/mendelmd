@@ -37,7 +37,7 @@
 </div>
 </div>
 
-{% if app_list %}
+{% if webapp_list %}
 <table class="table table-bordered table-striped table-condensed">
 	<tr>
 		<th>#<input type="checkbox" id="select_all"> ID</th>
@@ -48,7 +48,7 @@
 		<th>repository</th>
 		<th>Options</th>
 	</tr>
-	{% for app in app_list %}
+	{% for app in webapp_list %}
 	<tr>
 		<td><input type="checkbox" name="apps" class="apps" id="option{{app.id}}" value="{{app.id}}" />{{app.id}}</td>
 		<td>{{app.status}}</td>
@@ -57,7 +57,7 @@
 		<td>{{app.source}}</td>
 		<td>{{app.repository}}</td>
 		<td>
-			<a href="{% url 'apps-update' app.id %}">Update</a>
+			<a href="">Update</a>
 		</td>
 	</tr>
 	{% endfor %}

@@ -1,8 +1,11 @@
 #from fabric.api import *
-from fabric.api import run,local
+# from fabric.api import run,local
+# from invoke import run
+from fabric.api import run
+from subprocess import check_output
 #comment
-env.user  = 'raony'
-env.hosts = ['mendel']
+# env.user  = 'raony'
+# env.hosts = ['localhost']
 
 def install():
     # local('pip install cython')
@@ -59,9 +62,19 @@ def make_doc():
         local('cp -rf _build/html/* /var/www/rockbio_static/docs/')
 
 def backup():
-    local('python3 manage.py dumpdata --indent=4 --format=json auth account allauth > fixtures/users.json')
-    local('python3 manage.py dumpdata --indent=4 --format=json keys > fixtures/keys.json')
+    command = 'python3 manage.py dumpdata --indent=4 --format=json auth account allauth > fixtures/users.json'
+    check_output(command,shell=True)
+    command = 'python3 manage.py dumpdata --indent=4 --format=json keys > fixtures/keys.json'
+    check_output(command, shell = True)
+
     # run(' mysqldump -u root -p rockbio14 | gzip > db_backup/rockbio151012.sql.gz ')
+
+
+def restore():
+    # command = 'python3 manage.py loaddata fixtures/users.json'
+    # check_output(command, shell=True)
+    command = 'python3 manage.py loaddata fixtures/keys.json'
+    check_output(command, shell=True)
 
 
 def create_sample_data():
