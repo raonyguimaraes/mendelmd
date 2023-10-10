@@ -7,6 +7,12 @@ class Server(models.Model):
         return self.name
 
     name = models.CharField(max_length=30)
-    desc = models.TextField()
+
+    desc = models.TextField(null=True)
+    status = models.TextField(null=True)
+
+    cpu_load = models.TextField(null=True)
+    password = models.TextField(null=True)
+
     provider = models.CharField(max_length=30)
     ip = models.CharField(max_length=30)
