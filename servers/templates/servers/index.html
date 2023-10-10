@@ -6,12 +6,13 @@
 {% block content %}
 
 <a href="/servers/import_from_hetzner">Import from Hetzner</a>
-<a href="/servers/add_keys">Add SSHKey</a>
+<a href="/servers/add_sshkey_to_servers">Add SSH Key to servers</a>
+<a href="/servers/update_usage">Update usage</a>
 
 {% if server_list %}
 <ul>
     {% for server in server_list %}
-    <li>{{ server.id }} <a href="/servers/{{ server.id }}/">{{ server.name }}</a> {{ server.ip }} {{ server.status }}</li>
+    <li>{{ server.id }} <a href="/servers/{{ server.id }}/">{{ server.name }}</a> {{ server.ip }} {{ server.status }}  {{ server.usage }}</li>
     {% endfor %}
 </ul>
 {% else %}

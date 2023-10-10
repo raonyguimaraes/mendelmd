@@ -7,7 +7,7 @@ from settings.models import Provider
 from samples.models import Sample
 from tasks.models import Task
 from files.models import File
-from mapps.models import App as Mapp
+# from mapps.models import App as Mapp
 
 from django.contrib.auth.models import User, Group
 from django.db.models import JSONField
@@ -33,7 +33,7 @@ class Analysis(models.Model):
     name = models.CharField(max_length=30)
     status = models.TextField(null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
-    apps = models.ManyToManyField(Mapp)
+    # apps = models.ManyToManyField(Mapp)
     samples = models.ManyToManyField(Sample)
     tasks = models.ManyToManyField(Task)
     files = models.ManyToManyField(File)

@@ -11,6 +11,8 @@ class Server(models.Model):
     desc = models.TextField(null=True)
     status = models.TextField(null=True)
 
+    usage = models.TextField(null=True)
+    
     cpu_load = models.TextField(null=True)
     password = models.TextField(null=True)
 

@@ -46,9 +46,10 @@ urlpatterns = [
     path("tasks/", include("tasks.urls")),
     path("workers/", include("workers.urls")),
     path("analyses/", include("analyses.urls")),
-    path("apps/", include("mapps.urls")),
+    # path("apps/", include("mapps.urls")),
     path("keys/", include("keys.urls")),
     path("servers/", include("servers.urls")),
+    path("apps/", include("apps.urls")),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

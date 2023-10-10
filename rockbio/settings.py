@@ -85,11 +85,12 @@ INSTALLED_APPS = [
     'workers',
     'analyses',
     'formtools',
-    'mapps',
+    # 'mapps',
     'django_gravatar',    
     #'storages',
     'keys',
     'servers',
+    'apps',
 ]
 
 MIDDLEWARE = [

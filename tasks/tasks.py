@@ -46,7 +46,7 @@ from urllib.parse import urlparse
 from ftplib import FTP, FTP_TLS
 import ftplib
 
-from mapps.models import App
+# from mapps.models import App
 from helpers import b2_wrapper
 from helpers.aws_wrapper import AWS
 

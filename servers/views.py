@@ -31,6 +31,20 @@ def index(request):
     context = {"server_list": server_list}
     return render(request, "servers/index.html", context)
 
+def try_to_connect(ip):
+    #try to connect
+    paramikoclient = paramiko.SSHClient()
+    paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # paramikoclient.load_system_host_keys()
+    try:
+        paramikoclient.connect(ip, username='root')
+        ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("ls -alrt")
+        exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
+        print('paramiko can connect', exit_code)
+        status=0
+    except paramiko.ssh_exception.AuthenticationException:
+        status=1
+    return(status)
 
 def import_from_hetzner(request):
 
@@ -51,47 +65,26 @@ def import_from_hetzner(request):
         ip = server.public_net.ipv4.ip
         print(f"{server.id=} {server.name=} {server.status=} {ip=}")
 
-        #try to connect
-        paramikoclient = paramiko.SSHClient()
-        paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # paramikoclient.load_system_host_keys()
-        try:
-            paramikoclient.connect(ip, username='root')
-            ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("ls -alrt")
-            exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
-            print('paramiko can connect', exit_code)
-            status='paramiko can connect'
-        except paramiko.ssh_exception.AuthenticationException:
-            status='paramiko cant connect'
-
-
+        status=try_to_connect(ip)
 
         server_object, created = Server.objects.update_or_create(
             name=server.name,
             defaults={"ip": ip,"status":status}
         )
-        # server_object.save()
-        # visitor, created = Visitor.objects.update_or_create(
-        #     name="Harry", surname="Potter", defaults={"age": 21}
-        # )
+        
 
     server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
     context = {"server_list": server_list}
     return render(request, "servers/index.html", context)
 
-def add_sshkey_to_servers(request):
-    #get all servers and try to connect, if it doesn't work try to add pub keys:
-    print('Add Key to servers!')
-
-    hetznerkey = CloudKey.objects.get(cloudprovider="Hetzner")
-    sshkey = SSHKey.objects.first()
-
-    client = Client(token=hetznerkey.key)  # Please paste your API token here
-    #
-    # List your servers
-    # servers = client.servers.get_all()
-    # server=client.servers.get_by_name(server_name)
-
+def add_local_ssh_key_to_hetzner(client):
+    # get ssh key name
+    home = expanduser("~")
+    local_ssh_key = open('{}/.ssh/id_rsa.pub'.format(home), 'r').readlines()[0]
+    local_ssh_key_name = local_ssh_key.strip().split()[2]
+    
+    
+    servers = client.servers.get_all()
     ssh_keys = client.ssh_keys.get_all()
     ssh_keys_dict = {}
     # print(ssh_keys)
@@ -102,87 +95,103 @@ def add_sshkey_to_servers(request):
         ssh_keys_dict[ssh_key.name] = {}
         ssh_keys_dict[ssh_key.name]['id'] = ssh_key.id
         ssh_keys_dict[ssh_key.name]['public_key'] = ssh_key.public_key
-        # print(ssh_key.public_key)
-
-    # get ssh key name
-    home = expanduser("~")
-    localsshkey = open('{}/.ssh/id_rsa.pub'.format(home), 'r').readlines()[0]
-    localsshkeyname = localsshkey.strip().split()[2]
-    # print(localsshkeyname,localsshkey)
-    if localsshkeyname not in ssh_keys_dict:
+    if local_ssh_key_name not in ssh_keys_dict:
         # create ssh key on hetzner
-        sshkeyresponse = client.ssh_keys.create(name=localsshkeyname, public_key=localsshkey)
+        sshkeyresponse = client.ssh_keys.create(name=local_ssh_key_name, public_key=local_ssh_key)
         ssh_keys_dict[sshkeyresponse.name] = {}
         ssh_keys_dict[sshkeyresponse.name]['id'] = sshkeyresponse.id
         ssh_keys_dict[sshkeyresponse.name]['public_key'] = sshkeyresponse.public_key
+
+    ssh_key_hetzner_id=ssh_keys_dict[local_ssh_key_name]['id']
+    return(ssh_key_hetzner_id)
+    
+
+def add_sshkey_to_servers(request):
+    #get all servers and try to connect, if it doesn't work try to add pub keys:
+    print('Add Key to servers!')
+
+    hetznerkey = CloudKey.objects.get(cloudprovider="Hetzner")
+    client = Client(token=hetznerkey.key)  # Please paste your API token here
+    
+    #add local ssh key to hetzner
+
+    ssh_key_hetzner_id=add_local_ssh_key_to_hetzner(client)
+    print('ssh_key_hetzner_id', ssh_key_hetzner_id)
+
+    servers = client.servers.get_all()
 
     for server in servers:
         ip = server.public_net.ipv4.ip
         print(f"{server.id=} {server.name=} {server.status=} {ip=}")
 
-        # newpass=server.reset_password()
-        # print(newpass.root_password,ip)
-        # break
-        # rescue mode
-        response = server.enable_rescue(type='linux64', ssh_keys=[ssh_keys_dict[localsshkeyname]['id']])  # ,
-        # rootpass= response.root_password
-        # print(rootpass)
-        # time.sleep(30)
-        response.action.wait_until_finished()
-        rebootresponse = server.reboot()
+        status=try_to_connect(ip)
 
-        print(rebootresponse.wait_until_finished())
+        if status==1:
+            print('Try to add ssh key')
+            response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id]) 
+            response.action.wait_until_finished() 
+            rebootresponse = server.reboot()
+            rebootresponse.wait_until_finished()
+            time.sleep(45)
+            
+            # paramikoclient = paramiko.SSHClient()
+            # paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            # paramikoclient.connect(ip, username='root')
+            # ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("ls -alrt")
+            # exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
+            # for line in ssh_stdout:
+            #     print(line.strip())
+            # break
 
-        time.sleep(30)
+            command = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/add_ssh_key.py root@{}:~/'.format(ip)
+            output = check_output(command, shell=True)
+            print(output.decode())
 
-        print('connect with ssh')
+            command = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{} python3 add_ssh_key.py'.format(ip)
+            output = check_output(command, shell=True)
+            print(output.decode())
+
+            rebootresponse = server.reboot()
+            rebootresponse.wait_until_finished()
+            time.sleep(45)
+
+            status=try_to_connect(ip)
+            print('Now it can connect!')
+        else:
+            print('Can already connect! Great.')
+        server_object, created = Server.objects.update_or_create(
+            name=server.name,
+            defaults={"ip": ip,"status":status}
+        )
+
+    server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
+    context = {"server_list": server_list}
+    return render(request, "servers/index.html", context)
+
+def update_usage(request):
+
+    servers = Server.objects.all()
+    for server in servers:
+        print(server.name,server.ip)
+
         paramikoclient = paramiko.SSHClient()
         paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # paramikoclient.load_system_host_keys()
-        # paramikoclient.connect(ip, username='root', password = rootpass)
-        # stdin, stdout, stderr = paramikoclient.exec_command('ls -l')
-
-        # ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("ls -alrt")
+        paramikoclient.connect(server.ip, username='root')
+        subcomand = '''echo "Load  `LC_ALL=C top -bn1 | head -n 1` , `LC_ALL=C top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'`% RAM `free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }'` HDD `df -h / | awk '/\// {print $(NF-1)}'`"'''
+        ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(subcomand)
         # exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
-        #
         # for line in ssh_stdout:
         #     print(line.strip())
+        # print()
+        server.usage = ssh_stdout.readlines()[0].strip()
+        print(server.usage)
+        server.save()    
 
-        command = 'ssh -o StrictHostKeyChecking=no root@{} mkdir /mnt/hd'.format(ip)
-        output = check_output(command, shell=True)
-        print(output.decode())
-
-        command = 'ssh -o StrictHostKeyChecking=no root@{} mkdir /mnt/hd'.format(ip)
-        output = check_output(command, shell=True)
-        print(output.decode())
-
-        command = 'ssh -o StrictHostKeyChecking=no root@{} ls'.format(ip)
-        output = check_output(command, shell=True)
-        print(output.decode())
-
-        # connect to server
-        # add ssh key
-        # reboot
-        # try to connect
-
-        break
-
-        # echo "keyfile_content" >> / root /.ssh / authorized_keys
-
-        # print(server.public_net.ipv4_address)
-        # print(server.public_net)
-        # print(server.public_net.ipv4)
-        # print(server.public_net.ipv4.ip)
-
-        # get private ssh key and try to connect to the server
-        
-        server_object = Server(
-            name=server.name,
-            ip=ip)
-        server_object.save()
-        # visitor, created = Visitor.objects.update_or_create(
-        #     name="Harry", surname="Potter", defaults={"age": 21}
-        # )
+        # command = """ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{} {}""".format(server.ip,subcomand)
+        # print(command)
+        # output = check_output(command, shell=True)
+        # print(output.decode())
+        # break
 
     server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
     context = {"server_list": server_list}
