@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Update Server" %}{% endblock %}
+{% block content %}
+<h2>Update Server</h2>
+
+    <form action="." method="POST">
+
+    <!-- Security token -->
+    {% csrf_token %}
+
+    <!-- Using the formset -->
+    {{ form.as_p }}
+
+    <input type="submit" value="Submit">
+	</form>
+{% endblock %}
+
+<!--<div class="main">-->
+
+<!--    &lt;!&ndash; Specify fields to be displayed &ndash;&gt;-->
+<!--    {{ data.title }}<br/>-->
+<!--    {{ data.description }}<br/>-->
+
+<!--</div>-->

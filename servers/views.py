@@ -1,10 +1,21 @@
+import socket
+
+from django.db.models import Sum
+from django.shortcuts import render, redirect, get_object_or_404
+
+# relative import of forms
+from .models import Server
+from .forms import ServerForm
+
 from django.shortcuts import render
 from subprocess import run,check_output
 # hvloud reqs
 from hcloud import Client
+from time import sleep
+
+from paramiko.ssh_exception import BadHostKeyException, AuthenticationException, SSHException, NoValidConnectionsError
 
 from keys.models import CloudKey, SSHKey
-from .models import Server
 import time
 from os.path import expanduser
 import paramiko
@@ -28,8 +39,87 @@ import paramiko
 
 def index(request):
     server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
-    context = {"server_list": server_list}
+    server_count=server_list.count()
+    total_cost = server_list.aggregate(total_price=Sum('cost'))
+    context = {
+        "server_list": server_list,
+        "total_cost": total_cost,
+        "server_count":server_count
+    }
+
     return render(request, "servers/index.html", context)
+
+def create(request):
+    # dictionary for initial data with
+    # field names as keys
+    context = {}
+
+    # add the dictionary during initialization
+    form = ServerForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('servers_index')
+
+    context['form'] = form
+    return render(request, "servers/create_view.html", context)
+
+
+# delete view for details
+def delete_view(request, id):
+    # dictionary for initial data with
+    # field names as keys
+    context = {}
+    # fetch the object related to passed id
+    obj = get_object_or_404(Server, id=id)
+
+    if request.method == "POST":
+        # delete object
+        obj.delete()
+        # after deleting redirect to
+        # home page
+        return redirect('servers_index')
+
+    return render(request, "servers/delete_view.html", context)
+
+
+# pass id attribute from urls
+def detail_view(request, id):
+    # dictionary for initial data with
+    # field names as keys
+    # context = {}
+
+    # add the dictionary during initialization
+    # context["data"] = Server.objects.get(id=id)
+    server=Server.objects.get(id=id)
+    if server.password:
+        server.password = '****'
+    context = {"server": server}
+
+    return render(request, "servers/detail_view.html", context)
+
+
+# update view for details
+def update_view(request, id):
+    # dictionary for initial data with
+    # field names as keys
+    context = {}
+
+    # fetch the object related to passed id
+    obj = get_object_or_404(Server, id=id)
+
+    # pass the object as instance in form
+    form = ServerForm(request.POST or None, instance=obj)
+
+    # save the data from the form and
+    # redirect to detail_view
+    if form.is_valid():
+        form.save()
+        return redirect('servers_index')
+
+    # add form dictionary to context
+    context["form"] = form
+
+    return render(request, "servers/update_view.html", context)
 
 def try_to_connect(ip):
     #try to connect
@@ -45,6 +135,33 @@ def try_to_connect(ip):
     except paramiko.ssh_exception.AuthenticationException:
         status=1
     return(status)
+
+
+def check_status(request):
+    print('Import Servers!')
+    hetznerkey = CloudKey.objects.get(cloudprovider="Hetzner")
+    sshkey = SSHKey.objects.first()
+
+    servers = Server.objects.all()
+    # Server.objects.all().delete()
+
+    for server in servers:
+        ip = server.ip
+        print(f"{server.id=} {server.name=} {server.status=} {ip=}")
+
+        status = try_to_connect(ip)
+
+        server_object, created = Server.objects.update_or_create(
+            name=server.name,
+            defaults={"status": status}
+        )
+
+    return redirect('servers_index')
+
+    # server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
+    # context = {"server_list": server_list}
+    # return render(request, "servers/index.html", context)
+
 
 def import_from_hetzner(request):
 
@@ -80,9 +197,9 @@ def import_from_hetzner(request):
 def add_local_ssh_key_to_hetzner(client):
     # get ssh key name
     home = expanduser("~")
-    local_ssh_key = open('{}/.ssh/id_rsa.pub'.format(home), 'r').readlines()[0]
+    key_path='{}/.ssh/id_rsa.pub'.format(home)
+    local_ssh_key = open(key_path, 'r').readlines()[0]
     local_ssh_key_name = local_ssh_key.strip().split()[2]
-    
     
     servers = client.servers.get_all()
     ssh_keys = client.ssh_keys.get_all()
@@ -105,6 +222,22 @@ def add_local_ssh_key_to_hetzner(client):
     ssh_key_hetzner_id=ssh_keys_dict[local_ssh_key_name]['id']
     return(ssh_key_hetzner_id)
     
+def check_ssh(ip, user, key_file, initial_wait=0, interval=0, retries=1):
+
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    sleep(initial_wait)
+
+    for x in range(retries):
+        try:
+            ssh.connect(ip, username=user, key_filename=key_file)
+            return True
+        except (BadHostKeyException, AuthenticationException,
+                SSHException, socket.error, NoValidConnectionsError) as e:
+            print(e)
+            sleep(interval)
+    return False
 
 def add_sshkey_to_servers(request):
     #get all servers and try to connect, if it doesn't work try to add pub keys:
@@ -112,7 +245,9 @@ def add_sshkey_to_servers(request):
 
     hetznerkey = CloudKey.objects.get(cloudprovider="Hetzner")
     client = Client(token=hetznerkey.key)  # Please paste your API token here
-    
+    home = expanduser("~")
+    key_path = '{}/.ssh/id_rsa.pub'.format(home)
+
     #add local ssh key to hetzner
 
     ssh_key_hetzner_id=add_local_ssh_key_to_hetzner(client)
@@ -128,12 +263,13 @@ def add_sshkey_to_servers(request):
 
         if status==1:
             print('Try to add ssh key')
-            response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id]) 
-            response.action.wait_until_finished() 
+            response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id])
+            response.action.wait_until_finished()
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
-            time.sleep(45)
-            
+            # time.sleep(120)
+            check_ssh(ip, 'root', key_path, initial_wait=3, interval=10, retries=2)
+
             # paramikoclient = paramiko.SSHClient()
             # paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             # paramikoclient.connect(ip, username='root')
@@ -153,7 +289,8 @@ def add_sshkey_to_servers(request):
 
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
-            time.sleep(45)
+            # time.sleep(120)
+            check_ssh(ip, 'root', key_path, initial_wait=3, interval=10, retries=2)
 
             status=try_to_connect(ip)
             print('Now it can connect!')
@@ -192,6 +329,27 @@ def update_usage(request):
         # output = check_output(command, shell=True)
         # print(output.decode())
         # break
+
+    server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
+    context = {"server_list": server_list}
+    return render(request, "servers/index.html", context)
+
+
+def reboot(request):
+
+    servers = Server.objects.all()
+    for server in servers:
+        print(server.name,server.ip)
+
+        paramikoclient = paramiko.SSHClient()
+        paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            paramikoclient.connect(server.ip, username='root')
+            subcomand = '''reboot'''
+            ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(subcomand)
+        except e:
+            print(e)
+            pass
 
     server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
     context = {"server_list": server_list}

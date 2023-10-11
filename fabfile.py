@@ -62,7 +62,7 @@ def make_doc():
         local('cp -rf _build/html/* /var/www/rockbio_static/docs/')
 
 def backup():
-    command = 'python3 manage.py dumpdata --indent=4 --format=json auth account allauth > fixtures/users.json'
+    command = 'python3 manage.py dumpdata --indent=4 --format=json auth.user account allauth > fixtures/users.json'
     check_output(command,shell=True)
     command = 'python3 manage.py dumpdata --indent=4 --format=json keys > fixtures/keys.json'
     check_output(command, shell = True)

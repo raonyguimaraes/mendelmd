@@ -15,6 +15,19 @@
 
 <br><br>
 
+<div class="row">
+	<div class='col-md-6'>
+		<a class="btn btn-primary" href="{% url 'import_from_hetzner' %}">Import from Hetzner</a>
+		<a class="btn btn-primary" href="{% url 'add_sshkey_to_servers' %}">Add SSH Key to servers</a>
+		<a class="btn btn-primary" href="{% url 'servers_check_status' %}">Check Status</a>
+		<a class="btn btn-primary" href="{% url 'update_usage' %}">Update usage</a>
+		<a class="btn btn-primary" href="{% url 'servers_reboot' %}">Reboot</a>
+		<a class="btn btn-primary" href="{% url 'server_create' %}">Create Server</a>
+	</div>
+
+</div>
+<br>
+
 <form action="." method="post" id='apps_form'>
     {% csrf_token %}
 
@@ -43,25 +56,32 @@
 		<th>#<input type="checkbox" id="select_all"> ID</th>
 		<th>status</th>
 		<th width="20%">name</th>
+		<th>Options</th>
+		<th>data</th>
 		<th width="20%">description</th>
 		<th>source</th>
 		<th>repository</th>
-		<th>Options</th>
+
 	</tr>
 	{% for app in webapp_list %}
 	<tr>
-		<td><input type="checkbox" name="apps" class="apps" id="option{{app.id}}" value="{{app.id}}" />{{app.id}}</td>
+		<td><input type="checkbox" name="apps" class="apps" id="option{{app.id}}" value="{{app.id}}" /> {{app.id}}</td>
 		<td>{{app.status}}</td>
 		<td>{{app.name}}</td>
+		<td>
+			<a class="btn btn-primary" href="{% url 'app_view' app.id %}">View</a>
+		</td>
+		<td>{{app.data}}</td>
 		<td>{{app.description}}</td>
 		<td>{{app.source}}</td>
 		<td>{{app.repository}}</td>
-		<td>
-			<a href="">Update</a>
-		</td>
+
+
 	</tr>
 	{% endfor %}
 </table>
+</form>
+Total:{{n_apps}}
 {% else %}
 You still have no apps created. <br>
 

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account %}
+
+{% block content %}
+
+<h2>Move App</h2>
+<form action="." method="POST" enctype="multipart/form-data">
+
+    <!-- Security token -->
+    {% csrf_token %}
+
+    <!-- Using the formset -->
+    {{ form.as_p }}
+
+    <input type="submit" value="Submit">
+</form>
+
+
+{% endblock %}

@@ -71,14 +71,14 @@
             
             <li><a href="https://rockbio.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
             <li><a href="https://forum.rockbio.org/" target="_blank">Forum</a></li>
+            <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
+            <li><a href="{% url 'webapps_index' %}">{% trans "Apps" %}</a></li>
             {% if user.is_staff %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                   <li><a href="{#% url 'statistics_index' %#}">{% trans "Statistics" %}</a></li>
                   <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
-                <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
-                 <li><a href="{% url 'webapps_index' %}">{% trans "Apps" %}</a></li>
                   <li><a href="{% url "admin:index" %}" target="_blank">{% trans "Admin" %}</a></li>
               </ul>
             </li>
