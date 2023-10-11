@@ -18,7 +18,7 @@ class Task(models.Model):
     
     started = models.DateTimeField(null=True, blank=True)
     finished = models.DateTimeField(null=True, blank=True)
-    timetaken = models.DateTimeField(null=True, blank=True)
+    time_taken = models.DateTimeField(null=True, blank=True)
     
     total_cost = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=10)
 
