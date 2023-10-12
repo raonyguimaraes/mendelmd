@@ -3,8 +3,12 @@
 {% block content %}
 <h1>{{task.name}}</h1>
 
-<a class="btn btn-primary" href="#">Edit Task</a>
-<a class="btn btn-primary" href="{% url 'tasks-run' task.id %}">Run Task</a>
+
+  <a class="btn btn-primary" href="#">Edit Task</a>
+  <a class="btn btn-primary" href="{% url 'tasks-run' task.id %}">Run Task</a>
+  <a class="btn btn-primary" href="{% url 'tasks-view' task.id %}">Refresh</a>
+<p></p>
+
 
 <div class="row">
 <div class="col-md-12">
@@ -15,6 +19,7 @@
               <li><a href="#tab_2" data-toggle="tab">Input Files</a></li>
               <li><a href="#tab_3" data-toggle="tab">Output Files</a></li>
                <li><a href="#tab_4" data-toggle="tab">Output</a></li>
+               <li><a href="#tab_5" data-toggle="tab">Tail</a></li>
 
               <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
             </ul>
@@ -37,13 +42,18 @@
 
               <div class="tab-pane" id="tab_4">
                 
-                
-                  <h2>Output</h2>
                   Lines:{{output_lines}}
                   {{output|linebreaks}}
                 
 
               </div>
+              <div class="tab-pane" id="tab_5">
+                
+                Lines:{{output_lines}}
+                {{output_tail|linebreaks}}
+              
+
+            </div>
               <!-- /.tab-pane -->
             </div>
             <!-- /.tab-content -->
@@ -55,7 +65,10 @@
     <div class="col-md-6">
     <h2>Output</h2>
     Lines:{{output_lines}}
-    {{output|linebreaks}}
+    <h2>Tail</h2>
+    {{output_tail|linebreaks}}
+
+    
     </div>
 </div>
 {% endblock content %}
