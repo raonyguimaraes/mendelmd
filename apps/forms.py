@@ -15,6 +15,7 @@ class MoveAppForm(forms.ModelForm):
         ('docker', 'docker'),
     )
     install_type = forms.CharField(widget=forms.Select(choices=INSTALL_TYPES))
+    new_dns=forms.CharField(required=True,label='New DNS')
     class Meta:
         # specify model to be used
         model = WebApp

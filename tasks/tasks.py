@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+
+import select
+
 from celery import shared_task
 
 from files.models import File
@@ -121,73 +124,112 @@ def task_run_task(task_id):
     task.started = start
     task.save()
 
-    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    worker.n_tasks += 1 
-    worker.status = 'running task %s' % (task.id)
-    worker.started = start
-    worker.save()
+    data = manifest
+    print('data',data)
 
-
-    task_location = '/projects/tasks/%s/' % (task.id)
-    command = 'mkdir -p %s' % (task_location)
-    run(command, shell=True)
-
-    command = 'mkdir -p %s/input' % (task_location)
-    run(command, shell=True)
-
-    command = 'mkdir -p %s/output' % (task_location)
-    run(command, shell=True)
-
-    command = 'mkdir -p %s/scripts' % (task_location)
-    run(command, shell=True)
-
-
-    os.chdir(task_location)
-
-    with open('manifest.json', 'w') as fp:
-        json.dump(manifest, fp, sort_keys=True,indent=4)
-    # file_list = []
-
-    # for file_id in manifest['files']:        
-    #     print(file_id)
-    #     file = File.objects.get(pk=file_id)        
-    #     file = get_file(file)
-        # file_list.append(file.name)
-
-    #start analysis
-    for analysis_name in manifest['analysis_types']:
-        print('analysis_name', analysis_name)
-        analysis = App.objects.filter(name=analysis_name)[0]
-        print(analysis)
-
-        
-        command = 'mkdir -p /projects/programs/'
-        run(command, shell=True)
-        os.chdir('/projects/programs/')
-
-        basename = os.path.basename(analysis.repository)
-        print('basename', basename)
-        
-        command = 'git clone {}'.format(analysis.source)
-        run(command, shell=True)
-
-        os.chdir(basename)
-
-        # install
-        command = 'bash scripts/install.sh'
-        output = check_output(command, shell=True)
-
-        log_output += output.decode('utf-8')
-        #run
-        
-        os.chdir(task_location)
-        command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
+    if data['task_type'] == 'transfer_nf-tower_lxd':
+        print('transfer_nf-tower_lxd')
+        ip_origin = data['server_ip']
+        ip_dest = data['server_destination']
+        print(os.getcwd())
+        command = 'bash scripts/transfer_nf-tower_to_lxd.sh {} {} > work_dir/out.{}.log 2>&1'.format(ip_origin, ip_dest,task_id)  # > work_dir/out.{}.log
+        # out=open('work_dir/out.{}.log'.format(task_id),'w', buffering=1)
         print(command)
-        output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        log_output += output.stdout.decode('utf-8')
+        os.system(command)
+
+        # os.system('bash < scripts/transfer_nf-tower_to_lxd.sh {} {} >> work_dir/out.{}.log 2>&1'.format(ip_origin, ip_dest, task_id))
+        # f = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        # p = select.poll()
+        # p.register(f.stdout)
+
+        # while True:
+        #     if p.poll(1):
+        #         commandout=f.stdout.readline().decode()
+        #         print(commandout)
+        #         out.writelines(commandout)
+        #         # out.flush()
+        #     time.sleep(1)
+        # try:
+        #     output = check_output(command, shell=True, stderr=subprocess.STDOUT).decode()
+        #     print(output)
+        # except subprocess.CalledProcessError as e:
+        #     print(e)
+        #     print(e.stdout.decode())
+            # output=e.stdout
+            # output = str(e.stdout.decode())
+        # transfer dns
+
+        print('ok its running')
+        print('now transfer dns afterwards!')
 
 
-    AWS.upload(task_location+'/output', task.id)
+    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    # worker.n_tasks += 1
+    # worker.status = 'running task %s' % (task.id)
+    # worker.started = start
+    # worker.save()
+    #
+    #
+    # task_location = '/projects/tasks/%s/' % (task.id)
+    # command = 'mkdir -p %s' % (task_location)
+    # run(command, shell=True)
+    #
+    # command = 'mkdir -p %s/input' % (task_location)
+    # run(command, shell=True)
+    #
+    # command = 'mkdir -p %s/output' % (task_location)
+    # run(command, shell=True)
+    #
+    # command = 'mkdir -p %s/scripts' % (task_location)
+    # run(command, shell=True)
+    #
+    #
+    # os.chdir(task_location)
+    #
+    # with open('manifest.json', 'w') as fp:
+    #     json.dump(manifest, fp, sort_keys=True,indent=4)
+    # # file_list = []
+    #
+    # # for file_id in manifest['files']:
+    # #     print(file_id)
+    # #     file = File.objects.get(pk=file_id)
+    # #     file = get_file(file)
+    #     # file_list.append(file.name)
+    #
+    # #start analysis
+    # for analysis_name in manifest['analysis_types']:
+    #     print('analysis_name', analysis_name)
+    #     analysis = App.objects.filter(name=analysis_name)[0]
+    #     print(analysis)
+    #
+    #
+    #     command = 'mkdir -p /projects/programs/'
+    #     run(command, shell=True)
+    #     os.chdir('/projects/programs/')
+    #
+    #     basename = os.path.basename(analysis.repository)
+    #     print('basename', basename)
+    #
+    #     command = 'git clone {}'.format(analysis.source)
+    #     run(command, shell=True)
+    #
+    #     os.chdir(basename)
+
+        # # install
+        # command = 'bash scripts/install.sh'
+        # output = check_output(command, shell=True)
+        #
+        # log_output += output.decode('utf-8')
+        # #run
+        #
+        # os.chdir(task_location)
+        # command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
+        # print(command)
+        # output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # log_output += output.stdout.decode('utf-8')
+
+
+    # AWS.upload(task_location+'/output', task.id)
 
     #upload results to b2/s3
     # md5_dict = calculate_md5('output/')
@@ -223,13 +265,13 @@ def task_run_task(task_id):
     task.output = log_output
     task.save()
 
-    worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    worker.n_tasks -= 1
-    if worker.n_tasks == 0:
-        worker.status = 'idle'
-    worker.finished = stop
-    worker.execution_time = str(stop - start)
-    worker.save()
+    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
+    # worker.n_tasks -= 1
+    # if worker.n_tasks == 0:
+    #     worker.status = 'idle'
+    # worker.finished = stop
+    # worker.execution_time = str(stop - start)
+    # worker.save()
     print('Finished Task %s' % (task.name))
 
 @app.task(queue="qc")

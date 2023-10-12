@@ -21,6 +21,7 @@ from django.db.models import Q
 from collections import Counter
 from files.models import File
 import time
+from .taskrunner import TaskRunner
 
 @login_required
 def index(request):
@@ -124,7 +125,10 @@ def run_task(request, task_id):
     else:
         task = Task.objects.get(pk=task_id, user=request.user)
 
-    task.output=TransferApp(task).transfer()
+    # TaskRunner(task_id).run()
+    task_run_task.delay(task.id)
+
+    # task.output=TransferApp(task).transfer()
     #task_run_task.delay(task.id)
 
     # if task.action == "check":
@@ -149,11 +153,13 @@ class TaskDetail(DetailView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # files = self.object.manifest['files']
-        context['output'] = open('work_dir/out.{}.log'.format(self.object.id)).read()
-        context['output_lines']=len(context['output'].splitlines())
-        command = 'tail work_dir/out.{}.log'.format(self.object.id)
-        out=check_output(command,shell=True).decode()
-        context['output_tail'] = out
+        task_file='work_dir/out.{}.log'.format(self.object.id)
+        if os.path.isfile(task_file):
+            context['output'] = open(task_file).read()
+            context['output_lines']=len(context['output'].splitlines())
+            command = 'tail work_dir/out.{}.log'.format(self.object.id)
+            out=check_output(command,shell=True).decode()
+            context['output_tail'] = out
 
         # context['input_files'] = File.objects.filter(pk__in=files)
         # context['output_files'] = File.objects.filter(task=self.object.id)

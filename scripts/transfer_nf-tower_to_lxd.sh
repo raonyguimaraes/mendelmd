@@ -5,13 +5,16 @@ ip_dest=$2
 echo $ip_origin $ip_dest
 echo "Transfer to LXD"
 # sudo apt update
-rsync -avz root@$ip_origin:/root/nf-tower.tar.gz .
-rsync -avz nf-tower.tar.gz root@$ip_dest:/root/nf-tower.tar.gz
-rsync -avz scripts/install_nf-tower_lxd.sh root@$ip_dest:/root/install_nf-tower_lxd.sh
+rsync -rtvh root@$ip_origin:/root/nf-tower.tar.gz .
+echo "Transfer to Destination"
+rsync -rtvh nf-tower.tar.gz root@$ip_dest:/root/nf-tower.tar.gz
+rsync -rtvh scripts/install_nf-tower_lxd.sh root@$ip_dest:/root/
 
 echo "Install NF-Tower"
-ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@$ip_dest -- sh -c 'cd nf-tower; bash install_nf-tower_lxd.sh'
+ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@$ip_dest bash install_nf-tower_lxd.sh
 
+#ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@$ip_dest -- sh -c 'bash install_nf-tower_lxd.sh 2>&1'
+#-q
 # lxc delete nf-tower --force;lxc launch ubuntu:22.04 nf-tower -c security.nesting=true
 # lxc config set nf-tower security.privileged true
 # lxc config set nf-tower limits.cpu 2
