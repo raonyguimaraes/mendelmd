@@ -1,4 +1,5 @@
 import socket
+from django.contrib.auth.decorators import login_required
 
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
@@ -19,6 +20,8 @@ from keys.models import CloudKey, SSHKey
 import time
 from os.path import expanduser
 import paramiko
+import os
+
 
 # ['STATUS_DELETING', 'STATUS_INIT', 'STATUS_MIGRATING',
 # 'STATUS_OFF', 'STATUS_REBUILDING', 'STATUS_RUNNING',
@@ -57,6 +60,11 @@ def create(request):
     # add the dictionary during initialization
     form = ServerForm(request.POST or None)
     if form.is_valid():
+
+        # if form.cleaned_data['url']!='':
+        #     print('get ip')
+        #     form.cleaned_data['ip']=socket.gethostbyname(form.cleaned_data['url'])
+        #     print(form.cleaned_data)
         form.save()
         return redirect('servers_index')
 
@@ -121,20 +129,34 @@ def update_view(request, id):
 
     return render(request, "servers/update_view.html", context)
 
-def try_to_connect(ip):
-    #try to connect
-    paramikoclient = paramiko.SSHClient()
-    paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    # paramikoclient.load_system_host_keys()
-    try:
-        paramikoclient.connect(ip, username='root')
-        ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("ls -alrt")
-        exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
-        print('paramiko can connect', exit_code)
-        status=0
-    except paramiko.ssh_exception.AuthenticationException:
-        status=1
-    return(status)
+# def try_to_connect(ip):
+
+#     #check if it doesn exists
+#     home = expanduser("~")
+#     key_path='{}/.ssh/id_rsa'.format(home)
+    
+#     if not os.path.isfile(key_path):
+#         print('create key')
+#         # command = 'ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1'
+#         command="""ssh-keygen -b 2048 -t rsa -f {} -q -N "" """.format(key_path)
+#         run(command,shell=True)
+
+
+#     #try to connect
+#     paramikoclient = paramiko.SSHClient()
+#     paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#     paramikoclient.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
+#     paramikoclient.load_system_host_keys()
+
+#     try:
+#         paramikoclient.connect(ip, username='root')
+#         ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("ls -alrt")
+#         exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
+#         print('paramiko can connect', exit_code)
+#         status=0
+#     except paramiko.ssh_exception.AuthenticationException:
+#         status=1
+#     return(status)
 
 
 def check_status(request):
@@ -149,7 +171,8 @@ def check_status(request):
         ip = server.ip
         print(f"{server.id=} {server.name=} {server.status=} {ip=}")
 
-        status = try_to_connect(ip)
+        # status = try_to_connect(ip)
+        status=check_ssh(ip, username=server.username, password=server.password)
 
         server_object, created = Server.objects.update_or_create(
             name=server.name,
@@ -162,6 +185,30 @@ def check_status(request):
     # context = {"server_list": server_list}
     # return render(request, "servers/index.html", context)
 
+def check_ssh(ip, username, password, key_file=None, initial_wait=2, interval=5, retries=1):
+
+    if key_file==None:
+        key_file=expanduser("~/.ssh/id_rsa.pub")
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # ssh.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy())
+    # ssh.load_system_host_keys()
+
+    sleep(initial_wait)
+    knownhosts = expanduser("~/.ssh/known_hosts")
+    
+    command = 'ssh-keygen -f "{}" -R {}'.format(knownhosts, ip)
+    check_output(command,shell=True)
+
+    for x in range(retries):
+        try:
+            ssh.connect(ip, username=username, password=password, key_filename=key_file)
+            return True
+        except (BadHostKeyException, AuthenticationException,
+                SSHException, socket.error, NoValidConnectionsError) as e:
+            print(e)
+            sleep(interval)
+    return False
 
 def import_from_hetzner(request):
 
@@ -182,17 +229,22 @@ def import_from_hetzner(request):
         ip = server.public_net.ipv4.ip
         print(f"{server.id=} {server.name=} {server.status=} {ip=}")
 
-        status=try_to_connect(ip)
+        # status=try_to_connect(ip)
+        key_file=expanduser("~/.ssh/id_rsa.pub")
+        status=check_ssh(ip, 'root', None, key_file)
 
         server_object, created = Server.objects.update_or_create(
             name=server.name,
+            username='root',
+            provider='hetzner_cloud',
             defaults={"ip": ip,"status":status}
         )
         
+    return redirect('servers_index')
 
-    server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
-    context = {"server_list": server_list}
-    return render(request, "servers/index.html", context)
+    # server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
+    # context = {"server_list": server_list}
+    # return render(request, "servers/index.html", context)
 
 def add_local_ssh_key_to_hetzner(client):
     # get ssh key name
@@ -222,22 +274,7 @@ def add_local_ssh_key_to_hetzner(client):
     ssh_key_hetzner_id=ssh_keys_dict[local_ssh_key_name]['id']
     return(ssh_key_hetzner_id)
     
-def check_ssh(ip, user, key_file, initial_wait=0, interval=0, retries=1):
 
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    sleep(initial_wait)
-
-    for x in range(retries):
-        try:
-            ssh.connect(ip, username=user, key_filename=key_file)
-            return True
-        except (BadHostKeyException, AuthenticationException,
-                SSHException, socket.error, NoValidConnectionsError) as e:
-            print(e)
-            sleep(interval)
-    return False
 
 def add_sshkey_to_servers(request):
     #get all servers and try to connect, if it doesn't work try to add pub keys:
@@ -256,19 +293,24 @@ def add_sshkey_to_servers(request):
     servers = client.servers.get_all()
 
     for server in servers:
+
         ip = server.public_net.ipv4.ip
+        server_obj = Server.objects.get(ip=ip)
+
         print(f"{server.id=} {server.name=} {server.status=} {ip=}")
+        print('server_obj',server_obj,server_obj.provider)
 
-        status=try_to_connect(ip)
+        status=check_ssh(ip, server_obj.username, server_obj.password)
 
-        if status==1:
+
+        if status==False:
             print('Try to add ssh key')
             response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id])
             response.action.wait_until_finished()
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
             # time.sleep(120)
-            check_ssh(ip, 'root', key_path, initial_wait=3, interval=10, retries=2)
+            status=check_ssh(ip, server_obj.username, server_obj.password, key_path, initial_wait=3, interval=10, retries=20)
 
             # paramikoclient = paramiko.SSHClient()
             # paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -290,20 +332,42 @@ def add_sshkey_to_servers(request):
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
             # time.sleep(120)
-            check_ssh(ip, 'root', key_path, initial_wait=3, interval=10, retries=2)
+            status=check_ssh(ip, server_obj.username, server_obj.password, key_path, initial_wait=3, interval=10, retries=20)
 
-            status=try_to_connect(ip)
+            # status=try_to_connect(ip)
+
             print('Now it can connect!')
         else:
             print('Can already connect! Great.')
+
+        server_object, created = Server.objects.update_or_create(
+            name=server.name,
+            defaults={"ip": ip,"status":status}
+        )
+    #now deal with non hetzner server
+    servers = Server.objects.all().exclude(provider='hetzner_cloud')
+    for server in servers:
+        print('install keys')
+        key = open(os.path.expanduser('~/.ssh/id_rsa.pub')).read()
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(server.ip, username=server.username, password=server.password)
+        client.exec_command('mkdir -p ~/.ssh/')
+        client.exec_command('echo "%s" > ~/.ssh/authorized_keys' % key)
+        client.exec_command('chmod 644 ~/.ssh/authorized_keys')
+        client.exec_command('chmod 700 ~/.ssh/')
+        status=check_ssh(server.ip, server.username, server.password,retries=2)
+        ip=server.ip
         server_object, created = Server.objects.update_or_create(
             name=server.name,
             defaults={"ip": ip,"status":status}
         )
 
-    server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
-    context = {"server_list": server_list}
-    return render(request, "servers/index.html", context)
+    return redirect('servers_index')
+
+    # server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
+    # context = {"server_list": server_list}
+    # return render(request, "servers/index.html", context)
 
 def update_usage(request):
 
@@ -313,7 +377,9 @@ def update_usage(request):
 
         paramikoclient = paramiko.SSHClient()
         paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        paramikoclient.connect(server.ip, username='root')
+        
+        paramikoclient.connect(server.ip, username=server.username,password=server.password)
+
         subcomand = '''echo "Load  `LC_ALL=C top -bn1 | head -n 1` , `LC_ALL=C top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'`% RAM `free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }'` HDD `df -h / | awk '/\// {print $(NF-1)}'`"'''
         ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(subcomand)
         # exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
@@ -354,3 +420,61 @@ def reboot(request):
     server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
     context = {"server_list": server_list}
     return render(request, "servers/index.html", context)
+
+@login_required
+def servers_bulk_action(request):
+    if request.method == 'POST':
+        servers = request.POST.getlist('servers')
+        print(servers) 
+        servers = list(reversed([int(x) for x in servers]))
+        print(servers)
+        
+        # if request.POST['selectionField'] == "Show":
+        #     for individual_id in individuals:
+        #         individual = get_object_or_404(Individual, pk=individual_id)
+        #         individual.featured = True
+        #         individual.save()
+        # if request.POST['selectionField'] == "Hide":
+        #     for individual_id in individuals:
+        #         individual = get_object_or_404(Individual, pk=individual_id)
+        #         individual.featured = False
+        #         individual.save()
+        if request.POST['selectionField'] == "Delete":
+            for server_id in servers:
+                server = get_object_or_404(Server, pk=server_id)
+                server.delete()
+        #         individual_id = individual.id
+        #         if individual.user:
+        #             username = individual.user.username
+        #         else:
+        #             username = 'public'
+        #         #delete files
+        #         if individual.vcf_file:
+        #             individual.vcf_file.delete()
+        #         # if individual.strs_file:
+        #         #     individual.strs_file.delete()
+        #         # if individual.cnvs_file:
+        #         #     individual.cnvs_file.delete()
+        #         os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, slugify(username), individual_id))
+
+        #         individual.delete()
+        #     messages.add_message(request, messages.INFO, "Individuals deleted with success!")
+        #     #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
+        # if request.POST['selectionField'] == "Populate":
+        #     for individual_id in individuals:
+        #         individual = get_object_or_404(Individual, pk=individual_id)
+        #         PopulateVariants.delay(individual.id)
+            
+        # if request.POST['selectionField'] == "Annotate":
+        #     for individual_id in individuals:
+        #         individual = get_object_or_404(Individual, pk=individual_id)
+        #         individual.status = 'new'
+        #         individual.n_lines = 0
+        #         individual.save()
+        #         AnnotateVariants.delay(individual.id)
+        # if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
+        #     for individual_id in individuals:
+        #         individual = get_object_or_404(Individual, pk=individual_id)
+        #         Find_Medical_Conditions_and_Medicines.delay(individual.id)
+    
+    return redirect('servers_index')

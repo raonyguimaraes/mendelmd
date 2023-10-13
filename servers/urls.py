@@ -15,6 +15,7 @@ urlpatterns = [
     path('<id>/delete/', views.delete_view, name="server_delete"),
     path('<id>', views.detail_view, name='server_view'),
     path('<id>/update/', views.update_view, name='server_update'),
+    path("servers_bulk_action/", views.servers_bulk_action, name="servers_bulk_action"), 
     # path("edit/<int:individual_id>/", views.edit, name="individual_edit"),
     # path("view/<int:individual_id>/", views.view, name="individual_view"),
 

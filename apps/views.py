@@ -104,25 +104,28 @@ def move_app(request, id):
 
     return render(request, "apps/move_app.html", context)
 
-def connect_and_find_apps(ip):
+def connect_and_find_apps(server):
 
-    command = 'scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/find_apps.py root@{}:~/'.format(
-        ip)
+    ip=server.ip
+    username=server.username
+
+    command = 'scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/find_apps.py {}@{}:~/'.format(
+        server.username,ip)
     output = check_output(command, shell=True)
     print(output.decode())
 
 
     paramikoclient = paramiko.SSHClient()
     paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    paramikoclient.connect(ip, username='root')
+    paramikoclient.connect(ip, username=server.username)
 
     # ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command("python3 find_apps.py")
     # exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
     # out=ssh_stdout.read().decode().splitlines()
     # print(out)#.replace('\n', ' '))
 
-    command = 'ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{} python3 find_apps.py'.format(
-        ip)
+    command = 'ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} python3 find_apps.py'.format(
+        username,ip)
     output = check_output(command, shell=True)
     print(output.decode())
 
@@ -159,7 +162,7 @@ def import_apps(request):
     for server in servers:
         print('server', server.name,server.ip)
         #connect and find apps
-        apps=connect_and_find_apps(server.ip)
+        apps=connect_and_find_apps(server)
         print('apps',apps)
         if len(apps)>0:
             for app in apps:

@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.models import WebApp
-
+import socket
 
 # Create your models here.
 class Server(models.Model):
@@ -23,4 +23,8 @@ class Server(models.Model):
     provider = models.CharField(max_length=300,null=True,blank=True)
     ip = models.CharField(max_length=300,null=True,blank=True)
 
+    def save(self, *args, **kwargs):
+        if self.url:
+            self.ip=socket.gethostbyname(self.url)
+        super(Server, self).save(*args, **kwargs)
     # apps = models.ManyToManyField(WebApp)
