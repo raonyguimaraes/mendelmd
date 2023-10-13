@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from files.models import File
 # from analyses.models import Analysis
+import datetime
 
 class Task(models.Model):
 
@@ -18,13 +19,20 @@ class Task(models.Model):
     
     started = models.DateTimeField(null=True, blank=True)
     finished = models.DateTimeField(null=True, blank=True)
-    time_taken = models.DateTimeField(null=True, blank=True)
+    time_taken = models.TextField(null=True, blank=True)
     
     total_cost = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=10)
 
     creation_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     modified_date = models.DateTimeField(null=True, blank=True)
+    
+    
     files = models.ManyToManyField(File)
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        self.modified_date=datetime.datetime.now()
+
+        super(Task, self).save(*args, **kwargs)

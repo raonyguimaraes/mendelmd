@@ -82,6 +82,8 @@ def move_app(request, id):
         data=form.cleaned_data['data']
         data['server_destination']=form.cleaned_data['server_destination'].ip
         data['install_type'] = form.cleaned_data['install_type']
+        data['new_dns'] = form.cleaned_data['new_dns']
+        
         data['task_type'] = 'transfer_nf-tower_lxd'
 
         task=Task(
@@ -170,7 +172,7 @@ def import_apps(request):
 
                 app['server_name']=server.name
                 app['server_ip']=server.ip
-
+                
                 webapp_object, created = WebApp.objects.update_or_create(
                     name=app['name'],
                     defaults={"data": app}

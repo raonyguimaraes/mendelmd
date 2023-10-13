@@ -49,15 +49,16 @@ def index(request):
 
 @method_decorator(login_required, name='dispatch')
 class TaskDelete(DeleteView):
-
+    
     model = Task
-
     success_url = reverse_lazy('tasks-index')
+
     def get_queryset(self):
         if not self.request.user.is_staff:
             return self.model.objects.filter(user=self.request.user)
         else:
             return self.model.objects
+        
 def run_remote_command(ip,command):
     command = """ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{} '{} </dev/null'""".format(
         ip,command)

@@ -160,7 +160,12 @@ def task_run_task(task_id):
         # transfer dns
 
         print('ok its running')
+        #install nginx proxy_pass
+        #update address on cpanel
+        
+
         print('now transfer dns afterwards!')
+
 
 
     # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
@@ -260,7 +265,7 @@ def task_run_task(task_id):
 
     task.status = 'done'
     stop = datetime.datetime.now()
-    task.execution_time = str(stop - start)
+    task.time_taken = str(stop - start)
     task.finished = stop
     task.output = log_output
     task.save()

@@ -200,6 +200,10 @@ def check_ssh(ip, username, password, key_file=None, initial_wait=2, interval=5,
     command = 'ssh-keygen -f "{}" -R {}'.format(knownhosts, ip)
     check_output(command,shell=True)
 
+    command = 'ssh-keyscan {} >> {}'.format(ip,knownhosts)
+    check_output(command,shell=True)
+    
+
     for x in range(retries):
         try:
             ssh.connect(ip, username=username, password=password, key_filename=key_file)
