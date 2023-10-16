@@ -2,10 +2,13 @@
 from __future__ import absolute_import, unicode_literals
 
 import select
+from urllib import request
 
 from celery import shared_task
 
 from files.models import File
+from keys.models import CloudKey
+from servers.models import Server
 from .models import Task as Taskobj
 
 import urllib.request, os
@@ -43,6 +46,11 @@ import datetime
 import time
 import socket
 import json
+from re import compile
+
+from http import client
+from base64 import b64encode
+import paramiko
 
 from urllib.parse import urlparse
 
@@ -109,11 +117,74 @@ def calculate_md5(path):
     return(md5_dict)
 
 @shared_task()
+def transfer_nf_tower(task):
+    data=task.manifest
+    task_id=task.id
+    # ip_origin = data['server_ip']
+    # ip_dest = data['server_destination']
+    # print(os.getcwd())
+    command = 'bash scripts/transfer_nf-tower_to_lxd.sh {} {} > work_dir/out.{}.log 2>&1'.format(data['server_ip'], data['server_destination'],
+                                                                                                 task_id)
+    print(command)
+    os.system(command)
+def update_dns(task):
+    data=task.manifest
+    manifest=task.manifest
+
+    print(data['new_dns'])
+
+    newdns = data['new_dns']
+    maindomain = '.'.join(newdns.split('.')[-2:])
+
+    cpanel = CloudKey.objects.get(cloudprovider="Cpanel")
+
+    conn = client.HTTPSConnection(cpanel.host, 2083)
+    binarystring = '{}:{}'.format(cpanel.username, cpanel.password).encode()
+    myAuth = b64encode(binarystring).decode('ascii')
+    authHeader = {'Authorization': 'Basic ' + myAuth}
+    conn.request('GET',
+                 '/json-api/cpanel?cpanel_jsonapi_version=2&cpanel_jsonapi_module=ZoneEdit&cpanel_jsonapi_func=fetchzone_records&domain={}'.format(
+                     maindomain),
+                 headers=authHeader)
+    myResponse = conn.getresponse()
+    print(myResponse.getcode())
+    data = myResponse.read()
+    if myResponse.getcode() != 200:
+        print('did not succeed')
+    # print(data)
+    data2 = json.loads(data)
+    line_number = None
+    for zone_record in data2['cpanelresult']['data']:
+        # print(zone_record)
+        if 'name' in zone_record:
+            if zone_record['name'].startswith(newdns):
+                # get line number and update
+                line_number = str(zone_record['Line'])
+                print('line number {}'.format(line_number))
+
+    newIP = manifest['server_destination']
+    print('new IP, ', newIP)
+    if line_number:
+        # update record
+        conn.request('GET',
+                     '/json-api/cpanel?cpanel_jsonapi_version=2&cpanel_jsonapi_module=ZoneEdit&cpanel_jsonapi_func=edit_zone_record&domain=' + maindomain + '&line=' + line_number + '&class=IN&type=A&name=' + newdns + '.&ttl=3600&address=' + newIP,
+                     headers=authHeader)
+    else:
+        # add record
+        conn.request('GET',
+                     '/json-api/cpanel?cpanel_jsonapi_version=2&cpanel_jsonapi_module=ZoneEdit&cpanel_jsonapi_func=add_zone_record&domain=' + maindomain + '&class=IN&type=A&name=' + newdns + '.&ttl=3600&address=' + newIP,
+                     headers=authHeader)
+    myResponse = conn.getresponse()
+    print(myResponse.getcode())
+
+@shared_task()
 def task_run_task(task_id):
     print('RUN TASK: ', task_id)
     log_output = ''
 
     task = Task.objects.get(id=task_id)
+    server= Server.objects.get(name=task.manifest['server_name'])
+
     
     task.output = ''
     
@@ -129,35 +200,7 @@ def task_run_task(task_id):
 
     if data['task_type'] == 'transfer_nf-tower_lxd':
         print('transfer_nf-tower_lxd')
-        ip_origin = data['server_ip']
-        ip_dest = data['server_destination']
-        print(os.getcwd())
-        command = 'bash scripts/transfer_nf-tower_to_lxd.sh {} {} > work_dir/out.{}.log 2>&1'.format(ip_origin, ip_dest,task_id)  # > work_dir/out.{}.log
-        # out=open('work_dir/out.{}.log'.format(task_id),'w', buffering=1)
-        print(command)
-        os.system(command)
-
-        # os.system('bash < scripts/transfer_nf-tower_to_lxd.sh {} {} >> work_dir/out.{}.log 2>&1'.format(ip_origin, ip_dest, task_id))
-        # f = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        # p = select.poll()
-        # p.register(f.stdout)
-
-        # while True:
-        #     if p.poll(1):
-        #         commandout=f.stdout.readline().decode()
-        #         print(commandout)
-        #         out.writelines(commandout)
-        #         # out.flush()
-        #     time.sleep(1)
-        # try:
-        #     output = check_output(command, shell=True, stderr=subprocess.STDOUT).decode()
-        #     print(output)
-        # except subprocess.CalledProcessError as e:
-        #     print(e)
-        #     print(e.stdout.decode())
-            # output=e.stdout
-            # output = str(e.stdout.decode())
-        # transfer dns
+        transfer_nf_tower(task)
 
         print('ok its running')
         #install nginx proxy_pass
@@ -165,8 +208,86 @@ def task_run_task(task_id):
         
 
         print('now transfer dns afterwards!')
+        #here transfer DNS
+        update_dns(task)
+
+        #get lxc ip
+
+        subcommand = 'lxc list --format=json'
+        ip=manifest['server_destination']
+        # command = 'ls -larth'
+        command = 'ssh -t root@{} {}'.format(
+            ip, subcommand)
+        print(command)
+        output = check_output(command, shell=True)
+        # print(output.decode())
+        outjson=json.loads(output.decode())
+        #dict_keys(['architecture', 'config', 'devices', 'ephemeral', 'profiles', 'stateful', 'description', 'created_at', 'expanded_config', 'expanded_devices', 'name', 'status', 'status_code', 'last_used_at', 'location', 'type', 'project', 'backups', 'state', 'snapshots'])
+        print(outjson[0].keys())
+        for lxc in outjson:
+            print('name',lxc['name'])
+            if lxc['name']=='nf-tower':
+                # print(lxc.keys())
+                lxc_ip = lxc['state']['network']['eth0']['addresses'][0]['address']
+
+        name=task.manifest['name']
+        print(name)
+        # lxcdata=outjson[0]
+        # print(lxcdata['name'])
 
 
+        # paramikoclient = paramiko.SSHClient()
+        # paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        # #
+        # paramikoclient.connect(server.ip, username=server.username)
+        # #
+        # # subcomand = '''echo "Load  `LC_ALL=C top -bn1 | head -n 1` , `LC_ALL=C top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'`% RAM `free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }'` HDD `df -h / | awk '/\// {print $(NF-1)}'`"'''
+        # ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(command)
+        # exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
+        # print(exit_code)
+        # for line in ssh_stdout:
+        #     print(line.strip())
+        # print(ssh_stdout.readlines())
+        # output = ssh_stdout.readlines()
+        # print(output)
+        new_dns=task.manifest['new_dns']
+        #add nginx
+        subcommand = '''sudo bash -c 'cat << EOF > /etc/nginx/sites-available/{}.conf
+server {{
+        listen 80;
+        server_name {};
+
+        error_log /var/log/nginx/{}.error;
+        access_log /var/log/nginx/{}.access;
+        location / {{
+                proxy_pass http://{}:8000/;
+                proxy_set_header Host \$host;
+                proxy_set_header Upgrade \$http_upgrade;
+                proxy_set_header Connection upgrade;
+                proxy_set_header Accept-Encoding gzip;
+        }}
+}}
+EOF' '''.format(name,new_dns, name,name,lxc_ip)
+
+        command = 'ssh -t root@{} {}'.format(
+            ip, subcommand)
+        print(command)
+        output = check_output(command, shell=True)
+
+        subcommand = 'sudo ln -sf /etc/nginx/sites-available/{}.conf /etc/nginx/sites-enabled/{}.conf'.format(name,name)
+        command = 'ssh -t root@{} {}'.format(
+            ip, subcommand)
+        output = check_output(command, shell=True)
+
+        subcommand = 'sudo service nginx restart'
+        command = 'ssh -t root@{} {}'.format(
+            ip, subcommand)
+        output = check_output(command, shell=True)
+
+        subcommand = 'certbot --nginx --non-interactive --agree-tos -m raony@rockbio.io -d "{}"'.format(new_dns)
+        command = 'ssh -t root@{} {}'.format(
+            ip, subcommand)
+        output = check_output(command, shell=True)
 
     # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
     # worker.n_tasks += 1
