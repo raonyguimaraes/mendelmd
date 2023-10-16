@@ -89,6 +89,38 @@ def delete_view(request, id):
 
     return render(request, "servers/delete_view.html", context)
 
+def terminate_view(request,id):
+    # dictionary for initial data with
+    # field names as keys
+    context = {}
+    # fetch the object related to passed id
+    obj = get_object_or_404(Server, id=id)
+
+    if request.method == "POST":
+        hetznerkey = CloudKey.objects.get(cloudprovider="Hetzner")
+        client = Client(token=hetznerkey.key)  # Please paste your API token here
+        servers = client.servers.get_all()
+        for server in servers:
+            ip = server.public_net.ipv4.ip
+            if server.name == obj.name and ip == obj.ip:
+                print('DELETE NOW')
+                server.delete()
+                obj.status='terminated'
+                obj.save()
+                # response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id])
+                # response.action.wait_until_finished()
+                # rebootresponse = server.reboot()
+                # rebootresponse.wait_until_finished()
+            # print(f"{server.id=} {server.name=} {server.status=} {ip=}")
+
+
+        # delete object
+        # obj.delete()
+        # after deleting redirect to
+        # home page
+        return redirect('servers_index')
+
+    return render(request, "servers/terminate_view.html", context)
 
 # pass id attribute from urls
 def detail_view(request, id):
