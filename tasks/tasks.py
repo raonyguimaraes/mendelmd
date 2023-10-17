@@ -184,7 +184,7 @@ def transfer_galaxy(task):
     task_id=task.id
     
     command = f'python3 scripts/transfer_galaxy_to_lxd.py \
-    --app {data["name"]} --origin {data["server_ip"]} --destination {data["server_destination"]} --app_folder {data["app_folder"]} \
+    --app_name {data["name"]} --origin {data["server_ip"]} --destination {data["server_destination"]} --app_folder {data["app_folder"]} \
     > work_dir/out.{task_id}.log 2>&1 '
     print(command)
     os.system(command)
