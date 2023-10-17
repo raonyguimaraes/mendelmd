@@ -25,7 +25,6 @@ from individuals.models import Individual
 from files.models import File
 from django.contrib.auth.models import User
 
-
 individuals = Individual.objects.all()
 
 for individual in individuals:

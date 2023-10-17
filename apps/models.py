@@ -4,6 +4,7 @@ from django.db import models
 
 # Create your models here.
 class WebApp(models.Model):
+    
     def __str__(self):
         return self.name
     def get_fields(self):

@@ -75,7 +75,9 @@ def main():
     if os.path.isdir(nftower_path):
         app = {
             'name': 'nftower',
-            'app_folder':nftower_path
+            'app_folder':nftower_path,
+            'app_type': 'nftower',
+            'install_type': 'local',
         }
         apps.append(app)
 
@@ -84,7 +86,9 @@ def main():
     if os.path.isdir(galaxy_path):
         app = {
             'name': 'galaxy',
-            'app_folder': galaxy_path
+            'app_folder': galaxy_path,
+            'app_type': 'galaxy',
+            'install_type': 'local',
         }
         apps.append(app)
     #
@@ -92,10 +96,47 @@ def main():
     if os.path.isdir(discourse_path):
         app = {
             'name': 'discourse',
-            'app_folder': discourse_path
+            'app_folder': discourse_path,
+            'app_type': 'discourse',
+            'install_type': 'local',
         }
         apps.append(app)
 
+    #get lxd apps
+    
+    command = 'lxc list --format=json'
+    # print(command)
+    try:
+        output = check_output(command, shell=True)
+        
+        outjson=json.loads(output.decode())
+        # print(outjson)
+        
+        
+        for lxc in outjson:
+            
+            print('lxcname',lxc['name'])
+            
+            # if 'state' in lxc:
+            #     if 'network' in lxc['state']:
+            #         if 'eth0' in lxc['state']['network']:
+            #             lxc_ip = lxc['state']['network']['eth0']['addresses'][0]['address']
+            #         else:
+            #             lxc_ip = None
+            #     else:
+            #         lxc_ip = None
+            # else:
+            #     lxc_ip = None
+            
+            app = {
+                'name': lxc['name'],
+                'source': 'lxc'
+                # 'ip': lxc_ip
+            }
+            apps.append(app)
+    except:
+        pass
+    
     #now check apps for credentials
     # print('now check apps')
     for idx, app in enumerate(apps):
@@ -130,7 +171,8 @@ def main():
                 print(proxy_port,'proxy_port')
 
 
-    # print(apps)
+    print(apps)
+    
     with open('apps.json', 'w') as fp:
         json.dump(apps, fp)
 

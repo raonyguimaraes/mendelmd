@@ -39,7 +39,7 @@ import json
 #     # print(data)
 
 def index(request):
-    webapp_list = WebApp.objects.all()  # .order_by("-pub_date")[:5]
+    webapp_list = WebApp.objects.all().order_by("id")  # .order_by("-pub_date")[:5]
     n_apps=webapp_list.count()
     context = {"webapp_list": webapp_list, 'n_apps':n_apps}
     return render(request, "apps/index.html", context)
@@ -84,7 +84,7 @@ def move_app(request, id):
         data['install_type'] = form.cleaned_data['install_type']
         data['new_dns'] = form.cleaned_data['new_dns']
         
-        data['task_type'] = 'transfer_nf-tower_lxd'
+        data['task_type'] = 'transfer_app'
 
         task=Task(
             name='transfer_app',

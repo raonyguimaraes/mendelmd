@@ -1,4 +1,5 @@
 import socket
+import subprocess
 from django.contrib.auth.decorators import login_required
 
 from django.db.models import Sum
@@ -41,7 +42,7 @@ import os
 #https://community.hetzner.com/tutorials/howto-ssh-key
 
 def index(request):
-    server_list = Server.objects.all()  # .order_by("-pub_date")[:5]
+    server_list = Server.objects.all().order_by("id")  # .order_by("-pub_date")[:5]
     server_count=server_list.count()
     total_cost = server_list.aggregate(total_price=Sum('cost'))
     context = {
@@ -227,18 +228,25 @@ def check_ssh(ip, username, password, key_file=None, initial_wait=2, interval=5,
     # ssh.load_system_host_keys()
 
     sleep(initial_wait)
-    knownhosts = expanduser("~/.ssh/known_hosts")
+    # knownhosts = expanduser("~/.ssh/known_hosts")
     
-    command = 'ssh-keygen -f "{}" -R {}'.format(knownhosts, ip)
-    check_output(command,shell=True)
-
-    command = 'ssh-keyscan {} >> {}'.format(ip,knownhosts)
-    check_output(command,shell=True)
+    # command = 'ssh-keygen -f "{}" -R {}'.format(knownhosts, ip)
+    # check_output(command,shell=True)
+    
+    # knownhosts = expanduser("~/.ssh/known_hosts")
+    # command = 'ssh-keyscan -T 240 {} >> {}'.format(ip,knownhosts)
+    # # check_output(command,shell=True)
+    
+    # try:
+    #     subprocess.check_output(command, shell=True)
+    # except subprocess.CalledProcessError as e:
+    #     print(e.returncode)
+    #     print(e.output)
     
 
     for x in range(retries):
         try:
-            ssh.connect(ip, username=username, password=password, key_filename=key_file)
+            ssh.connect(ip, username=username, password=password, key_filename=key_file, banner_timeout=200)
             return True
         except (BadHostKeyException, AuthenticationException,
                 SSHException, socket.error, NoValidConnectionsError) as e:
@@ -266,6 +274,11 @@ def import_from_hetzner(request):
         print(f"{server.id=} {server.name=} {server.status=} {ip=}")
 
         # status=try_to_connect(ip)
+        
+        knownhosts = expanduser("~/.ssh/known_hosts")
+        command = f'ssh-keyscan -T 240 {ip} >> {knownhosts}'#.format(ip,knownhosts)
+        check_output(command,shell=True)
+        
         key_file=expanduser("~/.ssh/id_rsa.pub")
         status=check_ssh(ip, 'root', None, key_file)
 
@@ -311,6 +324,44 @@ def add_local_ssh_key_to_hetzner(client):
     return(ssh_key_hetzner_id)
     
 
+def add_sshkey_to_server(request, id):
+    
+    obj=Server.objects.get(id=id)
+    print('Add Key to server')
+    
+    hetznerkey = CloudKey.objects.get(cloudprovider="Hetzner")
+    client = Client(token=hetznerkey.key)  # Please paste your API token here
+    
+    home = expanduser("~")
+    key_path = '{}/.ssh/id_rsa.pub'.format(home)
+
+    #add local ssh key to hetzner
+    ssh_key_hetzner_id=add_local_ssh_key_to_hetzner(client)
+    print('ssh_key_hetzner_id', ssh_key_hetzner_id)
+    
+    server = client.servers.get_by_name(name=obj.name) # .get_all()
+    
+    ip = server.public_net.ipv4.ip
+    
+    print('Try to add ssh key')
+    response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id])
+    response.action.wait_until_finished()
+    rebootresponse = server.reboot()
+    rebootresponse.wait_until_finished()
+    # time.sleep(120)
+    print('after reboot, now try to ssh')
+    status=check_ssh(ip, obj.username, obj.password, key_path, initial_wait=3, interval=10, retries=20)
+    print('after check ssh suceeds')
+    
+    # print(server)
+    # # for server in servers:
+    # ip = server.public_net.ipv4.ip
+    # print(ip)
+    
+    
+    context = {"server": obj}
+    return render(request, "servers/detail_view.html", context)
+    
 
 def add_sshkey_to_servers(request):
     #get all servers and try to connect, if it doesn't work try to add pub keys:
@@ -340,14 +391,17 @@ def add_sshkey_to_servers(request):
 
 
         if status==False:
+            
             print('Try to add ssh key')
             response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id])
             response.action.wait_until_finished()
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
             # time.sleep(120)
+            print('after reboot, now try to ssh')
             status=check_ssh(ip, server_obj.username, server_obj.password, key_path, initial_wait=3, interval=10, retries=20)
-
+            print('after check ssh suceeds')
+            
             # paramikoclient = paramiko.SSHClient()
             # paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             # paramikoclient.connect(ip, username='root')
@@ -364,6 +418,8 @@ def add_sshkey_to_servers(request):
             command = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{} python3 add_ssh_key.py'.format(ip)
             output = check_output(command, shell=True)
             print(output.decode())
+            
+            print('nwo reboot again after adding the key')
 
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
@@ -387,7 +443,7 @@ def add_sshkey_to_servers(request):
         key = open(os.path.expanduser('~/.ssh/id_rsa.pub')).read()
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(server.ip, username=server.username, password=server.password)
+        client.connect(server.ip, username=server.username, password=server.password, banner_timeout=200)
         client.exec_command('mkdir -p ~/.ssh/')
         client.exec_command('echo "%s" > ~/.ssh/authorized_keys' % key)
         client.exec_command('chmod 644 ~/.ssh/authorized_keys')
@@ -414,7 +470,7 @@ def update_usage(request):
         paramikoclient = paramiko.SSHClient()
         paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         
-        paramikoclient.connect(server.ip, username=server.username,password=server.password)
+        paramikoclient.connect(server.ip, username=server.username,password=server.password, banner_timeout=200)
 
         subcomand = '''echo "Load  `LC_ALL=C top -bn1 | head -n 1` , `LC_ALL=C top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'`% RAM `free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }'` HDD `df -h / | awk '/\// {print $(NF-1)}'`"'''
         ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(subcomand)
@@ -446,7 +502,7 @@ def reboot(request):
         paramikoclient = paramiko.SSHClient()
         paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
-            paramikoclient.connect(server.ip, username='root')
+            paramikoclient.connect(server.ip, username='root', banner_timeout=200)
             subcomand = '''reboot'''
             ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(subcomand)
         except e:

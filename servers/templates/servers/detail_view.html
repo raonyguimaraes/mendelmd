@@ -8,8 +8,9 @@
     <h1>{% trans "Server" %}</h1>
 
 	<div class="row">
+		<a class="btn btn-primary" href="{% url 'add_sshkey_to_server' server.id %}">Add Key To Server</a>
 		<a class="btn btn-primary" href="{% url 'server_delete' server.id %}">Delete</a>
-		<a class="btn btn-primary" href="{% url 'server_terminate' server.id %}">Terminate</a>
+		<a class="btn btn-primary" href="{% url 'server_terminate' server.id %}">Terminate</a>		
 	</div>
 	<div class="row">
 	    <div class="table">

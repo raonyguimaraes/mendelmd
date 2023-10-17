@@ -178,6 +178,20 @@ def update_dns(task):
     print(myResponse.getcode())
 
 @shared_task()
+def transfer_galaxy(task):
+    print(f'transfer galaxy {task.id}')
+    data=task.manifest
+    task_id=task.id
+    
+    command = f'python3 scripts/transfer_galaxy_to_lxd.py \
+    --app {data["name"]} --origin {data["server_ip"]} --destination {data["server_destination"]} --app_folder {data["app_folder"]} \
+    > work_dir/out.{task_id}.log 2>&1 '
+    print(command)
+    os.system(command)
+    
+    
+
+@shared_task()
 def task_run_task(task_id):
     print('RUN TASK: ', task_id)
     log_output = ''
@@ -197,6 +211,13 @@ def task_run_task(task_id):
 
     data = manifest
     print('data',data)
+    
+    if data['task_type'] == 'transfer_app':
+        print('transfer app')
+        #what app?
+        if data['app_type']=='galaxy':
+            transfer_galaxy(task)
+        
 
     if data['task_type'] == 'transfer_nf-tower_lxd':
         print('transfer_nf-tower_lxd')
@@ -288,101 +309,6 @@ EOF' '''.format(name,new_dns, name,name,lxc_ip)
         command = 'ssh -t root@{} {}'.format(
             ip, subcommand)
         output = check_output(command, shell=True)
-
-    # worker = Worker.objects.filter(ip=socket.gethostbyname(socket.gethostname())).reverse()[0]
-    # worker.n_tasks += 1
-    # worker.status = 'running task %s' % (task.id)
-    # worker.started = start
-    # worker.save()
-    #
-    #
-    # task_location = '/projects/tasks/%s/' % (task.id)
-    # command = 'mkdir -p %s' % (task_location)
-    # run(command, shell=True)
-    #
-    # command = 'mkdir -p %s/input' % (task_location)
-    # run(command, shell=True)
-    #
-    # command = 'mkdir -p %s/output' % (task_location)
-    # run(command, shell=True)
-    #
-    # command = 'mkdir -p %s/scripts' % (task_location)
-    # run(command, shell=True)
-    #
-    #
-    # os.chdir(task_location)
-    #
-    # with open('manifest.json', 'w') as fp:
-    #     json.dump(manifest, fp, sort_keys=True,indent=4)
-    # # file_list = []
-    #
-    # # for file_id in manifest['files']:
-    # #     print(file_id)
-    # #     file = File.objects.get(pk=file_id)
-    # #     file = get_file(file)
-    #     # file_list.append(file.name)
-    #
-    # #start analysis
-    # for analysis_name in manifest['analysis_types']:
-    #     print('analysis_name', analysis_name)
-    #     analysis = App.objects.filter(name=analysis_name)[0]
-    #     print(analysis)
-    #
-    #
-    #     command = 'mkdir -p /projects/programs/'
-    #     run(command, shell=True)
-    #     os.chdir('/projects/programs/')
-    #
-    #     basename = os.path.basename(analysis.repository)
-    #     print('basename', basename)
-    #
-    #     command = 'git clone {}'.format(analysis.source)
-    #     run(command, shell=True)
-    #
-    #     os.chdir(basename)
-
-        # # install
-        # command = 'bash scripts/install.sh'
-        # output = check_output(command, shell=True)
-        #
-        # log_output += output.decode('utf-8')
-        # #run
-        #
-        # os.chdir(task_location)
-        # command = 'python /projects/programs/{}/main.py -i {}'.format(basename, ' '.join(manifest['files']))
-        # print(command)
-        # output = run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        # log_output += output.stdout.decode('utf-8')
-
-
-    # AWS.upload(task_location+'/output', task.id)
-
-    #upload results to b2/s3
-    # md5_dict = calculate_md5('output/')
-    # for hash in md5_dict:
-    #     print(hash)
-    #     try:
-    #         file = File.objects.get(md5=hash)
-    #     except:
-    #         pass
-    #         file = File(user=task.user)
-    #         file.md5 = hash
-    #         file.name = md5_dict[hash]
-    #         file.save()
-
-    #         source = 'output/{}'.format(file.name)
-    #         dest = 'files/{}/{}'.format(file.id, file.name)
-
-    #         output = b2.upload(source, dest)
-            
-    #         file.params = output
-    #         file.location = 'b2://rockbio/files/{}/{}'.format(file.id, file.name)
-    #         file.save()    
-    #         # if task.analysis:
-    #         #     task.analysis_set.all()[0].files.add(file)
-    #     task.files.add(file)
-
-    # add files if needed :)
 
     task.status = 'done'
     stop = datetime.datetime.now()
