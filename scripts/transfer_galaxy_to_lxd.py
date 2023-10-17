@@ -5,13 +5,8 @@ import os
 import argparse
 import subprocess
 import json
-
-
 import os, sys
 import gzip
-
-import json
-import os
 
 #for cpanel
 from re import compile
@@ -45,10 +40,6 @@ parser = argparse.ArgumentParser()
  
 # Adding optional argument
 parser.add_argument("-i", "--task_id", help = "appname")
-# parser.add_argument("-o", "--origin", help = "origin")
-# parser.add_argument("-d", "--destination", help = "destination")
-# parser.add_argument("-f", "--app_folder", help = "app_folder")
-# parser.add_argument("-n", "--new_dns", help = "new_dns")
 
 # Read arguments from command line
 args = parser.parse_args()
@@ -76,20 +67,20 @@ def run_remote(command):
     os.system(command)
     # subprocess.run(command,shell=True)
 
-
+#
 # command = f'ssh root@{ip_origin} tar -czvf galaxy.tar.gz galaxy/'
 # run(command)
-
+#
 # print('transfer here')
 # run(f'rsync -rtvh root@{ip_origin}:/root/galaxy.tar.gz work_dir/')
-
+#
 # print("Transfer to Destination")
 # run(f'rsync -rtvh work_dir/galaxy.tar.gz root@{ip_dest}:/root/galaxy.tar.gz')
 
 print('now install')
 #now install there
-# run_remote(f'lxc delete {app_name} --force')
-# run_remote(f'lxc launch ubuntu:22.04 {app_name} -c security.nesting=true')
+run_remote(f'lxc delete {app_name} --force')
+run_remote(f'lxc launch ubuntu:22.04 {app_name} -c security.nesting=true')
 # run_remote(f'lxc config set {app_name} security.privileged true')
 # run_remote(f'lxc config set {app_name} limits.cpu 2')
 # run_remote(f'lxc config set {app_name} limits.memory 16GB')
@@ -98,9 +89,9 @@ print('now install')
 # run_remote(f'lxc exec {app_name} -- apt update')
 # run_remote(f'lxc exec {app_name} -- apt -y install python3-venv python3-pip')
 # run_remote(f'lxc exec {app_name} -- snap install yq')
-
-
-# die()
+#
+#
+#
 # run_remote(f'lxc exec {app_name} --cwd /root/galaxy -- rm -rf .venv')
 
 subcommand = 'grep -qxF \'uvicorn[standard]\' requirements.txt || echo \'uvicorn[standard]\' >> requirements.txt'
@@ -108,11 +99,10 @@ command=f'lxc exec {app_name} --cwd /root/galaxy -- {subcommand}'
 run_remote(command)
 die()
 
+
 command=f'lxc exec {app_name} --cwd /root/galaxy -- yq -i \'.gravity.gunicorn.bind=\\"0.0.0.0:8080\\"\' config/galaxy.yml'
 run_remote(command)
 run_remote(f'lxc exec {app_name} --cwd /root/galaxy -- sh run.sh &')
-
-die()
 
 #update dns
 data=task.manifest
