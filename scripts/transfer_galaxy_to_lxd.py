@@ -62,47 +62,58 @@ def run(command):
     subprocess.run(command,shell=True)
 
 def run_remote(command):
-    command = f'ssh -t root@{ip_dest} {command}'
+    command = f'ssh -tt root@{ip_dest} {command}'
     print(command)
     os.system(command)
     # subprocess.run(command,shell=True)
 
-#
-# command = f'ssh root@{ip_origin} tar -czvf galaxy.tar.gz galaxy/'
-# run(command)
-#
-# print('transfer here')
-# run(f'rsync -rtvh root@{ip_origin}:/root/galaxy.tar.gz work_dir/')
-#
-# print("Transfer to Destination")
-# run(f'rsync -rtvh work_dir/galaxy.tar.gz root@{ip_dest}:/root/galaxy.tar.gz')
+def run_remote_escape(command):
+    command = f'ssh -tt root@{ip_dest} "{command}"'
+    print(command)
+    os.system(command)
 
-print('now install')
+print('transfer files from remote server to destination passing through localhost')
+
+#
+command = f'ssh root@{ip_origin} tar -czvf galaxy.tar.gz galaxy/'
+run(command)
+
+print('transfer here')
+run(f'rsync -rtvh root@{ip_origin}:/root/galaxy.tar.gz work_dir/')
+
+print("Transfer to Destination")
+run(f'rsync -rtvh work_dir/galaxy.tar.gz root@{ip_dest}:/root/galaxy.tar.gz')
+
+print('now install app')
 #now install there
 run_remote(f'lxc delete {app_name} --force')
 run_remote(f'lxc launch ubuntu:22.04 {app_name} -c security.nesting=true')
-# run_remote(f'lxc config set {app_name} security.privileged true')
-# run_remote(f'lxc config set {app_name} limits.cpu 2')
-# run_remote(f'lxc config set {app_name} limits.memory 16GB')
-# run_remote(f'lxc file push /root/{app_name}.tar.gz {app_name}/root/{app_name}.tar.gz')
-# run_remote(f'lxc exec {app_name} -- tar -zxvf {app_name}.tar.gz')
-# run_remote(f'lxc exec {app_name} -- apt update')
-# run_remote(f'lxc exec {app_name} -- apt -y install python3-venv python3-pip')
-# run_remote(f'lxc exec {app_name} -- snap install yq')
-#
-#
-#
-# run_remote(f'lxc exec {app_name} --cwd /root/galaxy -- rm -rf .venv')
+run_remote(f'lxc config set {app_name} security.privileged true')
+run_remote(f'lxc config set {app_name} limits.cpu 2')
+run_remote(f'lxc config set {app_name} limits.memory 16GB')
+run_remote(f'lxc file push /root/{app_name}.tar.gz {app_name}/root/{app_name}.tar.gz')
+run_remote(f'lxc exec {app_name} -- tar -zxvf {app_name}.tar.gz')
+run_remote(f'lxc exec {app_name} -- apt update')
+run_remote(f'lxc exec {app_name} -- apt -y install python3-venv python3-pip')
+run_remote(f'lxc exec {app_name} -- snap install yq')
+#this works!
 
-subcommand = 'grep -qxF \'uvicorn[standard]\' requirements.txt || echo \'uvicorn[standard]\' >> requirements.txt'
-command=f'lxc exec {app_name} --cwd /root/galaxy -- {subcommand}'
-run_remote(command)
-die()
+run_remote(f'lxc exec {app_name} --cwd /root/galaxy -- rm -rf .venv')
 
+
+#this was hard to write
+#ssh -t root@.... "lxc exec galaxy --cwd /root/galaxy -- sh -c \"echo uvicorn[standard] >> requirements.txt\" "
+subcommand = 'grep -qxF uvicorn[standard] requirements.txt || echo uvicorn[standard] >> requirements.txt'
+command=f'lxc exec {app_name} --cwd /root/galaxy -- sh -c \\"{subcommand}\\"'
+run_remote_escape(command)
+#but it was worth it! :D
 
 command=f'lxc exec {app_name} --cwd /root/galaxy -- yq -i \'.gravity.gunicorn.bind=\\"0.0.0.0:8080\\"\' config/galaxy.yml'
 run_remote(command)
-run_remote(f'lxc exec {app_name} --cwd /root/galaxy -- sh run.sh &')
+
+#now run the app dettached
+run_remote_escape(f'lxc exec {app_name} --cwd /root/galaxy -- \"sh run.sh & \"')
+#this as well!
 
 #update dns
 data=task.manifest
@@ -193,38 +204,10 @@ run_remote(subcommand)
 run_remote(f'sudo ln -sf /etc/nginx/sites-available/{app_name}.conf /etc/nginx/sites-enabled/{app_name}.conf')
 run_remote('sudo service nginx restart')
 
-subcommand = 'certbot --nginx --non-interactive --agree-tos -m raony@rockbio.io -d "{}"'.format(new_dns)
+subcommand = 'certbot --nginx --non-interactive --agree-tos -m raony@rockbio.io -d \"{}\"'.format(new_dns)
 run_remote(subcommand)
 
-# command = 'ssh -t root@{} {}'.format(
-#     ip, subcommand)
-# output = check_output(command, shell=True)
-
-#lxc config set container_name limits.memory 16GB
-#
-#lxc file push nf-tower.tar.gz nf-tower/root/nf-tower.tar.gz
-#lxc exec nf-tower -- sh -c "tar -zxvf nf-tower.tar.gz"
+run_remote('sudo service nginx restart')
 
 
-# rsync -rtvh scripts/install_nf-tower_lxd.sh root@$ip_dest:/root/
-
-# echo "Install NF-Tower"
-# ssh -t -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@$ip_dest bash install_nf-tower_lxd.sh
-
-#ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@$ip_dest -- sh -c 'bash install_nf-tower_lxd.sh 2>&1'
-#-q
-# lxc delete nf-tower --force;lxc launch ubuntu:22.04 nf-tower -c security.nesting=true
-# lxc config set nf-tower security.privileged true
-# lxc config set nf-tower limits.cpu 2
-# lxc config set container_name limits.memory 16GB
-
-# lxc file push nf-tower.tar.gz nf-tower/root/nf-tower.tar.gz
-# lxc exec nf-tower -- sh -c "tar -zxvf nf-tower.tar.gz"
-# lxc exec nf-tower -- sh -c "sudo apt-get update;apt install -y make docker.io docker-compose"
-# lxc exec nf-tower -- sh -c "sudo apt-get update;apt install -y openjdk-11-jdk"
-
-# echo "Build..."
-# lxc exec nf-tower -- sh -c "cd nf-tower;make build"
-# lxc exec nf-tower -- sh -c "cd nf-tower;make run"
-
-# echo "Finished"
+print('Finished transfering the app!')

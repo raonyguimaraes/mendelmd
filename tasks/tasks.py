@@ -188,7 +188,17 @@ def transfer_galaxy(task):
     print(command)
     os.system(command)
     
+@shared_task()
+def transfer_discourse(task):
+    print(f'transfer discourse {task.id}')
+    data=task.manifest
+    task_id=task.id
     
+    command = f'python3 scripts/transfer_discourse_to_lxd.py -i {task_id} \
+    > work_dir/out.{task_id}.log 2>&1 '
+    print(command)
+    os.system(command)
+        
 
 @shared_task()
 def task_run_task(task_id):
@@ -216,6 +226,8 @@ def task_run_task(task_id):
         #what app?
         if data['app_type']=='galaxy':
             transfer_galaxy(task)
+        if data['app_type']=='discourse':
+            transfer_discourse(task)
         
 
     if data['task_type'] == 'transfer_nf-tower_lxd':
