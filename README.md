@@ -67,5 +67,3 @@ https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 https://www.genomeweb.com/informatics/software-tool-aims-easy-quick-mendelian-disease-diagnoses-genome-data
 
 https://github.com/raonyguimaraes/rockbio
-
-test
