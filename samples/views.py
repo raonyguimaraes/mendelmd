@@ -92,13 +92,14 @@ def create_group(request):
 
         form = SampleGroupForm(request.POST)
         if form.is_valid():
-            form.save()
+            # form.save()
             return redirect('sample_index')
     else:
-        samples = request.session['samples']
-        print('samples', samples)
-        form = SampleGroupForm(initial = {'members': [1,2,3] })
+        # samples = request.session['samples']
+        # print('samples', samples)
+        # form = SampleGroupForm(initial = {'members': [1,2,3] })
         # form.members.initial = ['537']
+        pass
     return render(request, 'samples/create_group.html', {'form': form})
 
 

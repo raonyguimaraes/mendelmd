@@ -1,23 +1,23 @@
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 #from forms import PathwayAnalysisForm
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.db.models import Count, Sum, Avg, Min, Max
 import csv
 from django.contrib import messages
 from django.core import serializers
-from django.core.urlresolvers import reverse 
+from django.urls import reverse
 
 from django.views.generic import UpdateView, DeleteView
 
-from django.shortcuts import render_to_response
 #from django.contrib.formtools.wizard import FormWizard
-from django.contrib.formtools.wizard.views import SessionWizardView
+from formtools.wizard.views import SessionWizardView
 
 from pathway_analysis.forms import PathwayAnalysisForm, PathAnalysisForm
 
@@ -33,7 +33,7 @@ from diseases.models import Gene as GeneDisease
 
 
 #pathwya imports
-from SOAPpy import WSDL
+# from SOAPpy import WSDL
 #REST
 import urllib.request, urllib.error, urllib.parse
 

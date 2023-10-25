@@ -6,7 +6,7 @@
 {% block content %}
 <h1>Files</h1>
 
-{% include 'files/files_summary_table.html' %}
+{#% include 'files/files_summary_table.html' %#}
 
 {% if user.is_staff %}
 <a href="{% url 'files-import' %}" type="button" class="btn btn-success">Import Files</a>
