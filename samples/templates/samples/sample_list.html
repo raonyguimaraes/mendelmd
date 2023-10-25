@@ -28,7 +28,7 @@
           <td>
               <a href="{% url 'sample_import_vcf' sample.id %}" class="btn btn-success" role="button">Import VCF</a>
               <a href="{% url 'sample_view' sample.id %}" class="btn btn-success" role="button">View</a>
-              <a href="" class="btn btn-success" role="button">Create Analysis</a>
+              <a href="{% url 'sample_create_analysis' sample.id %}" class="btn btn-success" role="button">Create Analysis</a>
               <a href="" class="btn btn-success" role="button">Edit</a>
               <a href="" class="btn btn-success" role="button">Delete</a>
           </td>

@@ -60,6 +60,11 @@ def index(request):
 
     return render(request, 'samples/index.html', context)
 
+@login_required
+def create_analysis(request, pk):
+    
+    return render(request, 'samples/index.html', context)
+    
 
 @login_required
 def create_group(request):

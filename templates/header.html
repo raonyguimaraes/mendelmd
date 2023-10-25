@@ -23,9 +23,10 @@
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             <li><a href="{% url 'projects-index' %}"><i class="fa fa-folder"></i> <span>Projects</span></a></li>
-            <li><a href="{% url 'files-index' %}"><i class="fa fa-file"></i> <span>Files</span></a></li>
             <li><a href="{% url 'sample_index' %}"><i class="fa fa-user"></i> <span>Samples</span></a></li>
-            <li><a href="{% url 'tasks-index' %}">{% trans "Tasks" %}</a></li>
+            <li><a href="{% url 'files-index' %}"><i class="fa fa-file"></i> <span>Files</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa fa-space-shuttle"></i> <span>Analyses</span></a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> {% trans "Tasks" %}</a></li>
             <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
     	    <!--
 	    <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
@@ -74,7 +75,6 @@
             </li>
             
             <li><a href="https://rockbio.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
-            <li><a href="https://forum.rockbio.org/" target="_blank">Forum</a></li>
             <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
             <li><a href="{% url 'webapps_index' %}">{% trans "Apps" %}</a></li>
             
@@ -90,16 +90,7 @@
             </li>
                   
             {% endif %}
-            <li>
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                    <input type="hidden" name="cmd" value="_s-xclick">
-                    <input type="hidden" name="hosted_button_id" value="X8R874MNN8YBY">
-                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
-
-            </li>
-
+            
           </ul>
           
           <!-- <form class="navbar-form navbar-left" role="search">

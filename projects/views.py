@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Project
 from files.models import File
-
+from samples.models import Sample
 from tasks.models import Task
 
-from .forms import ProjectForm, ImportForm
+from .forms import ProjectForm, ImportForm,AddSamplesForm
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -81,7 +81,7 @@ def view(request, project_id):
     print(dir(project))
 
     n_files = project.files.count()
-    n_samples = project.files.count()
+    n_samples = project.samples.count()
     # total_file_size = 0
     # total_file_size = sum(project.files.values_list('size', flat=True))
     
@@ -92,7 +92,36 @@ def view(request, project_id):
         # 'total_file_size':total_file_size,
     }
 
-    return render(request, 'projects/view.html', context)
+    return render(request, 'projects/project_view.html', context)
+
+@login_required
+def addsamples(request, project_id):
+    if request.user.is_staff:
+        project = get_object_or_404(Project, pk=project_id)
+    else:
+        project = get_object_or_404(Project, pk=project_id, user=request.user)
+
+    form = AddSamplesForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            
+            names=form.cleaned_data['names'].splitlines()
+            descriptions=form.cleaned_data['descriptions'].splitlines()
+            locations=form.cleaned_data['locations'].splitlines()
+            
+            for i, sample in enumerate(names):
+                print(i,sample)
+                
+                try:
+                    obj = Sample.objects.get(name=names[i], location=locations[i], user=request.user)
+                except Sample.DoesNotExist:
+                    obj = Sample(name=names[i], location=locations[i], description=descriptions[i], user=request.user)
+                    obj.save()
+                    project.samples.add(obj)
+
+            return redirect('projects-view', project.id)
+    context = {'form': form, 'project': project}
+    return render(request, 'projects/add_samples.html', context)
 
 @login_required
 def project_files(request, project_id):

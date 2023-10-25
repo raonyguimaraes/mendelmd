@@ -6,6 +6,11 @@ from files.models import File
 from django.urls import reverse
 
 class Sample(models.Model):
+    
+    
+    def get_fields(self):
+        return [(field.name, field.value_to_string(self)) for field in Sample._meta.fields]
+
     def get_upload_path(self, filename):
         if self.user != None:
             string = "%s/media/%s/%s/%s" % (settings.BASE_DIR, slugify(self.user.username), self.id, filename)
@@ -14,16 +19,21 @@ class Sample(models.Model):
         return string
 
     user = models.ForeignKey(User, editable=False, null=True, on_delete=models.CASCADE)
-    files = models.ManyToManyField(File, blank=True)
+    
 
     # shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
     # shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
 
     name = models.CharField(max_length=600)
+    description = models.TextField(null=True, blank=True)
+    location = models.TextField(null=True, blank=True)
+    
+    files = models.ManyToManyField(File, blank=True)
+    
     is_featured = models.BooleanField(default=True)
     is_public = models.BooleanField(default=False)
     
-    file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)
+    file = models.FileField(upload_to=get_upload_path, blank=True,max_length=600)
     file_header = models.TextField(null=True, blank=True)
 
     prefix = models.TextField(null=True, blank=True)
