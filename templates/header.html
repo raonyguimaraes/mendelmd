@@ -33,15 +33,19 @@
               
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'individuals_list' %}"><i class="fa fa-users"></i> <span>Individuals</span></a></li>
+                
                 <li><a href="{% url 'sample_index' %}"><i class="fa fa-user"></i> Samples</a></li>
+                <li><a href="{% url 'individuals_list' %}"><i class="fa fa-users"></i> <span>Groups</span></a></li>
             {% comment %} <li><a href="{% url 'files-index' %}"><i class="fa fa-file"></i> <span>Files</span></a></li> {% endcomment %}
             <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Cohorts</span></a></li>
             <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Cases</span></a></li>
             <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Reports</span></a></li>
             <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Diseases</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Phenotypes</span></a></li>
             <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Genes</span></a></li>
-
             <li><a href="{% url 'files-index' %}"><i class="fa fa-files-o"></i> Files</a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Analyses</a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Jobs</a></li>
             <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Tasks</a></li>
             <li><a href="{% url 'worker-list' %}"><i class="fa fa-briefcase"></i> Workers</a></li>
             <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
