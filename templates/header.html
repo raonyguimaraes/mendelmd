@@ -22,6 +22,10 @@
             <!-- <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li> -->
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li><a href="{% url 'projects-index' %}"><i class="fa fa-folder"></i> <span>Projects</span></a></li>
+            <li><a href="{% url 'files-index' %}"><i class="fa fa-file"></i> <span>Files</span></a></li>
+            <li><a href="{% url 'sample_index' %}"><i class="fa fa-user"></i> <span>Samples</span></a></li>
+            <li><a href="{% url 'tasks-index' %}">{% trans "Tasks" %}</a></li>
             <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
     	    <!--
 	    <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
@@ -73,7 +77,7 @@
             <li><a href="https://forum.rockbio.org/" target="_blank">Forum</a></li>
             <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
             <li><a href="{% url 'webapps_index' %}">{% trans "Apps" %}</a></li>
-            <li><a href="{% url 'tasks-index' %}">{% trans "Tasks" %}</a></li>
+            
             {% if user.is_staff %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
