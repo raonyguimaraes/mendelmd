@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Sample Detail" %}{% endblock %}
+{% block content %}
+    <h1>{% trans "Sample" %}</h1>
+	<div class="row">
+		<div class='col-md-6'>
+			{% comment %} <a class="btn btn-primary" href="">Run Analysis</a> {% endcomment %}
+            <a href="{% url 'sample_create_analysis' sample.id %}" class="btn btn-success" role="button">Create Analysis</a>
+            <a class="btn btn-primary" href="">Edit</a>
+            <a class="btn btn-primary" href="">Delete</a>
+		</div>
+
+	</div>
+<br>
+	<div class="row">
+		<div class='col-md-6'>
+	    <div class="table">
+		    <table class="table table-striped table-bordered table-condensed">
+			{% for field, value in sample.get_fields %}
+				<tr>
+					<td style="width: 22%">{{ field }}</td>
+					<td>{{ value }}</td>
+				</tr>
+			{% endfor %}
+		    </table>
+	    </div>
+		</div>
+    </div>
+{% endblock %}

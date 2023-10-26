@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Group
 from individuals.models import Individual
 from files.models import File
 from tasks.models import Task
+from samples.models import Sample
 
 class Project(models.Model):
 
@@ -10,6 +11,7 @@ class Project(models.Model):
     individuals = models.ManyToManyField(Individual, blank=True)
     
     files = models.ManyToManyField(File, blank=True)
+    samples = models.ManyToManyField(Sample, blank=True)
     tasks = models.ManyToManyField(Task, blank=True)
 
     name = models.CharField(max_length=30)

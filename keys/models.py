@@ -20,7 +20,11 @@ class CloudKey(models.Model):
         ("Hetzner", "Hetzner"),
         ("Google", "Google"),
         ("AWS", "AWS"),
+        ("Cpanel", "Cpanel"),
     ]
     name = models.CharField(max_length=30)
-    key = models.TextField()
+    key = models.TextField(blank=True)
+    host = models.CharField(max_length=200,blank=True)
+    username = models.CharField(max_length=200,blank=True)
+    password = models.CharField(max_length=200,blank=True)
     cloudprovider = models.CharField(max_length=30, choices=CLOUDPROVIDERS)

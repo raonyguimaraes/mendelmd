@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+
+{% block title %}{% trans "Server" %}{% endblock %}
+{% block content %}
+    <h1>{% trans "Server" %}</h1>
+
+	<div class="row">
+		<a class="btn btn-primary" href="{% url 'add_sshkey_to_server' server.id %}">Add Key To Server</a>
+		<a class="btn btn-primary" href="{% url 'server_delete' server.id %}">Delete</a>
+		<a class="btn btn-primary" href="{% url 'server_terminate' server.id %}">Terminate</a>		
+	</div>
+	<div class="row">
+	    <div class="table">
+		    <table class="table table-striped table-bordered table-condensed">
+			{% for field, value in server.get_fields %}
+				<tr>
+					<td style="width: 22%">{{ field }}</td>
+					<td>{{ value }}</td>
+				</tr>
+			{% endfor %}
+
+		    </table>
+
+
+	    </div>
+    </div>
+{% endblock %}
+
+<!--<div class="main">-->
+
+<!--    &lt;!&ndash; Specify fields to be displayed &ndash;&gt;-->
+<!--    {{ data.title }}<br/>-->
+<!--    {{ data.description }}<br/>-->
+
+<!--</div>-->

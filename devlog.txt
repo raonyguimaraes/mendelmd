@@ -136,3 +136,13 @@ filename  ['NA12878', 'recessive', 'vcf', 'gz']
 
 
 celery -A rockbio worker -l info
+
+How to create a super user using Docker
+
+docker exec -it e2465e9bd4e8 export USE_DOCKER=yes python3 manage.py createsuperser
+
+or
+
+docker-compose run web bash -c "export USE_DOCKER=yes;python3 manage.py createsuperuser"
+
+

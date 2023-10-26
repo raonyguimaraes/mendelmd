@@ -5,19 +5,115 @@
 
 {% block content %}
 
-<a href="/servers/import_from_hetzner">Import from Hetzner</a>
-<a href="/servers/add_sshkey_to_servers">Add SSH Key to servers</a>
-<a href="/servers/update_usage">Update usage</a>
+<div class="row">
+	<div class='col-md-6'>
+		<a class="btn btn-primary" href="{% url 'import_from_hetzner' %}">Import from Hetzner</a>
+		<a class="btn btn-primary" href="{% url 'add_sshkey_to_servers' %}">Add SSH Key to servers</a>
+		<a class="btn btn-primary" href="{% url 'servers_check_status' %}">Check Status</a>
+		<a class="btn btn-primary" href="{% url 'update_usage' %}">Update usage</a>
+		<a class="btn btn-primary" href="{% url 'servers_reboot' %}">Reboot</a>
+		<a class="btn btn-primary" href="{% url 'server_create' %}">Create Server</a>
+	</div>
+
+</div>
+<br>
+<form action="." method="post" id='servers_form'>
+    {% csrf_token %}
+
+<input type="hidden" id="action" name="action" value="">
+
+<div class="row">
+<div class='col-md-6'>
+
+<div class="input-group input-group-sm">
+<input class="form-control" type="text" name="query">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </span>
+</div>
+<br>
+
+
+</div>
+</div>
+</form>
+
+<form action="{% url 'servers_bulk_action' %}" method="post">
+    {% csrf_token %}
+    {% if user.is_staff %}
+    <select name="selectionField">
+        <option value="Delete">Delete</option>
+    </select>
+    <input type="submit" value="Submit"/>
+    {% endif %}
 
 {% if server_list %}
-<ul>
-    {% for server in server_list %}
-    <li>{{ server.id }} <a href="/servers/{{ server.id }}/">{{ server.name }}</a> {{ server.ip }} {{ server.status }}  {{ server.usage }}</li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No Servers are available.</p>
-{% endif %}
 
+<table class="table table-bordered table-striped table-condensed">
+	<tr>
+		<th>#<input type="checkbox" id="select_all"> ID</th>
+		<th>name</th>
+		<th>provider</th>
+		<th>url</th>
+		<th>username</th>
+		<th>ip</th>
+		<th>status</th>
+        <th>usage</th>
+		<th>cost</th>
+		<th>Options</th>
+	</tr>
+	{% for server in server_list %}
+	<tr>
+		<td><input type="checkbox" name="servers" class="servers" id="option{{server.id}}" value="{{server.id}}" /> {{server.id}}</td>
+		<td>{{server.name}}</td>
+		<td>{{server.provider}}</td>
+		<td>{{server.url}}</td>
+		<td>{{server.username}}</td>
+		<td>{{server.ip}}</td>
+		<td>{{server.status}}</td>
+		<td>{{server.usage}}</td>
+		<td>{{server.cost}}</td>
+		<td>
+			<a class="btn btn-primary" href="{% url 'server_view' server.id %}">View</a>
+			<a class="btn btn-primary" href="{% url 'server_update' server.id %}">Update</a>
+			<a class="btn btn-primary" href="{% url 'server_delete' server.id %}">Delete</a>
+		</td>
+	</tr>
+	{% endfor %}
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td>{{total_cost.total_price|floatformat:2}}</td>
+		<td></td>
+	</tr>
+
+</table>
+Total Servers: {{server_count}}
+</form>
+
+{% else %}
+You still have no servers created. <br>
+{% endif %}
 {% endblock %}
 
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".servers:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(action)
+    {
+
+       document.getElementById("action").value = action;
+       document.getElementById("servers_form").submit();
+    }
+</script>
+{% endblock %}

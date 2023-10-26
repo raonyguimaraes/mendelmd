@@ -41,8 +41,9 @@
 	<tr>
 		<th>#<input type="checkbox" id="select_all"> ID</th>
 		<th>status</th>
-		<th width="20%">name</th>
-		<th width="20%">description</th>
+		<th width="20%">Name</th>
+		<th width="20%">Params</th>
+		<th width="20%">Description</th>
 		<th>members</th>
 		<th>Options</th>
 	</tr>
@@ -51,6 +52,7 @@
 		<td><input type="checkbox" name="analyses" class="analyses" id="option{{analysis.id}}" value="{{analysis.id}}" />{{analysis.id}}</td>
 		<td>{{analysis.status}}</td>
 		<td>{{analysis.name}}</td>
+		<td>{{analysis.params}}</td>
 		<td>{{analysis.description}}</td>
 		<td></td>
 		<td>

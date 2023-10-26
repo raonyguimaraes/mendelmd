@@ -22,10 +22,38 @@
             <!-- <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li> -->
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-            <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
-    	    <!--
-	    <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
-            <li><a href="{% url 'sample_index' %}"><i class="fa fa-users"></i> Samples</a></li>
+            <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
+
+
+            <li class="dropdown">
+
+              <a href="" class="dropdown-toggle"><i class="fa "></i> 
+                <span>Models </span>
+              </a>
+              
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'individuals_list' %}"><i class="fa fa-users"></i> <span>Individuals</span></a></li>
+                
+                <li><a href="{% url 'sample_index' %}"><i class="fa fa-user"></i> Samples</a></li>
+                <li><a href="{% url 'individuals_list' %}"><i class="fa fa-users"></i> <span>Groups</span></a></li>
+            {% comment %} <li><a href="{% url 'files-index' %}"><i class="fa fa-file"></i> <span>Files</span></a></li> {% endcomment %}
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Cohorts</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Cases</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Reports</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Diseases</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Phenotypes</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Genes</span></a></li>
+            <li><a href="{% url 'files-index' %}"><i class="fa fa-files-o"></i> Files</a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Analyses</a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Jobs</a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Tasks</a></li>
+            <li><a href="{% url 'worker-list' %}"><i class="fa fa-briefcase"></i> Workers</a></li>
+            <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
+            <li><a href="{% url 'webapps_index' %}">{% trans "Apps" %}</a></li>
+              </ul>
+            </li>
+            
+            
             <li class="dropdown">
 
               <a href="{% url 'analyses-index' %}" class="dropdown-toggle"><i class="fa analysis-icon"></i> 
@@ -48,20 +76,16 @@
                 <li><a href="#">MultiQC</a></li>
               </ul>
             </li>
-            <li><a href="{% url 'files-index' %}"><i class="fa fa-files-o"></i> Files</a></li>
-            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Tasks</a></li>
-            <li><a href="{% url 'worker-list' %}"><i class="fa fa-briefcase"></i> Workers</a></li>
-	    -->
-            
-
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
                 <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
-                <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
-                <li><a href="#">Browser</a></li>
-                <li><a href="#">Data Query</a></li> 
+                <li><a href="{% url 'pathway_analysis' %}">Pathway Analysis</a></li>
+                <li><a href="{% url 'comparison' %}">{% trans "Sample Comparison" %}</a></li>
+                <li><a href="#">Genome Browser</a></li>
+                <li><a href="#">Variant Browser</a></li> 
+
                 <!-- <li class="divider"></li> -->
                 <!-- <li><a href="#">Separated link</a></li> -->
                 <!-- <li class="divider"></li> -->
@@ -69,38 +93,44 @@
               </ul>
             </li>
             
+	    
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Marketplace</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Play</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Chat GPT</span></a></li>
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> {% trans "Tasks" %}</a></li>
+            <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
+            
+    	    
+	    
+            
+      
+            
+
+            
+            
             <li><a href="https://rockbio.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
-            <li><a href="https://forum.rockbio.org/" target="_blank">Forum</a></li>
+            
+            
             {% if user.is_staff %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                  <li><a href="{#% url 'statistics_index' %#}">{% trans "Statistics" %}</a></li>
+                  <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
                   <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
-                <li><a href="{% url 'servers_index' %}">{% trans "Servers" %}</a></li>
-                 <li><a href="{% url 'webapps_index' %}">{% trans "Apps" %}</a></li>
+                  <li><a href="/admin/keys/">{% trans "Keys" %}</a></li>
                   <li><a href="{% url "admin:index" %}" target="_blank">{% trans "Admin" %}</a></li>
               </ul>
             </li>
                   
             {% endif %}
-            <li>
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                    <input type="hidden" name="cmd" value="_s-xclick">
-                    <input type="hidden" name="hosted_button_id" value="X8R874MNN8YBY">
-                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
-
-            </li>
-
+            
           </ul>
           
-          <!-- <form class="navbar-form navbar-left" role="search">
+          <form class="navbar-form navbar-left" role="search">
             <div class="form-group">
               <input type="text" class="form-control" id="navbar-search-input" placeholder="Search">
             </div>
-          </form> -->
+          </form>
         </div>
 
       {% if user.is_authenticated %}
@@ -108,7 +138,7 @@
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
           <!-- Messages: style can be found in dropdown.less-->
-          <!-- <li class="dropdown messages-menu">
+          <li class="dropdown messages-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-envelope-o"></i>
               <span class="label label-success">4</span>
@@ -181,9 +211,9 @@
               </li>
               <li class="footer"><a href="#">See All Messages</a></li>
             </ul>
-          </li> -->
+          </li>
           <!-- Notifications: style can be found in dropdown.less -->
-          <!-- <li class="dropdown notifications-menu">
+          <li class="dropdown notifications-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
               <span class="label label-warning">10</span>
@@ -298,7 +328,7 @@
                 <a href="#">View all tasks</a>
               </li>
             </ul>
-          </li> -->
+          </li> 
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -316,7 +346,7 @@
                 </p>
               </li>
               <!-- Menu Body -->
-              <!-- <li class="user-body">
+              <li class="user-body">
                 <div class="row">
                   <div class="col-xs-4 text-center">
                     <a href="#">Followers</a>
@@ -329,11 +359,13 @@
                   </div>
                 </div>
                 
-              </li> -->
+              </li>
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <!-- <a href="#" class="btn btn-default btn-flat">Profile</a><br> -->
+                  <a href="#" >Profile</a><br> 
+                  <a href="#" >My Subscription</a><br> 
+                  <a href="#" >Billing</a><br> 
                   <a href="{% url 'settings-index' %}">Settings</a><br>
                   <a href="{% url 'account_change_password' %}">Change Password</a><br>
                   <a href="{% url 'account_email' %}">Change E-mail</a><br>
@@ -360,9 +392,8 @@
               <input type="password" name="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
-            <!-- <font color="white">or</font>
+            <font color="white">or</font>
             <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a>
-      -->
           </form>
 
       {% endif %}

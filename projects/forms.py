@@ -13,3 +13,11 @@ class ImportForm(forms.Form):
     # paths = forms.CharField(widget=forms.Textarea, required=False)
     file_list = forms.CharField(widget=forms.Textarea, required=False)
     samples = forms.CharField(widget=forms.Textarea, required=False)
+    
+class AddSamplesForm(forms.Form):
+    names = forms.CharField(widget=forms.Textarea, required=False)
+    descriptions = forms.CharField(widget=forms.Textarea, required=False)
+    locations = forms.CharField(widget=forms.Textarea, required=False)
+    # paths = forms.CharField(widget=forms.Textarea, required=False)
+    # file_list = forms.CharField(widget=forms.Textarea, required=False)
+    # samples = forms.CharField(widget=forms.Textarea, required=False)

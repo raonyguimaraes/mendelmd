@@ -35,7 +35,7 @@ class Analysis(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     # apps = models.ManyToManyField(Mapp)
     samples = models.ManyToManyField(Sample)
-    tasks = models.ManyToManyField(Task)
+    # tasks = models.ManyToManyField(Task)
     files = models.ManyToManyField(File)
 
     # type = models.ForeignKey(AnalysisType, on_delete=models.CASCADE)
