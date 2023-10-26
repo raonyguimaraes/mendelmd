@@ -131,9 +131,17 @@ def add_sshkey_to_servers(request):
             response = server.enable_rescue(type='linux64', ssh_keys=[ssh_key_hetzner_id]) 
             response.action.wait_until_finished() 
             rebootresponse = server.reboot()
+            print('wait until it finishes')
             rebootresponse.wait_until_finished()
-            time.sleep(45)
-            
+            print('Sleep 120')
+            time.sleep(160)
+            # command = '''until ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{}; done
+            #              sleep 30
+            #         done'''.format(ip)
+            # output = check_output(command, shell=True)
+            # print(output.decode())
+
+
             # paramikoclient = paramiko.SSHClient()
             # paramikoclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             # paramikoclient.connect(ip, username='root')
@@ -153,7 +161,7 @@ def add_sshkey_to_servers(request):
 
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
-            time.sleep(45)
+            time.sleep(160)
 
             status=try_to_connect(ip)
             print('Now it can connect!')

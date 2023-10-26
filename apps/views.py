@@ -55,6 +55,10 @@ def import_apps(request):
 		if len(apps)>0:
 			for app_name in apps:
 				print(app_name,apps[app_name])
+
+				apps[app_name]['server_name']=server.name
+				apps[app_name]['server_ip']=server.ip
+
 				webapp_object, created = WebApp.objects.update_or_create(
 					name=app_name,
 					defaults={"data": apps[app_name]}

@@ -15,6 +15,7 @@ def parse_apache_file(file):
         # print(file)
         if file=='wp-config.php':
             app['app_type']='wordpress'
+            app['source']='apache'
     return(app)
 
 def parse_nginx_file(file):
@@ -30,8 +31,10 @@ def parse_nginx_file(file):
             # print(file)
             if 'jitsy' in file:
                 app['app_type']='jitsy'
+                app['source']='nginx'
     else:
         app['app_type'] = 'unknown'
+        app['source']='nginx'
     return(app)
 
 nginx_path='/etc/nginx/sites-available/'
