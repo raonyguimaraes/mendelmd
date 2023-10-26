@@ -424,14 +424,10 @@ def add_sshkey_to_servers(request):
 
             rebootresponse = server.reboot()
             rebootresponse.wait_until_finished()
-<<<<<<< HEAD
-            time.sleep(160)
-=======
             # time.sleep(120)
             status=check_ssh(ip, server_obj.username, server_obj.password, key_path, initial_wait=3, interval=10, retries=20)
 
             # status=try_to_connect(ip)
->>>>>>> 47a93d44e5b066f4549e181239950bb4cc525af9
 
             print('Now it can connect!')
         else:
