@@ -7,7 +7,7 @@
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><img src="{% static "img/Gregor_Mendel_small.png" %}"></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><img src="{% static "img/Gregor_Mendel_small.png" %}">Mendel,MD</span>
+      <span class="logo-lg"><img src="{% static "img/Gregor_Mendel_small.png" %}">Rockbio</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -363,9 +363,9 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" >Profile</a><br> 
-                  <a href="#" >My Subscription</a><br> 
-                  <a href="#" >Billing</a><br> 
+                  <a href="{% url 'settings-profile' %}" >Profile</a><br> 
+                  <a href="{% url 'settings-mysubscription' %}" >My Subscription</a><br> 
+                  <a href="{% url 'settings-billing' %}" >Billing</a><br> 
                   <a href="{% url 'settings-index' %}">Settings</a><br>
                   <a href="{% url 'account_change_password' %}">Change Password</a><br>
                   <a href="{% url 'account_email' %}">Change E-mail</a><br>

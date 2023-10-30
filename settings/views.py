@@ -24,6 +24,24 @@ def index(request):
     return render(request, 'settings/index.html', context)
 
 @login_required
+def profile(request):
+
+    context = {}
+    return render(request, 'account/profile.html', context)
+
+@login_required
+def mysubscription(request):
+
+    context = {}
+    return render(request, 'account/my_subscription.html', context)
+
+@login_required
+def billing(request):
+
+    context = {}
+    return render(request, 'account/billing.html', context)
+
+@login_required
 def create_s3_credential(request):
     form = S3CredentialForm(request.POST or None)
     if request.method == 'POST':

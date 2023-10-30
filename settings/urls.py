@@ -3,7 +3,12 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
-    path("", views.index, name="settings-index"),    
+    path("", views.index, name="settings-index"),
+    path("profile/", views.profile, name="settings-profile"),
+    path("mysubscription/", views.mysubscription, name="settings-mysubscription"),
+    path("billing/", views.billing, name="settings-billing"),
+
+    
     path("s3-create/", views.create_s3_credential, name="settings-s3-create"),
     path("s3-edit/<int:pk>)/", views.S3CredentialUpdate.as_view(), name="settings-s3-update"),
     path("s3-view/<int:pk>)/", views.S3CredentialDetailView.as_view(), name="settings-s3-detail"),    
