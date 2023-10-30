@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django-flexible-subscriptions = "*"
+django = "*"
+psycopg2-binary = "*"
+django-allauth = "*"
+django-debug-toolbar = "*"
+django-crispy-forms = "*"
+soappy = "*"
+sphinx = "*"
+fabric3 = "*"
+pysam = "*"
+pynnotator = "*"
+pyvcf3 = "*"
+celery = "*"
+django-celery-results = "*"
+django-appconf = "*"
+gunicorn = "*"
+boto3 = "*"
+django-formtools = "*"
+dj-database-url = "*"
+django-gravatar2 = "*"
+crispy-bootstrap3 = "*"
+hcloud = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
