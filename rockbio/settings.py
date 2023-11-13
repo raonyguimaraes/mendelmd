@@ -192,7 +192,6 @@ SITE_ID = 2
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_REDIRECT_URL = 'dashboard'
-#LOGIN_REDIRECT_URL = 'https://daivero.rockbio.io/accounts/google/login/callback/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -247,5 +246,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # BROKER_CONNECTION_RETRY = True
 # BROKER_CONNECTION_MAX_RETRIES = 0
-#CSRF_TRUSTED_ORIGINS = ['https://daivero.rockbio.io']
 
