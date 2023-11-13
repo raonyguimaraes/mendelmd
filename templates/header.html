@@ -26,7 +26,7 @@
 
 
 
-            <li class="dropdown">
+            <!-- <li class="dropdown">
 
               <a href="{% url 'analyses-index' %}" class="dropdown-toggle"><i class="fa analysis-icon"></i> 
                 <span>Analyses </span>
@@ -47,8 +47,8 @@
                 <li><a href="#">HLA-Typing</a></li>
                 <li><a href="#">MultiQC</a></li>
               </ul>
-            </li>
-            <li class="dropdown">
+            </li> -->
+            <!-- <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
@@ -58,17 +58,17 @@
                 <li><a href="#">Genome Browser</a></li>
                 <li><a href="#">Variant Browser</a></li> 
 
-                <!-- <li class="divider"></li> -->
-                <!-- <li><a href="#">Separated link</a></li> -->
-                <!-- <li class="divider"></li> -->
-                <!-- <li><a href="#">One more separated link</a></li> -->
+                <li class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+                <li class="divider"></li>
+                <li><a href="#">One more separated link</a></li>
               </ul>
-            </li>
+            </li> -->
             
 	    
-            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Marketplace</span></a></li>
+            <!-- <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Marketplace</span></a></li>
             <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Play</span></a></li>
-            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Chat GPT</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Chat GPT</span></a></li> -->
             <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> {% trans "Tasks" %}</a></li>
             <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
             
@@ -80,7 +80,7 @@
 
             
             
-            <li><a href="https://rockbio.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
+            <!-- <li><a href="https://rockbio.readthedocs.io/en/latest/" target="_blank">Docs</a></li> -->
             
             
             {% if user.is_staff %}
@@ -98,11 +98,11 @@
             
           </ul>
           
-          <form class="navbar-form navbar-left" role="search">
+          <!-- <form class="navbar-form navbar-left" role="search">
             <div class="form-group">
               <input type="text" class="form-control" id="navbar-search-input" placeholder="Search">
             </div>
-          </form>
+          </form> -->
         </div>
 
       {% if user.is_authenticated %}
@@ -110,7 +110,7 @@
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
           <!-- Messages: style can be found in dropdown.less-->
-          <li class="dropdown messages-menu">
+          <!-- <li class="dropdown messages-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-envelope-o"></i>
               <span class="label label-success">4</span>
@@ -183,9 +183,9 @@
               </li>
               <li class="footer"><a href="#">See All Messages</a></li>
             </ul>
-          </li>
+          </li> -->
           <!-- Notifications: style can be found in dropdown.less -->
-          <li class="dropdown notifications-menu">
+          <!-- <li class="dropdown notifications-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
               <span class="label label-warning">10</span>
@@ -224,8 +224,8 @@
               </li>
               <li class="footer"><a href="#">View all</a></li>
             </ul>
-          </li>
-          <li class="dropdown tasks-menu">
+          </li> -->
+          <!-- <li class="dropdown tasks-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-flag-o"></i>
               <span class="label label-danger">9</span>
@@ -300,7 +300,7 @@
                 <a href="#">View all tasks</a>
               </li>
             </ul>
-          </li> 
+          </li>  -->
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
