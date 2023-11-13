@@ -187,11 +187,12 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_REDIRECT_URL = 'dashboard'
+#LOGIN_REDIRECT_URL = 'https://daivero.rockbio.io/accounts/google/login/callback/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -236,9 +237,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
 # ALL AUTH
 ACCOUNT_EMAIL_REQUIRED=True
-ACCOUNT_AUTHENTICATION_METHOD="username_email"
+ACCOUNT_AUTHENTICATION_METHOD="email"
 ACCOUNT_SESSION_REMEMBER=True
-# ACCOUNT_UNIQUE_EMAIL=False
+ACCOUNT_UNIQUE_EMAIL=True
 SOCIALACCOUNT_AUTO_SIGNUP=True
 SOCIALACCOUNT_QUERY_EMAIL=True
 
@@ -246,3 +247,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # BROKER_CONNECTION_RETRY = True
 # BROKER_CONNECTION_MAX_RETRIES = 0
+#CSRF_TRUSTED_ORIGINS = ['https://daivero.rockbio.io']
+
