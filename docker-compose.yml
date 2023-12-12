@@ -1,10 +1,12 @@
-version: '2'
+version: "3.8"
 services:
  db:
    image: postgres
    volumes:
      - ./data/postgresql_data:/var/lib/postgresql/data/
    restart: always
+   environment:
+      POSTGRES_PASSWORD: postgres
 
  web:
    build: .

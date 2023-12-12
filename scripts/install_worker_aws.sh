@@ -14,15 +14,15 @@ cd /projects
 python3 -m venv venv
 source venv/bin/activate
 
-rm -rf mendelmd
-git clone -b development https://github.com/raonyguimaraes/mendelmd
-cd mendelmd
+rm -rf rockbio
+git clone -b development https://github.com/raonyguimaraes/rockbio
+cd rockbio
 pip install wheel
 pip install -r requirements.txt
 
 bash scripts/install_conda.sh
 
-cp ~/local_settings.py mendelmd/
+cp ~/local_settings.py rockbio/
 
 # ./manage.py celery
-celery worker -l info -A mendelmd -c 1 -P solo
+celery worker -l info -A rockbio -c 1 -P solo

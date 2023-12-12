@@ -14,7 +14,7 @@ from . import views
 
 urlpatterns = [
     # Examples:
-    # url(r'^$', 'mendelmd.views.home', name='home'),
+    # url(r'^$', 'rockbio.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^$', views.upload, name='upload'),
 

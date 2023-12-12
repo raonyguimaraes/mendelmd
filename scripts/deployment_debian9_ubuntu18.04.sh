@@ -17,16 +17,16 @@ sudo mkdir /projects
 cd /projects
 sudo chown $USER .
 
-git clone https://github.com/raonyguimaraes/mendelmd
-cd mendelmd/
+git clone https://github.com/raonyguimaraes/rockbio
+cd rockbio/
 #git checkout development
 
 #set up database
 sudo apt-get install -y libpq-dev postgresql
 echo "create user \"$USER\" password ''; CREATE ROLE \"$USER\" superuser; alter user \"$USER\" with createdb; ALTER ROLE \"$USER\" WITH LOGIN;" > /tmp/create_user.sql
 sudo -u postgres psql --file=/tmp/create_user.sql
-createdb mendelmd
-cp mendelmd/local_settings.sample.py mendelmd/local_settings.py
+createdb rockbio
+cp rockbio/local_settings.sample.py rockbio/local_settings.py
 
 python3 -m venv /projects/venv
 source /projects/venv/bin/activate
@@ -40,23 +40,23 @@ python manage.py populate
 #python manage.py createsuperuser
 #python manage.py runserver
 
-sudo bash -c 'cat << EOF > /etc/nginx/sites-available/mendelmd
+sudo bash -c 'cat << EOF > /etc/nginx/sites-available/rockbio
 server {
     listen 80;
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        root /projects/mendelmd/;
+        root /projects/rockbio/;
     }
 
     location / {
         include proxy_params;
         client_max_body_size 100G;
-        proxy_pass http://unix:/projects/mendelmd/mendelmd.sock;
+        proxy_pass http://unix:/projects/rockbio/rockbio.sock;
     }
 }
 EOF'
 
-bash -c 'cat << EOF > /tmp/mendelmd.service
+bash -c 'cat << EOF > /tmp/rockbio.service
 [Unit]
 Description=gunicorn daemon
 After=network.target
@@ -64,17 +64,17 @@ After=network.target
 [Service]
 User=$USER
 Group=www-data
-WorkingDirectory=/projects/mendelmd/
-ExecStart=/projects/venv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/mendelmd/mendelmd.sock mendelmd.wsgi:application
+WorkingDirectory=/projects/rockbio/
+ExecStart=/projects/venv/bin/gunicorn --access-logfile - --workers 4 --timeout 900 --bind unix:/projects/rockbio/rockbio.sock rockbio.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
 EOF'
-sudo cp /tmp/mendelmd.service /etc/systemd/system/mendelmd.service
+sudo cp /tmp/rockbio.service /etc/systemd/system/rockbio.service
 
-sudo systemctl enable mendelmd
-sudo systemctl start mendelmd
-sudo ln -s /etc/nginx/sites-available/mendelmd /etc/nginx/sites-enabled
+sudo systemctl enable rockbio
+sudo systemctl start rockbio
+sudo ln -s /etc/nginx/sites-available/rockbio /etc/nginx/sites-enabled
 sudo rm /etc/nginx/sites-enabled/default
 sudo service nginx reload
 #add apache config

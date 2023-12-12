@@ -20,7 +20,7 @@ class B2():
 
     def upload(self, source, dest):
         
-        command = 'b2 upload-file mendelmd {} {}'.format(source,dest)
+        command = 'b2 upload-file rockbio {} {}'.format(source,dest)
         
         output = check_output(command, shell=True).decode('utf-8')
         output = output.splitlines()
@@ -44,5 +44,5 @@ class B2():
     def download(self, bucket, file):
 
         basename = os.path.basename(file)
-        command = 'b2 download-file-by-name mendelmd {} {}'.format(file, file)
+        command = 'b2 download-file-by-name rockbio {} {}'.format(file, file)
         run(command, shell=True)

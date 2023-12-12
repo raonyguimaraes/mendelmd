@@ -20,7 +20,7 @@ test_db/
 .vagrant
 *.sublime-project
 *.sublime-workspace
-mendelmd/local_settings.py
+rockbio/local_settings.py
 genomes/*
 annotator/libs/*
 annotator/data/
@@ -31,8 +31,8 @@ morbidmap.txt
 celerybeat.pid
 loaded.txt
 fixtures/
-mendelmdenv/
-mendelmdenv/*
+rockbioenv/
+rockbioenv/*
 ann_sample
 data/files/
 data/genomes/
@@ -42,3 +42,4 @@ celerybeat-schedule
 __pycache__
 media/
 scripts/merge_folders.py
+work_dir/*

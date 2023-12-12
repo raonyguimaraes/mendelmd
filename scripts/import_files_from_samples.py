@@ -11,7 +11,7 @@ current_dir = os.getcwd().split('/')
 del current_dir[-1]
 proj_path = "/".join(current_dir)
 # This is so Django knows where to find stuff.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mendelmd.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rockbio.settings")
 sys.path.append(proj_path)
 
 # This is so my local_settings.py gets loaded.
@@ -24,7 +24,6 @@ application = get_wsgi_application()
 from individuals.models import Individual
 from files.models import File
 from django.contrib.auth.models import User
-
 
 individuals = Individual.objects.all()
 

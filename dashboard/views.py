@@ -89,7 +89,7 @@ def bulk_action(request):
 
                 individual.delete()
             messages.add_message(request, messages.INFO, "Individuals deleted with success!")
-            #os.system('rm -rf mendelmd14/site_media/media/genomes/%s/%s' % (username, individual_id))
+            #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)

@@ -15,12 +15,12 @@ python:
 services: postgresql
 
 env:
-  - DATABASE_URL=postgres://postgres@localhost/mendelmd
+  - DATABASE_URL=postgres://postgres@localhost/rockbio
 
 
 before_install:
-  - export DJANGO_SETTINGS_MODULE=mendelmd.settings
-  - export PYTHONPATH=$HOME/builds/raonyguimaraes/mendelmd
+  - export DJANGO_SETTINGS_MODULE=rockbio.settings
+  - export PYTHONPATH=$HOME/builds/raonyguimaraes/rockbio
   - export PIP_USE_MIRRORS=true
   - export PIP_USE_MIRRORS=true
 
@@ -30,7 +30,7 @@ install:
   - pip install psycopg2-binary --quiet
 
 before_script:
-  - psql -c "CREATE DATABASE mendelmd;" -U postgres
+  - psql -c "CREATE DATABASE rockbio;" -U postgres
 
 script:
 - python manage.py migrate --noinput

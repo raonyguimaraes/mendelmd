@@ -7,7 +7,7 @@ from .models import Analysis
 from samples.models import Sample, SampleGroup
 
 from celery import Celery
-app = Celery('mendelmd')
+app = Celery('rockbio')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.

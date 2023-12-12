@@ -223,7 +223,7 @@ def AnnotateVariants(individual_id):
 It took %s to execute. \n
 Now we need to insert this data to the database.
                 """ % (individual.name, elapsed)
-        #send_mail('[Mendel,MD] Annotation Completed!', message, 'mendelmd@rockbio.io',
+        #send_mail('[Mendel,MD] Annotation Completed!', message, 'rockbio@rockbio.io',
         #          ['raonyguimaraes@gmail.com', email], fail_silently=False)
         #delete ann folder
         command = 'rm -rf ann_*'
@@ -249,7 +249,7 @@ Now we need to insert this data to the database.
         message = """The Individual %s failed to be annotated!\n
                 It took %s to execute.
                 """ % (individual.name, elapsed)
-        #send_mail('[Mendel,MD] Annotation Failed!', message, 'mendelmd1@gmail.com',
+        #send_mail('[Mendel,MD] Annotation Failed!', message, 'rockbio1@gmail.com',
         ##          ['raonyguimaraes@gmail.com'], fail_silently=False)
 
     individual.save()
@@ -825,7 +825,7 @@ def PopulateVariants(individual_id):
     message = """
             The individual %s was inserted to the database with success!
             Now you can check the variants on the link: \n
-            http://mendelmd.org/individuals/view/%s
+            http://rockbio.org/individuals/view/%s
                 """ % (individual.name, individual.id)
 
     #if individual.user:

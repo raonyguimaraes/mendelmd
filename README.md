@@ -1,67 +1,69 @@
-# Mendel,MD a user-friendly online program for clinical exome and genome analysis
+# Rockbio - Cloud based genome analysis and tools.
 
-![Build Status](https://travis-ci.org/raonyguimaraes/mendelmd.svg?branch=master)
+![Build Status](https://travis-ci.org/rockbio/rockbio.svg?branch=master)
 [![BSD License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Read The Docs](https://readthedocs.org/projects/mendelmd/badge/?version=latest)](http://mendelmd.readthedocs.io/en/latest/)
+[![Read The Docs](https://readthedocs.org/projects/rockbio/badge/?version=latest)](http://rockbio.readthedocs.io/en/latest/)
 [![Django](https://www.djangoproject.com/m/img/badges/djangopowered126x54.gif)](https://www.djangoproject.com)
 
-This is an online tool created to help doctors and scientists to identify disease causing variants using exome/genome sequencing data from patients with mendelian disorders.
+This is an online tool developed to help doctors and scientists to analyse NGS data and identify disease causing variants using WES and WGS sequencing data from patients with Mendelian Disorders.
 
-Recently added M-CAP scores, filtering for CADD scores and Haploinsufficiency Scores.
+Rockbio is based on Mendel,MD, but it's got a lot more to it now, so please try our servers on https://rockbio.io
 
+Installation/Development
+========================
+
+    git clone https://github.com/rockbio/rockbio/
+    cd rockbio/
+    docker-compose up
+
+Or using python3, virtualenv and pip: 
+
+    python3 -m venv venv
+    source venv/bin/activate
+    pip3 install -r requirements.txt
+    ./manage.py migrate
+    ./manage.py runserver
+    # Then on another window for running the background tasks with Celery type:
+    source venv/bin/activate
+    ./manage.py celery
+
+Installation with Curl (to-do)
+==============================
+    curl -Sf https://install.rockbio.io | bash
+
+# Installation using Docker
+    git clone https://github.com/rockbio/rockbio
+    cd rockbio
+    docker-compose up
+
+# Installation with pip (to-do)
+    pip3 install rockbio
+    rockbio runserver
+
+# Installation with conda (to-do)
+    conda install -c conda-forge rockbio
+    rockbio runserver
+
+# Using Dockerhub (to-do)
+    docker run rockbio/rockbio
+
+# Using SNAPs
+    sudo snap install code --classic
+
+# Using APT
+    sudo apt install rockbio
+
+# Deployment
+
+    wget https://raw.github.com/rockbio/rockbio/master/scripts/deployment_ubuntu_22.04_LTS.sh
+    bash deployment_ubuntu_22.04_LTS.sh
+
+Sources
+=======
 http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005520
 
 https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-16-S8-A2
 
-Try our new test server on https://mendelmd.org
-Or use our original server on https://mendel.medicina.ufmg.br
+https://www.genomeweb.com/informatics/software-tool-aims-easy-quick-mendelian-disease-diagnoses-genome-data
 
-OMIM Data
-=========
-
-You need to register at OMIM: http://omim.org/downloads and submit a download request to get a file named "morbidmap.txt".
-
-After obtaining this file you will need to put it in the folder: "data/omim/".
-
-
-Installation of docker and docker-compose on Ubuntu 16.04 LTS
-=============================================================
-
-    sudo apt-get update
-    sudo apt-get install software-properties-common apt-transport-https libffi-dev
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
-    sudo apt update
-    sudo apt-get install -y docker-engine
-    sudo usermod -aG docker $(whoami)
-    exec sudo su ${USER}
-    sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
-    sudo chmod +x /usr/local/bin/docker-compose
-
-
-Running Mendel,MD using Docker Compose
-======================================
-
-    git clone https://github.com/raonyguimaraes/mendelmd/
-    cd mendelmd/
-    wget https://data.omim.org/downloads/addyourkeyhere/morbidmap.txt -O data/omim/morbidmap.txt
-    docker-compose up
-
-Also see how to install it locally without docker-compose here: 
-
-http://mendelmd.readthedocs.io/en/latest/installation.html#manual-installation
-
-Requirements
-============
-
-* At least 60GB of disk space
-* Python 3.4+
-* Perl 5.8+
-* Java 1.8
-* Ubuntu LTS 16.04/CentOS 7 or Red Hat 7
-
-OR
-
-* Docker
-* Docker Compose
-
+https://github.com/raonyguimaraes/rockbio

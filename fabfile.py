@@ -1,8 +1,11 @@
-from fabric.api import *
+#from fabric.api import *
+# from fabric.api import run,local
+# from invoke import run
 from fabric.api import run
+from subprocess import check_output
 #comment
-env.user  = 'raony'
-env.hosts = ['mendel']
+# env.user  = 'raony'
+# env.hosts = ['localhost']
 
 def install():
     # local('pip install cython')
@@ -14,8 +17,9 @@ def install():
 
 def backup_users():
     local('python3 manage.py dumpdata --indent=4 --format=json auth account allauth > fixtures/users.json')
-    local('python3 manage.py dumpdata --indent=4 --format=json individuals > fixtures/individuals.json')
-    local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
+
+    # local('python3 manage.py dumpdata --indent=4 --format=json individuals > fixtures/individuals.json')
+    # local('python3 manage.py dumpdata --indent=4 --format=json individuals.usergroup > fixtures/usergroups.json')
     # local('python manage.py dumpdata users allauth > initial_data.json')
 
 def reset_migrations():
@@ -32,11 +36,11 @@ def reset_migrations():
 
 def resetdb():
     # local('rm db.sqlite3')
-    # local('psql -d template1 -c "DROP DATABASE mendelmd_prod;"')
-    # local('psql -d template1 -c "CREATE DATABASE mendelmd_prod;"')
+    # local('psql -d template1 -c "DROP DATABASE rockbio_prod;"')
+    # local('psql -d template1 -c "CREATE DATABASE rockbio_prod;"')
     # local('python manage.py syncdb')
-    local('dropdb mendelmd')
-    local('createdb mendelmd')
+    local('dropdb rockbio')
+    local('createdb rockbio')
     local('./manage.py migrate')
     # local('python manage.py loaddata fixtures/users.json')
     # local('python manage.py loaddata fixtures/usergroups.json')
@@ -55,54 +59,68 @@ def import_samples():
 def make_doc():
     with lcd('../docs'):
         local('make html')
-        local('cp -rf _build/html/* /var/www/mendelmd_static/docs/')
+        local('cp -rf _build/html/* /var/www/rockbio_static/docs/')
 
-#def backup():
-#    run(' mysqldump -u root -p mendelmd14 | gzip > db_backup/mendelmd151012.sql.gz ')
+def backup():
+    command = 'python3 manage.py dumpdata --indent=4 --format=json auth.user account allauth > fixtures/users.json'
+    check_output(command,shell=True)
+    command = 'python3 manage.py dumpdata --indent=4 --format=json keys > fixtures/keys.json'
+    check_output(command, shell = True)
+
+    # run(' mysqldump -u root -p rockbio14 | gzip > db_backup/rockbio151012.sql.gz ')
+
+
+def restore():
+    # command = 'python3 manage.py loaddata fixtures/users.json'
+    # check_output(command, shell=True)
+    command = 'python3 manage.py loaddata fixtures/keys.json'
+    check_output(command, shell=True)
+
+
 def create_sample_data():
     #backup all users
-#    with cd('/projects/www/mendelmd14'):
+#    with cd('/projects/www/rockbio14'):
 #
-#        run('mysqldump -u root -p mendelmd14 auth_user account_account profiles_profile | gzip > db_backup/users.sql.gz')
+#        run('mysqldump -u root -p rockbio14 auth_user account_account profiles_profile | gzip > db_backup/users.sql.gz')
 #        #get sample from individuals
-#        run('mysqldump -u root -p --where="individual_id < 16" mendelmd14 individuals_variant | gzip > db_backup/individual_variants_sample.sql.gz')
-#        run('mysqldump -u root -p --where="id < 16" mendelmd14 individuals_individual | gzip > db_backup/individuals_sample.sql.gz')
+#        run('mysqldump -u root -p --where="individual_id < 16" rockbio14 individuals_variant | gzip > db_backup/individual_variants_sample.sql.gz')
+#        run('mysqldump -u root -p --where="id < 16" rockbio14 individuals_individual | gzip > db_backup/individuals_sample.sql.gz')
 
 
-    get('/projects/www/mendelmd14/db_backup/users.sql.gz', '/home/raony/sites/mendelmd14/db_backup/')
-    get('/projects/www/mendelmd14/db_backup/individual_variants_sample.sql.gz', '/home/raony/sites/mendelmd14/db_backup/')
-    get('/projects/www/mendelmd14/db_backup/individuals_sample.sql.gz', '/home/raony/sites/mendelmd14/db_backup/')
+    get('/projects/www/rockbio14/db_backup/users.sql.gz', '/home/raony/sites/rockbio14/db_backup/')
+    get('/projects/www/rockbio14/db_backup/individual_variants_sample.sql.gz', '/home/raony/sites/rockbio14/db_backup/')
+    get('/projects/www/rockbio14/db_backup/individuals_sample.sql.gz', '/home/raony/sites/rockbio14/db_backup/')
 
 def copy_sample_from_server():
-    local('scp 150.164.199.43:/projects/www/mendelmd14/db_backup/mendelmd040113_withoutvariants.zip .')
+    local('scp 150.164.199.43:/projects/www/rockbio14/db_backup/rockbio040113_withoutvariants.zip .')
 
 def make_sample_data():
-    # local('pg_dump -U raony mendelmd -T individuals_variant > db_sample/mendelmd_sample_variants.sql')
-    # local('zip db_sample/samples.sql.zip db_sample/mendelmd_sample_variants.sql')
-    # local('rm db_sample/mendelmd_sample_variants.sql')
-    local('python manage.py makefixture --format=json --indent=4 mendelmd.individuals.variant[1:101] > fixtures/individuals_variant.json')
+    # local('pg_dump -U raony rockbio -T individuals_variant > db_sample/rockbio_sample_variants.sql')
+    # local('zip db_sample/samples.sql.zip db_sample/rockbio_sample_variants.sql')
+    # local('rm db_sample/rockbio_sample_variants.sql')
+    local('python manage.py makefixture --format=json --indent=4 rockbio.individuals.variant[1:101] > fixtures/individuals_variant.json')
 
 def load_sample_data():
-    local('psql -U raony -d mendelmd < db_sample/mendelmd210313_sample.sql')
-    local('psql -U raony -d mendelmd -f db_sample/restore_db.sql')
+    local('psql -U raony -d rockbio < db_sample/rockbio210313_sample.sql')
+    local('psql -U raony -d rockbio -f db_sample/restore_db.sql')
 
 
 def loaddata():
     #Load user and sample from individuals
-    local('gunzip < db_backup/users.sql.gz | mysql -u root -p mendelmd')
-    local('gunzip < db_backup/individual_variants_sample.sql.gz | mysql -u root -p mendelmd ')
-    local('gunzip < db_backup/individuals_sample.sql.gz | mysql -u root -p mendelmd ')
+    local('gunzip < db_backup/users.sql.gz | mysql -u root -p rockbio')
+    local('gunzip < db_backup/individual_variants_sample.sql.gz | mysql -u root -p rockbio ')
+    local('gunzip < db_backup/individuals_sample.sql.gz | mysql -u root -p rockbio ')
 
 
-#    run(' gunzip < db_backup/mendelmd151012.sql.gz | mysql -u root -p mendelmd14 ')
+#    run(' gunzip < db_backup/rockbio151012.sql.gz | mysql -u root -p rockbio14 ')
 #    local("""python manage.py loaddata db_backup/all_without_individuals.json.gz""")
 
 def local_reset():
 	#delete database
 
     # local("sudo su - postgres")
-    # local("""psql -c 'DROP DATABASE mendelmd_dev;'""")
-    # local("""psql -c 'CREATE DATABASE mendelmd_dev;'""")
+    # local("""psql -c 'DROP DATABASE rockbio_dev;'""")
+    # local("""psql -c 'CREATE DATABASE rockbio_dev;'""")
 
     #sync and migrate
     local('python manage.py sqlclear individuals | python manage.py dbshell')
@@ -142,7 +160,7 @@ def run_local():
 
 def deploy(message="changes (fabric)"):
     local('git add .; git commit -m "%s";git push' % (message))
-    with cd('/projects/www/mendelmd'):
+    with cd('/projects/www/rockbio'):
 #        run('git reset --hard HEAD')
         run('git pull')
 #        run('source virtualenvwrapper.sh && workon genome_research && python manage.py syncdb --noinput')

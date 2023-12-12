@@ -360,7 +360,7 @@ def list(request):
                 os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, username, individual_id))
 
                 individual.delete()
-            #os.system('rm -rf mendelmd14/site_media/media/genomes/%s/%s' % (username, individual_id))
+            #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
@@ -493,7 +493,7 @@ def download_annotated(request, individual_id):
 
     response = HttpResponse(vcffile, content_type='application/x-zip-compressed')
     # # response['Content-Encoding'] = 'gzip'
-    response['Content-Disposition'] = 'attachment; filename=%s.annotated.mendelmd.vcf.zip' % basename
+    response['Content-Disposition'] = 'attachment; filename=%s.annotated.rockbio.vcf.zip' % basename
     response['Content-Length'] = os.path.getsize(fullpath)
     return response
 

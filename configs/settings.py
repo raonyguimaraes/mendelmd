@@ -111,7 +111,7 @@ dbscsnv_source = 'ftp://dbnsfp:dbnsfp@dbnsfp.softgenetics.com/dbscSNV%s.zip' % (
 dbscsnv = '%s/dbnsfp/dbscSNV%s.txt.gz' % (data_dir,dbscsnv_version)
 
 data_file = "pynnotator-data.latest.tar.gz"
-data_source = "https://storage.googleapis.com/mendelmd/%s" % (data_file)
+data_source = "https://storage.googleapis.com/rockbio/%s" % (data_file)
 
 libs_file = "pynnotator-libs.latest.tar.gz"
-libs_source = "https://storage.googleapis.com/mendelmd/%s" % (libs_file)
+libs_source = "https://storage.googleapis.com/rockbio/%s" % (libs_file)

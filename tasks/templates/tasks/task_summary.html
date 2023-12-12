@@ -9,9 +9,12 @@
 <tr><th>Md5</th><td>{{task.md5}}</td></tr>
 <tr><th>Creation_date</th><td>{{task.creation_date}}</td></tr>
 <tr><th>Modified_date</th><td>{{task.modified_date}}</td></tr>
-<tr><th>Analysis</th><td>{{task.analysis_set.all}}</td></tr>
-<tr><th>Files</th><td>{{task.files.all}}</td></tr>
+<tr><th>Started</th><td>{{task.started}}</td></tr>
+<tr><th>Finished</th><td>{{task.finished}}</td></tr>
+<tr><th>Time Taken</th><td>{{task.time_taken}}</td></tr>
 
+<tr><th>Files</th><td>{{task.files.all}}</td></tr>
+<tr><th>Tail</th><td>Lines:{{output_lines}}<br>{{output_tail|linebreaks}}</td></tr>
 <tr><th>Options</th><td></td></tr>
 
 </table>

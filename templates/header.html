@@ -5,9 +5,9 @@
     <!-- Logo -->
     <a href="{% url 'dashboard' %}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><img src="{% static "img/Gregor_Mendel_small.png" %}"></span>
+      <span class="logo-mini"><img src="{% static "images/rockbio_small.png" %}"></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><img src="{% static "img/Gregor_Mendel_small.png" %}">Mendel,MD</span>
+      <span class="logo-lg"><img src="{% static "images/rockbio_medium.png" %}"></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -22,11 +22,11 @@
             <!-- <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li> -->
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
             <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-            <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
-    	    <!--
-	    <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
-            <li><a href="{% url 'sample_index' %}"><i class="fa fa-users"></i> Samples</a></li>
-            <li class="dropdown">
+            <li><a href="{% url 'projects-index' %}"><i class="fa fa-briefcase"></i> Projects</a></li>
+
+
+
+            <!-- <li class="dropdown">
 
               <a href="{% url 'analyses-index' %}" class="dropdown-toggle"><i class="fa analysis-icon"></i> 
                 <span>Analyses </span>
@@ -47,51 +47,55 @@
                 <li><a href="#">HLA-Typing</a></li>
                 <li><a href="#">MultiQC</a></li>
               </ul>
-            </li>
-            <li><a href="{% url 'files-index' %}"><i class="fa fa-files-o"></i> Files</a></li>
-            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> Tasks</a></li>
-            <li><a href="{% url 'worker-list' %}"><i class="fa fa-briefcase"></i> Workers</a></li>
-	    -->
-            
-
-            <li class="dropdown">
+            </li> -->
+            <!-- <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'filter_analysis' %}">Filter Analysis</a></li>
                 <li><a href="{% url 'family_analysis' %}">Family Analysis</a></li>
-                <li><a href="{% url 'comparison' %}">{% trans "Comparison" %}</a></li>
-                <li><a href="#">Browser</a></li>
-                <li><a href="#">Data Query</a></li> 
-                <!-- <li class="divider"></li> -->
-                <!-- <li><a href="#">Separated link</a></li> -->
-                <!-- <li class="divider"></li> -->
-                <!-- <li><a href="#">One more separated link</a></li> -->
+                <li><a href="{% url 'pathway_analysis' %}">Pathway Analysis</a></li>
+                <li><a href="{% url 'comparison' %}">{% trans "Sample Comparison" %}</a></li>
+                <li><a href="#">Genome Browser</a></li>
+                <li><a href="#">Variant Browser</a></li> 
+
+                <li class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+                <li class="divider"></li>
+                <li><a href="#">One more separated link</a></li>
               </ul>
-            </li>
+            </li> -->
             
-            <li><a href="https://mendelmd.readthedocs.io/en/latest/" target="_blank">Docs</a></li>
-            <li><a href="https://forum.mendelmd.org/" target="_blank">Forum</a></li>
+	    
+            <!-- <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Marketplace</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Play</span></a></li>
+            <li><a href="{% url 'analyses-index' %}"><i class="fa "></i> <span>Chat GPT</span></a></li> -->
+            <li><a href="{% url 'tasks-index' %}"><i class="fa fa-tasks"></i> {% trans "Tasks" %}</a></li>
+            <li><a href="{% url 'oneclick' %}"><i class="fa fa-magic"></i> <span>1-Click</span></a></li>
+            
+    	    
+	    
+            
+      
+            
+
+            
+            
+            <!-- <li><a href="https://rockbio.readthedocs.io/en/latest/" target="_blank">Docs</a></li> -->
+            
+            
             {% if user.is_staff %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                  <li><a href="{#% url 'statistics_index' %#}">{% trans "Statistics" %}</a></li>
+                  <li><a href="{% url 'statistics_index' %}">{% trans "Statistics" %}</a></li>
                   <li><a href="{% url 'databases_index' %}">{% trans "Databases" %}</a></li>
+                  <li><a href="/admin/keys/">{% trans "Keys" %}</a></li>
                   <li><a href="{% url "admin:index" %}" target="_blank">{% trans "Admin" %}</a></li>
               </ul>
             </li>
                   
             {% endif %}
-            <li>
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                    <input type="hidden" name="cmd" value="_s-xclick">
-                    <input type="hidden" name="hosted_button_id" value="X8R874MNN8YBY">
-                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
-
-            </li>
-
+            
           </ul>
           
           <!-- <form class="navbar-form navbar-left" role="search">
@@ -220,8 +224,8 @@
               </li>
               <li class="footer"><a href="#">View all</a></li>
             </ul>
-          </li>
-          <li class="dropdown tasks-menu">
+          </li> -->
+          <!-- <li class="dropdown tasks-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-flag-o"></i>
               <span class="label label-danger">9</span>
@@ -296,7 +300,7 @@
                 <a href="#">View all tasks</a>
               </li>
             </ul>
-          </li> -->
+          </li>  -->
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -314,7 +318,7 @@
                 </p>
               </li>
               <!-- Menu Body -->
-              <!-- <li class="user-body">
+              <li class="user-body">
                 <div class="row">
                   <div class="col-xs-4 text-center">
                     <a href="#">Followers</a>
@@ -327,11 +331,13 @@
                   </div>
                 </div>
                 
-              </li> -->
+              </li>
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <!-- <a href="#" class="btn btn-default btn-flat">Profile</a><br> -->
+                  <a href="{% url 'settings-profile' %}" >Profile</a><br> 
+                  <a href="{% url 'settings-mysubscription' %}" >My Subscription</a><br> 
+                  <a href="{% url 'settings-billing' %}" >Billing</a><br> 
                   <a href="{% url 'settings-index' %}">Settings</a><br>
                   <a href="{% url 'account_change_password' %}">Change Password</a><br>
                   <a href="{% url 'account_email' %}">Change E-mail</a><br>
@@ -358,9 +364,8 @@
               <input type="password" name="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
-            <!-- <font color="white">or</font>
+            <font color="white">or</font>
             <a href="/accounts/signup"><button type="button" class="btn btn-primary">Sign up</button></a>
-      -->
           </form>
 
       {% endif %}

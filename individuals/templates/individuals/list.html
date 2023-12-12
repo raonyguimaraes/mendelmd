@@ -60,13 +60,13 @@
         </li>
         {% endif %}
     {% for one_page in page_numbers %}
-        {% ifequal one_page page %}
+        {% if one_page == page %}
         <li class="current">{{ page }}</li>
         {% else %}
         <li>
             <a href="?page={{ one_page }}">{{ one_page }}</a>
         </li>
-        {% endifequal %}
+        {% endif %}
     {% endfor %}
     {% if has_next %}
         <li>

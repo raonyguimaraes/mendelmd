@@ -3,6 +3,7 @@ from django.shortcuts import render
 from .models import Sample, SampleGroup
 from files.models import File
 from tasks.models import Task
+from analyses.models import Analysis
 import json
 from tasks.tasks import annotate_vcf, run_qc
 
@@ -26,7 +27,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 import io
 
-from samples.forms import SampleGroupForm
+from samples.forms import SampleGroupForm, CreateAnalysisForm
 
 from django.views.generic import ListView
 from django.views.generic.edit import DeleteView
@@ -60,6 +61,30 @@ def index(request):
 
     return render(request, 'samples/index.html', context)
 
+@login_required
+def create_analysis(request, pk):
+
+    """
+    Sample Create Analysis
+    """
+    form = CreateAnalysisForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            # analysis = form.save(commit=False)
+            
+            # form.cleaned_data["subject"]
+            analysis = Analysis(
+                name=form.cleaned_data["name"]
+            )
+            analysis.user = request.user
+            analysis.params = json.dumps(form.cleaned_data)
+            analysis.save()
+
+            return redirect('sample_view', pk=pk)
+
+    context = {'form': form}
+    return render(request, 'samples/create_analysis.html', context)
+    
 
 @login_required
 def create_group(request):
@@ -67,13 +92,14 @@ def create_group(request):
 
         form = SampleGroupForm(request.POST)
         if form.is_valid():
-            form.save()
+            # form.save()
             return redirect('sample_index')
     else:
-        samples = request.session['samples']
-        print('samples', samples)
-        form = SampleGroupForm(initial = {'members': [1,2,3] })
+        # samples = request.session['samples']
+        # print('samples', samples)
+        # form = SampleGroupForm(initial = {'members': [1,2,3] })
         # form.members.initial = ['537']
+        pass
     return render(request, 'samples/create_group.html', {'form': form})
 
 

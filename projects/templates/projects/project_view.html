@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{project.name}}</h1>
+
+{% comment %} <a href="">Upload Files</a> {% endcomment %}
+
+<a class="btn btn-primary" href="{% url 'project-add-samples' project.id %}">Add Samples</a>
+{% comment %} <a class="btn btn-primary" href="{% url 'projects-addfiles' project.id %}">Add Files</a> {% endcomment %}
+
+{% comment %} <a href="{% url 'projects-import-files' project.id %}">Import Files</a>
+<a href="{% url 'import_project_files' project.id %}">Reimport Files</a> {% endcomment %}
+
+<form action="{% url 'projects-bulk-action' project.id %}" method="post" id='project_form'>
+{% csrf_token %}
+
+<input type="hidden" id="action" name="action" value="">
+<input type="hidden" id="model" name="model" value="">
+
+<div class="row">
+
+<div class="col-md-12">
+          <!-- Custom Tabs -->
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Samples</a></li>
+              <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Files</a></li>
+              <li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="false">Tasks</a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_1">
+                {% include 'projects/sample_list.html' %}
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_2">
+                {% include 'projects/file_list.html' %}
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_3">
+                {% include 'tasks/task_list.html' %}
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- nav-tabs-custom -->
+        </div>
+
+<div class="col-md-6">
+
+
+</div>
+
+</div>
+
+</form>
+
+{% endblock content %}
+
+
+
+{% block extra_js %}
+<script type="text/javascript" >
+$("#select_all_files").change(function() {
+  $(".files:checkbox").attr('checked', this.checked);
+});
+$("#select_all_samples").change(function() {
+  $(".samples:checkbox").attr('checked', this.checked);
+});
+</script>
+<script type="text/javascript">
+    function submitform(model, action)
+    {
+       
+       document.getElementById("action").value = action;
+       document.getElementById("model").value = model;
+       document.getElementById("project_form").submit();  
+    }
+    
+</script>
+
+
+<script type="text/javascript" >
+$("#select_all").change(function() {
+  $(".tasks:checkbox").attr('checked', this.checked);
+});
+</script>
+
+{% endblock %}

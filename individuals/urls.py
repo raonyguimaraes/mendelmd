@@ -1,3 +1,4 @@
+
 from django.urls import include, path
 
 from individuals.views import IndividualDeleteView, GroupDeleteView

@@ -18,21 +18,21 @@ sudo pip install docker-compose --force --upgrade
 sudo mkdir /projects
 cd /projects
 sudo chown ec2-user .
-git clone https://github.com/raonyguimaraes/mendelmd
-cd mendelmd/
+git clone https://github.com/raonyguimaraes/rockbio
+cd rockbio/
 cp /tmp/morbidmap.txt data/omim/
-cp mendelmd/local_settings.docker.py mendelmd/local_settings.py
+cp rockbio/local_settings.docker.py rockbio/local_settings.py
 docker-compose build
 # docker-compose up -d
 # docker-compose down
 
-sudo bash -c 'cat << EOF > /etc/systemd/system/mendelmd.service
+sudo bash -c 'cat << EOF > /etc/systemd/system/rockbio.service
 [Unit]
-Description=Mendelmd
+Description=rockbio
 After=network.target docker.service
 [Service]
 Type=simple
-WorkingDirectory=/projects/mendelmd
+WorkingDirectory=/projects/rockbio
 ExecStart=/usr/bin/docker-compose -f docker-compose.yml up
 ExecStop=/usr/bin/docker-compose -f docker-compose.yml down
 Restart=always
@@ -40,7 +40,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF'
 
-sudo bash -c 'cat << EOF > /etc/httpd/conf.d/mendelmd.conf
+sudo bash -c 'cat << EOF > /etc/httpd/conf.d/rockbio.conf
 <VirtualHost *:80>
     ProxyPreserveHost On
     ProxyPass / http://127.0.0.1:8000/
@@ -50,9 +50,9 @@ EOF'
 
 sudo /usr/sbin/setsebool -P httpd_can_network_connect 1
 
-sudo systemctl enable mendelmd
-sudo systemctl start mendelmd
-sudo systemctl restart mendelmd
+sudo systemctl enable rockbio
+sudo systemctl start rockbio
+sudo systemctl restart rockbio
 
 sudo systemctl enable httpd
 sudo systemctl restart httpd

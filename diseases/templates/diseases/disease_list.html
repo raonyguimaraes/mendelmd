@@ -53,13 +53,13 @@
         <div class="pagination">
             <span class="page-links">
                 {% if page_obj.has_previous %}
-                    <a href="/mendelmd/diseases?page={{ page_obj.previous_page_number }}">previous</a>
+                    <a href="/rockbio/diseases?page={{ page_obj.previous_page_number }}">previous</a>
                 {% endif %}
                 <span class="page-current">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                 </span>
                 {% if page_obj.has_next %}
-                    <a href="/mendelmd/diseases?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="/rockbio/diseases?page={{ page_obj.next_page_number }}">next</a>
                 {% endif %}
             </span>
         </div>

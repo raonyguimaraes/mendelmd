@@ -1008,7 +1008,7 @@ def family_analysis_create_filter(request):
             filter.save()
             #return HttpResponseRedirect('/filter_analysis/family_analysis/?%s' % (filter.filterstring))
             return redirect(reverse('family_analysis')+'?'+filter.filterstring)
-            # return redirect('mendelmd/%s' % (reverse('family_analysis')+'?'+filter.filterstring))
+            # return redirect('rockbio/%s' % (reverse('family_analysis')+'?'+filter.filterstring))
     else:
         form = FamilyFilter(initial={'filterstring': filterstring})
         

@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from djstripe.models import Product
 
 @login_required
 def index(request):
@@ -22,6 +23,25 @@ def index(request):
 
     context = {'s3_settings':s3_settings}
     return render(request, 'settings/index.html', context)
+
+@login_required
+def profile(request):
+
+    context = {}
+    return render(request, 'account/profile.html', context)
+
+@login_required
+def mysubscription(request):
+
+    products = Product.objects.all()
+    context = {'products': products}
+    return render(request, 'account/my_subscription.html', context)
+
+@login_required
+def billing(request):
+
+    context = {}
+    return render(request, 'account/billing.html', context)
 
 @login_required
 def create_s3_credential(request):

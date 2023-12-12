@@ -62,13 +62,13 @@ Number of Samples: {{n_samples}}
 </tr>
 </thead>
 <tbody>
-{% for sample in project.projectsample_set.all %}
+{% for sample in project.samples.all %}
 <tr>  
     <td>
         <input type="checkbox" name="samples" class="samples" id="option{{sample.id}}" value="{{sample.id}}" />
     </td>
     <td>
-        <a href="#">{{sample.name}}</a>
+      <a href="{% url 'sample_view' sample.id %}" class="btn btn-success">{{sample.name}}</a>
     </td>
     <td>{{ sample.alias }}</td>
     <td>{{ sample.status }}</td>
