@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from djstripe.models import Product
 
 @login_required
 def index(request):
@@ -32,7 +33,8 @@ def profile(request):
 @login_required
 def mysubscription(request):
 
-    context = {}
+    products = Product.objects.all()
+    context = {'products': products}
     return render(request, 'account/my_subscription.html', context)
 
 @login_required

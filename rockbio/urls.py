@@ -6,13 +6,14 @@ from django.views.generic import TemplateView
 
 admin.autodiscover()
 
-from django.conf import settings
+from django.conf import settings as settings2
 
 from django.conf.urls.static import static
 
 from . import views
 
 import files.views
+import settings.views
 
 urlpatterns = [
     # Examples:
@@ -26,6 +27,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     path("upload/", files.views.upload, name="upload"),
+    path("subscribe/", settings.views.mysubscription, name="settings-mysubscription"),
+    
+    
 
     path("accounts/", include("allauth.urls")),
     path("dashboard/", include("dashboard.urls")),
@@ -42,7 +46,7 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     path("files/", include("files.urls")),
     path("samples/", include("samples.urls")),
-    path("settings/", include("settings.urls")),
+    path("settings/", include("settings.urls")),    
     path("tasks/", include("tasks.urls")),
     path("workers/", include("workers.urls")),
     path("analyses/", include("analyses.urls")),
@@ -50,8 +54,11 @@ urlpatterns = [
     path("keys/", include("keys.urls")),
     path("servers/", include("servers.urls")),
     path("apps/", include("apps.urls")),
+    #path("subscription/", views.pricing_page, name="pricing_page"),
+    
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+] + static(settings2.STATIC_URL, document_root=settings2.STATIC_ROOT)
 
 # if settings.DEBUG:
 #     import debug_toolbar

@@ -3,6 +3,11 @@
 {% load i18n %}
 
 {% block head_title %}{% trans "My Subscription" %}{% endblock %}
+{% load static i18n %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static "css/pricing_table.css" %}">
+{% endblock %}
 
 
 {% block content %}
@@ -10,3 +15,60 @@
 <h1>{% trans "My Subscription" %}</h1>
 
 {% endblock %}
+<h1>My Subscripti n</h1>
+ 
+<h2 style="text-align:center">Responsive Pricing Tables</h2>
+<p style="text-align:center">Resize the browser window to see the effect.</p>
+
+{% for product in products %}
+<div class="columns">
+<ul class="price">
+<li class="header">{{product.name}}</li>
+          {% for plan in product.plan_set.all %}
+              <li>{{ plan.nickname }}</li>
+              <li>{{ plan.human_readable_price }}</li>
+              <!-- Add a button for each plan -->
+	      <li>{{ plan.get_purchase_link }} <button type="button" onclick="location.href='{{ plan.get_purchase_link }}'">Purchase</button></li>
+          {% endfor %}
+</ul>
+</div>
+{% endfor %}
+
+<div class="columns">
+  <ul class="price">
+    <li class="header">Basic</li>
+    <li class="grey">$ 9.99 / year</li>
+    <li>10GB Storage</li>
+    <li>10 Emails</li>
+    <li>10 Domains</li>
+    <li>1GB Bandwidth</li>
+    <li class="grey"><a href="#" class="button">Sign Up</a></li>
+  </ul>
+</div>
+
+<div class="columns">
+  <ul class="price">
+    <li class="header" style="background-color:#04AA6D">Pro</li>
+    <li class="grey">$ 24.99 / year</li>
+    <li>25GB Storage</li>
+    <li>25 Emails</li>
+    <li>25 Domains</li>
+    <li>2GB Bandwidth</li>
+    <li class="grey"><a href="#" class="button">Sign Up</a></li>
+  </ul>
+</div>
+
+<div class="columns">
+  <ul class="price">
+    <li class="header">Premium</li>
+    <li class="grey">$ 49.99 / year</li>
+    <li>50GB Storage</li>
+    <li>50 Emails</li>
+    <li>50 Domains</li>
+    <li>5GB Bandwidth</li>
+    <li class="grey"><a href="#" class="button">Sign Up</a></li>
+  </ul>
+</div>
+
+{% endblock %}
+

@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     'keys',
     'servers',
     'apps',
+    'djstripe',
 ]
 
 MIDDLEWARE = [
@@ -247,3 +248,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # BROKER_CONNECTION_RETRY = True
 # BROKER_CONNECTION_MAX_RETRIES = 0
 
+STRIPE_TEST_PUBLIC_KEY = os.environ.get("STRIPE_TEST_PUBLIC_KEY", "pk_test_51OEeqyEEnyj6o0Ci8vaFM3IGB0MQkWPaUZAgyG2L2XZhRs5EIcRqmJeVsujY2mLARIVUC9WIOmCOUwVJ2EeVnWEl00btEWQ5aS")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "sk_test_51OEeqyEEnyj6o0Cifu4JksvVaTnr0IeHTNEGzIbEsoxpD32JKUsSexF2YpZOJwIdnPU3Hon1J9usCHvZ5YoMIMWP00csVaRuK9")
+STRIPE_LIVE_MODE = False
+# Needed for webhooks, which are discussed later in the guide.
+DJSTRIPE_WEBHOOK_SECRET = os.environ.get("DJSTRIPE_WEBHOOK_SECRET", "whsec_xxx")
+
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = 'id'
