@@ -50,10 +50,12 @@
                   {% if price.id in current_price_ids %}
                     <span class="label label-primary" style="font-size: 13px; padding: 6px 12px;">Current plan</span>
                   {% else %}
-                    <form method="post" action="{% url 'create-checkout-session' %}">
+                    <form method="post" action="{% url 'create-checkout-session' %}" class="checkout-form">
                       {% csrf_token %}
                       <input type="hidden" name="price_id" value="{{ price.id }}">
-                      <button type="submit" class="btn btn-primary btn-block">Subscribe</button>
+                      <button type="submit" class="btn btn-primary btn-block checkout-btn">
+                        Subscribe
+                      </button>
                     </form>
                   {% endif %}
                 </div>
@@ -66,4 +68,16 @@
     </div>
   </div>
 </section>
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.checkout-form').forEach(function(form) {
+    form.addEventListener('submit', function() {
+      var btn = form.querySelector('.checkout-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Redirecting...';
+    });
+  });
+</script>
+{% endblock %}
 {% endblock %}

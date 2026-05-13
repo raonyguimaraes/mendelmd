@@ -170,7 +170,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 # Required by allauth template tags
-                
+                'rockbio.context_processors.stripe',
             ],
 
         },

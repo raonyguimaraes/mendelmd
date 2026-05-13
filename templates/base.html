@@ -64,6 +64,8 @@
 
 {% block extra_css %}{% endblock %}
 
+<!-- Stripe.js — loaded on every page for fraud detection -->
+<script src="https://js.stripe.com/v3/"></script>
 
 </head>
 <body class="skin-black-light sidebar-mini"><!-- sidebar-collapse-->
@@ -140,6 +142,11 @@
 <script src="{% static "adminlte/dist/js/demo.js" %}"></script>
 <script src="{% static 'js/materialize.min.js' %}"></script>
 {% block javascript %}
+{% if STRIPE_PUBLIC_KEY %}
+<script>
+  window.stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+</script>
+{% endif %}
  <!-- Bootstrap core JavaScript
     ================================================== -->
 
