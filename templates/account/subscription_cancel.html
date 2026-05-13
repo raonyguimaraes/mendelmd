@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Checkout Cancelled" %}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+  <h1>{% trans "Checkout Cancelled" %}</h1>
+</section>
+
+<section class="content">
+  <div class="box">
+    <div class="box-body text-center" style="padding: 40px;">
+      <i class="fa fa-times-circle" style="font-size: 48px; color: #dd4b39; margin-bottom: 16px; display: block;"></i>
+      <h3>Checkout was cancelled</h3>
+      <p class="text-muted">No charge was made. You can try again whenever you're ready.</p>
+      <a href="{% url 'settings-mysubscription' %}" class="btn btn-primary" style="margin-right: 8px;">View plans</a>
+      <a href="{% url 'dashboard' %}" class="btn btn-default">Go to dashboard</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,12 +1,70 @@
 {% extends "base.html" %}
-
 {% load i18n %}
 
 {% block head_title %}{% trans "Billing" %}{% endblock %}
 
-
 {% block content %}
+<section class="content-header">
+  <h1>{% trans "Billing" %}</h1>
+</section>
 
-<h1>{% trans "Billing" %}</h1>
+<section class="content">
+  <div class="box">
+    <div class="box-header with-border">
+      <h3 class="box-title">Subscription</h3>
+    </div>
+    <div class="box-body">
 
+      {% if subscription %}
+        <table class="table table-bordered" style="max-width: 500px;">
+          <tr>
+            <th>Status</th>
+            <td>
+              {% if subscription.status == 'active' %}
+                <span class="label label-success">Active</span>
+              {% elif subscription.status == 'trialing' %}
+                <span class="label label-info">Trial</span>
+              {% else %}
+                <span class="label label-default">{{ subscription.status|capfirst }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% for item in subscription.items.all %}
+            <tr>
+              <th>Plan</th>
+              <td>
+                {% if item.price.product.name %}{{ item.price.product.name }}{% endif %}
+                {% if item.price.nickname %} &mdash; {{ item.price.nickname }}{% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th>Price</th>
+              <td>{{ item.price.human_readable_price }}</td>
+            </tr>
+          {% endfor %}
+          {% if subscription.current_period_end %}
+            <tr>
+              <th>Renews</th>
+              <td>{{ subscription.current_period_end|date:"N j, Y" }}</td>
+            </tr>
+          {% endif %}
+        </table>
+
+        <form method="post" action="{% url 'create-portal-session' %}" style="margin-top: 16px;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-default">
+            <i class="fa fa-external-link"></i> Manage subscription
+          </button>
+        </form>
+
+      {% else %}
+        <p class="text-muted">You don't have an active subscription.</p>
+        <a href="{% url 'settings-mysubscription' %}" class="btn btn-primary">
+          View plans
+        </a>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
 {% endblock %}

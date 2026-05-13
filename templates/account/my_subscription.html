@@ -1,74 +1,69 @@
 {% extends "base.html" %}
+{% load i18n static %}
 
-{% load i18n %}
-
-{% block head_title %}{% trans "My Subscription" %}{% endblock %}
-{% load static i18n %}
+{% block head_title %}{% trans "Subscription Plans" %}{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static "css/pricing_table.css" %}">
+<style>
+  .pricing-card { border: 1px solid #ddd; border-radius: 4px; padding: 24px; text-align: center; margin-bottom: 20px; }
+  .pricing-card .plan-name { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .pricing-card .plan-price { font-size: 32px; font-weight: 700; color: #3c8dbc; margin-bottom: 4px; }
+  .pricing-card .plan-interval { font-size: 14px; color: #777; margin-bottom: 20px; }
+  .pricing-card.current-plan { border-color: #3c8dbc; border-width: 2px; }
+  .pricing-card.current-plan .plan-name { color: #3c8dbc; }
+</style>
 {% endblock %}
-
 
 {% block content %}
+<section class="content-header">
+  <h1>{% trans "Subscription Plans" %}</h1>
+</section>
 
-<h1>{% trans "My Subscription" %}</h1>
+<section class="content">
+  <div class="box">
+    <div class="box-body">
 
-{% endblock %}
-<h1>My Subscripti n</h1>
- 
-<h2 style="text-align:center">Responsive Pricing Tables</h2>
-<p style="text-align:center">Resize the browser window to see the effect.</p>
+      {% if not products_with_prices %}
+        <div class="text-center" style="padding: 40px;">
+          <p class="text-muted">No plans are currently available. Please check back later.</p>
+          <a href="{% url 'settings-billing' %}" class="btn btn-default">View billing</a>
+        </div>
+      {% else %}
+        {% if current_price_ids %}
+          <div class="alert alert-info">
+            You already have an active subscription.
+            <a href="{% url 'settings-billing' %}">Manage your subscription</a>
+          </div>
+        {% endif %}
 
-{% for product in products %}
-<div class="columns">
-<ul class="price">
-<li class="header">{{product.name}}</li>
-          {% for plan in product.plan_set.all %}
-              <li>{{ plan.nickname }}</li>
-              <li>{{ plan.human_readable_price }}</li>
-              <!-- Add a button for each plan -->
-	      <li>{{ plan.get_purchase_link }} <button type="button" onclick="location.href='{{ plan.get_purchase_link }}'">Purchase</button></li>
+        <div class="row">
+          {% for entry in products_with_prices %}
+            {% for price in entry.prices %}
+              <div class="col-sm-6 col-md-4">
+                <div class="pricing-card {% if price.id in current_price_ids %}current-plan{% endif %}">
+                  <div class="plan-name">{{ entry.product.name }}</div>
+                  {% if price.nickname %}
+                    <div class="text-muted" style="margin-bottom: 8px;">{{ price.nickname }}</div>
+                  {% endif %}
+                  <div class="plan-price">{{ price.human_readable_price }}</div>
+
+                  {% if price.id in current_price_ids %}
+                    <span class="label label-primary" style="font-size: 13px; padding: 6px 12px;">Current plan</span>
+                  {% else %}
+                    <form method="post" action="{% url 'create-checkout-session' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="price_id" value="{{ price.id }}">
+                      <button type="submit" class="btn btn-primary btn-block">Subscribe</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
           {% endfor %}
-</ul>
-</div>
-{% endfor %}
+        </div>
+      {% endif %}
 
-<div class="columns">
-  <ul class="price">
-    <li class="header">Basic</li>
-    <li class="grey">$ 9.99 / year</li>
-    <li>10GB Storage</li>
-    <li>10 Emails</li>
-    <li>10 Domains</li>
-    <li>1GB Bandwidth</li>
-    <li class="grey"><a href="#" class="button">Sign Up</a></li>
-  </ul>
-</div>
-
-<div class="columns">
-  <ul class="price">
-    <li class="header" style="background-color:#04AA6D">Pro</li>
-    <li class="grey">$ 24.99 / year</li>
-    <li>25GB Storage</li>
-    <li>25 Emails</li>
-    <li>25 Domains</li>
-    <li>2GB Bandwidth</li>
-    <li class="grey"><a href="#" class="button">Sign Up</a></li>
-  </ul>
-</div>
-
-<div class="columns">
-  <ul class="price">
-    <li class="header">Premium</li>
-    <li class="grey">$ 49.99 / year</li>
-    <li>50GB Storage</li>
-    <li>50 Emails</li>
-    <li>50 Domains</li>
-    <li>5GB Bandwidth</li>
-    <li class="grey"><a href="#" class="button">Sign Up</a></li>
-  </ul>
-</div>
-
+    </div>
+  </div>
+</section>
 {% endblock %}
-

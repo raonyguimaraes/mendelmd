@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Subscription Confirmed" %}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+  <h1>{% trans "Subscription Confirmed" %}</h1>
+</section>
+
+<section class="content">
+  <div class="box box-success">
+    <div class="box-body text-center" style="padding: 40px;">
+      <i class="fa fa-check-circle" style="font-size: 48px; color: #00a65a; margin-bottom: 16px; display: block;"></i>
+      <h3>Thank you for subscribing!</h3>
+      <p class="text-muted">Your subscription is now active. It may take a moment to reflect in your account.</p>
+      <a href="{% url 'settings-billing' %}" class="btn btn-success" style="margin-right: 8px;">View billing</a>
+      <a href="{% url 'dashboard' %}" class="btn btn-default">Go to dashboard</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
