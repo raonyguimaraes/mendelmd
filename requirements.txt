@@ -4,14 +4,11 @@ psycopg2-binary
 django-allauth
 django-debug-toolbar
 django-crispy-forms
-SOAPpy
 Sphinx
-Fabric3
 pysam
 pynnotator
 pyvcf3
 celery
-#django-celery
 django-celery-results
 django-appconf
 gunicorn
@@ -19,6 +16,7 @@ boto3
 django-formtools
 dj-database-url
 django-gravatar2
-#pandas
 crispy-bootstrap3
 hcloud
+djstripe
+django-select2

@@ -26,12 +26,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*efl#$$!@93)8397wwf8hy387"&^%3&ad8h7d2w-yus5mzcx&@'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-only-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 
 # Application definition
@@ -217,7 +215,7 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 if 'USE_DOCKER' in os.environ:
     try:
@@ -248,10 +246,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # BROKER_CONNECTION_RETRY = True
 # BROKER_CONNECTION_MAX_RETRIES = 0
 
-STRIPE_TEST_PUBLIC_KEY = os.environ.get("STRIPE_TEST_PUBLIC_KEY", "pk_test_51OEeqyEEnyj6o0Ci8vaFM3IGB0MQkWPaUZAgyG2L2XZhRs5EIcRqmJeVsujY2mLARIVUC9WIOmCOUwVJ2EeVnWEl00btEWQ5aS")
-STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "sk_test_51OEeqyEEnyj6o0Cifu4JksvVaTnr0IeHTNEGzIbEsoxpD32JKUsSexF2YpZOJwIdnPU3Hon1J9usCHvZ5YoMIMWP00csVaRuK9")
+STRIPE_TEST_PUBLIC_KEY = os.environ.get("STRIPE_TEST_PUBLIC_KEY", "")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "")
 STRIPE_LIVE_MODE = False
-# Needed for webhooks, which are discussed later in the guide.
-DJSTRIPE_WEBHOOK_SECRET = os.environ.get("DJSTRIPE_WEBHOOK_SECRET", "whsec_xxx")
+DJSTRIPE_WEBHOOK_SECRET = os.environ.get("DJSTRIPE_WEBHOOK_SECRET", "")
 
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = 'id'

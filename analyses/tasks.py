@@ -6,13 +6,7 @@ from tasks.models import Task
 from .models import Analysis
 from samples.models import Sample, SampleGroup
 
-from celery import Celery
-app = Celery('rockbio')
-
-# Using a string here means the worker will not have to
-# pickle the object when using Windows.
-app.config_from_object('django.conf:settings')
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+from rockbio.celery import app
 
 @app.task(queue="master")
 def create_analysis_tasks(analysis_id):

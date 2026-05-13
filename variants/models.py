@@ -101,7 +101,6 @@ class Variant(models.Model):
 
     #new annotations
     ensembl_clin_HGMD = models.BooleanField(default=False, db_index=True)
-    ensembl_clin_HGMD = models.BooleanField(default=False, db_index=True)
     clinvar_CLNSRC = models.TextField(null=True, blank=True, db_index=True)
     # ensembl_phen.CLIN_pathogenic
     #ensembl_phen.CLIN_likely_pathogenic
