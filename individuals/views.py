@@ -180,7 +180,7 @@ def _load_parquet_variants(individual):
             return [], []
         # Put core columns first, then any extras
         core = [c for c in ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'VARTYPE'] if c in df.columns]
-        vep = [c for c in ['SYMBOL', 'Consequence', 'SIFT', 'PolyPhen', 'BIOTYPE', 'EXON'] if c in df.columns]
+        vep = [c for c in ['SYMBOL', 'Gene', 'Consequence', 'IMPACT', 'SIFT', 'PolyPhen', 'HGVSc', 'HGVSp', 'BIOTYPE', 'EXON', 'INTRON', 'Amino_acids'] if c in df.columns]
         extra = [c for c in df.columns if c not in core and c not in vep and c not in ('HET', 'HOM')]
         cols = core + vep + extra
         df = df[cols].fillna('')
