@@ -129,6 +129,23 @@ def VerifyVCF(individual_id):
     #if so extract individuals and create other individual models
     #if not send it to be annotated
 
+def _detect_vcf_build(vcf_path):
+    """Return 'hg38' or 'hg19' by scanning VCF meta-info lines; defaults to hg38."""
+    try:
+        with open(vcf_path, 'r') as f:
+            for line in f:
+                if not line.startswith('#'):
+                    break
+                ll = line.lower()
+                if 'grch38' in ll or 'hg38' in ll:
+                    return 'hg38'
+                if 'grch37' in ll or 'hg19' in ll:
+                    return 'hg19'
+    except Exception:
+        pass
+    return 'hg38'
+
+
 @shared_task()
 def AnnotateVariants(individual_id):
 
@@ -198,10 +215,14 @@ def AnnotateVariants(individual_id):
     #     individual.vcf_file.name = individual.vcf_file.name.replace('.zip', '.vcf')
 
 
-    # print(os.getcwd())
     if os.path.exists('sample.vcf'):
-        command = 'pynnotator -i sample.vcf'
-        os.system(command)
+        import argparse
+        from pynnotator.annotator import Annotator
+        build = _detect_vcf_build('sample.vcf')
+        print('Detected build:', build)
+        ann_args = argparse.Namespace(vcf_file=os.path.abspath('sample.vcf'), build=build)
+        Annotator(ann_args).run()
+        os.chdir(path)
 
     #get sample name using pyvcf
 

@@ -3,7 +3,7 @@
 service rabbitmq-server start
 sleep 5
 pwd
-cp configs/settings.py /usr/local/lib/python3.10/dist-packages/pynnotator/
+pip3 install -q -e /pynnotator/
 
 export USE_DOCKER=yes
 #cp rockbio/local_settings.docker.py rockbio/local_settings.py
