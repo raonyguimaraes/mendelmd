@@ -42,37 +42,37 @@ class JSONResponse(HttpResponse):
 def create(request):
     if request.method == 'POST':
         form = IndividualForm(request.POST, request.FILES)
-        
+
         if form.is_valid():
-            
+            uploaded_file = request.FILES.get('file')
+            if not uploaded_file:
+                return JSONResponse({'error': 'No file provided'}, mimetype=response_mimetype(request))
+
             if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
             else:
                 individual = Individual.objects.create(user=None, status='new')
 
-            individual.vcf_file= request.FILES.get('file')
-            
-            print('file')
-            print(request.FILES.get('file'))
+            # Slugify each dot-separated part of the filename
+            parts = uploaded_file.name.split('.')
+            uploaded_file.name = ".".join(slugify(tag) for tag in parts)
 
-            filename = individual.vcf_file.name.split('.')
-            new_filename = [] 
-            for tag in filename:
-                new_filename.append(slugify(tag))
+            individual.vcf_file = uploaded_file
 
-            individual.vcf_file.name = ".".join(new_filename)
-
-            print('filename ', filename)
-
-            #get name from inside vcf file
-            individual.name= str(os.path.splitext(individual.vcf_file.name)[0]).replace('.vcf','').replace('.gz','').replace('.rar','').replace('.zip','').replace('._',' ').replace('.',' ')
-
-            # individual.shared_with_groups = form.cleaned_data['shared_with_groups']
+            # Derive a human-readable name from the base filename only
+            basename = os.path.basename(uploaded_file.name)
+            stem = os.path.splitext(basename)[0]
+            individual.name = (
+                stem
+                .replace('.vcf', '').replace('.gz', '').replace('.rar', '').replace('.zip', '')
+                .replace('._', ' ').replace('.', ' ')
+                .strip()
+            ) or f"Individual {individual.id}"
 
             individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
-            
+
             individual.save()
-            
+
             f = individual.vcf_file
             
             #fix permissions

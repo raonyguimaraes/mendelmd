@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<section class="content-header">
+    <h1>Apps <small>Integrated tools &amp; environments</small></h1>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Apps</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://jupyter.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/jupyter.png' %}" class="app-icon">
+                        <p class="app-label">Jupyter</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://rstudio.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/rstudio.png' %}" class="app-icon">
+                        <p class="app-label">RStudio</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://nextcloud.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/nextcloud.png' %}" class="app-icon">
+                        <p class="app-label">Nextcloud</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://mattermost.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/mattermost.png' %}" class="app-icon">
+                        <p class="app-label">Mattermost</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://meet.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/jitsi.png' %}" class="app-icon">
+                        <p class="app-label">Video Meet</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://gitlab.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/gitlab.png' %}" class="app-icon">
+                        <p class="app-label">GitLab</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://galaxy.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/galaxy.png' %}" class="app-icon">
+                        <p class="app-label">Galaxy</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://nftower.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/nftower.png' %}" class="app-icon">
+                        <p class="app-label">nf-Tower</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://discourse.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/discourse.png' %}" class="app-icon">
+                        <p class="app-label">Forum</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="http://dev.rockbio.io:8080" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/visualstudio.png' %}" class="app-icon">
+                        <p class="app-label">VS Code</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-2 col-sm-3 col-xs-6">
+            <a href="https://dev.rockbio.io" target="_blank" class="app-card">
+                <div class="box box-solid text-center">
+                    <div class="box-body">
+                        <img src="{% static 'images/ChatGPT.png' %}" class="app-icon">
+                        <p class="app-label">AI Chat</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.app-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 20px;
+}
+.app-card:hover .box {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    transform: translateY(-3px);
+    transition: all 0.2s ease;
+}
+.app-card .box {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+.app-icon {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+.app-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    margin: 0;
+}
+</style>
+{% endblock %}

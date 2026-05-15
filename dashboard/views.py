@@ -30,8 +30,11 @@ def index(request):
         individuals = Individual.objects.filter(user=None).order_by('-id')
 
     n_individuals = individuals.count()
+    n_annotated = individuals.filter(status='annotated').count()
+    n_processing = individuals.filter(status__in=['new', 'annotating']).count()
+    n_failed = individuals.filter(status='failed').count()
 
-    paginator = Paginator(individuals, 1000) # Show 25 contacts per page
+    paginator = Paginator(individuals, 1000)
 
     page = request.GET.get('page')
 
@@ -46,10 +49,17 @@ def index(request):
 
 
     context = {
-    'n_individuals': n_individuals,
-    'individuals':individuals
+        'n_individuals': n_individuals,
+        'n_annotated': n_annotated,
+        'n_processing': n_processing,
+        'n_failed': n_failed,
+        'individuals': individuals,
     }
     return render(request, 'dashboard/dashboard.html', context)
+
+@login_required
+def apps(request):
+    return render(request, 'dashboard/apps.html')
 
 @login_required
 def bulk_action(request):
