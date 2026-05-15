@@ -263,7 +263,6 @@ Now we need to insert this data to the database.
         os.system(command)
 
         individual.save()
-        PopulateVariants.delay(individual.id)
 
         if individual.vcf_file.name.endswith(".vcf"):
             command = 'bgzip %s' % (filename)

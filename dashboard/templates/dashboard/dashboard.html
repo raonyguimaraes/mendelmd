@@ -304,8 +304,7 @@
                         <td>{{ individual.id }}</td>
 
                         <td>
-                            <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30
-                                }}</a>
+                            <a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:30 }}</a>
                         </td>
                         {% if user.is_staff %}
                         <td>
