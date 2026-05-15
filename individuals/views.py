@@ -1,4 +1,5 @@
 import gzip
+import datetime
 import json
 import os
 
@@ -14,10 +15,14 @@ from django.db.models import Max
 from django.db.models import Min
 from django.db.models import Q
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
+from django.http import JsonResponse as DjangoJsonResponse
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.http import Http404
+from django.urls import reverse
 from django.template import RequestContext
 from django.utils.text import slugify
 from django.views.generic import DeleteView
@@ -26,7 +31,53 @@ from individuals.models import Individual, Group
 from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
 from variants.models import Variant
 
-def response_mimetype(request):
+
+def _individual_storage_path(individual):
+    if individual.user:
+        username = slugify(individual.user.username)
+    else:
+        username = 'public'
+    return os.path.join(settings.BASE_DIR, 'genomes', username, str(individual.id))
+
+
+def _can_view_individual(request, individual):
+    if request.user.is_staff:
+        return True
+    if individual.user_id is None:
+        return True
+    return request.user.is_authenticated and individual.user_id == request.user.id
+
+
+def _read_tail(path, max_bytes=60000):
+    if not os.path.exists(path):
+        return ''
+    with open(path, 'rb') as log_file:
+        log_file.seek(0, os.SEEK_END)
+        size = log_file.tell()
+        log_file.seek(max(0, size - max_bytes))
+        return log_file.read().decode('utf-8', errors='replace')
+
+
+def _seed_annotation_monitor(individual, stage, percent, message):
+    path = _individual_storage_path(individual)
+    os.makedirs(path, exist_ok=True)
+    progress = {
+        'individual_id': individual.id,
+        'status': individual.status,
+        'stage': stage,
+        'percent': percent,
+        'message': message,
+        'updated_at': datetime.datetime.now().isoformat(),
+    }
+    with open(os.path.join(path, 'annotation.progress.json'), 'w') as progress_file:
+        json.dump(progress, progress_file)
+    with open(os.path.join(path, 'annotation.log'), 'a') as log_file:
+        log_file.write('[%s] %s\n' % (
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            message,
+        ))
+
+def response_content_type(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
     else:
@@ -35,9 +86,9 @@ def response_mimetype(request):
 
 class JSONResponse(HttpResponse):
     """JSON response class."""
-    def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
+    def __init__(self,obj='',json_opts={},content_type="application/json",*args,**kwargs):
         content = json.dumps(obj,**json_opts)
-        super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
+        super(JSONResponse,self).__init__(content,content_type=content_type,*args,**kwargs)
 
 def create(request):
     if request.method == 'POST':
@@ -46,7 +97,7 @@ def create(request):
         if form.is_valid():
             uploaded_file = request.FILES.get('file')
             if not uploaded_file:
-                return JSONResponse({'error': 'No file provided'}, mimetype=response_mimetype(request))
+                return JSONResponse({'error': 'No file provided'}, content_type=response_content_type(request))
 
             if request.user.is_authenticated:
                 individual = Individual.objects.create(user=request.user, status='new')
@@ -86,13 +137,23 @@ def create(request):
 
             # AnnotateVariants.delay(individual.id)
             try:
+                _seed_annotation_monitor(individual, 'queued', 1, 'Upload completed; annotation queued')
                 VerifyVCF.delay(individual.id)
             except Exception as e:
                 print('Error dispatching VerifyVCF task:', e)
 
-            data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
+            data = {'files': [{
+                'deleteType': 'DELETE',
+                'name': individual.name,
+                'url': '',
+                'thumbnailUrl': '',
+                'type': 'image/png',
+                'deleteUrl': '',
+                'size': f.size,
+                'monitorUrl': reverse('individual_annotation_monitor', args=[individual.id]),
+            }]}
 
-            response = JSONResponse(data, mimetype=response_mimetype(request))
+            response = JSONResponse(data, content_type=response_content_type(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
 
             return response
@@ -156,7 +217,7 @@ class IndividualDeleteView(DeleteView):
         
         
         
-#        response = JSONResponse(True, {}, response_mimetype(self.request))
+#        response = JSONResponse(True, {}, response_content_type(self.request))
 #        response['Content-Disposition'] = 'inline; filename=files.json'
 #        return response
         messages.add_message(request, messages.INFO, "Individual deleted with success!")
@@ -361,7 +422,7 @@ def list(request):
                 os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, username, individual_id))
 
                 individual.delete()
-            #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
+            #os.system('rm -rf mendelmd/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
                 individual = get_object_or_404(Individual, pk=individual_id)
@@ -414,12 +475,60 @@ def list(request):
 @login_required
 def annotate(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
     individual.status = 'new'
     individual.n_lines = 0
-    VerifyVCF.delay(individual.id)
     individual.save()
+    _seed_annotation_monitor(individual, 'queued', 1, 'Annotation queued')
+    VerifyVCF.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being annotated.")
-    return redirect('dashboard')
+    return redirect('individual_annotation_monitor', individual_id=individual.id)
+
+
+def annotation_monitor(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
+    return render(request, 'individuals/annotation_monitor.html', {'individual': individual})
+
+
+def annotation_status(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
+
+    path = _individual_storage_path(individual)
+    progress_path = os.path.join(path, 'annotation.progress.json')
+    log_path = os.path.join(path, 'annotation.log')
+    progress = {}
+    if os.path.exists(progress_path):
+        try:
+            with open(progress_path) as progress_file:
+                progress = json.load(progress_file)
+        except ValueError:
+            progress = {}
+    has_log = os.path.exists(log_path)
+    fallback_stage = individual.status or 'pending'
+    fallback_message = ''
+    if not has_log and individual.status == 'new':
+        fallback_stage = 'not_started'
+        fallback_message = 'Annotation has not been queued yet. Click Start annotation.'
+
+    data = {
+        'id': individual.id,
+        'name': individual.name,
+        'status': individual.status,
+        'annotation_time': str(individual.annotation_time or ''),
+        'n_variants': individual.n_variants,
+        'stage': progress.get('stage') or fallback_stage,
+        'percent': progress.get('percent'),
+        'message': progress.get('message') or fallback_message,
+        'updated_at': progress.get('updated_at') or '',
+        'log': _read_tail(log_path),
+        'has_log': has_log,
+    }
+    return DjangoJsonResponse(data)
 
 @login_required
 def populate(request, individual_id):
@@ -439,38 +548,17 @@ def populate_mongo(request, individual_id):
     return redirect('individuals_list')
 
 
+@login_required
 def download(request, individual_id):
     individual = get_object_or_404(Individual, pk=individual_id)
-    
-    filepath = os.path.dirname(str(individual.vcf_file.name))
-    filename = os.path.basename(str(individual.vcf_file.name))
-    
-    path = ''
-    # os.chmod("%s/genomes/%s/%s" % (settings.MEDIA_ROOT, individual.user, individual.id), 0777)
 
-    
-    # if filename.endswith('vcf.zip'):
-       # basename = filename.split('.vcf.zip')[0]       
-    # elif filename.endswith('.zip'):
-       # basename = filename.split('.zip')[0]       
-    # else:
-       # basename = filename.split('.vcf')[0]
-    #print basename
-    #print path
-    #print filepath
-    
-    fullpath = '%s/%s' % (filepath, filename)
-    if filename.endswith('.gz'):
-        vcffile = gzip.open(fullpath, 'r')
-    else:
-        vcffile = open(fullpath, 'r')
+    if not individual.vcf_file:
+        raise Http404
 
-    content = vcffile.read()
-    vcffile.close()
+    fullpath = individual.vcf_file.path
+    filename = os.path.basename(fullpath)
 
-    response = HttpResponse(content, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=%s' % filename
-    response['Content-Length'] = os.path.getsize(fullpath)
+    response = FileResponse(open(fullpath, 'rb'), as_attachment=True, filename=filename)
     return response
 
 
@@ -494,7 +582,7 @@ def download_annotated(request, individual_id):
 
     response = HttpResponse(vcffile, content_type='application/x-zip-compressed')
     # # response['Content-Encoding'] = 'gzip'
-    response['Content-Disposition'] = 'attachment; filename=%s.annotated.rockbio.vcf.zip' % basename
+    response['Content-Disposition'] = 'attachment; filename=%s.annotated.mendelmd.vcf.zip' % basename
     response['Content-Length'] = os.path.getsize(fullpath)
     return response
 
