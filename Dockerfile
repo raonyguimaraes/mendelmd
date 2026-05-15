@@ -10,7 +10,7 @@ RUN	apt-get upgrade -y
 #	libcurl4-openssl-dev libffi-dev liblocal-lib-perl liblzma-dev libpq-dev libssl-dev libxml2-dev make \
 #	pkg-config python-lxml python python2-dev python-pip python3 python3-dev python3-pip python3-setuptools python3-venv rabbitmq-server dh-python python3-wheel software-properties-common sudo tabix unzip vcftools vim virtualenvwrapper wget zip zlib1g zlib1g-dev zlibc \
 RUN	apt-get install -y \
-	python3-pip rabbitmq-server libpq-dev \
+	python3-pip rabbitmq-server libpq-dev zip unzip bcftools tabix \
     && apt-get autoremove -y \
 	&& apt-get clean
 RUN pip3 install -U pip
@@ -21,8 +21,9 @@ RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-ADD requirements.txt /code/
-RUN pip3 install -r requirements.txt
+ADD requirements.stable.txt /code/
+RUN pip3 install -r requirements.stable.txt
+COPY configs/settings.py /usr/local/lib/python3.10/dist-packages/pynnotator/settings.py
 RUN service rabbitmq-server start
 #ADD . /code/
 #RUN pip3 install pynnotator

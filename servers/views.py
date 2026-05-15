@@ -473,7 +473,7 @@ def update_usage(request):
         
         paramikoclient.connect(server.ip, username=server.username,password=server.password, banner_timeout=200)
 
-        subcomand = '''echo "Load  `LC_ALL=C top -bn1 | head -n 1` , `LC_ALL=C top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'`% RAM `free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }'` HDD `df -h / | awk '/\// {print $(NF-1)}'`"'''
+        subcomand = r'''echo "Load  `LC_ALL=C top -bn1 | head -n 1` , `LC_ALL=C top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'`% RAM `free -m | awk '/Mem:/ { printf("%3.1f%%", $3/$2*100) }'` HDD `df -h / | awk '/\// {print $(NF-1)}'`"'''
         ssh_stdin, ssh_stdout, ssh_stderr = paramikoclient.exec_command(subcomand)
         # exit_code = ssh_stdout.channel.recv_exit_status()  # handles async exit error
         # for line in ssh_stdout:

@@ -5,6 +5,7 @@ import os
 snpEff_memory = "2G"
 snpsift_merge_memory ="2G"
 vep_cores = 2
+vcfanno_cores = 2
 vcf_annotator_cores = 2
 func_pred_cores = 2
 

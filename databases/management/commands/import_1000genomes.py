@@ -215,8 +215,8 @@ class Command(BaseCommand):
                                 count2 += 1
                                 count += 1
                                 if count2 == 10000000:
-                                    output.writelines('\.\n\n')
+                                    output.writelines(r'\.\n\n')
                                     output.writelines('COPY public.databases_genome1ksamplevariant (id, genotype_id, sample_id, variant_id) FROM stdin;\n')
                                     count2 = 0
                                 output.writelines('{}\t{}\t{}\t{}\n'.format(count, genotypes_dict[genotype].pk, file_samples_dict[i].pk, variant.pk))
-                output.writelines('\.\n')
+                output.writelines(r'\.\n')

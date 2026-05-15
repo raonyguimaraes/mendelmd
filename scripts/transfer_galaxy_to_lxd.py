@@ -183,7 +183,7 @@ print(lxc_ip)
 
 # new_dns=task.manifest['new_dns']
     #add nginx
-subcommand = f'''sudo bash -c 'cat << EOF > /etc/nginx/sites-available/{app_name}.conf
+subcommand = rf'''sudo bash -c 'cat << EOF > /etc/nginx/sites-available/{app_name}.conf
 server {{
     listen 80;
     server_name {new_dns};

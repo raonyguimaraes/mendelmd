@@ -8,6 +8,6 @@ for line in variants:
 		c_lines+=1
 	if line.startswith('COPY'):
 		flag=True
-	if line.startswith('\.'):
+	if line.startswith(r'\.'):
 		break
 print(c_lines)

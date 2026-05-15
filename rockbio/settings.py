@@ -234,7 +234,7 @@ from datetime import timedelta
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
 # ALL AUTH
-ACCOUNT_EMAIL_REQUIRED=True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_LOGIN_METHODS={"username", "email"}
 ACCOUNT_SESSION_REMEMBER=True
 #ACCOUNT_UNIQUE_EMAIL=True

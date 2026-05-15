@@ -1,12 +1,17 @@
 version: "3.8"
 services:
  db:
-   image: postgres
+   image: postgres:15
    volumes:
      - ./data/postgresql_data:/var/lib/postgresql/data/
    restart: always
    environment:
       POSTGRES_PASSWORD: postgres
+   healthcheck:
+     test: ["CMD-SHELL", "pg_isready -U postgres"]
+     interval: 5s
+     timeout: 5s
+     retries: 10
 
  web:
    build: .
@@ -14,9 +19,11 @@ services:
    volumes:
      - .:/code
    ports:
-     - "8000:8000"
+     - "127.0.0.1:8002:8000"
+   restart: always
    depends_on:
-     - db
+     db:
+       condition: service_healthy
      
     
  # annotator:

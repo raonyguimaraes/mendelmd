@@ -87,8 +87,8 @@ def create(request):
             # AnnotateVariants.delay(individual.id)
             try:
                 VerifyVCF.delay(individual.id)
-            except:
-                pass
+            except Exception as e:
+                print('Error dispatching VerifyVCF task:', e)
 
             data = {'files': [{'deleteType': 'DELETE', 'name': individual.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 

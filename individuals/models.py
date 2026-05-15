@@ -31,7 +31,7 @@ class Individual(models.Model):
     shared_with_users = models.ManyToManyField(User, editable=True, related_name="shared_with_users", blank=True)
     shared_with_groups = models.ManyToManyField(UserGroup, editable=True, related_name="shared_with_groups", blank=True)
 
-    name = models.CharField(max_length=600)
+    name = models.CharField(max_length=600, blank=True, default='')
     is_featured = models.BooleanField(default=True)
     is_public = models.BooleanField(default=False)
     vcf_file = models.FileField(upload_to=get_upload_path, blank=True, help_text="File Format: VCF",max_length=600)

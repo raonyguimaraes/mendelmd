@@ -7,7 +7,7 @@ from variants.models import *
 
 class IndividualForm(ModelForm):
 
-
+    name = forms.CharField(max_length=600, required=False)
     vcf_file = forms.CharField(max_length=600, required=False)
 
     class Meta:

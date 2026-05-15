@@ -65,6 +65,7 @@ def VerifyVCF(individual_id):
     
     print(new_path)
 
+    orig_cwd = os.getcwd()
     os.chdir(path)
     
     print('filename', filename)
@@ -121,6 +122,9 @@ def VerifyVCF(individual_id):
             # AnnotateVariants.delay(new_individual.id)
     else:
         AnnotateVariants.delay(individual_id)
+
+    os.chdir(orig_cwd)
+
     #check if VCF is multisample
     #if so extract individuals and create other individual models
     #if not send it to be annotated
@@ -237,12 +241,14 @@ Now we need to insert this data to the database.
         command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
         os.system(command)
 
+        individual.save()
         PopulateVariants.delay(individual.id)
 
         if individual.vcf_file.name.endswith(".vcf"):
             command = 'bgzip %s' % (filename)
             os.system(command)
             individual.vcf_file.name = '%s.gz' % (individual.vcf_file.name)
+            individual.save(update_fields=['vcf_file'])
 
     else:
         individual.status = 'failed'
@@ -251,8 +257,8 @@ Now we need to insert this data to the database.
                 """ % (individual.name, elapsed)
         #send_mail('[Mendel,MD] Annotation Failed!', message, 'rockbio1@gmail.com',
         ##          ['raonyguimaraes@gmail.com'], fail_silently=False)
+        individual.save()
 
-    individual.save()
     os.chdir(settings.BASE_DIR)
 
 def treat_float_max(float_string):

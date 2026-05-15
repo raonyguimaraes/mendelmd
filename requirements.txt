@@ -19,7 +19,7 @@ dj-database-url
 django-gravatar2
 crispy-bootstrap3
 hcloud
-djstripe
+dj-stripe
 django-select2
 requests>=2.34.0
 urllib3>=2.7.0

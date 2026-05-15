@@ -32,4 +32,4 @@ python3 manage.py celery &
 
 # Start server
 echo "Starting server"
-python3 manage.py runserver 0.0.0.0:8000
+gunicorn rockbio.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120

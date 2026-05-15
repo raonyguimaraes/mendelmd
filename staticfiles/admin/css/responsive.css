@@ -565,6 +565,10 @@ input[type="submit"], button {
         flex-flow: column;
     }
 
+    .flex-container.checkbox-row {
+        flex-flow: row;
+    }
+
     textarea {
         max-width: none;
     }
@@ -584,6 +588,7 @@ input[type="submit"], button {
 
     .aligned label {
         width: 100%;
+        min-width: auto;
         padding: 0 0 10px;
     }
 
@@ -596,10 +601,6 @@ input[type="submit"], button {
     .aligned .form-row textarea {
         flex: 1 1 auto;
         max-width: 100%;
-    }
-
-    .aligned .checkbox-row {
-        align-items: center;
     }
 
     .aligned .checkbox-row input {
