@@ -164,55 +164,54 @@ class IndividualDeleteView(DeleteView):
         return redirect('individuals_list')
 
 
+def _load_parquet_variants(individual):
+    """Load variants from the annotation parquet file. Returns (columns, rows_list)."""
+    try:
+        import pandas as pd
+        username = slugify(individual.user.username) if individual.user else 'public'
+        parquet_path = os.path.join(
+            settings.BASE_DIR, 'genomes', username,
+            str(individual.id), 'ann_sample', 'annotation.final.parquet'
+        )
+        if not os.path.exists(parquet_path):
+            return [], []
+        df = pd.read_parquet(parquet_path)
+        if df.empty:
+            return [], []
+        # Put core columns first, then any extras
+        core = [c for c in ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'VARTYPE'] if c in df.columns]
+        vep = [c for c in ['SYMBOL', 'Consequence', 'SIFT', 'PolyPhen', 'BIOTYPE', 'EXON'] if c in df.columns]
+        extra = [c for c in df.columns if c not in core and c not in vep and c not in ('HET', 'HOM')]
+        cols = core + vep + extra
+        df = df[cols].fillna('')
+        return cols, df.to_dict('records')
+    except Exception:
+        return [], []
+
+
 def view(request, individual_id):
 
     individual = get_object_or_404(Individual, pk=individual_id)
 
-    variant_list = Variant.objects.filter(individual=individual)
-    # snpeff = SnpeffAnnotation.objects.filter(individual=individual)
+    parquet_columns, parquet_rows = _load_parquet_variants(individual)
 
-    individual.n_variants = variant_list.count()
-    individual.novel_variants = variant_list.filter(variant_id = '.').count()
+    individual.n_variants = len(parquet_rows)
+    individual.novel_variants = sum(1 for r in parquet_rows if r.get('ID') in ('', '.'))
 
-    individual.summary = []
+    # Chromosome breakdown from parquet
+    from collections import Counter
+    chr_counts = Counter(str(r.get('CHROM', '')) for r in parquet_rows if r.get('CHROM'))
+    individual.chromossome = [{'chr': k, 'total': v} for k, v in sorted(chr_counts.items())]
 
-    #get calculated values from database
+    # VARTYPE breakdown
+    vartype_counts = Counter(str(r.get('VARTYPE', '')) for r in parquet_rows if r.get('VARTYPE'))
+    individual.vartype_summary = [{'vartype': k, 'total': v} for k, v in sorted(vartype_counts.items())]
 
-    summary_item = {
-                'type': 'Total SNVs',
-                'total': variant_list.values('genotype').count(),
-                'discrete': variant_list.values('genotype').annotate(total=Count('genotype'))
-                    }
-    individual.summary.append(summary_item)
+    # Filter breakdown
+    filter_counts = Counter(str(r.get('FILTER', '')) for r in parquet_rows if r.get('FILTER'))
+    individual.filter_variants = [{'filter': k, 'filter__count': v} for k, v in sorted(filter_counts.items())]
 
-    summary_item = {
-                'type': 'Total Gene-associated SNVs',
-                'total': variant_list.values('gene').exclude(gene="").count(),
-                'discrete': variant_list.exclude(gene="").values('genotype').annotate(total=Count('genotype'))
-                    }
-    individual.summary.append(summary_item)
-
-    individual.snp_eff = variant_list.values('snpeff_effect').annotate(Count('snpeff_effect')).order_by('snpeff_effect')
-    # print 'individual.snp_eff', individual.snp_eff
-    # variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
-    #
-    individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
-    individual.impact_variants = variant_list.values('snpeff_impact').annotate(Count('snpeff_impact')).order_by('snpeff_impact')
-
-    individual.filter_variants = variant_list.values('filter').annotate(Count('filter')).order_by('filter')
-    individual.quality = variant_list.aggregate(Avg('qual'), Max('qual'), Min('qual'))
-    individual.read_depth = variant_list.aggregate(Avg('read_depth'), Max('read_depth'), Min('read_depth'))
-
-    individual.clinvar_clnsig = variant_list.values('clinvar_clnsig').annotate(total=Count('clinvar_clnsig'))
-
-    individual.chromossome = variant_list.values('chr').annotate(total=Count('chr')).order_by('chr')
-
-    # variants_with_snpid = variant_list.values('variant_id').exclude(variant_id=".")
-    #print variants_with_snpid
-
-    # fields = Variant._meta.get_all_field_names()
-
-    paginator = Paginator(variant_list, 25) # Show 25 contacts per page
+    paginator = Paginator(parquet_rows, 50)
     try:
         page = int(request.GET.get('page', '1'))
     except ValueError:
@@ -220,13 +219,15 @@ def view(request, individual_id):
     try:
         variants = paginator.page(page)
     except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
         variants = paginator.page(1)
     except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
         variants = paginator.page(paginator.num_pages)
-    #'fields':fields
-    return render(request, 'individuals/view.html', {'individual': individual, 'variants':variants})
+
+    return render(request, 'individuals/view.html', {
+        'individual': individual,
+        'variants': variants,
+        'parquet_columns': parquet_columns,
+    })
 
 @login_required
 def browse(request, individual_id):
