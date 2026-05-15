@@ -6,7 +6,7 @@ from tasks.models import Task
 from .models import Analysis
 from samples.models import Sample, SampleGroup
 
-from rockbio.celery import app
+from mendelmd.celery import app
 
 @app.task(queue="master")
 def create_analysis_tasks(analysis_id):

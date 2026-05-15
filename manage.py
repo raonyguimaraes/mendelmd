@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "apps"))
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rockbio.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mendelmd.settings")
 
     # Add the apps directoriy to Python's path. In production it will
     # be necessary to add the apps directory to the path, too.

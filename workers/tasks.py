@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings  # noqa
-from rockbio.celery import app
+from mendelmd.celery import app
 
 from tasks.models import Task
 from workers.models import Worker

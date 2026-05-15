@@ -17,7 +17,7 @@ from projects.models import ProjectFile
 
 from django.conf import settings  # noqa
 
-from rockbio.celery import app
+from mendelmd.celery import app
 
 from tasks.models import Task
 from workers.models import Worker
