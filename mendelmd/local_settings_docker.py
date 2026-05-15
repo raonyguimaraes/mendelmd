@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '*efl#$$!@93)8397wwf8hy3873&ad8h7d2w-J
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['mendelmd.org', 'www.mendelmd.org', '144.76.63.166', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['dev.mendelmd.org', 'mendelmd.org', 'www.mendelmd.org', '144.76.63.166', 'localhost', '127.0.0.1']
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -31,6 +31,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Without this, Django's CSRF check compares Origin: https://mendelmd.org
 # against the internal Host header (e.g. localhost) and returns 403.
 CSRF_TRUSTED_ORIGINS = [
+    'https://dev.mendelmd.org',
     'https://mendelmd.org',
     'https://www.mendelmd.org',
 ]
