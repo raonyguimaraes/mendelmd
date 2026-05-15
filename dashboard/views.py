@@ -6,12 +6,64 @@ from django.shortcuts import get_object_or_404, redirect
 import os
 # Create your views here.
 from individuals.models import Individual
+from variants.models import Variant
 from django.contrib import messages
 from django.conf import settings
+from django.db.models import Count
 from django.utils.text import slugify
 from individuals.tasks import *
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+def _get_parquet_variant_count(individual):
+    username = slugify(individual.user.username) if individual.user else 'public'
+    parquet_path = os.path.join(
+        settings.BASE_DIR, 'genomes', username,
+        str(individual.id), 'ann_sample', 'annotation.final.parquet'
+    )
+
+    if not os.path.exists(parquet_path):
+        return None
+
+    try:
+        import pyarrow.parquet as pq
+        return pq.ParquetFile(parquet_path).metadata.num_rows
+    except Exception:
+        return None
+
+
+def _get_zip_variant_count(individual):
+    username = slugify(individual.user.username) if individual.user else 'public'
+    zip_path = os.path.join(
+        settings.BASE_DIR, 'genomes', username,
+        str(individual.id), 'annotation.final.vcf.zip'
+    )
+    if not os.path.exists(zip_path):
+        return None
+    try:
+        import zipfile
+        z = zipfile.ZipFile(zip_path, 'r')
+        with z.open('ann_sample/annotation.final.vcf', 'r') as f:
+            count = 0
+            for line in f:
+                if not line.startswith(b'#'):
+                    count += 1
+        return count
+    except Exception:
+        return None
+
+
+def _get_variant_count(individual, db_count=0):
+    parquet_count = _get_parquet_variant_count(individual)
+
+    if parquet_count is not None:
+        return parquet_count
+    zip_count = _get_zip_variant_count(individual)
+    if zip_count is not None:
+        return zip_count
+    if individual.n_variants is not None:
+        return individual.n_variants
+    return db_count
 
 def index(request):
     if request.method == 'POST':
@@ -47,6 +99,18 @@ def index(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         individuals = paginator.page(paginator.num_pages)
 
+    variant_counts = {
+        row['individual_id']: row['total']
+        for row in Variant.objects.filter(
+            individual_id__in=[individual.id for individual in individuals]
+        ).values('individual_id').annotate(total=Count('id'))
+    }
+
+    for individual in individuals:
+        individual.variant_count = _get_variant_count(
+            individual,
+            variant_counts.get(individual.id, 0),
+        )
 
     context = {
         'n_individuals': n_individuals,
