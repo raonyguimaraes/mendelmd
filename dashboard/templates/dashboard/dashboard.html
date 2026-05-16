@@ -153,11 +153,10 @@
                                     <th>Annotation</th>
                                     <th>Actions</th>
                                 </tr>
-<th>Actions</th>
                             </thead>
                             <tbody>
                             {% for individual in individuals %}
-                            <tr>
+                            <tr data-individual-id="{{ individual.id }}" data-status="{{ individual.status }}" data-status-url="{% url 'individual_annotation_status' individual.id %}">
                                 {% if user.is_staff %}
                                 <td><input type="checkbox" name="individuals" class="individuals" id="option{{individual.id}}" value="{{individual.id}}"/></td>
                                 {% endif %}
@@ -178,15 +177,13 @@
                                         <span class="label label-default">{{ individual.status }}</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <a href="{% url 'individual_annotation_monitor' individual.id %}" class="btn btn-xs btn-info">
-                                        <i class="fa fa-eye"></i> Watch
-                                    </a>
-                                    {% if individual.user_id == user.id %}
-                                    <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-warning">
-                                        <i class="fa fa-refresh"></i> Reannotate
-                                    </a>
-                                    {% endif %}
+                                <td style="min-width:140px;">
+                                    <div class="progress" style="margin-bottom:4px;height:12px;">
+                                        <div class="ann-progress-bar progress-bar {% if individual.status == 'annotated' %}progress-bar-success{% elif individual.status == 'failed' %}progress-bar-danger{% else %}progress-bar-striped active{% endif %}"
+                                             style="width:{% if individual.status == 'annotated' or individual.status == 'failed' %}100{% else %}0{% endif %}%;font-size:10px;line-height:12px;">
+                                        </div>
+                                    </div>
+                                    <small class="ann-stage text-muted">{{ individual.status }}</small>
                                 </td>
                                                                 <td>
                                                                     <a href="{% url 'individual_view' individual.id %}" class="btn btn-xs btn-info">Details</a>
@@ -239,5 +236,51 @@
 $("#select_all").change(function() {
     $(".individuals:checkbox").prop('checked', this.checked);
 });
+
+(function() {
+    var rows = document.querySelectorAll("tr[data-status-url]");
+    if (!rows.length) return;
+
+    function updateRow(row, data) {
+        var bar = row.querySelector(".ann-progress-bar");
+        var stageEl = row.querySelector(".ann-stage");
+        var status = data.status || row.dataset.status;
+        var percent = data.percent;
+        if (percent === null || percent === undefined) {
+            percent = (status === "annotated" || status === "failed") ? 100 : 0;
+        }
+        percent = Math.max(0, Math.min(100, parseInt(percent, 10) || 0));
+
+        bar.style.width = percent + "%";
+        bar.textContent = percent > 10 ? percent + "%" : "";
+        bar.className = "ann-progress-bar progress-bar";
+        if (status === "annotated") bar.className += " progress-bar-success";
+        else if (status === "failed") bar.className += " progress-bar-danger";
+        else bar.className += " progress-bar-striped active";
+
+        if (stageEl) stageEl.textContent = data.stage || status;
+    }
+
+    function pollRow(row) {
+        fetch(row.dataset.statusUrl, {headers: {"X-Requested-With": "XMLHttpRequest"}})
+            .then(function(r) { return r.json(); })
+            .then(function(data) { updateRow(row, data); })
+            .catch(function() {});
+    }
+
+    function pollActive() {
+        rows.forEach(function(row) {
+            var status = row.dataset.status;
+            if (status !== "annotated" && status !== "failed") {
+                pollRow(row);
+            }
+        });
+    }
+
+    // Initial fetch for all rows to get accurate progress
+    rows.forEach(function(row) { pollRow(row); });
+    // Poll only active rows every 5 seconds
+    setInterval(pollActive, 5000);
+})();
 </script>
 {% endblock %}
