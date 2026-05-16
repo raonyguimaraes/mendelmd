@@ -77,3 +77,4 @@ urllib3==2.7.0
 vine==5.1.0
 wcwidth==0.2.9
 wstools==0.4.8
+anthropic>=0.97.0

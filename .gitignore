@@ -43,3 +43,4 @@ __pycache__
 media/
 scripts/merge_folders.py
 work_dir/*
+.env
