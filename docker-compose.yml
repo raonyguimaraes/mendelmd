@@ -19,6 +19,7 @@ services:
    environment:
      - SECRET_KEY=django-insecure-dev-only-change-in-production
      - USE_DOCKER=yes
+     - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
    volumes:
       - .:/code
       - ./pynnotator:/pynnotator

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+<section class="content-header">
+  <h1>Chat <small>Talk to your agents</small></h1>
+</section>
+
+<section class="content">
+  <div class="row" style="height:calc(100vh - 160px);">
+
+    <!-- Sidebar: conversations -->
+    <div class="col-md-3" style="height:100%;display:flex;flex-direction:column;">
+      <div class="box box-primary" style="flex:1;display:flex;flex-direction:column;margin-bottom:0;">
+        <div class="box-header with-border">
+          <h3 class="box-title">Conversations</h3>
+          <div class="box-tools pull-right">
+            <form method="post" action="{% url 'chat_new' %}">
+              {% csrf_token %}
+              <button class="btn btn-xs btn-success" type="submit"><i class="fa fa-plus"></i> New</button>
+            </form>
+          </div>
+        </div>
+        <div class="box-body no-padding" style="overflow-y:auto;flex:1;">
+          <ul class="nav nav-pills nav-stacked" style="margin:0;">
+            {% for conv in conversations %}
+            <li {% if conv.id == conversation.id %}class="active"{% endif %}>
+              <a href="{% url 'chat_conversation' conv.id %}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                {{ conv.title|truncatechars:35 }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main chat area -->
+    <div class="col-md-9" style="height:100%;display:flex;flex-direction:column;">
+      <div class="box box-default" style="flex:1;display:flex;flex-direction:column;margin-bottom:0;">
+        <div class="box-header with-border">
+          <h3 class="box-title">{{ conversation.title }}</h3>
+          <div class="box-tools pull-right">
+            <small class="text-muted">Type <code>/help</code> for available commands</small>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="messages" class="box-body" style="flex:1;overflow-y:auto;padding:15px;background:#f9f9f9;">
+          {% for msg in messages %}
+          <div class="chat-message chat-{{ msg.role }} chat-agent-{{ msg.agent }}" data-id="{{ msg.id }}">
+            {% include "chat/message.html" with msg=msg %}
+          </div>
+          {% empty %}
+          <p class="text-muted text-center" style="margin-top:40px;">
+            Start a conversation. Type <code>/help</code> to see what agents are available.
+          </p>
+          {% endfor %}
+        </div>
+
+        <!-- Input -->
+        <div class="box-footer">
+          <div class="input-group">
+            <input id="chat-input" type="text" class="form-control"
+                   placeholder="Message… or /annotate, /custom, /help"
+                   autocomplete="off">
+            <span class="input-group-btn">
+              <button id="send-btn" class="btn btn-primary">
+                <i class="fa fa-send"></i> Send
+              </button>
+            </span>
+          </div>
+          <div id="typing-indicator" style="height:18px;margin-top:4px;">
+            <small id="typing-text" class="text-muted" style="display:none;">
+              <i class="fa fa-circle-o-notch fa-spin"></i> Agent is thinking…
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var sendUrl = "{% url 'chat_send' conversation.id %}";
+    var csrfToken = "{{ csrf_token }}";
+    var messagesEl = document.getElementById('messages');
+    var input = document.getElementById('chat-input');
+    var sendBtn = document.getElementById('send-btn');
+    var typingText = document.getElementById('typing-text');
+    var sending = false;
+
+    var agentLabels = {claude: 'Claude', annotation: 'Annotation', custom: 'Custom', '': ''};
+    var agentColors = {claude: '#8e44ad', annotation: '#27ae60', custom: '#2980b9'};
+
+    function scrollBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function renderMessage(msg) {
+        var isUser = msg.role === 'user';
+        var isSystem = msg.role === 'system';
+        var agentLabel = agentLabels[msg.agent] || msg.agent;
+        var agentColor = agentColors[msg.agent] || '#555';
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'chat-message chat-' + msg.role + ' chat-agent-' + msg.agent;
+        wrapper.setAttribute('data-id', msg.id);
+
+        var align = isUser ? 'right' : 'left';
+        var bubbleColor = isUser ? '#337ab7' : (isSystem ? '#e74c3c' : '#fff');
+        var textColor = isUser ? '#fff' : '#333';
+        var border = isUser ? 'none' : '1px solid #ddd';
+
+        wrapper.innerHTML =
+            '<div style="display:flex;justify-content:' + (isUser ? 'flex-end' : 'flex-start') + ';margin-bottom:12px;">' +
+              '<div style="max-width:75%;">' +
+                (!isUser ? '<small style="color:' + agentColor + ';font-weight:bold;display:block;margin-bottom:3px;">' + agentLabel + '</small>' : '') +
+                '<div style="background:' + bubbleColor + ';color:' + textColor + ';border:' + border + ';border-radius:12px;padding:10px 14px;white-space:pre-wrap;word-break:break-word;">' +
+                  escapeHtml(msg.content) +
+                '</div>' +
+                '<small style="color:#aaa;display:block;margin-top:2px;text-align:' + align + ';">' + msg.created_at + '</small>' +
+              '</div>' +
+            '</div>';
+        return wrapper;
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function appendMessage(msg) {
+        // Remove empty-state paragraph if present
+        var empty = messagesEl.querySelector('p.text-muted');
+        if (empty) empty.remove();
+        messagesEl.appendChild(renderMessage(msg));
+        scrollBottom();
+    }
+
+    function setSending(val) {
+        sending = val;
+        sendBtn.disabled = val;
+        input.disabled = val;
+        typingText.style.display = val ? 'inline' : 'none';
+    }
+
+    function send() {
+        var content = input.value.trim();
+        if (!content || sending) return;
+
+        // Optimistic user bubble
+        appendMessage({id: 'tmp', role: 'user', agent: 'claude', content: content, created_at: ''});
+        input.value = '';
+        setSending(true);
+
+        var form = new FormData();
+        form.append('content', content);
+        form.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch(sendUrl, {method: 'POST', body: form})
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                setSending(false);
+                if (data.message) appendMessage(data.message);
+            })
+            .catch(function() {
+                setSending(false);
+                appendMessage({id: 'err', role: 'system', agent: '', content: 'Network error. Please try again.', created_at: ''});
+            });
+    }
+
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+
+    scrollBottom();
+})();
+</script>
+{% endblock %}

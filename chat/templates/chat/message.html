@@ -1,0 +1,29 @@
+{% comment %}Server-side rendered message — mirrors the JS renderMessage() layout{% endcomment %}
+{% if msg.role == 'user' %}
+<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+  <div style="max-width:75%;">
+    <div style="background:#337ab7;color:#fff;border-radius:12px;padding:10px 14px;white-space:pre-wrap;word-break:break-word;">{{ msg.content }}</div>
+    <small style="color:#aaa;display:block;margin-top:2px;text-align:right;">{{ msg.created_at }}</small>
+  </div>
+</div>
+{% elif msg.role == 'system' %}
+<div style="display:flex;justify-content:flex-start;margin-bottom:12px;">
+  <div style="max-width:75%;">
+    <div style="background:#e74c3c;color:#fff;border-radius:12px;padding:10px 14px;white-space:pre-wrap;word-break:break-word;">{{ msg.content }}</div>
+    <small style="color:#aaa;display:block;margin-top:2px;">{{ msg.created_at }}</small>
+  </div>
+</div>
+{% else %}
+{% with agent_color=msg.agent|default:"claude" %}
+<div style="display:flex;justify-content:flex-start;margin-bottom:12px;">
+  <div style="max-width:75%;">
+    <small style="font-weight:bold;display:block;margin-bottom:3px;
+      color:{% if msg.agent == 'annotation' %}#27ae60{% elif msg.agent == 'custom' %}#2980b9{% else %}#8e44ad{% endif %};">
+      {{ msg.get_agent_display }}
+    </small>
+    <div style="background:#fff;border:1px solid #ddd;color:#333;border-radius:12px;padding:10px 14px;white-space:pre-wrap;word-break:break-word;">{{ msg.content }}</div>
+    <small style="color:#aaa;display:block;margin-top:2px;">{{ msg.created_at }}</small>
+  </div>
+</div>
+{% endwith %}
+{% endif %}

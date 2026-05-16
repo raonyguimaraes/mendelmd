@@ -54,6 +54,7 @@ urlpatterns = [
     path("keys/", include("keys.urls")),
     path("servers/", include("servers.urls")),
     path("apps/", include("apps.urls")),
+    path("chat/", include("chat.urls")),
     path("stripe/", include("djstripe.urls", namespace="djstripe")),
     #path("subscription/", views.pricing_page, name="pricing_page"),
     

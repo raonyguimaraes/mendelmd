@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'servers',
     'apps',
     'djstripe',
+    'chat',
 ]
 
 MIDDLEWARE = [
