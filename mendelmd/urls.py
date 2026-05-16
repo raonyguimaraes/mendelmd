@@ -14,12 +14,12 @@ from . import views
 
 import files.views
 import settings.views
+import dashboard.views
 
 urlpatterns = [
-    # Examples:
-    # path("", "rockbio.views.home", name="home"),
     # path("blog/", include("blog.urls")),
-    path("", views.index, name="index"),
+    # path("", views.index, name="index"),
+    path("", dashboard.views.index, name="index"),
 
     path("docs/", views.docs, name="docs"),
 

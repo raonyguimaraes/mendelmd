@@ -151,8 +151,9 @@
                                     <th>Created</th>
                                     <th>Status</th>
                                     <th>Annotation</th>
-                                    {% if user.is_staff %}<th>Operations</th>{% endif %}
+                                    <th>Actions</th>
                                 </tr>
+<th>Actions</th>
                             </thead>
                             <tbody>
                             {% for individual in individuals %}
@@ -181,18 +182,15 @@
                                     <a href="{% url 'individual_annotation_monitor' individual.id %}" class="btn btn-xs btn-info">
                                         <i class="fa fa-eye"></i> Watch
                                     </a>
+                                    {% if individual.user_id == user.id %}
                                     <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-warning">
                                         <i class="fa fa-refresh"></i> Reannotate
                                     </a>
+                                    {% endif %}
                                 </td>
-                                {% if user.is_staff %}
-                                <td>
-                                    <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-primary">Reannotate</a>
-                                    <a href="{% url 'individual_populate' individual.id %}" class="btn btn-xs btn-default">Repopulate</a>
-                                    <a href="{% url 'individual_edit' individual.id %}" class="btn btn-xs btn-default">Edit</a>
-                                    <a href="{% url 'individual_delete' individual.id %}" class="btn btn-xs btn-danger">Delete</a>
+                                                                <td>
+                                                                    <a href="{% url 'individual_view' individual.id %}" class="btn btn-xs btn-info">Details</a>
                                 </td>
-                                {% endif %}
                             </tr>
                             {% empty %}
                             <tr><td colspan="11" class="text-center text-muted" style="padding:30px;">

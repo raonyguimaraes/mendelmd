@@ -10,7 +10,11 @@
 {% block content %}
 
 <section class="content-header">
-  <h1>{{ individual.name|default:"Individual" }} <small>#{{ individual.id }}</small></h1>
+  <h1>{{ individual.name|default:"Individual" }} <small>#{{ individual.id }}</small>
+    <a href="{% url 'individual_annotation_monitor' individual.id %}" class="btn btn-info btn-sm" style="margin-left:15px;">
+      <i class="fa fa-eye"></i> Annotation Progress
+    </a>
+  </h1>
 </section>
 
 <section class="content">
@@ -20,7 +24,7 @@
     <li><a href="#summary" data-toggle="tab">Summary</a></li>
     <li><a href="#chr" data-toggle="tab">By Chromosome</a></li>
     <li><a href="#filter" data-toggle="tab">By Filter</a></li>
-    <li><a href="#downloads" data-toggle="tab">Downloads</a></li>
+    <li><a href="#progress" data-toggle="tab">Annotation Progress</a></li>
   </ul>
 
   <div class="tab-content" style="padding-top:15px;">
@@ -97,7 +101,68 @@
       </table>
     </div>
 
-    <!-- By Filter tab -->
+    <!-- Annotation Progress tab -->
+    <div class="tab-pane" id="progress">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Live Progress</h3>
+              <div class="box-tools pull-right">
+                <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-primary">
+                  <i class="fa fa-play"></i> Start annotation
+                </a>
+              </div>
+            </div>
+            <div class="box-body">
+              <dl class="dl-horizontal">
+                <dt>Status</dt>
+                <dd><span id="annotation-status" class="label label-default">{{ individual.status }}</span></dd>
+                <dt>Stage</dt>
+                <dd id="annotation-stage">Waiting to start</dd>
+                <dt>Message</dt>
+                <dd id="annotation-message" class="text-muted">-</dd>
+                <dt>Updated</dt>
+                <dd id="annotation-updated" class="text-muted">-</dd>
+              </dl>
+              <div class="progress">
+                <div id="annotation-progress" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%;">0%</div>
+              </div>
+            </div>
+          </div>
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">pynnotator Output</h3>
+              <div class="box-tools pull-right">
+                <span id="log-state" class="text-muted">polling</span>
+              </div>
+            </div>
+            <div class="box-body no-padding">
+              <pre id="annotation-log" style="height:400px;margin:0;padding:14px;background:#111;color:#d6ead6;border:0;border-radius:0;overflow:auto;white-space:pre-wrap;">No annotation log yet.</pre>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Input</h3>
+            </div>
+            <div class="box-body">
+              <dl>
+                <dt>Individual</dt>
+                <dd>#{{ individual.id }} {{ individual.name }}</dd>
+                <dt>VCF</dt>
+                <dd style="word-break:break-all;">{{ individual.vcf_file }}</dd>
+                <dt>Variants</dt>
+                <dd id="variant-count">{{ individual.n_variants|default:"-" }}</dd>
+                <dt>Annotation time</dt>
+                <dd id="annotation-time">{{ individual.annotation_time|default:"-" }}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="tab-pane" id="filter">
       <table class="table table-striped table-condensed table-nonfluid">
         <thead><tr><th>Filter</th><th>Variants</th></tr></thead>
@@ -123,4 +188,74 @@
 
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var statusUrl = "{% url 'individual_annotation_status' individual.id %}";
+    var statusEl = document.getElementById("annotation-status");
+    var stageEl = document.getElementById("annotation-stage");
+    var messageEl = document.getElementById("annotation-message");
+    var updatedEl = document.getElementById("annotation-updated");
+    var progressEl = document.getElementById("annotation-progress");
+    var logEl = document.getElementById("annotation-log");
+    var logStateEl = document.getElementById("log-state");
+    var variantCountEl = document.getElementById("variant-count");
+    var annotationTimeEl = document.getElementById("annotation-time");
+    var timer = null;
+
+    function setStatusLabel(status) {
+        statusEl.textContent = status || "unknown";
+        statusEl.className = "label label-default";
+        if (status === "annotated") statusEl.className = "label label-success";
+        else if (status === "failed") statusEl.className = "label label-danger";
+        else if (status === "running" || status === "new" || status === "annotating") statusEl.className = "label label-warning";
+    }
+
+    function setProgress(percent, status) {
+        var value = (percent === null || percent === undefined) ? (status === "annotated" || status === "failed" ? 100 : 0) : parseInt(percent, 10) || 0;
+        value = Math.max(0, Math.min(100, value));
+        progressEl.style.width = value + "%";
+        progressEl.textContent = value + "%";
+        progressEl.className = "progress-bar progress-bar-striped active";
+        if (status === "annotated") progressEl.className = "progress-bar progress-bar-success";
+        else if (status === "failed") progressEl.className = "progress-bar progress-bar-danger";
+    }
+
+    function refreshStatus() {
+        fetch(statusUrl, {headers: {"X-Requested-With": "XMLHttpRequest"}})
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                setStatusLabel(data.status);
+                setProgress(data.percent, data.status);
+                stageEl.textContent = data.stage || "-";
+                messageEl.textContent = data.message || "-";
+                updatedEl.textContent = data.updated_at || "-";
+                if (variantCountEl) variantCountEl.textContent = data.n_variants || "-";
+                if (annotationTimeEl) annotationTimeEl.textContent = data.annotation_time || "-";
+                if (logStateEl) logStateEl.textContent = data.has_log ? "polling" : "waiting for log";
+                var stick = logEl.scrollTop + logEl.clientHeight >= logEl.scrollHeight - 20;
+                if (data.log) logEl.textContent = data.log;
+                else if (!data.has_log) logEl.textContent = "No annotation log yet.";
+                if (stick) logEl.scrollTop = logEl.scrollHeight;
+                if (data.status === "annotated" || data.status === "failed") {
+                    if (logStateEl) logStateEl.textContent = "stopped";
+                    if (timer) { window.clearInterval(timer); timer = null; }
+                }
+            })
+            .catch(function() { if (logStateEl) logStateEl.textContent = "connection error"; });
+    }
+
+    var progressTab = document.querySelector('a[href="#progress"]');
+    if (progressTab) {
+        progressTab.addEventListener('shown.bs.tab', function() {
+            if (!timer) { refreshStatus(); timer = window.setInterval(refreshStatus, 2000); }
+        });
+        progressTab.addEventListener('show.bs.tab', function() {
+            if (!timer) { refreshStatus(); timer = window.setInterval(refreshStatus, 2000); }
+        });
+    }
+})();
+</script>
 {% endblock %}

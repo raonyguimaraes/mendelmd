@@ -16,9 +16,12 @@ services:
  web:
    build: .
    command: bash docker-entrypoint.sh
+   environment:
+     - SECRET_KEY=django-insecure-dev-only-change-in-production
+     - USE_DOCKER=yes
    volumes:
-     - .:/code
-     - /home/raony/dev/pynnotator:/pynnotator
+      - .:/code
+      - ./pynnotator:/pynnotator
    ports:
      - "127.0.0.1:8003:8000"
    restart: always
