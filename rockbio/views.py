@@ -44,4 +44,4 @@ def index(request):
 
 
 def docs(request):
-    return redirect("https://rockbio.readthedocs.io/")
+    return redirect("https://mendelmd.readthedocs.io/")

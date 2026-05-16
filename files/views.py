@@ -163,7 +163,7 @@ def import_files(request):
 
     return redirect('files-index')
 
-def response_mimetype(request):
+def response_content_type(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
     else:
@@ -172,9 +172,9 @@ def response_mimetype(request):
 
 class JSONResponse(HttpResponse):
     """JSON response class."""
-    def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
+    def __init__(self,obj='',json_opts={},content_type="application/json",*args,**kwargs):
         content = json.dumps(obj,**json_opts)
-        super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
+        super(JSONResponse,self).__init__(content,content_type=content_type,*args,**kwargs)
 
 def upload(request):
     if request.method == 'POST':
@@ -244,7 +244,7 @@ def upload(request):
 
             data = {'files': [{'deleteType': 'DELETE', 'name': file.name, 'url': '', 'thumbnailUrl': '', 'type': 'image/png', 'deleteUrl': '', 'size': f.size}]}
 
-            response = JSONResponse(data, mimetype=response_mimetype(request))
+            response = JSONResponse(data, content_type=response_content_type(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
             return response
         else:

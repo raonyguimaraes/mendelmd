@@ -21,7 +21,7 @@ current_dir = os.getcwd().split('/')
 del current_dir[-1]
 proj_path = "/".join(current_dir)
 # This is so Django knows where to find stuff.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rockbio.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mendelmd.settings")
 sys.path.append(script_dir)
 sys.path.append(proj_path)
 

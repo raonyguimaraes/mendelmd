@@ -267,12 +267,12 @@ def family_analysis(request):
             export = request.GET.get('export', '')
             if export != '':
                 if export == 'csv':
-                    response = HttpResponse(mimetype='text/csv')
+                    response = HttpResponse(content_type='text/csv')
                     response['Content-Disposition'] = 'attachment; filename=export.csv'
                     writer = csv.writer(response)
                     
                 elif export == 'txt':
-                    response = HttpResponse(mimetype='text/plain')
+                    response = HttpResponse(content_type='text/plain')
                     response['Content-Disposition'] = 'attachment; filename=export.txt'
                     writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_NONE)    
                 writer.writerow(['Individual',
@@ -846,12 +846,12 @@ def oldfamily_analysis(request):
     
         
         if export == 'csv':
-            response = HttpResponse(mimetype='text/csv')
+            response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=Variants_from_Mendel_MD.csv'
             writer = csv.writer(response)
             
         elif export == 'txt':
-            response = HttpResponse(mimetype='text/plain')
+            response = HttpResponse(content_type='text/plain')
             response['Content-Disposition'] = 'attachment; filename=Variants_from_Mendel_MD.txt'
             writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_NONE)
         

@@ -202,6 +202,9 @@ class Variant(models.Model):
     revel_score = models.TextField(null=True, blank=True, db_index=True)
 
 
+    class Meta:
+        unique_together = ['individual', 'chr', 'pos', 'ref', 'alt']
+
     def get_fields(self):
     	return [(field.name, field.verbose_name.title().replace('_', ' ')) for field in Variant._meta.fields]
 

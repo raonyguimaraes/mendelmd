@@ -247,15 +247,15 @@
             .catch(function() { if (logStateEl) logStateEl.textContent = "connection error"; });
     }
 
-    var progressTab = document.querySelector('a[href="#progress"]');
-    if (progressTab) {
-        progressTab.addEventListener('shown.bs.tab', function() {
-            if (!timer) { refreshStatus(); timer = window.setInterval(refreshStatus, 2000); }
-        });
-        progressTab.addEventListener('show.bs.tab', function() {
-            if (!timer) { refreshStatus(); timer = window.setInterval(refreshStatus, 2000); }
-        });
+    function startPolling() {
+        if (!timer) { refreshStatus(); timer = window.setInterval(refreshStatus, 2000); }
     }
+
+    // Bootstrap 3 fires tab events through jQuery
+    $('a[href="#progress"]').on('shown.bs.tab', startPolling);
+
+    // Also fetch immediately if the progress tab is already active on load
+    if (document.querySelector('#progress.active')) { startPolling(); }
 })();
 </script>
 {% endblock %}

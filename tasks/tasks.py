@@ -773,7 +773,7 @@ def insert_vcf(task_id):
     # message = """
     #         The individual %s was inserted to the database with success!
     #         Now you can check the variants on the link: \n
-    #         http://rockbio.org/individuals/view/%s
+    #         https://mendelmd.org/individuals/view/%s
     #             """ % (individual.name, individual.id)
 
     print('Individual %s Populated!' % (individual.id))

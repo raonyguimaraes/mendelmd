@@ -13,6 +13,8 @@ urlpatterns = [
     path("browse/<int:individual_id>/", views.browse, name="individual_browse"),
     path("delete/<pk>", staff_member_required(IndividualDeleteView.as_view()), {}, "individual_delete"),
     path("annotate/<int:individual_id>/", views.annotate, name="individual_annotate"),
+    path("annotation/<int:individual_id>/", views.annotation_monitor, name="individual_annotation_monitor"),
+    path("annotation/<int:individual_id>/status/", views.annotation_status, name="individual_annotation_status"),
     path("populate/<int:individual_id>/", views.populate, name="individual_populate"),
 	path("populate_mongo/<int:individual_id>/", views.populate_mongo, name="individual_populate_mongo"),
     path("", views.list, name="individuals_list"),

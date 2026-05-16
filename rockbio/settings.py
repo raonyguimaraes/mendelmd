@@ -1,32 +1,20 @@
 """
-Django settings for rockbio project.
+Django settings for mendelmd project.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
+https://docs.djangoproject.com/en/4.2/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
+https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import sys
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
-
-# APPS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'apps')
-
-# sys.path.append(APPS_DIR)
-
-# URL_PREFIX = "/rockbio"
-# FORCE_SCRIPT_NAME = '/rockbio'
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-only-change-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError('SECRET_KEY environment variable is required')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
@@ -103,20 +91,14 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-ROOT_URLCONF = 'rockbio.urls'
+ROOT_URLCONF = 'mendelmd.urls'
 
-WSGI_APPLICATION = 'rockbio.wsgi.application'
+WSGI_APPLICATION = 'mendelmd.wsgi.application'
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'rockbio',
-#    }
-#}
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': 'rockbio.db',
+         'NAME': 'mendelmd.db',
     }
 }
 
@@ -140,9 +122,7 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-#STATIC_ROOT = os.path.join(BASE_DIR,'static/')
 
-#STATIC_ROOT = '/var/www/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
@@ -170,7 +150,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 # Required by allauth template tags
-                'rockbio.context_processors.stripe',
+                'mendelmd.context_processors.stripe',
             ],
 
         },
@@ -197,8 +177,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 
-#this prevents crash when loading filter_analysis forms.py
-# DEBUG_TOOLBAR_PATCH_SETTINGS = True
+
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -228,9 +207,7 @@ else:
     except ImportError:
         pass
 
-FILE_UPLOAD_PERMISSIONS = 0o0777
-from datetime import timedelta
-
+FILE_UPLOAD_PERMISSIONS = 0o644
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
 # ALL AUTH

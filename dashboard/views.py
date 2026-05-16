@@ -15,6 +15,10 @@ from individuals.tasks import *
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def _get_parquet_variant_count(individual):
     username = slugify(individual.user.username) if individual.user else 'public'
     parquet_path = os.path.join(
@@ -23,14 +27,17 @@ def _get_parquet_variant_count(individual):
     )
 
     if not os.path.exists(parquet_path):
+        logger.warning("Parquet file not found for individual %s at %s", individual.id, parquet_path)
         return None
 
     try:
         import pyarrow.parquet as pq
-        return pq.ParquetFile(parquet_path).metadata.num_rows
-    except Exception:
+        count = pq.ParquetFile(parquet_path).metadata.num_rows
+        logger.info("Parquet file count for individual %s: %d", individual.id, count)
+        return count
+    except Exception as e:
+        logger.error("Error reading parquet file for individual %s: %s", individual.id, str(e))
         return None
-
 
 def _get_zip_variant_count(individual):
     username = slugify(individual.user.username) if individual.user else 'public'
@@ -39,30 +46,33 @@ def _get_zip_variant_count(individual):
         str(individual.id), 'annotation.final.vcf.zip'
     )
     if not os.path.exists(zip_path):
+        logger.warning("ZIP file not found for individual %s at %s", individual.id, zip_path)
         return None
     try:
         import zipfile
-        z = zipfile.ZipFile(zip_path, 'r')
-        with z.open('ann_sample/annotation.final.vcf', 'r') as f:
-            count = 0
-            for line in f:
-                if not line.startswith(b'#'):
-                    count += 1
+        with zipfile.ZipFile(zip_path, 'r') as z:
+            with z.open('ann_sample/annotation.final.vcf', 'r') as f:
+                count = 0
+                for line in f:
+                    if not line.startswith(b'#'):
+                        count += 1
+        logger.info("ZIP file count for individual %s: %d", individual.id, count)
         return count
-    except Exception:
+    except Exception as e:
+        logger.error("Error reading ZIP file for individual %s: %s", individual.id, str(e))
         return None
-
 
 def _get_variant_count(individual, db_count=0):
     parquet_count = _get_parquet_variant_count(individual)
-
     if parquet_count is not None:
         return parquet_count
     zip_count = _get_zip_variant_count(individual)
     if zip_count is not None:
         return zip_count
     if individual.n_variants is not None:
+        logger.info("Using n_variants field for individual %s: %d", individual.id, individual.n_variants)
         return individual.n_variants
+    logger.info("Using DB count for individual %s: %d", individual.id, db_count)
     return db_count
 
 def index(request):

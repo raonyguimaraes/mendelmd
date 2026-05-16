@@ -156,7 +156,7 @@ def index(request):
         pathways = Pathway.objects.all()    
     
     
-    return render_to_response('pathway_analysis/index.html', {'form': form, 'pathways': pathways}, context_instance=RequestContext(request))
+    return render(request, 'pathway_analysis/index.html', {'form': form, 'pathways': pathways})
 
 @login_required
 def view(request, pathway_id):
@@ -185,7 +185,7 @@ def view(request, pathway_id):
     
     
     #if request.method == 'GET':
-    return render_to_response('pathway_analysis/view.html', {'pathway':pathway}, context_instance=RequestContext(request))
+    return render(request, 'pathway_analysis/view.html', {'pathway':pathway})
 
 from filter_analysis.views import filter_analysis
 
@@ -426,12 +426,12 @@ def analysis(request):
             export = request.GET.get('export', '')
             if export != '':
                 if export == 'csv':
-                    response = HttpResponse(mimetype='text/csv')
+                    response = HttpResponse(content_type='text/csv')
                     response['Content-Disposition'] = 'attachment; filename=export.csv'
                     writer = csv.writer(response)
                     
                 elif export == 'txt':
-                    response = HttpResponse(mimetype='text/plain')
+                    response = HttpResponse(content_type='text/plain')
                     response['Content-Disposition'] = 'attachment; filename=export.txt'
                     writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_NONE)    
                 writer.writerow(['Individual',
@@ -548,7 +548,7 @@ def analysis(request):
         genes_cgd = []
         
         form = PathwayAnalysisForm()                    
-    return render_to_response('pathway_analysis/analysis.html', 
+    return render(request, 'pathway_analysis/analysis.html', 
         {'pathways':pathways,
         'form':form, 
         'summary':summary, 
@@ -558,7 +558,7 @@ def analysis(request):
         'genes':genes, 
         'genes_hgmd':genes_hgmd,
         'genes_omim':genes_omim,
-        'genes_cgd':genes_cgd}, context_instance=RequestContext(request))
+        'genes_cgd':genes_cgd})
 
 
 
@@ -652,7 +652,7 @@ def index(request):
 
 
 
-    return render_to_response('pathway_analysis/analysis.html', 
+    return render(request, 'pathway_analysis/analysis.html', 
         {'pathways':pathways,
         'form':form, 
         'summary':summary, 
@@ -662,7 +662,7 @@ def index(request):
         'genes':genes, 
         'genes_hgmd':genes_hgmd,
         'genes_omim':genes_omim,
-        'genes_cgd':genes_cgd}, context_instance=RequestContext(request))
+        'genes_cgd':genes_cgd})
 
 # #this method will quickly filter your data based on different criterias
 # @login_required

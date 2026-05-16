@@ -120,6 +120,7 @@
             <th>Modified on</th>
             <th>Annotation Time</th>
             <th>Insertion Time</th>
+            <th>Annotation</th>
             
             {% if user.is_staff %}
             <th>Operations</th>
@@ -157,9 +158,11 @@
             <td>{{ individual.modified_date }}</td>
             <td>{{ individual.annotation_time }}</td>
             <td>{{ individual.insertion_time }}</td>
-            
-
-            
+            <td>
+                <a href="{% url 'individual_annotation_monitor' individual.id %}" class="btn btn-info btn-sm">
+                    <i class="glyphicon glyphicon-eye-open"></i> Watch
+                </a>
+            </td>
 
             
             {% if user.is_staff %}
@@ -197,4 +200,3 @@ $("#select_all").change(function() {
 });
 </script>
 {% endblock %}
-
