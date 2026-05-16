@@ -18,6 +18,7 @@ from variants.models import *
 from django.shortcuts import render, get_object_or_404
 import os
 import datetime
+import contextlib
 from django.core.mail import send_mail
 # from snpedia.models import *
 from diseases.models import HGMDMutation
@@ -31,10 +32,70 @@ from collections import OrderedDict
 
 
 import json
+import sys
+import traceback
 import vcf
 
 from datetime import timedelta
 from django.template.defaultfilters import slugify
+
+
+class _AnnotationLogWriter:
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, data):
+        for stream in self.streams:
+            stream.write(data)
+            stream.flush()
+
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
+
+
+def _get_individual_folder(individual):
+    if individual.user:
+        return '%s/genomes/%s/%s' % (
+            settings.BASE_DIR,
+            slugify(individual.user.username),
+            individual.id,
+        )
+    return '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
+
+
+def _annotation_log_path(path):
+    return os.path.join(path, 'annotation.log')
+
+
+def _annotation_progress_path(path):
+    return os.path.join(path, 'annotation.progress.json')
+
+
+def _write_annotation_progress(path, individual, stage, percent=None, message=''):
+    data = {
+        'individual_id': individual.id,
+        'status': individual.status,
+        'stage': stage,
+        'percent': percent,
+        'message': message,
+        'updated_at': datetime.datetime.now().isoformat(),
+    }
+    with open(_annotation_progress_path(path), 'w') as progress_file:
+        json.dump(data, progress_file)
+
+
+def _log_annotation_message(path, message):
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with open(_annotation_log_path(path), 'a') as log_file:
+        log_file.write('[%s] %s\n' % (timestamp, message))
+
+
+def _run_annotation_command(path, command):
+    _log_annotation_message(path, '$ %s' % command)
+    exit_code = os.system(command)
+    _log_annotation_message(path, 'Command exited with code %s' % exit_code)
+    return exit_code
 
 
 @shared_task()
@@ -62,6 +123,10 @@ def VerifyVCF(individual_id):
         path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
 
     new_path = '/'.join(path.split('/')[:-1])
+    os.makedirs(path, exist_ok=True)
+    _write_annotation_progress(path, individual, 'verify_vcf', 5, 'Checking VCF before annotation')
+    _log_annotation_message(path, 'VCF verification started')
+    _log_annotation_message(path, 'Input file: %s' % individual.vcf_file.name)
     
     print(new_path)
 
@@ -72,24 +137,29 @@ def VerifyVCF(individual_id):
 
     if filename.endswith('.vcf'):
         command = 'cp %s sample.vcf' % (filename)
-        os.system(command)
+        _run_annotation_command(path, command)
     elif filename.endswith('.gz'):
         command = 'gunzip -c -d %s > sample.vcf' % (filename)
-        os.system(command)
+        _write_annotation_progress(path, individual, 'prepare_vcf', 10, 'Decompressing VCF')
+        _run_annotation_command(path, command)
     elif filename.endswith('.zip'):
         command = 'unzip -p %s > sample.vcf' % (filename)
-        os.system(command)
+        _write_annotation_progress(path, individual, 'prepare_vcf', 10, 'Extracting VCF')
+        _run_annotation_command(path, command)
     elif filename.endswith('.rar'):
         command = 'unrar e %s' % (filename)
-        os.system(command)
+        _write_annotation_progress(path, individual, 'prepare_vcf', 10, 'Extracting VCF')
+        _run_annotation_command(path, command)
         #now change filename to sample.vcf
         command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
-        os.system(command)
+        _run_annotation_command(path, command)
 
 
+    _write_annotation_progress(path, individual, 'verify_vcf', 15, 'Reading VCF samples')
     vcf_reader = vcf.Reader(open('sample.vcf', 'r'))
     n_samples = len(vcf_reader.samples)
     print('n_samples', n_samples)
+    _log_annotation_message(path, 'VCF sample count: %s' % n_samples)
 
     if n_samples > 1:
         #extract individuals and create new users
@@ -97,7 +167,7 @@ def VerifyVCF(individual_id):
             print(sample)
             command = "bcftools view -c 1 -s %s sample.vcf  > %s.vcf" % (sample, sample)
             print(command)
-            os.system(command)
+            _run_annotation_command(path, command)
         #now rename original sample
         first_sample = vcf_reader.samples[0]
         original_name = individual.name
@@ -115,11 +185,13 @@ def VerifyVCF(individual_id):
                 os.makedirs(output_folder)
                 os.chmod(output_folder, 0o777)
             command = 'mv %s.vcf %s' % (sample, output_folder)
-            os.system(command)
+            _run_annotation_command(path, command)
             new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, sample)
             new_individual.save()
             AnnotateVariants.delay(new_individual.id)
     else:
+        _write_annotation_progress(path, individual, 'queued_pynnotator', 20, 'VCF verified; queued pynnotator')
+        _log_annotation_message(path, 'VCF verification completed; queueing annotation task')
         AnnotateVariants.delay(individual_id)
 
     os.chdir(orig_cwd)
@@ -161,124 +233,150 @@ def AnnotateVariants(individual_id):
     # print 'individual.vcf_file.name'
     # print individual.vcf_file.name
     if individual.user:
-        path  = '%s/genomes/%s/%s' % (settings.BASE_DIR,  slugify(individual.user.username), individual.id)
         email = individual.user.email
     else:
-        path  = '%s/genomes/public/%s' % (settings.BASE_DIR, individual.id)
         email = 'raonyguimaraes@gmail.com'
+    path = _get_individual_folder(individual)
     orig_path = os.getcwd()
+    os.makedirs(path, exist_ok=True)
+    _write_annotation_progress(path, individual, 'starting', 5, 'Preparing annotation workspace')
+    _log_annotation_message(path, 'Annotation started for %s' % individual.name)
+    _log_annotation_message(path, 'Input file: %s' % individual.vcf_file.name)
     #change to path for the individual folder
-    os.chdir(path)
-    # print(os.getcwd())
-
-    #delete annotation folder before start annotating
-    command = 'rm -rf ann_*'
-    os.system(command)
-
-    filename = str(individual.vcf_file.name.split('/')[-1])
-    print(filename)
-    #deal with different types of compressed files
-    #ex. zip, vcf, gz, rar
-    #check if user uploaded a compressed vcf
-    if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
-        os.system(command)
-    elif filename.endswith('.tar.gz'):
-        print('targz')
-        tar = tarfile.open(filename, "r:gz")
-        for tarinfo in tar:
-            #print(tarinfo.name, "is", tarinfo.size, "bytes in size and is", end="")
-            if tarinfo.name.endswith('.vcf'):
-                if not os.path.exists('outdir'):
-                    os.mkdir('outdir')
-                tar.extract(tarinfo.name, 'outdir')
-                vcfs = os.listdir('outdir')
-                command = 'cp outdir/%s sample.vcf' % (vcfs[0])
-                print(command)
-                os.system(command)
-    
-    if filename.endswith('.vcf.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
-        os.system(command)
-    if filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
-        os.system(command)
-    if filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
-        os.system(command)
-        #now change filename to sample.vcf
-        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
-        os.system(command)
-
-
-    #     individual.vcf_file.name = individual.vcf_file.name.replace('.zip', '.vcf')
-
-
-    if os.path.exists('sample.vcf'):
-        import argparse
-        from pynnotator.annotator import Annotator
-        build = _detect_vcf_build('sample.vcf')
-        print('Detected build:', build)
-        ann_args = argparse.Namespace(vcf_file=os.path.abspath('sample.vcf'), build=build)
-        Annotator(ann_args).run()
+    try:
         os.chdir(path)
+        # print(os.getcwd())
 
-    #get sample name using pyvcf
+        #delete annotation folder before start annotating
+        _write_annotation_progress(path, individual, 'cleanup', 10, 'Removing previous annotation output')
+        command = 'rm -rf ann_*'
+        _run_annotation_command(path, command)
 
-    vcf_filename = os.path.splitext(os.path.basename(str(filename)))[0]
+        filename = str(individual.vcf_file.name.split('/')[-1])
+        print(filename)
+        _write_annotation_progress(path, individual, 'prepare_vcf', 20, 'Preparing VCF input')
+        #deal with different types of compressed files
+        #ex. zip, vcf, gz, rar
+        #check if user uploaded a compressed vcf
+        if filename.endswith('.vcf'):
+            command = 'cp %s sample.vcf' % (filename)
+            _run_annotation_command(path, command)
+        elif filename.endswith('.tar.gz'):
+            print('targz')
+            _log_annotation_message(path, 'Extracting tar.gz input')
+            tar = tarfile.open(filename, "r:gz")
+            for tarinfo in tar:
+                #print(tarinfo.name, "is", tarinfo.size, "bytes in size and is", end="")
+                if tarinfo.name.endswith('.vcf'):
+                    if not os.path.exists('outdir'):
+                        os.mkdir('outdir')
+                    tar.extract(tarinfo.name, 'outdir')
+                    vcfs = os.listdir('outdir')
+                    command = 'cp outdir/%s sample.vcf' % (vcfs[0])
+                    print(command)
+                    _run_annotation_command(path, command)
 
-    # create a folder for the annotation if it doesn't exists,
-    # or delete and create if the folder already exists
+        if filename.endswith('.vcf.gz'):
+            command = 'gunzip -c -d %s > sample.vcf' % (filename)
+            _run_annotation_command(path, command)
+        if filename.endswith('.zip'):
+            command = 'unzip -p %s > sample.vcf' % (filename)
+            _run_annotation_command(path, command)
+        if filename.endswith('.rar'):
+            command = 'unrar e %s' % (filename)
+            _run_annotation_command(path, command)
+            #now change filename to sample.vcf
+            command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
+            _run_annotation_command(path, command)
 
-    #first check if annotation succedded
-    annotation_final_file = 'ann_sample/annotation.final.vcf'
 
-    # print('checking destination ', annotation_final_file)
-    stop = datetime.datetime.now()
-    elapsed = stop - start
+        #     individual.vcf_file.name = individual.vcf_file.name.replace('.zip', '.vcf')
 
-    individual.annotation_time = elapsed
 
-    if os.path.exists(annotation_final_file):
+        if os.path.exists('sample.vcf'):
+            import argparse
+            from pynnotator.annotator import Annotator
+            build = _detect_vcf_build('sample.vcf')
+            print('Detected build:', build)
+            _write_annotation_progress(path, individual, 'pynnotator', 35, 'Running pynnotator')
+            _log_annotation_message(path, 'Detected build: %s' % build)
+            vcf_abs = os.path.abspath('sample.vcf')
+            with open(_annotation_log_path(path), 'a') as log_file:
+                tee_stdout = _AnnotationLogWriter(sys.stdout, log_file)
+                tee_stderr = _AnnotationLogWriter(sys.stderr, log_file)
+                with contextlib.redirect_stdout(tee_stdout), contextlib.redirect_stderr(tee_stderr):
+                    Annotator(vcf_abs).run()
+            os.chdir(path)
+        else:
+            _log_annotation_message(path, 'sample.vcf was not created')
 
-        individual.status = 'annotated'
-        #send email
-        message = """The file %s was annotated with success!\n
+        #get sample name using pyvcf
+
+        vcf_filename = os.path.splitext(os.path.basename(str(filename)))[0]
+
+        # create a folder for the annotation if it doesn't exists,
+        # or delete and create if the folder already exists
+
+        #first check if annotation succedded
+        annotation_final_file = 'ann_sample/annotation.final.vcf'
+
+        # print('checking destination ', annotation_final_file)
+        stop = datetime.datetime.now()
+        elapsed = stop - start
+
+        individual.annotation_time = elapsed
+
+        if os.path.exists(annotation_final_file):
+
+            individual.status = 'annotated'
+            _write_annotation_progress(path, individual, 'finalizing', 90, 'Packaging annotated VCF')
+            #send email
+            message = """The file %s was annotated with success!\n
 It took %s to execute. \n
 Now we need to insert this data to the database.
                 """ % (individual.name, elapsed)
-        #send_mail('[Mendel,MD] Annotation Completed!', message, 'rockbio@rockbio.io',
-        #          ['raonyguimaraes@gmail.com', email], fail_silently=False)
-        #delete ann folder
-        command = 'rm -rf ann_*'
-        # os.system(command)
-        #delete sample
-        command = 'rm -rf sample.vcf'
-        os.system(command)
+            #send_mail('[Mendel,MD] Annotation Completed!', message, 'support@mendelmd.org',
+            #          ['raonyguimaraes@gmail.com', email], fail_silently=False)
+            #delete ann folder
+            command = 'rm -rf ann_*'
+            # os.system(command)
+            #delete sample
+            command = 'rm -rf sample.vcf'
+            _run_annotation_command(path, command)
 
-        #zip, and delete annotation folder
+            #zip, and delete annotation folder
 
-        command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
-        os.system(command)
+            command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
+            _run_annotation_command(path, command)
 
-        individual.save()
+            individual.save()
 
-        if individual.vcf_file.name.endswith(".vcf"):
-            command = 'bgzip %s' % (filename)
-            os.system(command)
-            individual.vcf_file.name = '%s.gz' % (individual.vcf_file.name)
-            individual.save(update_fields=['vcf_file'])
+            if individual.vcf_file.name.endswith(".vcf"):
+                command = 'bgzip %s' % (filename)
+                _run_annotation_command(path, command)
+                individual.vcf_file.name = '%s.gz' % (individual.vcf_file.name)
+                individual.save(update_fields=['vcf_file'])
 
-    else:
-        individual.status = 'failed'
-        message = """The Individual %s failed to be annotated!\n
+            _write_annotation_progress(path, individual, 'complete', 100, 'Annotation completed')
+            _log_annotation_message(path, 'Annotation completed in %s' % elapsed)
+        else:
+            individual.status = 'failed'
+            message = """The Individual %s failed to be annotated!\n
                 It took %s to execute.
                 """ % (individual.name, elapsed)
-        #send_mail('[Mendel,MD] Annotation Failed!', message, 'rockbio1@gmail.com',
-        ##          ['raonyguimaraes@gmail.com'], fail_silently=False)
+            #send_mail('[Mendel,MD] Annotation Failed!', message, 'support@mendelmd.org',
+            ##          ['raonyguimaraes@gmail.com'], fail_silently=False)
+            individual.save()
+            _write_annotation_progress(path, individual, 'failed', 100, 'Annotation failed')
+            _log_annotation_message(path, 'Annotation failed in %s' % elapsed)
+    except Exception:
+        individual.status = 'failed'
         individual.save()
-
-    os.chdir(settings.BASE_DIR)
+        _write_annotation_progress(path, individual, 'failed', 100, 'Annotation failed')
+        _log_annotation_message(path, traceback.format_exc())
+        raise
+    finally:
+        os.chdir(orig_path)
 
 def treat_float_max(float_string):
     max_value = -100
@@ -850,7 +948,7 @@ def PopulateVariants(individual_id):
     message = """
             The individual %s was inserted to the database with success!
             Now you can check the variants on the link: \n
-            http://rockbio.org/individuals/view/%s
+            https://mendelmd.org/individuals/view/%s
                 """ % (individual.name, individual.id)
 
     #if individual.user:

@@ -13,16 +13,18 @@ Rockbio (formerly MendelMD) is a Django web platform for analyzing NGS (Next-Gen
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
+export SECRET_KEY='django-insecure-dev-only-change-in-production'
 python3 manage.py migrate
 python3 manage.py populate     # load genes/diseases reference data (run once)
 python3 manage.py runserver
 
 # Celery worker (required for background tasks - in a separate terminal)
 source venv/bin/activate
+export SECRET_KEY='django-insecure-dev-only-change-in-production'
 python3 manage.py celery
 
 # Docker (recommended for full stack with PostgreSQL + RabbitMQ)
-docker-compose up
+docker compose up
 
 # Run tests
 python3 manage.py test
@@ -34,19 +36,40 @@ python3 manage.py migrate
 
 # Collect static files
 python3 manage.py collectstatic --noinput
+
+# Reload gunicorn workers after template/code changes (inside Docker)
+docker exec mendelmd-dev-web-1 kill -HUP $(docker exec mendelmd-dev-web-1 pgrep -o gunicorn)
 ```
 
 ## Configuration
 
-Settings live in `rockbio/settings.py`. Local overrides go in `rockbio/local_settings.py` (gitignored). For Docker, `rockbio/local_settings_docker.py` is loaded when `USE_DOCKER=yes` is set. See `rockbio/local_settings.sample.py` for the override template.
+There are two settings modules:
+- **`mendelmd/settings.py`** — active settings, used by `mendelmd/wsgi.py` (what runs in production/Docker)
+- **`rockbio/settings.py`** — legacy settings (kept for reference)
 
-Default development DB is SQLite (`rockbio.db`). Production uses PostgreSQL — configure via `local_settings.py`.
+`SECRET_KEY` is required and must be set as an environment variable — there is no default. For local dev, export it in your shell before running any management commands:
+```bash
+export SECRET_KEY='django-insecure-dev-only-change-in-production'
+```
+
+Docker sets it automatically via `docker-compose.yml`.
+
+Default development DB is SQLite (`mendelmd.db`). Production uses PostgreSQL — configure via `mendelmd/local_settings.py` (gitignored).
 
 Stripe keys and webhook secrets are read from environment variables (`STRIPE_TEST_PUBLIC_KEY`, `STRIPE_TEST_SECRET_KEY`, `DJSTRIPE_WEBHOOK_SECRET`); test values are hardcoded as fallbacks in settings — never use these in production.
 
+### Debugging templates in Docker
+
+Gunicorn workers cache compiled templates in memory. After editing a template, send HUP to reload without restarting the container:
+```bash
+docker exec mendelmd-dev-web-1 kill -HUP $(docker exec mendelmd-dev-web-1 pgrep -o gunicorn)
+```
+
+For faster iteration, use `python3 manage.py runserver` locally instead of Docker — the dev server reloads on every request.
+
 ## Architecture
 
-**Django project root:** `rockbio/` (settings, urls, celery, wsgi)
+**Django project root:** `mendelmd/` (settings, urls, celery, wsgi). The `rockbio/` directory is a legacy duplicate kept for reference.
 
 **Core data flow:**
 1. User uploads a VCF file via `upload/` or `files/`
