@@ -14,7 +14,7 @@ from django.db.models import Max
 from django.db.models import Min
 from django.db.models import Q
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse as DjangoJsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -607,3 +607,74 @@ def comparison(request):
         
         
     return render(request, 'individuals/comparison.html', {'form':form, 'summary':summary, 'query_string':query_string})
+
+
+def _individual_storage_path(individual):
+    if individual.user:
+        username = slugify(individual.user.username)
+    else:
+        username = 'public'
+    return os.path.join(settings.BASE_DIR, 'genomes', username, str(individual.id))
+
+
+def _can_view_individual(request, individual):
+    if request.user.is_staff:
+        return True
+    if individual.user_id is None:
+        return True
+    return request.user.is_authenticated and individual.user_id == request.user.id
+
+
+def _read_tail(path, max_bytes=60000):
+    if not os.path.exists(path):
+        return ''
+    with open(path, 'rb') as log_file:
+        log_file.seek(0, os.SEEK_END)
+        size = log_file.tell()
+        log_file.seek(max(0, size - max_bytes))
+        return log_file.read().decode('utf-8', errors='replace')
+
+
+def annotation_monitor(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
+    return render(request, 'individuals/annotation_monitor.html', {'individual': individual})
+
+
+def annotation_status(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
+
+    path = _individual_storage_path(individual)
+    progress_path = os.path.join(path, 'annotation.progress.json')
+    log_path = os.path.join(path, 'annotation.log')
+    progress = {}
+    if os.path.exists(progress_path):
+        try:
+            with open(progress_path) as progress_file:
+                progress = json.load(progress_file)
+        except ValueError:
+            progress = {}
+    has_log = os.path.exists(log_path)
+    fallback_stage = individual.status or 'pending'
+    fallback_message = ''
+    if not has_log and individual.status == 'new':
+        fallback_stage = 'not_started'
+        fallback_message = 'Annotation has not been queued yet. Click Start annotation.'
+
+    data = {
+        'id': individual.id,
+        'name': individual.name,
+        'status': individual.status,
+        'annotation_time': str(individual.annotation_time or ''),
+        'n_variants': individual.n_variants,
+        'stage': progress.get('stage') or fallback_stage,
+        'percent': progress.get('percent'),
+        'message': progress.get('message') or fallback_message,
+        'updated_at': progress.get('updated_at') or '',
+        'log': _read_tail(log_path),
+        'has_log': has_log,
+    }
+    return DjangoJsonResponse(data)
