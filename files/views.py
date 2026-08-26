@@ -184,11 +184,8 @@ def upload(request):
         form = UploadForm(request.POST, request.FILES)
         
         if form.is_valid():
-            
-            if request.user.is_authenticated:
-                file = File.objects.create(user=request.user, status='new')
-            else:
-                file = File.objects.create(user=None, status='new')
+
+            file = File.objects.create(user=request.user, status='new')
 
             file.local_file = request.FILES.get('file')
             
@@ -220,16 +217,13 @@ def upload(request):
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, file.user), 0777)
 
-            if request.user.is_authenticated:
-                file_path = "%s/media/%s/%s" % (settings.BASE_DIR, slugify(file.user), file.id)
-            else:
-                file_path = "%s/media/public/%s" % (settings.BASE_DIR, file.id)
+            file_path = "%s/media/%s/%s" % (settings.BASE_DIR, slugify(file.user), file.id)
             os.chmod(file_path, 0o755)
 
             file.location = '/'+file.local_file.url
 
             # AnnotateVariants.delay(file.id)
-            
+
             task_manifest = {}
             task_manifest['file'] = file.id
             task_manifest['action'] = 'check'
