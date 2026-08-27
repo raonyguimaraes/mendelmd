@@ -79,15 +79,15 @@ def index(request):
                 file.save()
 
         status = request.POST.getlist('status')
-        
+
         print('status', status)
 
-        if len(status[0]) > 0:
+        if status and len(status[0]) > 0:
             args.append(Q(status__in=status))
 
         extension = request.POST.getlist('extension')
 
-        if len(extension[0]) > 0:
+        if extension and len(extension[0]) > 0:
             print('extension',extension)
             args.append(Q(extension__in=extension))
 
@@ -109,9 +109,8 @@ def index(request):
     # print(order_string, 'order_string')
     
     if request.user.is_staff:#status='scheduled' size=0
-        # files = File.objects.filter(location__icontains=query, *args).order_by(order_string)#size
-        files = File.objects.filter(location__regex=query, *args).order_by(order_string)#size
-        
+        files = File.objects.filter(location__icontains=query, *args).order_by(order_string)#size
+
     else:
         files = File.objects.filter(user=request.user).order_by(order_string)
     #sample__isnull=True
@@ -146,7 +145,10 @@ def index(request):
 @login_required
 def view(request, file_id):
 
-    file = File.objects.get(pk=file_id)
+    if request.user.is_staff:
+        file = get_object_or_404(File, pk=file_id)
+    else:
+        file = get_object_or_404(File, pk=file_id, user=request.user)
     print(dir(file))
     context = {
     'file':file
@@ -176,16 +178,14 @@ class JSONResponse(HttpResponse):
         content = json.dumps(obj,**json_opts)
         super(JSONResponse,self).__init__(content,content_type=content_type,*args,**kwargs)
 
+@login_required
 def upload(request):
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         
         if form.is_valid():
-            
-            if request.user.is_authenticated:
-                file = File.objects.create(user=request.user, status='new')
-            else:
-                file = File.objects.create(user=None, status='new')
+
+            file = File.objects.create(user=request.user, status='new')
 
             file.local_file = request.FILES.get('file')
             
@@ -217,16 +217,13 @@ def upload(request):
             #fix permissions
             #os.chmod("%s/genomes/%s/" % (settings.BASE_DIR, file.user), 0777)
 
-            if request.user.is_authenticated:
-                file_path = "%s/media/%s/%s" % (settings.BASE_DIR, slugify(file.user), file.id)
-            else:
-                file_path = "%s/media/public/%s" % (settings.BASE_DIR, file.id)
-            os.chmod(file_path, 0o777)
+            file_path = "%s/media/%s/%s" % (settings.BASE_DIR, slugify(file.user), file.id)
+            os.chmod(file_path, 0o755)
 
             file.location = '/'+file.local_file.url
 
             # AnnotateVariants.delay(file.id)
-            
+
             task_manifest = {}
             task_manifest['file'] = file.id
             task_manifest['action'] = 'check'
@@ -258,7 +255,7 @@ def upload(request):
 
 class FileUpdate(LoginRequiredMixin, UpdateView):
     model = File
-    fields = '__all__'
+    fields = ['name']
 
     def get_queryset(self):
         if not self.request.user.is_staff:
@@ -321,14 +318,18 @@ def run_task(request):
             action = request.GET['action']
             file_id  = request.GET['file_id']
 
-            file = File.get_object_or_404(pk=file_id)
+            if request.user.is_staff:
+                file = get_object_or_404(File, pk=file_id)
+            else:
+                file = get_object_or_404(File, pk=file_id, user=request.user)
+
             if action == "check":
-                
+
                 task_manifest = {}
                 task_manifest['file'] = file.id
                 task_manifest['action'] = action
                 task = Task(user=request.user)
-                
+
                 task.manifest = task_manifest
                 task.status = 'new'
                 task.action = action
@@ -339,15 +340,76 @@ def run_task(request):
 
                 file.status = 'scheduled'
                 file.save()
-            
+
     return redirect('files-index')
 
+
 @login_required
-def run_task(request):
-    if request.method == 'GET':
-        print(request.GET)
-        if 'action' in request.GET:
-            action = request.GET['action'][0]
-            file_id  = request.GET['file_id'][0]
-            print(action, file_id)
+def launch_analysis(request):
+    """Create an Individual from a File and kick off AnnotateVariants."""
+    from individuals.models import Individual
+    from individuals.tasks import AnnotateVariants
+
+    file_ids = request.session.get('files', [])
+    if not file_ids:
+        return redirect('files-index')
+
+    last_individual = None
+    for file_id in file_ids:
+        if request.user.is_staff:
+            file = get_object_or_404(File, pk=file_id)
+        else:
+            file = get_object_or_404(File, pk=file_id, user=request.user)
+
+        if not file.location or not os.path.exists(file.location):
+            continue
+
+        # Create Individual and save once to get an ID
+        individual = Individual.objects.create(
+            user=request.user,
+            name=file.name or os.path.basename(file.location),
+            status='new',
+        )
+
+        dest_dir = os.path.join(
+            settings.BASE_DIR,
+            'genomes',
+            slugify(request.user.username),
+            str(individual.id),
+        )
+        os.makedirs(dest_dir, exist_ok=True)
+        os.chmod(dest_dir, 0o755)
+
+        # Preserve the source extension (.vcf, .zip, .vcf.gz, ...) instead of
+        # always staging as .vcf.gz, which breaks downstream tools on other formats.
+        src_basename = os.path.basename(file.location)
+        if src_basename.endswith('.vcf.gz'):
+            ext = '.vcf.gz'
+        else:
+            ext = os.path.splitext(src_basename)[1] or '.vcf.gz'
+        dest_filename = 'sample' + ext
+
+        dest_path = os.path.join(dest_dir, dest_filename)
+        try:
+            os.link(file.location, dest_path)
+        except OSError:
+            shutil.copy2(file.location, dest_path)
+
+        # Set vcf_file.name to relative path (relative to MEDIA_ROOT / BASE_DIR)
+        rel_path = 'genomes/%s/%s/%s' % (
+            slugify(request.user.username),
+            individual.id,
+            dest_filename,
+        )
+        individual.vcf_file.name = rel_path
+        individual.status = 'queued'
+        individual.save()
+
+        AnnotateVariants.delay(individual.id)
+        last_individual = individual
+
+    del request.session['files']
+
+    if last_individual:
+        return redirect('individual_annotation_monitor', individual_id=last_individual.id)
     return redirect('files-index')
