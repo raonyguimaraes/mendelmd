@@ -22,7 +22,7 @@ hcloud
 dj-stripe
 django-select2
 requests>=2.34.0
-urllib3>=2.7.0
+urllib3>=2.8.0
 jinja2>=3.1.6
 sqlparse>=0.5.5
 paramiko>=5.0.0
