@@ -246,6 +246,12 @@ SOCIALACCOUNT_QUERY_EMAIL=True
 # Set SIGNUP_OPEN=True in the environment to reopen.
 SIGNUP_OPEN = os.environ.get('SIGNUP_OPEN', 'False') == 'True'
 ACCOUNT_ADAPTER = 'mendelmd.adapters.AccountAdapter'
+# Bot protection for open sign-ups: honeypot + minimum fill time form, and a
+# tighter per-IP signup rate limit. nginx overwrites X-Real-IP with the real
+# client address, so it is safe to trust here.
+ACCOUNT_FORMS = {'signup': 'mendelmd.signup_form.ProtectedSignupForm'}
+ACCOUNT_RATE_LIMITS = {'signup': '5/h/ip'}
+ALLAUTH_TRUSTED_CLIENT_IP_HEADER = 'X-Real-IP'
 SOCIALACCOUNT_ADAPTER = 'mendelmd.adapters.SocialAccountAdapter'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
