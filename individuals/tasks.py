@@ -18,6 +18,7 @@ from variants.models import *
 from django.shortcuts import render, get_object_or_404
 import os
 import shlex
+import shutil
 import datetime
 from django.core.mail import send_mail
 # from snpedia.models import *
@@ -36,6 +37,22 @@ import vcf
 
 from datetime import timedelta
 from django.template.defaultfilters import slugify
+
+
+def _copy_first_vcf_from_tar(tar_path, target_path):
+    """Copy the first regular *.vcf member of a .tar.gz to target_path.
+
+    Uses extractfile() instead of tar.extract(), which honours member paths
+    and links (../, absolute paths, symlinks) and could write anywhere.
+    Returns True when a VCF member was found.
+    """
+    with tarfile.open(tar_path, "r:gz") as tar:
+        for member in tar:
+            if member.isfile() and member.name.endswith('.vcf'):
+                with tar.extractfile(member) as source, open(target_path, 'wb') as target:
+                    shutil.copyfileobj(source, target)
+                return True
+    return False
 
 
 def _safe_stem(sample_name):
@@ -193,17 +210,7 @@ def AnnotateVariants(individual_id):
         os.system(command)
     elif filename.endswith('.tar.gz'):
         print('targz')
-        tar = tarfile.open(filename, "r:gz")
-        for tarinfo in tar:
-            #print(tarinfo.name, "is", tarinfo.size, "bytes in size and is", end="")
-            if tarinfo.name.endswith('.vcf'):
-                if not os.path.exists('outdir'):
-                    os.mkdir('outdir')
-                tar.extract(tarinfo.name, 'outdir')
-                vcfs = os.listdir('outdir')
-                command = 'cp %s sample.vcf' % (shlex.quote('outdir/' + vcfs[0]))
-                print(command)
-                os.system(command)
+        _copy_first_vcf_from_tar(filename, 'sample.vcf')
     
     if filename.endswith('.vcf.gz'):
         command = 'gunzip -c -d %s > sample.vcf' % (shlex.quote(filename))

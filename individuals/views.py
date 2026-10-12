@@ -80,7 +80,6 @@ def create(request):
                 .strip()
             ) or f"Individual {individual.id}"
 
-            individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
 
             individual.save()
 

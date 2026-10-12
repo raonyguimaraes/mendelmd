@@ -55,3 +55,51 @@ class ReviewFixTests(TestCase):
         from individuals.tasks import _safe_stem
         self.assertEqual(_safe_stem("../../etc/x;rm -rf"), "_.._etc_x_rm_-rf")
         self.assertEqual(_safe_stem("NA12878"), "NA12878")
+
+    def test_upload_creates_sample_and_queues_checks(self):
+        import shutil, tempfile
+        from unittest import mock
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import override_settings
+        media = tempfile.mkdtemp()
+        try:
+            self.client.force_login(self.alice)
+            upload = SimpleUploadedFile("My Exome.vcf", b"##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
+            with override_settings(MEDIA_ROOT=media), mock.patch("individuals.views.VerifyVCF.delay") as verify:
+                r = self.client.post("/individuals/create/", {"file": upload, "vcf_file": "/etc/passwd"}, HTTP_ACCEPT="application/json")
+            self.assertEqual(r.status_code, 200)
+            ind = Individual.objects.filter(user=self.alice).exclude(pk=self.ind.pk).get()
+            self.assertTrue(ind.vcf_file.name.startswith("genomes/ra/%s/" % ind.id))
+            verify.assert_called_once_with(ind.id)
+        finally:
+            shutil.rmtree(media, ignore_errors=True)
+
+    def test_tar_upload_cannot_write_outside_sample_folder(self):
+        import io, os, tarfile, tempfile, shutil
+        from individuals.tasks import _copy_first_vcf_from_tar
+        work = tempfile.mkdtemp()
+        try:
+            sample_dir = os.path.join(work, "genomes", "ra", "1")
+            os.makedirs(sample_dir)
+            archive = os.path.join(sample_dir, "x.tar.gz")
+            with tarfile.open(archive, "w:gz") as tar:
+                def add(name, data, **kw):
+                    info = tarfile.TarInfo(name); info.size = len(data)
+                    for k, v in kw.items(): setattr(info, k, v)
+                    tar.addfile(info, io.BytesIO(data))
+                add("../../../escape.vcf", b"evil")
+                add("/tmp/abs-escape-mendelmd.vcf", b"evil")
+                link = tarfile.TarInfo("link.vcf"); link.type = tarfile.SYMTYPE; link.linkname = "/etc/passwd"
+                tar.addfile(link)
+                add("real.vcf", b"##fileformat=VCFv4.2\n")
+            target = os.path.join(sample_dir, "sample.vcf")
+            self.assertTrue(_copy_first_vcf_from_tar(archive, target))
+            self.assertFalse(os.path.exists(os.path.join(work, "escape.vcf")))
+            self.assertFalse(os.path.exists("/tmp/abs-escape-mendelmd.vcf"))
+            self.assertFalse(os.path.islink(target))
+            # The first regular member wins; its bytes land only in sample.vcf.
+            with open(target, "rb") as fh:
+                self.assertEqual(fh.read(), b"evil")
+            self.assertEqual(sorted(os.listdir(sample_dir)), ["sample.vcf", "x.tar.gz"])
+        finally:
+            shutil.rmtree(work, ignore_errors=True)
