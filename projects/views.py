@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from mendelmd.access import owned_or_404
 
 from .models import Project
 from files.models import File
@@ -269,7 +270,7 @@ def bulk_action(request, project_id):
 
 
             for file_id in files:
-                file = File.objects.get(pk=file_id)
+                file = owned_or_404(request, File, pk=file_id)
                 if action == "delete":
                     file.delete()
                 if action == "qc":
@@ -310,7 +311,7 @@ def bulk_action(request, project_id):
         if model == 'samples':
             samples = request.POST.getlist('samples')
             for sample_id in samples:
-                sample = ProjectSample.objects.get(pk=sample_id)
+                sample = owned_or_404(request, ProjectSample, pk=sample_id)
                 if action == "delete":
                     sample.delete()
 

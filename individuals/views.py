@@ -175,52 +175,91 @@ class IndividualDeleteView(DeleteView):
         return redirect('individuals_list')
 
 
+class _ParquetRows:
+    """Sequence over a parquet file that only materialises the slices asked for.
+
+    The sample page shows 50 rows at a time; reading every row into Python
+    dicts on each request used several GB for large samples.
+    """
+
+    def __init__(self, parquet_file, columns):
+        self._pf = parquet_file
+        self.columns = columns
+        self._n = parquet_file.metadata.num_rows
+
+    def __len__(self):
+        return self._n
+
+    def count(self):
+        return self._n
+
+    def __getitem__(self, item):
+        if not isinstance(item, slice):
+            return self[item:item + 1][0]
+        start, stop, _ = item.indices(self._n)
+        rows, pos = [], 0
+        if start >= stop:
+            return rows
+        for batch in self._pf.iter_batches(batch_size=5000, columns=self.columns):
+            end = pos + batch.num_rows
+            if end > start:
+                lo, hi = max(start - pos, 0), min(stop - pos, batch.num_rows)
+                rows.extend(batch.slice(lo, hi - lo).to_pandas().fillna('').to_dict('records'))
+            if end >= stop:
+                break
+            pos = end
+        return rows
+
+
+def _parquet_path(individual):
+    username = slugify(individual.user.username) if individual.user else 'public'
+    return os.path.join(settings.BASE_DIR, 'genomes', username, str(individual.id),
+                        'ann_sample', 'annotation.final.parquet')
+
+
 def _load_parquet_variants(individual):
-    """Load variants from the annotation parquet file. Returns (columns, rows_list)."""
+    """Return (columns, lazy rows, summary dataframe) for the sample page."""
     try:
-        import pandas as pd
-        username = slugify(individual.user.username) if individual.user else 'public'
-        parquet_path = os.path.join(
-            settings.BASE_DIR, 'genomes', username,
-            str(individual.id), 'ann_sample', 'annotation.final.parquet'
-        )
-        if not os.path.exists(parquet_path):
-            return [], []
-        df = pd.read_parquet(parquet_path)
-        if df.empty:
-            return [], []
-        # Put core columns first, then any extras
-        core = [c for c in ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'VARTYPE'] if c in df.columns]
-        vep = [c for c in ['SYMBOL', 'Gene', 'Consequence', 'IMPACT', 'SIFT', 'PolyPhen', 'HGVSc', 'HGVSp', 'BIOTYPE', 'EXON', 'INTRON', 'Amino_acids'] if c in df.columns]
-        extra = [c for c in df.columns if c not in core and c not in vep and c not in ('HET', 'HOM')]
-        cols = core + vep + extra
-        df = df[cols].fillna('')
-        return cols, df.to_dict('records')
+        import pyarrow.parquet as pq
+        path = _parquet_path(individual)
+        if not os.path.exists(path):
+            return [], [], None
+        pf = pq.ParquetFile(path)
+        names = pf.schema_arrow.names
+        core = [c for c in ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'VARTYPE'] if c in names]
+        vep = [c for c in ['SYMBOL', 'Gene', 'Consequence', 'IMPACT', 'SIFT', 'PolyPhen', 'HGVSc', 'HGVSp', 'BIOTYPE', 'EXON', 'INTRON', 'Amino_acids'] if c in names]
+        extra = [c for c in names if c not in core and c not in vep and c not in ('HET', 'HOM')]
+        summary_cols = [c for c in ['CHROM', 'VARTYPE', 'FILTER', 'ID'] if c in names]
+        summary = pf.read(columns=summary_cols).to_pandas() if summary_cols else None
+        return core + vep + extra, _ParquetRows(pf, core + vep + extra), summary
     except Exception:
-        return [], []
+        return [], [], None
+
+
+def _counts(summary, column):
+    if summary is None or column not in summary:
+        return []
+    values = summary[column].dropna().astype(str)
+    values = values[values != '']
+    return sorted(values.value_counts().items())
 
 
 def view(request, individual_id):
 
     individual = get_owned_individual(request, individual_id)
 
-    parquet_columns, parquet_rows = _load_parquet_variants(individual)
+    parquet_columns, parquet_rows, summary = _load_parquet_variants(individual)
 
     individual.n_variants = len(parquet_rows)
-    individual.novel_variants = sum(1 for r in parquet_rows if r.get('ID') in ('', '.'))
+    if summary is not None and 'ID' in summary:
+        ids = summary['ID'].fillna('').astype(str)
+        individual.novel_variants = int(ids.isin(['', '.']).sum())
+    else:
+        individual.novel_variants = 0
 
-    # Chromosome breakdown from parquet
-    from collections import Counter
-    chr_counts = Counter(str(r.get('CHROM', '')) for r in parquet_rows if r.get('CHROM'))
-    individual.chromossome = [{'chr': k, 'total': v} for k, v in sorted(chr_counts.items())]
-
-    # VARTYPE breakdown
-    vartype_counts = Counter(str(r.get('VARTYPE', '')) for r in parquet_rows if r.get('VARTYPE'))
-    individual.vartype_summary = [{'vartype': k, 'total': v} for k, v in sorted(vartype_counts.items())]
-
-    # Filter breakdown
-    filter_counts = Counter(str(r.get('FILTER', '')) for r in parquet_rows if r.get('FILTER'))
-    individual.filter_variants = [{'filter': k, 'filter__count': v} for k, v in sorted(filter_counts.items())]
+    individual.chromossome = [{'chr': k, 'total': int(v)} for k, v in _counts(summary, 'CHROM')]
+    individual.vartype_summary = [{'vartype': k, 'total': int(v)} for k, v in _counts(summary, 'VARTYPE')]
+    individual.filter_variants = [{'filter': k, 'filter__count': int(v)} for k, v in _counts(summary, 'FILTER')]
 
     paginator = Paginator(parquet_rows, 50)
     try:
@@ -415,7 +454,7 @@ def list(request):
 
 
 
-    groups = Group.objects.all()
+    groups = owned_groups(request.user)
 #    individuals = Individual.objects.annotate(number_of_variants=Count('variant'))
     
     

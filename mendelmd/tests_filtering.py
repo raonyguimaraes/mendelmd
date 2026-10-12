@@ -91,6 +91,14 @@ class ParseLineTests(TestCase):
         line = LINES[0].replace("\t0/1:31", "\t./.:31")
         self.assertEqual(parse_line(line, self.fields)["mutation_type"], "HET")
 
+    def test_hom_ref_and_no_call_rows_are_skipped(self):
+        from individuals.populate import carries_alt_allele
+        self.assertTrue(carries_alt_allele(LINES[0]))
+        self.assertFalse(carries_alt_allele(LINES[0].replace("\t0/1:31", "\t0/0:31")))
+        self.assertFalse(carries_alt_allele(LINES[0].replace("\t0/1:31", "\t./.:31")))
+        self.assertTrue(carries_alt_allele(LINES[0].replace("\t0/1:31", "\t./1:31")))
+        self.assertTrue(carries_alt_allele("1\t5\t.\tA\tG\t.\tPASS\t.\n"))  # sites-only
+
     def test_helpers(self):
         self.assertEqual(split_score(""), (None, None))
         self.assertEqual(split_score("benign(0.1)"), ("benign", 0.1))
@@ -183,4 +191,15 @@ class PopulateAndFilterTests(TestCase):
         self.assertEqual(rows.get("GENEA"), "HET")
         export = self.client.get("/filter_analysis/family_analysis/", dict(params, export="csv"))
         self.assertEqual(export.status_code, 200)
-        self.assertIn("GENEA", export.content.decode())
+        body = b"".join(export.streaming_content).decode()
+        self.assertIn("GENEA", body)
+        self.assertIn("HET", body)  # father's genotype column is filled per row
+
+    def test_filter_page_streams_exports(self):
+        self._populate()
+        self.client.force_login(self.owner)
+        for fmt, sep in (("csv", ","), ("txt", "\t")):
+            r = self.client.get("/filter_analysis/", {"individuals": str(self.ind.id), "export": fmt})
+            lines = b"".join(r.streaming_content).decode().strip().splitlines()
+            self.assertEqual(len(lines), 4)  # header + 3 variants
+            self.assertTrue(lines[0].startswith("Individual" + sep))

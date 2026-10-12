@@ -1,3 +1,4 @@
+from django.http import StreamingHttpResponse
 from mendelmd.access import owned_variants, owned_queryset, owned_groups, OwnedQuerysetMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
@@ -40,6 +41,12 @@ from django.shortcuts import render
 
 #a method to integrate all different filters
 #should return an object with all the results
+
+class _Echo:
+    """File-like object whose write() returns the value, for streaming csv rows."""
+    def write(self, value):
+        return value
+
 
 def test(request):
     form = FilterAnalysisForm(request.user)
@@ -379,20 +386,15 @@ def index(request):
             
             #export_to_csv(request, variants)
             export = request.GET.get('export', '')
-            if export != '':
-                if export == 'csv':
-                    response = HttpResponse(content_type='text/csv')
-                    response['Content-Disposition'] = 'attachment; filename=export.csv'
-                    writer = csv.writer(response)
-                    
-                elif export == 'txt':
-                    response = HttpResponse(content_type='text/plain')
-                    response['Content-Disposition'] = 'attachment; filename=export.txt'
-                    writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_NONE)    
-                writer.writerow(['Individual', 'Index', 'Pos_index', 'Chr', 'Pos', 'Variant_id', 'Ref', 'Alt', 'Qual', 'Filter', 'Info', 'Format', 'Genotype_col', 'Genotype', 'Read_depth', 'Gene', 'Mutation_type', 'Vartype', 'Genomes1k_maf', 'Dbsnp_maf', 'Esp_maf', 'Dbsnp_build', 'Sift', 'Sift_pred', 'Polyphen2', 'Polyphen2_pred', 'Condel', 'Condel_pred', 'DANN', 'CADD', 'Is_at_omim', 'Is_at_hgmd', 'Hgmd_entries', 'Effect', 'Impact', 'Func_class', 'Codon_change', 'Aa_change', 'Gene_name', 'Biotype', 'Gene_coding', 'Transcript_id', 'Exon_rank', 'Allele', 'Gene', 'Feature', 'Feature_type', 'Consequence', 'Cdna_position', 'Cds_position', 'Protein_position', 'Amino_acids', 'Codons', 'Existing_variation', 'Distance', 'Strand', 'Symbol', 'Symbol_source', 'Sift', 'Polyphen', 'Condel']) 
-                for variant in variants:
-                    # print 'variant', variant.index
-                    writer.writerow([variant.individual, variant.index, variant.pos_index, variant.chr, variant.pos, variant.variant_id, variant.ref, variant.alt, variant.qual, variant.filter, json.loads(variant.info), variant.format, variant.genotype_col, variant.genotype, variant.read_depth, variant.gene, variant.mutation_type, variant.vartype, variant.genomes1k_maf, variant.dbsnp_maf, variant.esp_maf, variant.dbsnp_build, variant.sift, variant.sift_pred, variant.polyphen2, variant.polyphen2_pred, variant.condel, variant.condel_pred, variant.dann, variant.cadd, variant.is_at_omim, variant.is_at_hgmd, variant.hgmd_entries, variant.snpeff_effect, variant.snpeff_impact, variant.snpeff_func_class, variant.snpeff_codon_change, variant.snpeff_aa_change, variant.snpeff_gene_name, variant.snpeff_biotype, variant.snpeff_gene_coding, variant.snpeff_transcript_id, variant.snpeff_exon_rank, variant.vep_allele, variant.vep_gene, variant.vep_feature, variant.vep_feature_type, variant.vep_consequence, variant.vep_cdna_position, variant.vep_cds_position, variant.vep_protein_position, variant.vep_amino_acids, variant.vep_codons, variant.vep_existing_variation, variant.vep_distance, variant.vep_strand, variant.vep_symbol, variant.vep_symbol_source, variant.vep_sift, variant.vep_polyphen, variant.vep_condel])
+            if export in ('csv', 'txt'):
+                # Stream rows so large result sets are never held in memory.
+                def export_rows(export=export, variants=variants):
+                    writer = csv.writer(_Echo()) if export == 'csv' else csv.writer(_Echo(), delimiter='\t', quoting=csv.QUOTE_NONE, escapechar='\\')
+                    yield writer.writerow(['Individual', 'Index', 'Pos_index', 'Chr', 'Pos', 'Variant_id', 'Ref', 'Alt', 'Qual', 'Filter', 'Info', 'Format', 'Genotype_col', 'Genotype', 'Read_depth', 'Gene', 'Mutation_type', 'Vartype', 'Genomes1k_maf', 'Dbsnp_maf', 'Esp_maf', 'Dbsnp_build', 'Sift', 'Sift_pred', 'Polyphen2', 'Polyphen2_pred', 'Condel', 'Condel_pred', 'DANN', 'CADD', 'Is_at_omim', 'Is_at_hgmd', 'Hgmd_entries', 'Effect', 'Impact', 'Func_class', 'Codon_change', 'Aa_change', 'Gene_name', 'Biotype', 'Gene_coding', 'Transcript_id', 'Exon_rank', 'Allele', 'Gene', 'Feature', 'Feature_type', 'Consequence', 'Cdna_position', 'Cds_position', 'Protein_position', 'Amino_acids', 'Codons', 'Existing_variation', 'Distance', 'Strand', 'Symbol', 'Symbol_source', 'Sift', 'Polyphen', 'Condel'])
+                    for variant in variants.iterator(chunk_size=2000):
+                        yield writer.writerow([variant.individual, variant.index, variant.pos_index, variant.chr, variant.pos, variant.variant_id, variant.ref, variant.alt, variant.qual, variant.filter, json.loads(variant.info), variant.format, variant.genotype_col, variant.genotype, variant.read_depth, variant.gene, variant.mutation_type, variant.vartype, variant.genomes1k_maf, variant.dbsnp_maf, variant.esp_maf, variant.dbsnp_build, variant.sift, variant.sift_pred, variant.polyphen2, variant.polyphen2_pred, variant.condel, variant.condel_pred, variant.dann, variant.cadd, variant.is_at_omim, variant.is_at_hgmd, variant.hgmd_entries, variant.snpeff_effect, variant.snpeff_impact, variant.snpeff_func_class, variant.snpeff_codon_change, variant.snpeff_aa_change, variant.snpeff_gene_name, variant.snpeff_biotype, variant.snpeff_gene_coding, variant.snpeff_transcript_id, variant.snpeff_exon_rank, variant.vep_allele, variant.vep_gene, variant.vep_feature, variant.vep_feature_type, variant.vep_consequence, variant.vep_cdna_position, variant.vep_cds_position, variant.vep_protein_position, variant.vep_amino_acids, variant.vep_codons, variant.vep_existing_variation, variant.vep_distance, variant.vep_strand, variant.vep_symbol, variant.vep_symbol_source, variant.vep_sift, variant.vep_polyphen, variant.vep_condel])
+                response = StreamingHttpResponse(export_rows(), content_type='text/csv' if export == 'csv' else 'text/plain')
+                response['Content-Disposition'] = 'attachment; filename=export.%s' % export
                 return response
 
             #summary
@@ -762,21 +764,16 @@ def family_analysis(request):
             # full result set is never loaded into memory at once.
             
             export = request.GET.get('export', '')
-            if export != '':
-                if export == 'csv':
-                    response = HttpResponse(content_type='text/csv')
-                    response['Content-Disposition'] = 'attachment; filename=export.csv'
-                    writer = csv.writer(response)
-                    
-                elif export == 'txt':
-                    response = HttpResponse(content_type='text/plain')
-                    response['Content-Disposition'] = 'attachment; filename=export.txt'
-                    writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_NONE)    
-                writer.writerow(['Individual', 'Index', 'Pos_index', 'Chr', 'Pos', 'Variant_id', 'Ref', 'Alt', 'Qual', 'Filter', 'Info', 'Format', 'Genotype_col', 'Genotype', 'Father Genotype', 'Mother Genotype', 'Read_depth', 'Gene', 'Mutation_type', 'Vartype', 'Genomes1k_maf', 'Dbsnp_maf', 'Esp_maf', 'Dbsnp_build', 'Sift', 'Sift_pred', 'Polyphen2', 'Polyphen2_pred', 'Condel', 'Condel_pred', 'DANN', 'CADD', 'Is_at_omim', 'Is_at_hgmd', 'Hgmd_entries', 'Effect', 'Impact', 'Func_class', 'Codon_change', 'Aa_change', 'Gene_name', 'Biotype', 'Gene_coding', 'Transcript_id', 'Exon_rank', 'Allele', 'Gene', 'Feature', 'Feature_type', 'Consequence', 'Cdna_position', 'Cds_position', 'Protein_position', 'Amino_acids', 'Codons', 'Existing_variation', 'Distance', 'Strand', 'Symbol', 'Symbol_source', 'Sift', 'Polyphen', 'Condel']) 
-                for variant in variants.iterator(chunk_size=2000):
-                    fill_parents_variants(request, [variant], None, parents_variants)
-                    # print 'variant', variant.index
-                    writer.writerow([variant.individual, variant.index, variant.pos_index, variant.chr, variant.pos, variant.variant_id, variant.ref, variant.alt, variant.qual, variant.filter, json.loads(variant.info), variant.format, variant.genotype_col, variant.genotype, variant.father, variant.mother, variant.read_depth, variant.gene, variant.mutation_type, variant.vartype, variant.genomes1k_maf, variant.dbsnp_maf, variant.esp_maf, variant.dbsnp_build, variant.sift, variant.sift_pred, variant.polyphen2, variant.polyphen2_pred, variant.condel, variant.condel_pred, variant.dann, variant.cadd, variant.is_at_omim, variant.is_at_hgmd, variant.hgmd_entries, variant.snpeff_effect, variant.snpeff_impact, variant.snpeff_func_class, variant.snpeff_codon_change, variant.snpeff_aa_change, variant.snpeff_gene_name, variant.snpeff_biotype, variant.snpeff_gene_coding, variant.snpeff_transcript_id, variant.snpeff_exon_rank, variant.vep_allele, variant.vep_gene, variant.vep_feature, variant.vep_feature_type, variant.vep_consequence, variant.vep_cdna_position, variant.vep_cds_position, variant.vep_protein_position, variant.vep_amino_acids, variant.vep_codons, variant.vep_existing_variation, variant.vep_distance, variant.vep_strand, variant.vep_symbol, variant.vep_symbol_source, variant.vep_sift, variant.vep_polyphen, variant.vep_condel])
+            if export in ('csv', 'txt'):
+                # Stream rows so large result sets are never held in memory.
+                def export_rows(export=export, variants=variants):
+                    writer = csv.writer(_Echo()) if export == 'csv' else csv.writer(_Echo(), delimiter='\t', quoting=csv.QUOTE_NONE, escapechar='\\')
+                    yield writer.writerow(['Individual', 'Index', 'Pos_index', 'Chr', 'Pos', 'Variant_id', 'Ref', 'Alt', 'Qual', 'Filter', 'Info', 'Format', 'Genotype_col', 'Genotype', 'Father Genotype', 'Mother Genotype', 'Read_depth', 'Gene', 'Mutation_type', 'Vartype', 'Genomes1k_maf', 'Dbsnp_maf', 'Esp_maf', 'Dbsnp_build', 'Sift', 'Sift_pred', 'Polyphen2', 'Polyphen2_pred', 'Condel', 'Condel_pred', 'DANN', 'CADD', 'Is_at_omim', 'Is_at_hgmd', 'Hgmd_entries', 'Effect', 'Impact', 'Func_class', 'Codon_change', 'Aa_change', 'Gene_name', 'Biotype', 'Gene_coding', 'Transcript_id', 'Exon_rank', 'Allele', 'Gene', 'Feature', 'Feature_type', 'Consequence', 'Cdna_position', 'Cds_position', 'Protein_position', 'Amino_acids', 'Codons', 'Existing_variation', 'Distance', 'Strand', 'Symbol', 'Symbol_source', 'Sift', 'Polyphen', 'Condel'])
+                    for variant in variants.iterator(chunk_size=2000):
+                        fill_parents_variants(request, [variant], None, parents_variants)
+                        yield writer.writerow([variant.individual, variant.index, variant.pos_index, variant.chr, variant.pos, variant.variant_id, variant.ref, variant.alt, variant.qual, variant.filter, json.loads(variant.info), variant.format, variant.genotype_col, variant.genotype, variant.father, variant.mother, variant.read_depth, variant.gene, variant.mutation_type, variant.vartype, variant.genomes1k_maf, variant.dbsnp_maf, variant.esp_maf, variant.dbsnp_build, variant.sift, variant.sift_pred, variant.polyphen2, variant.polyphen2_pred, variant.condel, variant.condel_pred, variant.dann, variant.cadd, variant.is_at_omim, variant.is_at_hgmd, variant.hgmd_entries, variant.snpeff_effect, variant.snpeff_impact, variant.snpeff_func_class, variant.snpeff_codon_change, variant.snpeff_aa_change, variant.snpeff_gene_name, variant.snpeff_biotype, variant.snpeff_gene_coding, variant.snpeff_transcript_id, variant.snpeff_exon_rank, variant.vep_allele, variant.vep_gene, variant.vep_feature, variant.vep_feature_type, variant.vep_consequence, variant.vep_cdna_position, variant.vep_cds_position, variant.vep_protein_position, variant.vep_amino_acids, variant.vep_codons, variant.vep_existing_variation, variant.vep_distance, variant.vep_strand, variant.vep_symbol, variant.vep_symbol_source, variant.vep_sift, variant.vep_polyphen, variant.vep_condel])
+                response = StreamingHttpResponse(export_rows(), content_type='text/csv' if export == 'csv' else 'text/plain')
+                response['Content-Disposition'] = 'attachment; filename=export.%s' % export
                 return response
             #summary
             summary['genes'] = variants.order_by().values_list('gene', flat=True).distinct()

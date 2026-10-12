@@ -6,6 +6,7 @@ from individuals.models import *
 from variants.models import *
 from django.shortcuts import get_object_or_404
 from mendelmd.access import owned_groups, owned_variants
+from mendelmd.access import owned_queryset
 from django.db.models import Count
 
 from django.http import HttpResponse
@@ -669,7 +670,7 @@ def filter_genelists(request, query, args, exclude):
     if len(genelists) > 0:
         
         for genelist_id in genelists:
-            genelist_obj = GeneList.objects.get(pk=genelist_id)
+            genelist_obj = get_object_or_404(owned_queryset(request, GeneList.objects.all()), pk=genelist_id)
             # print 'genelist'
             # print genelist_obj.genes
             gene_list = genelist_obj.genes.split(',')
@@ -696,7 +697,7 @@ def filter_genelists(request, query, args, exclude):
     if len(exclude_genelists) > 0:
         exclude_safe_gene_list = []
         for genelist_id in exclude_genelists:
-            genelist_obj = GeneList.objects.get(pk=genelist_id)
+            genelist_obj = get_object_or_404(owned_queryset(request, GeneList.objects.all()), pk=genelist_id)
             gene_list = genelist_obj.genes.split(',')
             for gene in gene_list:
                 if gene not in safe_gene_list:

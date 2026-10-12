@@ -17,6 +17,7 @@ from variants.models import *
 # from mysql_bulk_insert import bulk_insert
 from django.shortcuts import render, get_object_or_404
 import os
+import shlex
 import datetime
 from django.core.mail import send_mail
 # from snpedia.models import *
@@ -35,6 +36,13 @@ import vcf
 
 from datetime import timedelta
 from django.template.defaultfilters import slugify
+
+
+def _safe_stem(sample_name):
+    """File-name-safe version of a VCF sample name (no paths, no shell metacharacters)."""
+    import re
+    stem = re.sub(r'[^A-Za-z0-9._-]', '_', str(sample_name)).lstrip('.')
+    return stem or 'sample'
 
 
 @shared_task()
@@ -71,19 +79,19 @@ def VerifyVCF(individual_id):
     print('filename', filename)
 
     if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
+        command = 'cp %s sample.vcf' % (shlex.quote(filename))
         os.system(command)
     elif filename.endswith('.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
+        command = 'gunzip -c -d %s > sample.vcf' % (shlex.quote(filename))
         os.system(command)
     elif filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
+        command = 'unzip -p %s > sample.vcf' % (shlex.quote(filename))
         os.system(command)
     elif filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
+        command = 'unrar e %s' % (shlex.quote(filename))
         os.system(command)
         #now change filename to sample.vcf
-        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
+        command = 'mv %s sample.vcf' % (shlex.quote(filename.replace('.rar', '')))
         os.system(command)
 
 
@@ -95,14 +103,14 @@ def VerifyVCF(individual_id):
         #extract individuals and create new users
         for sample in vcf_reader.samples:
             print(sample)
-            command = "bcftools view -c 1 -s %s sample.vcf  > %s.vcf" % (sample, sample)
+            command = "bcftools view -c 1 -s %s sample.vcf  > %s" % (shlex.quote(sample), shlex.quote(_safe_stem(sample) + ".vcf"))
             print(command)
             os.system(command)
         #now rename original sample
         first_sample = vcf_reader.samples[0]
         original_name = individual.name
         individual.name += ' %s' % (first_sample)
-        individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, first_sample)
+        individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, _safe_stem(first_sample))
         individual.save()
         AnnotateVariants.delay(individual.id)
         #create other samples
@@ -114,9 +122,9 @@ def VerifyVCF(individual_id):
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
                 os.chmod(output_folder, 0o777)
-            command = 'mv %s.vcf %s' % (sample, output_folder)
+            command = 'mv %s %s' % (shlex.quote(_safe_stem(sample) + '.vcf'), shlex.quote(output_folder))
             os.system(command)
-            new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, sample)
+            new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, _safe_stem(sample))
             new_individual.save()
             AnnotateVariants.delay(new_individual.id)
     else:
@@ -181,7 +189,7 @@ def AnnotateVariants(individual_id):
     #ex. zip, vcf, gz, rar
     #check if user uploaded a compressed vcf
     if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
+        command = 'cp %s sample.vcf' % (shlex.quote(filename))
         os.system(command)
     elif filename.endswith('.tar.gz'):
         print('targz')
@@ -193,21 +201,21 @@ def AnnotateVariants(individual_id):
                     os.mkdir('outdir')
                 tar.extract(tarinfo.name, 'outdir')
                 vcfs = os.listdir('outdir')
-                command = 'cp outdir/%s sample.vcf' % (vcfs[0])
+                command = 'cp %s sample.vcf' % (shlex.quote('outdir/' + vcfs[0]))
                 print(command)
                 os.system(command)
     
     if filename.endswith('.vcf.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
+        command = 'gunzip -c -d %s > sample.vcf' % (shlex.quote(filename))
         os.system(command)
     if filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
+        command = 'unzip -p %s > sample.vcf' % (shlex.quote(filename))
         os.system(command)
     if filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
+        command = 'unrar e %s' % (shlex.quote(filename))
         os.system(command)
         #now change filename to sample.vcf
-        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
+        command = 'mv %s sample.vcf' % (shlex.quote(filename.replace('.rar', '')))
         os.system(command)
 
 
@@ -266,7 +274,7 @@ Now we need to insert this data to the database.
         PopulateVariants.delay(individual.id)
 
         if individual.vcf_file.name.endswith(".vcf"):
-            command = 'bgzip %s' % (filename)
+            command = 'bgzip %s' % (shlex.quote(filename))
             os.system(command)
             individual.vcf_file.name = '%s.gz' % (individual.vcf_file.name)
             individual.save(update_fields=['vcf_file'])

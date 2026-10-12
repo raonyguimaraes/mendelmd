@@ -130,6 +130,11 @@ class SampleGroupUpdateView(OwnedSampleGroupMixin, UpdateView):
     model = SampleGroup
     fields = '__all__'
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['members'].queryset = owned_queryset(self.request, Sample.objects.all())
+        return form
+
 def sample_import_vcf(request, pk):
     sample = owned_or_404(request, Sample, pk=pk)
     messages.add_message(request, messages.SUCCESS, 'VCF from sample {} will be imported'.format(sample.name))

@@ -1,4 +1,5 @@
-from mendelmd.access import owned_queryset, owned_or_404, OwnedQuerysetMixin
+from mendelmd.access import owned_queryset, owned_or_404, owned_sample_groups, OwnedQuerysetMixin
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -152,9 +153,9 @@ class AnalysisDetailView(OwnedQuerysetMixin, DetailView):
             # for group in self.object.params['sample_groups']:
                 # files = File.objects.filter()
                 sample_groups = self.object.params['sample_groups']
-                samples = SampleGroup.objects.filter(pk__in=sample_groups).values_list('members', flat=True)
+                samples = owned_sample_groups(self.request.user).filter(pk__in=sample_groups).values_list('members', flat=True)
                 # print('samples', samples)
-                context['files'] = File.objects.filter(sample__in=samples)
+                context['files'] = owned_queryset(self.request, File.objects.filter(sample__in=samples))
                 # print(context['files'])
         if 'files' in self.object.params:
             files = self.object.params['files']
@@ -172,10 +173,10 @@ def human_size(bytes, units=[' bytes','KB','MB','GB','TB', 'PB', 'EB']):
     """ Returns a human readable string reprentation of bytes"""
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes>>10, units[1:])
 
+@login_required
 def run_analysis(request, analysis_id):
-    
-    print('run analysis')
-    create_analysis_tasks.delay(analysis_id)
+    analysis = owned_or_404(request, Analysis, pk=analysis_id)
+    create_analysis_tasks.delay(analysis.id)
 
     return redirect('analysis-detail', analysis_id)
     

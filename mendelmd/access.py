@@ -53,7 +53,9 @@ def owned_groups(user):
         return qs
     if not getattr(user, "is_authenticated", False):
         return qs.none()
-    return qs.exclude(members__in=Individual.objects.exclude(user=user)).distinct()
+    # Groups have no owner column; a group belongs to you when it has members
+    # and all of them are yours. Empty groups are reachable by staff only.
+    return qs.filter(members__isnull=False).exclude(members__in=Individual.objects.exclude(user=user)).distinct()
 
 
 def restrict_analysis_form(form, user):
@@ -91,7 +93,7 @@ def owned_sample_groups(user):
         return qs
     if not getattr(user, "is_authenticated", False):
         return qs.none()
-    return qs.exclude(members__in=Sample.objects.exclude(user=user)).distinct()
+    return qs.filter(members__isnull=False).exclude(members__in=Sample.objects.exclude(user=user)).distinct()
 
 
 class OwnedSampleGroupMixin:

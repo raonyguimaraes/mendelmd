@@ -251,6 +251,21 @@ def parse_line(line, csq_fields):
     )
 
 
+def carries_alt_allele(line):
+    """False for hom-ref (0/0) and no-call (./.) rows of a VCF with a sample column.
+
+    Those rows are not variants of the individual, and storing them made the
+    family filters treat a parent's 0/0 as "parent has a variant here".
+    Sites-only VCFs (no sample column) are kept.
+    """
+    cols = line.rstrip("\n").split("\t")
+    if len(cols) <= 9:
+        return True
+    gt = cols[-1].split(":")[0]
+    calls = [c for c in re.split(r"[/|]", gt) if c not in (".", "")]
+    return any(c != "0" for c in calls)
+
+
 def populate_variants(individual, vcf_path):
     """Replace the individual's rows in the variants table with the file's contents.
 
@@ -267,7 +282,7 @@ def populate_variants(individual, vcf_path):
                     continue
                 if fields is None:
                     fields = csq_format(header)
-                if not line.strip():
+                if not line.strip() or not carries_alt_allele(line):
                     continue
                 batch.append(Variant(individual=individual, **parse_line(line, fields)))
                 if len(batch) >= BATCH_SIZE:
