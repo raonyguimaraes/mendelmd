@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .landing { max-width: 960px; margin: 24px auto 48px; }
+  .landing .hero { text-align: center; padding: 32px 16px 24px; }
+  .landing .hero h1 { font-size: 36px; font-weight: 600; margin: 0 0 12px; }
+  .landing .hero p.lead { font-size: 18px; color: #555; max-width: 680px; margin: 0 auto 24px; }
+  .landing .hero .btn { margin: 4px 6px; min-width: 140px; }
+  .landing .features { display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0; }
+  .landing .feature { flex: 1 1 260px; background: #fff; border: 1px solid #e3e5e8; border-radius: 6px; padding: 18px 20px; }
+  .landing .feature h3 { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
+  .landing .feature p { color: #555; margin: 0; }
+  .landing .refs { background: #fff; border: 1px solid #e3e5e8; border-radius: 6px; padding: 18px 20px; margin-top: 8px; }
+  .landing .refs h3 { font-size: 17px; font-weight: 600; margin: 0 0 10px; }
+  .landing .refs li { margin-bottom: 6px; }
+  .landing .note { color: #777; font-size: 13px; text-align: center; margin-top: 24px; }
+</style>
+
+<div class="landing">
+  <div class="hero">
+    <h1>Mendel,MD</h1>
+    <p class="lead">
+      Open-source web software for annotating, filtering and prioritising variants from
+      exomes and genomes in Mendelian disorders. Upload a VCF and narrow it down to a short
+      list of candidate variants without writing code.
+    </p>
+    <a class="btn btn-primary btn-lg" href="{% url 'account_signup' %}">Create an account</a>
+    <a class="btn btn-default btn-lg" href="{% url 'account_login' %}">Sign in</a>
+    <a class="btn btn-default btn-lg" href="https://github.com/raonyguimaraes/mendelmd" target="_blank" rel="noopener">Source code</a>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <h3>Annotation</h3>
+      <p>VCFs are annotated with Pynnotator 3, a VEP-based pipeline, using hg38 by default. Results can be exported as Parquet.</p>
+    </div>
+    <div class="feature">
+      <h3>Filtering</h3>
+      <p>Filter by population frequency, predicted impact, pathogenicity scores, inheritance model and gene lists.</p>
+    </div>
+    <div class="feature">
+      <h3>Family analysis</h3>
+      <p>Look for de novo, recessive and compound heterozygous variants across members of a family.</p>
+    </div>
+  </div>
+
+  <div class="refs">
+    <h3>Publications</h3>
+    <ul>
+      <li><a href="https://doi.org/10.1371/journal.pcbi.1005520" target="_blank" rel="noopener">Mendel,MD: A user-friendly open-source web tool for analyzing WES and WGS in the diagnosis of patients with Mendelian disorders.</a> PLOS Computational Biology, 2017.</li>
+      <li><a href="https://doi.org/10.1186/1471-2105-16-S8-A2" target="_blank" rel="noopener">Mendel,MD: a user-friendly online program for clinical exome analysis.</a> BMC Bioinformatics, 2015.</li>
+    </ul>
+  </div>
+
+  <p class="note">
+    For research use only.
+    Mendel,MD is BSD-3 licensed open-source software.
+  </p>
+</div>
+{% endblock content %}

@@ -3,21 +3,26 @@
 
 <header class="main-header">
     <!-- Logo -->
-    <a href="{% url 'dashboard' %}" class="logo">
+    {% if user.is_authenticated %}<a href="{% url 'dashboard' %}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><img src="{% static "images/mendelmd.png" %}" style="height:30px;"></span>
       <!-- logo for regular state and mobile devices -->
       <span class="logo-lg"><img src="{% static "images/mendelmd.png" %}" style="height:35px;"> Mendel,MD</span>
-    </a>
+    </a>{% endif %}
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
       <!-- Sidebar toggle button-->
+      {% if user.is_authenticated %}
       <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
+      {% else %}
+      <a href="/" class="navbar-brand" style="padding:8px 15px;"><img src="{% static "images/mendelmd.png" %}" style="height:30px;display:inline-block;"> <b>Mendel,MD</b></a>
+      {% endif %}
 
       <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
 
+          {% if user.is_authenticated %}
           <ul class="nav navbar-nav">
             <!-- <li class="active"><a href="{% url 'dashboard' %}"">Dashboard<span class="sr-only">(current)</span></a></li> -->
             <li><a href="{% url 'individual_create' %}"><i class="fa fa-cloud-upload"></i> <span>Upload</span></a></li>
@@ -98,6 +103,7 @@
             {% endif %}
             
           </ul>
+          {% endif %}
           
           <!-- <form class="navbar-form navbar-left" role="search">
             <div class="form-group">

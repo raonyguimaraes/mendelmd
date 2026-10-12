@@ -1,3 +1,4 @@
+from django.http import Http404
 import gzip
 import json
 import os
@@ -25,6 +26,15 @@ from individuals.forms import IndividualForm, ComparisonForm, GroupForm, Browser
 from individuals.models import Individual, Group
 from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
 from variants.models import Variant
+
+
+def get_owned_individual(request, individual_id):
+    """Return the individual only if the requesting user owns it (staff may see all)."""
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not request.user.is_staff and individual.user_id != request.user.id:
+        raise Http404
+    return individual
+
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
@@ -107,7 +117,7 @@ def create(request):
 # Create your views here.
 @login_required
 def edit(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     if request.method == 'POST':
         form = IndividualForm(request.POST, instance=individual)
         if form.is_valid():
@@ -191,7 +201,7 @@ def _load_parquet_variants(individual):
 
 def view(request, individual_id):
 
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
 
     parquet_columns, parquet_rows = _load_parquet_variants(individual)
 
@@ -233,7 +243,7 @@ def view(request, individual_id):
 def browse(request, individual_id):
 
     query_string = request.META['QUERY_STRING']
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     query = {}
     
 #    DEFAULT_SORT = 'pk'
@@ -335,17 +345,17 @@ def list(request):
         
         if request.POST['selectionField'] == "Show":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 individual.is_featured = True
                 individual.save()
         if request.POST['selectionField'] == "Hide":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 individual.is_featured = False
                 individual.save()
         if request.POST['selectionField'] == "Delete":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
 
 
                 individual_id = individual.id
@@ -364,16 +374,16 @@ def list(request):
             #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 PopulateVariants.delay(individual.id)
             
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 AnnotateVariants.delay(individual.id)
         if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 Find_Medical_Conditions_and_Medicines.delay(individual.id)
         
     
@@ -413,7 +423,7 @@ def list(request):
 
 @login_required
 def annotate(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     individual.status = 'new'
     individual.n_lines = 0
     VerifyVCF.delay(individual.id)
@@ -423,7 +433,7 @@ def annotate(request, individual_id):
 
 @login_required
 def populate(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     PopulateVariants.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being populated.")
 
@@ -432,7 +442,7 @@ def populate(request, individual_id):
 
 @login_required
 def populate_mongo(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     PopulateMongoVariants.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being inserted at MongoDB.")
 
@@ -440,7 +450,7 @@ def populate_mongo(request, individual_id):
 
 
 def download(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
@@ -476,7 +486,7 @@ def download(request, individual_id):
 
 
 def download_annotated(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
