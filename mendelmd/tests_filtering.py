@@ -83,6 +83,14 @@ class ParseLineTests(TestCase):
         self.assertEqual(v["esp_maf"], 0.3)
         self.assertEqual(v["dbsnp_maf"], 0.3)
 
+    def test_genotype_beats_info_flags(self):
+        line = LINES[0].replace("\t0/1:31", "\t1/1:31")  # INFO still says HET
+        self.assertEqual(parse_line(line, self.fields)["mutation_type"], "HOM")
+        line = LINES[0].replace("\t0/1:31", "\t0/0:31")
+        self.assertIsNone(parse_line(line, self.fields)["mutation_type"])
+        line = LINES[0].replace("\t0/1:31", "\t./.:31")
+        self.assertEqual(parse_line(line, self.fields)["mutation_type"], "HET")
+
     def test_helpers(self):
         self.assertEqual(split_score(""), (None, None))
         self.assertEqual(split_score("benign(0.1)"), ("benign", 0.1))

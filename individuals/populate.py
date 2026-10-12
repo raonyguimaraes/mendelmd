@@ -164,18 +164,19 @@ def parse_line(line, csq_fields):
     if "DP" in fmt and fmt.index("DP") < len(sample) and sample[fmt.index("DP")].isdigit():
         read_depth = int(sample[fmt.index("DP")])
 
-    if "HOM" in info:
+    # The sample's own genotype wins; the HET/HOM INFO flags are only a
+    # fallback because in multi-sample VCFs they need not describe this sample.
+    calls = [c for c in genotype.split("/") if c not in (".", "")]
+    if len(calls) == 2 and calls[0] == calls[1]:
+        mutation_type = "HOM" if calls[0] != "0" else None
+    elif len(calls) == 2:
+        mutation_type = "HET"
+    elif "HOM" in info:
         mutation_type = "HOM"
     elif "HET" in info:
         mutation_type = "HET"
     else:
-        calls = [c for c in genotype.split("/") if c not in (".", "")]
-        if len(calls) == 2 and calls[0] != "0" and calls[0] == calls[1]:
-            mutation_type = "HOM"
-        elif len(set(calls)) == 2:
-            mutation_type = "HET"
-        else:
-            mutation_type = None
+        mutation_type = None
 
     csq = {}
     if "CSQ" in info and csq_fields:
