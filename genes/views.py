@@ -395,7 +395,9 @@ def populate(request):
 @login_required
 def view(request, gene_name):
 #    gene = owned_variants(request).filter(gene_name=gene_name).annotate(num_individuals=Count('individuals'))
-    gene_object = Gene.objects.get(symbol=gene_name)
+    gene_object = Gene.objects.filter(symbol=gene_name).first()
+    if gene_object is None:
+        raise Http404('Unknown gene')
     
     #get all variants present in this gene
     gene_variants = owned_variants(request).filter(gene=gene_name)

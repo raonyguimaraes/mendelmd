@@ -294,8 +294,9 @@ def filter_by_esp(request, args):
         esp = request.GET.get('esp_frequency', '')
         if esp != '':
             esp = esp.split(' - ')
-            min = float(esp[0]) 
-            max = float(esp[1])
+            # A single value means "at most"; the slider sends "min - max".
+            min = float(esp[0]) if len(esp) == 2 else 0
+            max = float(esp[-1])
             args.append((Q(esp_maf__lte=max) & Q(esp_maf__gte=min)) | Q(esp_maf__isnull=True))     
                
 # def filter_genomes1000(request, args):

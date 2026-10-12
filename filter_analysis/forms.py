@@ -149,18 +149,18 @@ class FilterAnalysisForm(forms.Form):
                ('>', '>= '),
                ('=', '='),)
     
-    genomes1000 = forms.CharField(max_length=50, required=False, label="1000 GENOMES FREQUENCY")
-    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN 1000GENOMES")
+    genomes1000 = forms.CharField(max_length=50, required=False, label="GNOMAD GENOMES FREQUENCY")
+    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD GENOMES")
     
     #DBSNP Frequency
 #    dbsnp_freq_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP Frequency")
     dbsnp_frequency = forms.CharField(max_length=50, required=False, label="")
-    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN DBSNP")
+    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD (EXOMES OR GENOMES)")
     
     #Variation Server Frequency
 #    variationserver_option = forms.ChoiceField(required=False, choices=CHOICES, label="ESP5400 Frequency")
     esp_frequency = forms.CharField(max_length=50, required=False, label="")
-    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN EXOME SEQUENCING PROJECT")
+    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD EXOMES")
     
     # hi_frequency = forms.CharField(max_length=50, required=False, label="")
     # hi_exclude = forms.BooleanField(required=False, label="Exclude all variants not in genes with Haploinsufficiency")
@@ -338,18 +338,18 @@ class FamilyAnalysisForm(forms.Form):
                ('>', '>= '),
                ('=', '='),)
     
-    genomes1000 = forms.CharField(max_length=50, required=False, label="1000 GENOMES FREQUENCY")
-    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN 1000GENOMES")
+    genomes1000 = forms.CharField(max_length=50, required=False, label="GNOMAD GENOMES FREQUENCY")
+    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD GENOMES")
     
     #DBSNP Frequency
 #    dbsnp_freq_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP Frequency")
     dbsnp_frequency = forms.CharField(max_length=50, required=False, label="")
-    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN DBSNP")
+    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD (EXOMES OR GENOMES)")
     
     #Variation Server Frequency
 #    variationserver_option = forms.ChoiceField(required=False, choices=CHOICES, label="ESP5400 Frequency")
     esp_frequency = forms.CharField(max_length=50, required=False, label="")
-    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN EXOME SEQUENCING PROJECT")
+    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD EXOMES")
     
     # hi_frequency = forms.CharField(max_length=50, required=False, label="")
     # hi_exclude = forms.BooleanField(required=False, label="Exclude all variants not in genes with Haploinsufficiency")
