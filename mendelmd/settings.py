@@ -90,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'mendelmd.middleware.SiteAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'mendelmd.urls'
@@ -218,6 +219,18 @@ ACCOUNT_SESSION_REMEMBER=True
 #ACCOUNT_UNIQUE_EMAIL=True
 SOCIALACCOUNT_AUTO_SIGNUP=True
 SOCIALACCOUNT_QUERY_EMAIL=True
+
+# Sign-ups are closed while per-user access controls are being completed.
+# Set SIGNUP_OPEN=True in the environment to reopen.
+SIGNUP_OPEN = os.environ.get('SIGNUP_OPEN', 'False') == 'True'
+ACCOUNT_ADAPTER = 'mendelmd.adapters.AccountAdapter'
+# Bot protection for open sign-ups: honeypot + minimum fill time form, and a
+# tighter per-IP signup rate limit. nginx overwrites X-Real-IP with the real
+# client address, so it is safe to trust here.
+ACCOUNT_FORMS = {'signup': 'mendelmd.signup_form.ProtectedSignupForm'}
+ACCOUNT_RATE_LIMITS = {'signup': '5/h/ip'}
+ALLAUTH_TRUSTED_CLIENT_IP_HEADER = 'X-Real-IP'
+SOCIALACCOUNT_ADAPTER = 'mendelmd.adapters.SocialAccountAdapter'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

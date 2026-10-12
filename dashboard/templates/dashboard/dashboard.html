@@ -185,8 +185,19 @@
                                     </div>
                                     <small class="ann-stage text-muted">{{ individual.status }}</small>
                                 </td>
-                                                                <td>
-                                                                    <a href="{% url 'individual_view' individual.id %}" class="btn btn-xs btn-info">Details</a>
+                                <td>
+                                    <a href="{% url 'individual_view' individual.id %}" class="btn btn-xs btn-info">Details</a>
+                                    <a href="{% url 'individual_annotation_monitor' individual.id %}" class="btn btn-xs btn-default">
+                                        <i class="fa fa-eye"></i> Watch
+                                    </a>
+                                    <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-warning">
+                                        <i class="fa fa-refresh"></i> Reannotate
+                                    </a>
+                                    {% if user.is_staff %}
+                                    <a href="{% url 'individual_populate' individual.id %}" class="btn btn-xs btn-default">Repopulate</a>
+                                    <a href="{% url 'individual_edit' individual.id %}" class="btn btn-xs btn-default">Edit</a>
+                                    <a href="{% url 'individual_delete' individual.id %}" class="btn btn-xs btn-danger">Delete</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% empty %}

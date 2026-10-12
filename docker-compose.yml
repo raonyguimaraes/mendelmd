@@ -17,19 +17,18 @@ services:
    build: .
    command: bash docker-entrypoint.sh
    environment:
-     - SECRET_KEY=django-insecure-dev-only-change-in-production
-     - USE_DOCKER=yes
-     - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+     SIGNUP_OPEN: "True"
+     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
    volumes:
-      - .:/code
-      - ./pynnotator:/pynnotator
+     - .:/code
+     - /home/raony/dev/pynnotator:/pynnotator
    ports:
-     - "127.0.0.1:8003:8000"
+     - "127.0.0.1:8002:8000"
+   mem_limit: 4g
    restart: always
    depends_on:
      db:
        condition: service_healthy
-     
-    
+
  # annotator:
  #  build: ./compose/annotator

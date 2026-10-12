@@ -9,16 +9,17 @@ from variants.models import *
 
 import pickle
 import json
+from mendelmd.access import owned_queryset, owned_or_404
 
 @login_required
 def index(request):
-    variants = Variant.objects.all()[:10]
+    variants = owned_queryset(request, Variant.objects.all(), 'individual__user')[:10]
     context = {'variants':variants}
     return render(request, 'variants/index.html', context)
 
 @login_required
 def view(request, variant_id):
-    variant = get_object_or_404(Variant, pk=variant_id)
+    variant = owned_or_404(request, Variant, owner_field='individual__user', pk=variant_id)
 
     variant.info = json.loads(variant.info)
 

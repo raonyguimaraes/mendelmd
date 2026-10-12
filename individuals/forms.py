@@ -8,17 +8,24 @@ from variants.models import *
 class IndividualForm(ModelForm):
 
     name = forms.CharField(max_length=600, required=False)
-    vcf_file = forms.CharField(max_length=600, required=False)
 
     class Meta:
         model = Individual
-        fields = '__all__'
+        # Only the display name is user-editable. vcf_file is set by the upload
+        # view; letting users post it allowed arbitrary paths (file read and
+        # shell injection in the annotation tasks).
+        fields = ['name']
         #'user', 'shared_with_users', , 'is_featured', 'is_public', 'vcf_file', 'vcf_header', 'status', 'n_variants', 'n_lines', 'creation_date', 'modified_date', 'annotation_time', 'insertion_time', 'insertion_time_mongo'
 
 class GroupForm(ModelForm):
     class Meta:
         model = Group
         fields = '__all__'
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        from mendelmd.access import owned_individuals
+        self.fields['members'].queryset = owned_individuals(user)
 
 
 class ControlGroupForm(ModelForm):
@@ -45,8 +52,8 @@ class ComparisonForm(forms.Form):
 
         elif not user.is_authenticated:
             
-            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
-            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
+            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.none(), required=False)
+            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.none(), required=False)
         else:
             print('user', user)
             self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)

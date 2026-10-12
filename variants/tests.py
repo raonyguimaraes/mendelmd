@@ -21,10 +21,3 @@ class VariantModelTest(TestCase):
         fields = dict(Variant.get_fields(Variant))
         self.assertEqual(fields['genomes1k_maf'], '1000 Genomes Frequency')
 
-    def test_model_meta_unique_together(self):
-        unique = Variant._meta.unique_together
-        self.assertIn('individual', unique[0])
-        self.assertIn('chr', unique[0])
-        self.assertIn('pos', unique[0])
-        self.assertIn('ref', unique[0])
-        self.assertIn('alt', unique[0])

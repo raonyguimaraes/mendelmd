@@ -1,3 +1,4 @@
+from mendelmd.access import owned_variants, owned_queryset, owned_groups, OwnedQuerysetMixin
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -207,8 +208,8 @@ def analysis(request):
     
     print('query string')
     print(query_string) 
-    filteranalysis = FilterAnalysis.objects.all().prefetch_related('user')
-    filterconfigs = FilterConfig.objects.all().prefetch_related('user')
+    filteranalysis = owned_queryset(request, FilterAnalysis.objects.all()).prefetch_related('user')
+    filterconfigs = owned_queryset(request, FilterConfig.objects.all()).prefetch_related('user')
     if query_string != [''] and query_string != '' :
         if request.method == 'GET':
             
@@ -288,7 +289,7 @@ def analysis(request):
             exclude_individuals_list = []
             if len(exclude_groups) > 0:
                 for group_id in exclude_groups:
-                    group_individuals = get_object_or_404(Group, pk=group_id).members.values_list('id', flat=True)
+                    group_individuals = get_object_or_404(owned_groups(request.user), pk=group_id).members.values_list('id', flat=True)
                     for individual in group_individuals:
                          exclude_individuals_list.append(str(str(individual)))
 #                    print exclude_individuals_list
@@ -301,7 +302,7 @@ def analysis(request):
                 
                 #for all individuals in exclude list
                 for individual in exclude_individuals_list:
-                    individual_variants = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values('chr', 'pos', 'genotype')
+                    individual_variants = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values('chr', 'pos', 'genotype')
                     for variant in individual_variants:
                         id = '%s-%s' % (variant['chr'], variant['pos'])                        
                         if id in exclude_individuals_variants:
@@ -318,7 +319,7 @@ def analysis(request):
             individuals_list = []
             if len(groups) > 0:
                 for group_id in groups:
-                    group_individuals = get_object_or_404(Group, pk=group_id).members.values_list('id', flat=True)
+                    group_individuals = get_object_or_404(owned_groups(request.user), pk=group_id).members.values_list('id', flat=True)
                     for individual in group_individuals:
                          individuals_list.append(str(str(individual)))
                     print(individuals_list)
@@ -332,7 +333,7 @@ def analysis(request):
     #                print 'now excluding variants from exclude_individuals'
                     variants_ids = []
                     #get variants from all select individuals    
-                    variants = Variant.objects.filter(*args, **query).exclude(**exclude).values('id', 'chr', 'pos', 'genotype')
+                    variants = owned_variants(request).filter(*args, **query).exclude(**exclude).values('id', 'chr', 'pos', 'genotype')
                     for variant in variants:
                         id = '%s-%s' % (variant['chr'], variant['pos'])
                         if id in exclude_individuals_variants:
@@ -368,7 +369,7 @@ def analysis(request):
 #                        print query
 #                        print exclude
                         print('get list of all genes for each individual')
-                        individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values('gene').exclude(gene="").annotate(count=Count('gene')).distinct() #.aggregate(Count('gene', distinct=True))
+                        individual_genes = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values('gene').exclude(gene="").annotate(count=Count('gene')).distinct() #.aggregate(Count('gene', distinct=True))
                         print(len(individual_genes))
     #                    print len(individual_genes)
                         if variants_per_gene_option == '>':    
@@ -401,7 +402,7 @@ def analysis(request):
                     #get all genes from individual
                     individual_gene_list = []
                     for individual in individuals_list:
-                        individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
+                        individual_genes = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
                         individual_genes = set(list(individual_genes))
                         individual_gene_list.append(individual_genes)
                     genes_in_common_list = set.intersection(*individual_gene_list)                    
@@ -414,14 +415,14 @@ def analysis(request):
                     individual_positions_list = []
                     for individual in individuals_list:
                         #should be done with an index ex. 1-2835763-C-T
-                        individual_positions = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('pos', flat=True).distinct()
+                        individual_positions = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('pos', flat=True).distinct()
                         individual_positions = set(list(individual_positions))
                         individual_positions_list.append(individual_positions)
                     positions_in_common_list = set.intersection(*individual_positions_list)                    
                     query['pos__in'] = positions_in_common_list#genes_in_common_list
             
             #last call to the DATABASE Finally!!!!!! 
-            variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
+            variants = owned_variants(request).filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
             #export to csv
             export = request.GET.get('export', '')
             if export != '':
@@ -454,8 +455,8 @@ def analysis(request):
                     variant.granthamscore, variant.protein_position])
                 return response
 
-            summary['genes'] = variants.values_list('gene', flat=True)
-            summary['genes'] = sorted(list(set(summary['genes'])))
+            summary['genes'] = variants.order_by().values_list('gene', flat=True).distinct()
+            summary['genes'] = sorted(g for g in set(summary['genes']) if g)
             summary['n_genes'] =  len(summary['genes'])
             summary['has_variants'] = True
             
@@ -481,7 +482,7 @@ def analysis(request):
                 genes_omim = []
                 genes_cgd = []
 
-            summary['n_variants'] = len(variants)
+            summary['n_variants'] = variants.count()
 
             #Do pathway analysis here
             pathways = Pathway.objects.all().order_by('name')
@@ -680,8 +681,8 @@ def index(request):
     
 #     print 'query string'
 #     print query_string 
-#     filteranalysis = FilterAnalysis.objects.all()
-#     filterconfigs = FilterConfig.objects.all()
+#     filteranalysis = owned_queryset(request, FilterAnalysis.objects.all())
+#     filterconfigs = owned_queryset(request, FilterConfig.objects.all())
 #     if query_string != [''] and query_string != '' :
 #         if request.method == 'GET':
             
@@ -909,7 +910,7 @@ def index(request):
 #             exclude_individuals_list = []
 #             if len(exclude_groups) > 0:
 #                 for group_id in exclude_groups:
-#                     group_individuals = get_object_or_404(Group, pk=group_id).members.values_list('id', flat=True)
+#                     group_individuals = get_object_or_404(owned_groups(request.user), pk=group_id).members.values_list('id', flat=True)
 #                     for individual in group_individuals:
 #                          exclude_individuals_list.append(unicode(str(individual)))
 #                     print exclude_individuals_list
@@ -924,7 +925,7 @@ def index(request):
                 
 #                 #for all individuals in exclude list
 #                 for individual in exclude_individuals_list:
-#                     individual_variants = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values('chromossome', 'pos', 'genotype')
+#                     individual_variants = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values('chromossome', 'pos', 'genotype')
 #                     for variant in individual_variants:
 #                         id = '%s-%s' % (variant['chromossome'], variant['pos'])                        
 #                         if id in exclude_individuals_variants:
@@ -941,7 +942,7 @@ def index(request):
 #             individuals_list = []
 #             if len(groups) > 0:
 #                 for group_id in groups:
-#                     group_individuals = get_object_or_404(Group, pk=group_id).members.values_list('id', flat=True)
+#                     group_individuals = get_object_or_404(owned_groups(request.user), pk=group_id).members.values_list('id', flat=True)
 #                     for individual in group_individuals:
 #                          individuals_list.append(unicode(str(individual)))
 #                     print individuals_list
@@ -956,7 +957,7 @@ def index(request):
 #     #                print 'now excluding variants from exclude_individuals'
 #                     variants_ids = []
 #                     #get variants from all select individuals    
-#                     variants = Variant.objects.filter(*args, **query).exclude(**exclude).values('id', 'chromossome', 'pos', 'genotype')
+#                     variants = owned_variants(request).filter(*args, **query).exclude(**exclude).values('id', 'chromossome', 'pos', 'genotype')
 #     #                print 'variants from selected individuals'
 #     #                print variants.count() 
                     
@@ -981,7 +982,7 @@ def index(request):
 #                     genes_exclude_list = []
 #                     for individual in individuals_list:
 #     #                    print individual
-#                         individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values('gene').exclude(gene="").annotate(count=Count('gene')).distinct() #.aggregate(Count('gene', distinct=True))
+#                         individual_genes = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values('gene').exclude(gene="").annotate(count=Count('gene')).distinct() #.aggregate(Count('gene', distinct=True))
 #     #                    print len(individual_genes)
 #                         if variants_per_gene_option == '>':    
 #                             for gene in individual_genes:
@@ -1011,7 +1012,7 @@ def index(request):
 #                     individual_gene_list = []
 #                     for individual in individuals_list:
 #     #                    print individual
-#                         individual_genes = Variant.objects.filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
+#                         individual_genes = owned_variants(request).filter(individual__id=individual, *args, **query).exclude(**exclude).values_list('gene', flat=True).exclude(gene="").distinct()
 #                         individual_genes = set(list(individual_genes))
 #                         individual_gene_list.append(individual_genes)
 #     #                print 'intersection'
@@ -1031,6 +1032,6 @@ def index(request):
 #     #        print args
 #     #        print query
 #     #        print exclude
-#             variants = Variant.objects.filter(*args, **query).exclude(**exclude).order_by('gene')
+#             variants = owned_variants(request).filter(*args, **query).exclude(**exclude).order_by('gene')
 #             return variants
 
