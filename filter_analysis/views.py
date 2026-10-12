@@ -671,6 +671,8 @@ def fill_parents_variants(request, variants, children_positions, parents_variant
     #         parents_variants[individual][gene][id][variant['mutation_type']] = 0
     # print 'get position from childs'
     for variant in variants:
+        variant.father = None
+        variant.mother = None
         id = '%s-%s' % (variant.chr, variant.pos)
         gene = variant.gene
         if gene in  parents_variants['father']:
@@ -756,8 +758,8 @@ def family_analysis(request):
             children_positions = owned_variants(request).filter(*args, **query).exclude(**exclude).values_list('pos_index', flat=True)
             
             # export_to_csv()
-            print('fill parents variants')
-            fill_parents_variants(request, variants, children_positions, parents_variants)
+            # Parent genotypes are attached per row (page or export stream) so the
+            # full result set is never loaded into memory at once.
             
             export = request.GET.get('export', '')
             if export != '':
@@ -771,7 +773,8 @@ def family_analysis(request):
                     response['Content-Disposition'] = 'attachment; filename=export.txt'
                     writer = csv.writer(response, delimiter='\t', quoting=csv.QUOTE_NONE)    
                 writer.writerow(['Individual', 'Index', 'Pos_index', 'Chr', 'Pos', 'Variant_id', 'Ref', 'Alt', 'Qual', 'Filter', 'Info', 'Format', 'Genotype_col', 'Genotype', 'Father Genotype', 'Mother Genotype', 'Read_depth', 'Gene', 'Mutation_type', 'Vartype', 'Genomes1k_maf', 'Dbsnp_maf', 'Esp_maf', 'Dbsnp_build', 'Sift', 'Sift_pred', 'Polyphen2', 'Polyphen2_pred', 'Condel', 'Condel_pred', 'DANN', 'CADD', 'Is_at_omim', 'Is_at_hgmd', 'Hgmd_entries', 'Effect', 'Impact', 'Func_class', 'Codon_change', 'Aa_change', 'Gene_name', 'Biotype', 'Gene_coding', 'Transcript_id', 'Exon_rank', 'Allele', 'Gene', 'Feature', 'Feature_type', 'Consequence', 'Cdna_position', 'Cds_position', 'Protein_position', 'Amino_acids', 'Codons', 'Existing_variation', 'Distance', 'Strand', 'Symbol', 'Symbol_source', 'Sift', 'Polyphen', 'Condel']) 
-                for variant in variants:
+                for variant in variants.iterator():
+                    fill_parents_variants(request, [variant], None, parents_variants)
                     # print 'variant', variant.index
                     writer.writerow([variant.individual, variant.index, variant.pos_index, variant.chr, variant.pos, variant.variant_id, variant.ref, variant.alt, variant.qual, variant.filter, json.loads(variant.info), variant.format, variant.genotype_col, variant.genotype, variant.father, variant.mother, variant.read_depth, variant.gene, variant.mutation_type, variant.vartype, variant.genomes1k_maf, variant.dbsnp_maf, variant.esp_maf, variant.dbsnp_build, variant.sift, variant.sift_pred, variant.polyphen2, variant.polyphen2_pred, variant.condel, variant.condel_pred, variant.dann, variant.cadd, variant.is_at_omim, variant.is_at_hgmd, variant.hgmd_entries, variant.snpeff_effect, variant.snpeff_impact, variant.snpeff_func_class, variant.snpeff_codon_change, variant.snpeff_aa_change, variant.snpeff_gene_name, variant.snpeff_biotype, variant.snpeff_gene_coding, variant.snpeff_transcript_id, variant.snpeff_exon_rank, variant.vep_allele, variant.vep_gene, variant.vep_feature, variant.vep_feature_type, variant.vep_consequence, variant.vep_cdna_position, variant.vep_cds_position, variant.vep_protein_position, variant.vep_amino_acids, variant.vep_codons, variant.vep_existing_variation, variant.vep_distance, variant.vep_strand, variant.vep_symbol, variant.vep_symbol_source, variant.vep_sift, variant.vep_polyphen, variant.vep_condel])
                 return response
@@ -797,6 +800,8 @@ def family_analysis(request):
             except EmptyPage:
                # If page is out of range (e.g. 9999), deliver last page of results.
                variants = paginator.page(paginator.num_pages)
+            variants.object_list = list(variants.object_list)
+            fill_parents_variants(request, variants.object_list, None, parents_variants)
     #first entrance in methods
     else:
         variants = []

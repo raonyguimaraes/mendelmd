@@ -168,3 +168,19 @@ class PopulateAndFilterTests(TestCase):
         self.assertEqual(self.client.get("/genes/GENEB/").status_code, 200)
         self.assertEqual(self.client.get("/genes/NOSUCHGENE/").status_code, 404)
         self.assertEqual(self.client.get("/genes/geneset/add/").status_code, 200)
+
+    def test_family_analysis_with_parent_and_export(self):
+        self._populate()
+        father = Individual.objects.create(name="father", user=self.owner)
+        Variant.objects.create(**{**{f.name: getattr(Variant.objects.filter(individual=self.ind, gene="GENEA").first(), f.name)
+                                  for f in Variant._meta.concrete_fields if not f.primary_key},
+                                  "individual": father, "genotype": "0/1"})
+        self.client.force_login(self.owner)
+        params = {"individuals": str(self.ind.id), "children": str(self.ind.id), "father": str(father.id)}
+        page = self.client.get("/filter_analysis/family_analysis/", params)
+        self.assertEqual(page.status_code, 200)
+        rows = {v.gene: v.father for v in page.context["variants"]}
+        self.assertEqual(rows.get("GENEA"), "HET")
+        export = self.client.get("/filter_analysis/family_analysis/", dict(params, export="csv"))
+        self.assertEqual(export.status_code, 200)
+        self.assertIn("GENEA", export.content.decode())
