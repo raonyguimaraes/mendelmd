@@ -23,7 +23,7 @@ services:
      - /home/raony/dev/pynnotator:/pynnotator
    ports:
      - "127.0.0.1:8002:8000"
-   mem_limit: 1g
+   mem_limit: 4g
    restart: always
    depends_on:
      db:
