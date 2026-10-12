@@ -421,10 +421,10 @@ class FamilyAnalysisForm(forms.Form):
     children = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
     INHERITANCE_CHOICES = (('', ''),
                ('recessive', 'Autosomal Recessive'),
-               ('dominant', 'Autosomal Dominant'),
+               ('dominant', 'Autosomal Dominant de novo (absent in both parents)'),
                ('compound heterozygous', 'Autosomal Compound Heterozygous'),
                ('xlinked recessive', 'X-linked Recessive'),
-               ('xlinked dominant', 'X-linked Dominant'),               # ('recessive denovo', 'Autsomal Recessive denovo'),
+               ('xlinked dominant', 'X-linked Dominant de novo (absent in both parents)'),               # ('recessive denovo', 'Autsomal Recessive denovo'),
                # ('dominant denovo', 'Autsomal Dominant denovo'),
                # ('xlinked dominant denovo', 'X-linked dominant de novo'),
                # ('xlinked recessive denovo', 'X-linked Recessive de novo'),
