@@ -101,6 +101,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'mendelmd.middleware.SiteAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'mendelmd.urls'

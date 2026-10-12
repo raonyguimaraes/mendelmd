@@ -68,12 +68,12 @@
 <script src="https://js.stripe.com/v3/"></script>
 
 </head>
-<body class="skin-black-light sidebar-mini"><!-- sidebar-collapse-->
+<body class="skin-black-light {% if user.is_authenticated %}sidebar-mini{% else %}layout-top-nav{% endif %}"><!-- sidebar-collapse-->
 
 <div class="wrapper">
 
   {% include "header.html" %}
-  {% include "main_sidebar.html" %}
+  {% if user.is_authenticated %}{% include "main_sidebar.html" %}{% endif %}
 
   <!-- Content Wrapper. Contains page content -->
 
@@ -99,7 +99,6 @@
     reserved.
   </footer>
 
-  {% include "control_sidebar.html" %}
 </div>
 <!-- ./wrapper -->
 

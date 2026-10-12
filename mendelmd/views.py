@@ -5,6 +5,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        return render(request, 'pages/landing.html')
     if request.method == 'POST':
         status = request.POST['status']
         # print('status', status)
@@ -18,7 +20,7 @@ def index(request):
     elif request.user.is_authenticated:
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
-        individuals = Individual.objects.filter(user=None).order_by('-id')
+        individuals = Individual.objects.none()
 
     n_individuals = individuals.count()
 
