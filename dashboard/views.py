@@ -1,3 +1,4 @@
+from mendelmd.access import owned_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -6,12 +7,64 @@ from django.shortcuts import get_object_or_404, redirect
 import os
 # Create your views here.
 from individuals.models import Individual
+from variants.models import Variant
 from django.contrib import messages
 from django.conf import settings
+from django.db.models import Count
 from django.utils.text import slugify
 from individuals.tasks import *
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+def _get_parquet_variant_count(individual):
+    username = slugify(individual.user.username) if individual.user else 'public'
+    parquet_path = os.path.join(
+        settings.BASE_DIR, 'genomes', username,
+        str(individual.id), 'ann_sample', 'annotation.final.parquet'
+    )
+
+    if not os.path.exists(parquet_path):
+        return None
+
+    try:
+        import pyarrow.parquet as pq
+        return pq.ParquetFile(parquet_path).metadata.num_rows
+    except Exception:
+        return None
+
+
+def _get_zip_variant_count(individual):
+    username = slugify(individual.user.username) if individual.user else 'public'
+    zip_path = os.path.join(
+        settings.BASE_DIR, 'genomes', username,
+        str(individual.id), 'annotation.final.vcf.zip'
+    )
+    if not os.path.exists(zip_path):
+        return None
+    try:
+        import zipfile
+        z = zipfile.ZipFile(zip_path, 'r')
+        with z.open('ann_sample/annotation.final.vcf', 'r') as f:
+            count = 0
+            for line in f:
+                if not line.startswith(b'#'):
+                    count += 1
+        return count
+    except Exception:
+        return None
+
+
+def _get_variant_count(individual, db_count=0):
+    parquet_count = _get_parquet_variant_count(individual)
+
+    if parquet_count is not None:
+        return parquet_count
+    zip_count = _get_zip_variant_count(individual)
+    if zip_count is not None:
+        return zip_count
+    if individual.n_variants is not None:
+        return individual.n_variants
+    return db_count
 
 def index(request):
     if request.method == 'POST':
@@ -27,7 +80,7 @@ def index(request):
     elif request.user.is_authenticated:
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
-        individuals = Individual.objects.filter(user=None).order_by('-id')
+        individuals = Individual.objects.none()
 
     n_individuals = individuals.count()
     n_annotated = individuals.filter(status='annotated').count()
@@ -47,6 +100,18 @@ def index(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         individuals = paginator.page(paginator.num_pages)
 
+    variant_counts = {
+        row['individual_id']: row['total']
+        for row in Variant.objects.filter(
+            individual_id__in=[individual.id for individual in individuals]
+        ).values('individual_id').annotate(total=Count('id'))
+    }
+
+    for individual in individuals:
+        individual.variant_count = _get_variant_count(
+            individual,
+            variant_counts.get(individual.id, 0),
+        )
 
     context = {
         'n_individuals': n_individuals,
@@ -71,17 +136,17 @@ def bulk_action(request):
         
         if request.POST['selectionField'] == "Show":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 individual.featured = True
                 individual.save()
         if request.POST['selectionField'] == "Hide":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 individual.featured = False
                 individual.save()
         if request.POST['selectionField'] == "Delete":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
 
                 individual_id = individual.id
                 if individual.user:
@@ -102,19 +167,19 @@ def bulk_action(request):
             #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 PopulateVariants.delay(individual.id)
             
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 individual.status = 'new'
                 individual.n_lines = 0
                 individual.save()
                 AnnotateVariants.delay(individual.id)
         if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 Find_Medical_Conditions_and_Medicines.delay(individual.id)
     
     return redirect('dashboard')

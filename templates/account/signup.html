@@ -12,6 +12,7 @@
 
 <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
 
+<style>#div_id_website{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;}</style>
 <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
   {% csrf_token %}
   {{ form|crispy }}

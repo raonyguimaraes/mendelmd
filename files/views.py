@@ -1,3 +1,4 @@
+from mendelmd.access import owned_or_404
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -146,7 +147,7 @@ def index(request):
 @login_required
 def view(request, file_id):
 
-    file = File.objects.get(pk=file_id)
+    file = owned_or_404(request, File, pk=file_id)
     print(dir(file))
     context = {
     'file':file
@@ -321,7 +322,7 @@ def run_task(request):
             action = request.GET['action']
             file_id  = request.GET['file_id']
 
-            file = File.get_object_or_404(pk=file_id)
+            file = owned_or_404(request, File, pk=file_id)
             if action == "check":
                 
                 task_manifest = {}

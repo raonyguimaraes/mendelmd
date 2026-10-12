@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import include, path
+from django.urls import include, path, re_path
 from .views import ListGene, GeneDetail, GenesetDetailView
 from django.contrib import admin
 admin.autodiscover()
@@ -25,4 +25,6 @@ urlpatterns = [
     path("geneset/add/", views.genesetcreate, name="geneset-create"),
     path("geneset/view/<int:pk>", login_required(GenesetDetailView.as_view()), name="geneset-detail"),
     path("geneset/delete/<int:pk>", views.delete_genelist, name="geneset-delete"),
+    # Gene page by symbol; kept last so it cannot shadow the routes above.
+    re_path(r"^(?P<gene_name>(?!creategroup|geneset|geneontology|populate)[\"@:~.\-\w]+)/$", login_required(views.view), name="gene_view"),
     ]

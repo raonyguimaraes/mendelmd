@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# pynnotator (and some libs) invoke bare `python`; the base image only ships python3
+ln -sf /usr/bin/python3 /usr/local/bin/python
+
 service rabbitmq-server start
 sleep 5
 pwd

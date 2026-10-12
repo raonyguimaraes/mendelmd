@@ -1,3 +1,4 @@
+from mendelmd.access import restrict_analysis_form
 from django import forms
 
 from individuals.models import *
@@ -148,18 +149,18 @@ class FilterAnalysisForm(forms.Form):
                ('>', '>= '),
                ('=', '='),)
     
-    genomes1000 = forms.CharField(max_length=50, required=False, label="1000 GENOMES FREQUENCY")
-    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN 1000GENOMES")
+    genomes1000 = forms.CharField(max_length=50, required=False, label="GNOMAD GENOMES FREQUENCY")
+    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD GENOMES")
     
     #DBSNP Frequency
 #    dbsnp_freq_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP Frequency")
     dbsnp_frequency = forms.CharField(max_length=50, required=False, label="")
-    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN DBSNP")
+    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD (EXOMES OR GENOMES)")
     
     #Variation Server Frequency
 #    variationserver_option = forms.ChoiceField(required=False, choices=CHOICES, label="ESP5400 Frequency")
     esp_frequency = forms.CharField(max_length=50, required=False, label="")
-    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN EXOME SEQUENCING PROJECT")
+    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD EXOMES")
     
     # hi_frequency = forms.CharField(max_length=50, required=False, label="")
     # hi_exclude = forms.BooleanField(required=False, label="Exclude all variants not in genes with Haploinsufficiency")
@@ -252,6 +253,7 @@ class FilterAnalysisForm(forms.Form):
                     queryset=Individual.objects.filter(Q(user=user) | Q(user=None)).order_by('id'), required=False, label='INDIVIDUALS')
                 self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(
                     queryset=Individual.objects.filter(Q(user=user) | Q(user=None)).order_by('id'), required=False, label='INDIVIDUALS')
+        restrict_analysis_form(self, user)
         # self.fields['sift'].widget.attrs['readonly'] = True
         # self.fields['polyphen'].widget.attrs['readonly'] = True
         # self.fields['genomes1000'].widget.attrs['readonly'] = True
@@ -336,18 +338,18 @@ class FamilyAnalysisForm(forms.Form):
                ('>', '>= '),
                ('=', '='),)
     
-    genomes1000 = forms.CharField(max_length=50, required=False, label="1000 GENOMES FREQUENCY")
-    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN 1000GENOMES")
+    genomes1000 = forms.CharField(max_length=50, required=False, label="GNOMAD GENOMES FREQUENCY")
+    genomes1000_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD GENOMES")
     
     #DBSNP Frequency
 #    dbsnp_freq_option = forms.ChoiceField(required=False, choices=CHOICES, label="DBSNP Frequency")
     dbsnp_frequency = forms.CharField(max_length=50, required=False, label="")
-    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN DBSNP")
+    dbsnp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD (EXOMES OR GENOMES)")
     
     #Variation Server Frequency
 #    variationserver_option = forms.ChoiceField(required=False, choices=CHOICES, label="ESP5400 Frequency")
     esp_frequency = forms.CharField(max_length=50, required=False, label="")
-    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN EXOME SEQUENCING PROJECT")
+    esp_exclude = forms.BooleanField(required=False, label="EXCLUDE ALL VARIANTS PRESENT IN GNOMAD EXOMES")
     
     # hi_frequency = forms.CharField(max_length=50, required=False, label="")
     # hi_exclude = forms.BooleanField(required=False, label="Exclude all variants not in genes with Haploinsufficiency")
@@ -419,10 +421,10 @@ class FamilyAnalysisForm(forms.Form):
     children = forms.ModelMultipleChoiceField(queryset=Individual.objects.all().order_by('id'), required=False)
     INHERITANCE_CHOICES = (('', ''),
                ('recessive', 'Autosomal Recessive'),
-               ('dominant', 'Autosomal Dominant'),
+               ('dominant', 'Autosomal Dominant de novo (absent in both parents)'),
                ('compound heterozygous', 'Autosomal Compound Heterozygous'),
                ('xlinked recessive', 'X-linked Recessive'),
-               ('xlinked dominant', 'X-linked Dominant'),               # ('recessive denovo', 'Autsomal Recessive denovo'),
+               ('xlinked dominant', 'X-linked Dominant de novo (absent in both parents)'),               # ('recessive denovo', 'Autsomal Recessive denovo'),
                # ('dominant denovo', 'Autsomal Dominant denovo'),
                # ('xlinked dominant denovo', 'X-linked dominant de novo'),
                # ('xlinked recessive denovo', 'X-linked Recessive de novo'),
@@ -446,6 +448,7 @@ class FamilyAnalysisForm(forms.Form):
             self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
             self.fields['children'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
+        restrict_analysis_form(self, user)
 
 
 # INDIVIDUALS = [(x.id, x.name) for x in Individual.objects.all().order_by('id')]

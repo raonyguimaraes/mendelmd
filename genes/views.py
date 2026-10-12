@@ -1,3 +1,4 @@
+from mendelmd.access import owned_or_404, owned_queryset, owned_variants, owned_individuals
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
@@ -85,7 +86,7 @@ class GenesetDetailView(DetailView):
 
     def get_object(self):
         #get objects
-        return GeneList.objects.filter(id=self.kwargs['pk'])[0]
+        return owned_or_404(self.request, GeneList, pk=self.kwargs['pk'])
 
 
     def get_context_data(self, **kwargs):
@@ -101,7 +102,7 @@ class GenesetDetailView(DetailView):
 #         return obj
 
 def delete_genelist(request,pk):
-    u = GeneList.objects.filter(id=pk)[0]
+    u = owned_or_404(request, GeneList, pk=pk)
     
     if u.user == request.user:
         u.delete()
@@ -133,7 +134,7 @@ class ListGene(ListView):
         # Call the base implementation first to get a context
         context = super(ListGene, self).get_context_data(**kwargs)
         # Add in a QuerySet of all the books
-        context['genelists'] = GeneList.objects.all().order_by('name')
+        context['genelists'] = owned_queryset(self.request, GeneList.objects.all()).order_by('name')
 
         return context
 
@@ -393,11 +394,13 @@ def populate(request):
 
 @login_required
 def view(request, gene_name):
-#    gene = Variant.objects.filter(gene_name=gene_name).annotate(num_individuals=Count('individuals'))
-    gene_object = Gene.objects.get(symbol=gene_name)
+#    gene = owned_variants(request).filter(gene_name=gene_name).annotate(num_individuals=Count('individuals'))
+    gene_object = Gene.objects.filter(symbol=gene_name).first()
+    if gene_object is None:
+        raise Http404('Unknown gene')
     
     #get all variants present in this gene
-    gene_variants = Variant.objects.filter(gene=gene_name)
+    gene_variants = owned_variants(request).filter(gene=gene_name)
     
     #variants by individuals
     variants_by_individuals = gene_variants.values('individual').annotate(total=Count('individual')).order_by('individual')
@@ -406,8 +409,8 @@ def view(request, gene_name):
     variants_summary = {}
     variants_summary['individual'] = {'known':0, 'novel':0, 'total':0} 
     for individual in variants_by_individuals:
-        individual['individual'] = get_object_or_404(Individual, pk=individual['individual'])
-        individual['novel'] = Variant.objects.filter(gene=gene_name, individual=individual['individual'], variant_id='.').count()
+        individual['individual'] = get_object_or_404(owned_individuals(request.user), pk=individual['individual'])
+        individual['novel'] = owned_variants(request).filter(gene=gene_name, individual=individual['individual'], variant_id='.').count()
         individual['known'] = individual['total'] - individual['novel']
         
         #update total summary
@@ -426,39 +429,39 @@ def view(request, gene_name):
     for individual in variants_by_individuals:
         individual_dna_variation = {}
         #get all variants from individual by effect
-        variants = Variant.objects.filter(gene=gene_name, individual=individual['individual']).values('snpeff_effect').annotate(total=Count('snpeff_effect')).order_by('snpeff_effect')
+        variants = owned_variants(request).filter(gene=gene_name, individual=individual['individual']).values('snpeff_effect').annotate(total=Count('snpeff_effect')).order_by('snpeff_effect')
         for item in variants:
             individual_dna_variation[item['snpeff_effect']] = item['total'] 
         individuals_dna_variation[individual['individual']] = individual_dna_variation
     #print individuals_dna_variation
     
     
-    functional_class = Variant.objects.filter(gene=gene_name).values('snpeff_func_class').annotate(total=Count('snpeff_func_class')).order_by('snpeff_func_class')
+    functional_class = owned_variants(request).filter(gene=gene_name).values('snpeff_func_class').annotate(total=Count('snpeff_func_class')).order_by('snpeff_func_class')
     
     functional_class_classes = functional_class.values_list('snpeff_func_class', flat=True)
     
     individuals_functional_class = {}
     for individual in variants_by_individuals:
         individual_functional_class = {}
-        variants = Variant.objects.filter(gene=gene_name, individual=individual['individual']).values('snpeff_func_class').annotate(total=Count('snpeff_func_class')).order_by('snpeff_func_class')
+        variants = owned_variants(request).filter(gene=gene_name, individual=individual['individual']).values('snpeff_func_class').annotate(total=Count('snpeff_func_class')).order_by('snpeff_func_class')
         for item in variants:
             individual_functional_class[item['snpeff_func_class']] = item['total'] 
         individuals_functional_class[individual['individual']] = individual_functional_class
         
     
-    impact = Variant.objects.filter(gene=gene_name).values('snpeff_impact').annotate(total=Count('snpeff_impact')).order_by('snpeff_impact')
+    impact = owned_variants(request).filter(gene=gene_name).values('snpeff_impact').annotate(total=Count('snpeff_impact')).order_by('snpeff_impact')
     print(impact) 
     impact_classes = impact.values_list('snpeff_impact', flat=True)
     individuals_impact = {}
     for individual in variants_by_individuals:
         individual_impact = {}
-        variants = Variant.objects.filter(gene=gene_name, individual=individual['individual']).values('snpeff_impact').annotate(total=Count('snpeff_impact')).order_by('snpeff_impact')
+        variants = owned_variants(request).filter(gene=gene_name, individual=individual['individual']).values('snpeff_impact').annotate(total=Count('snpeff_impact')).order_by('snpeff_impact')
         for item in variants:
             individual_impact[item['snpeff_impact']] = item['total'] 
         individuals_impact[individual['individual']] = individual_impact
-#    dna_variation = Variant.objects.filter(gene_name=gene_name).values_list('snp_eff').annotate(total=Count('snp_eff')).order_by('snp_eff')
-#    functional_class = Variant.objects.filter(gene_name=gene_name).values_list('snp_eff_functional_class').annotate(total=Count('snp_eff_functional_class')).order_by('snp_eff_functional_class')
-#    protein_impact = Variant.objects.filter(gene_name=gene_name).values_list('impact').annotate(total=Count('impact')).order_by('impact')
+#    dna_variation = owned_variants(request).filter(gene_name=gene_name).values_list('snp_eff').annotate(total=Count('snp_eff')).order_by('snp_eff')
+#    functional_class = owned_variants(request).filter(gene_name=gene_name).values_list('snp_eff_functional_class').annotate(total=Count('snp_eff_functional_class')).order_by('snp_eff_functional_class')
+#    protein_impact = owned_variants(request).filter(gene_name=gene_name).values_list('impact').annotate(total=Count('impact')).order_by('impact')
 #    print gene.count()
     
     return render(request, 'genes/view.html', {'gene_object':gene_object,

@@ -1,3 +1,4 @@
+from django.http import Http404
 import gzip
 import json
 import os
@@ -14,7 +15,7 @@ from django.db.models import Max
 from django.db.models import Min
 from django.db.models import Q
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse as DjangoJsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -25,6 +26,16 @@ from individuals.forms import IndividualForm, ComparisonForm, GroupForm, Browser
 from individuals.models import Individual, Group
 from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
 from variants.models import Variant
+from mendelmd.access import owned_groups, owned_variants
+
+
+def get_owned_individual(request, individual_id):
+    """Return the individual only if the requesting user owns it (staff may see all)."""
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not request.user.is_staff and individual.user_id != request.user.id:
+        raise Http404
+    return individual
+
 
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
@@ -69,7 +80,6 @@ def create(request):
                 .strip()
             ) or f"Individual {individual.id}"
 
-            individual.shared_with_groups.set(form.cleaned_data['shared_with_groups'])
 
             individual.save()
 
@@ -107,7 +117,7 @@ def create(request):
 # Create your views here.
 @login_required
 def edit(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     if request.method == 'POST':
         form = IndividualForm(request.POST, instance=individual)
         if form.is_valid():
@@ -164,55 +174,93 @@ class IndividualDeleteView(DeleteView):
         return redirect('individuals_list')
 
 
+class _ParquetRows:
+    """Sequence over a parquet file that only materialises the slices asked for.
+
+    The sample page shows 50 rows at a time; reading every row into Python
+    dicts on each request used several GB for large samples.
+    """
+
+    def __init__(self, parquet_file, columns):
+        self._pf = parquet_file
+        self.columns = columns
+        self._n = parquet_file.metadata.num_rows
+
+    def __len__(self):
+        return self._n
+
+    def count(self):
+        return self._n
+
+    def __getitem__(self, item):
+        if not isinstance(item, slice):
+            return self[item:item + 1][0]
+        start, stop, _ = item.indices(self._n)
+        rows, pos = [], 0
+        if start >= stop:
+            return rows
+        for batch in self._pf.iter_batches(batch_size=5000, columns=self.columns):
+            end = pos + batch.num_rows
+            if end > start:
+                lo, hi = max(start - pos, 0), min(stop - pos, batch.num_rows)
+                rows.extend(batch.slice(lo, hi - lo).to_pandas().fillna('').to_dict('records'))
+            if end >= stop:
+                break
+            pos = end
+        return rows
+
+
+def _parquet_path(individual):
+    username = slugify(individual.user.username) if individual.user else 'public'
+    return os.path.join(settings.BASE_DIR, 'genomes', username, str(individual.id),
+                        'ann_sample', 'annotation.final.parquet')
+
+
+def _load_parquet_variants(individual):
+    """Return (columns, lazy rows, summary dataframe) for the sample page."""
+    try:
+        import pyarrow.parquet as pq
+        path = _parquet_path(individual)
+        if not os.path.exists(path):
+            return [], [], None
+        pf = pq.ParquetFile(path)
+        names = pf.schema_arrow.names
+        core = [c for c in ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'VARTYPE'] if c in names]
+        vep = [c for c in ['SYMBOL', 'Gene', 'Consequence', 'IMPACT', 'SIFT', 'PolyPhen', 'HGVSc', 'HGVSp', 'BIOTYPE', 'EXON', 'INTRON', 'Amino_acids'] if c in names]
+        extra = [c for c in names if c not in core and c not in vep and c not in ('HET', 'HOM')]
+        summary_cols = [c for c in ['CHROM', 'VARTYPE', 'FILTER', 'ID'] if c in names]
+        summary = pf.read(columns=summary_cols).to_pandas() if summary_cols else None
+        return core + vep + extra, _ParquetRows(pf, core + vep + extra), summary
+    except Exception:
+        return [], [], None
+
+
+def _counts(summary, column):
+    if summary is None or column not in summary:
+        return []
+    values = summary[column].dropna().astype(str)
+    values = values[values != '']
+    return sorted(values.value_counts().items())
+
+
 def view(request, individual_id):
 
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
 
-    variant_list = Variant.objects.filter(individual=individual)
-    # snpeff = SnpeffAnnotation.objects.filter(individual=individual)
+    parquet_columns, parquet_rows, summary = _load_parquet_variants(individual)
 
-    individual.n_variants = variant_list.count()
-    individual.novel_variants = variant_list.filter(variant_id = '.').count()
+    individual.n_variants = len(parquet_rows)
+    if summary is not None and 'ID' in summary:
+        ids = summary['ID'].fillna('').astype(str)
+        individual.novel_variants = int(ids.isin(['', '.']).sum())
+    else:
+        individual.novel_variants = 0
 
-    individual.summary = []
+    individual.chromossome = [{'chr': k, 'total': int(v)} for k, v in _counts(summary, 'CHROM')]
+    individual.vartype_summary = [{'vartype': k, 'total': int(v)} for k, v in _counts(summary, 'VARTYPE')]
+    individual.filter_variants = [{'filter': k, 'filter__count': int(v)} for k, v in _counts(summary, 'FILTER')]
 
-    #get calculated values from database
-
-    summary_item = {
-                'type': 'Total SNVs',
-                'total': variant_list.values('genotype').count(),
-                'discrete': variant_list.values('genotype').annotate(total=Count('genotype'))
-                    }
-    individual.summary.append(summary_item)
-
-    summary_item = {
-                'type': 'Total Gene-associated SNVs',
-                'total': variant_list.values('gene').exclude(gene="").count(),
-                'discrete': variant_list.exclude(gene="").values('genotype').annotate(total=Count('genotype'))
-                    }
-    individual.summary.append(summary_item)
-
-    individual.snp_eff = variant_list.values('snpeff_effect').annotate(Count('snpeff_effect')).order_by('snpeff_effect')
-    # print 'individual.snp_eff', individual.snp_eff
-    # variant_list.values('snpeff__effect').annotate(Count('snpeff__effect')).order_by('snpeff__effect')
-    #
-    individual.functional_class = variant_list.values('snpeff_func_class').annotate(Count('snpeff_func_class')).order_by('snpeff_func_class')
-    individual.impact_variants = variant_list.values('snpeff_impact').annotate(Count('snpeff_impact')).order_by('snpeff_impact')
-
-    individual.filter_variants = variant_list.values('filter').annotate(Count('filter')).order_by('filter')
-    individual.quality = variant_list.aggregate(Avg('qual'), Max('qual'), Min('qual'))
-    individual.read_depth = variant_list.aggregate(Avg('read_depth'), Max('read_depth'), Min('read_depth'))
-
-    individual.clinvar_clnsig = variant_list.values('clinvar_clnsig').annotate(total=Count('clinvar_clnsig'))
-
-    individual.chromossome = variant_list.values('chr').annotate(total=Count('chr')).order_by('chr')
-
-    # variants_with_snpid = variant_list.values('variant_id').exclude(variant_id=".")
-    #print variants_with_snpid
-
-    # fields = Variant._meta.get_all_field_names()
-
-    paginator = Paginator(variant_list, 25) # Show 25 contacts per page
+    paginator = Paginator(parquet_rows, 50)
     try:
         page = int(request.GET.get('page', '1'))
     except ValueError:
@@ -220,19 +268,21 @@ def view(request, individual_id):
     try:
         variants = paginator.page(page)
     except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
         variants = paginator.page(1)
     except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
         variants = paginator.page(paginator.num_pages)
-    #'fields':fields
-    return render(request, 'individuals/view.html', {'individual': individual, 'variants':variants})
+
+    return render(request, 'individuals/view.html', {
+        'individual': individual,
+        'variants': variants,
+        'parquet_columns': parquet_columns,
+    })
 
 @login_required
 def browse(request, individual_id):
 
     query_string = request.META['QUERY_STRING']
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     query = {}
     
 #    DEFAULT_SORT = 'pk'
@@ -334,17 +384,17 @@ def list(request):
         
         if request.POST['selectionField'] == "Show":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 individual.is_featured = True
                 individual.save()
         if request.POST['selectionField'] == "Hide":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 individual.is_featured = False
                 individual.save()
         if request.POST['selectionField'] == "Delete":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
 
 
                 individual_id = individual.id
@@ -363,16 +413,16 @@ def list(request):
             #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 PopulateVariants.delay(individual.id)
             
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 AnnotateVariants.delay(individual.id)
         if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = get_owned_individual(request, individual_id)
                 Find_Medical_Conditions_and_Medicines.delay(individual.id)
         
     
@@ -403,7 +453,7 @@ def list(request):
 
 
 
-    groups = Group.objects.all()
+    groups = owned_groups(request.user)
 #    individuals = Individual.objects.annotate(number_of_variants=Count('variant'))
     
     
@@ -412,7 +462,7 @@ def list(request):
 
 @login_required
 def annotate(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     individual.status = 'new'
     individual.n_lines = 0
     VerifyVCF.delay(individual.id)
@@ -422,7 +472,7 @@ def annotate(request, individual_id):
 
 @login_required
 def populate(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     PopulateVariants.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being populated.")
 
@@ -431,7 +481,7 @@ def populate(request, individual_id):
 
 @login_required
 def populate_mongo(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     PopulateMongoVariants.delay(individual.id)
     messages.add_message(request, messages.INFO, "Your individual is being inserted at MongoDB.")
 
@@ -439,7 +489,7 @@ def populate_mongo(request, individual_id):
 
 
 def download(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
@@ -475,7 +525,7 @@ def download(request, individual_id):
 
 
 def download_annotated(request, individual_id):
-    individual = get_object_or_404(Individual, pk=individual_id)
+    individual = get_owned_individual(request, individual_id)
     
     filepath = os.path.dirname(str(individual.vcf_file.name))
     filename = os.path.basename(str(individual.vcf_file.name))
@@ -500,22 +550,25 @@ def download_annotated(request, individual_id):
 @login_required
 def create_group(request):
     if request.method == 'POST':
-        form = GroupForm(request.POST, request.FILES)        
+        form = GroupForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             form.save()
             
             return redirect('individuals_list')
     else:
-        form = GroupForm()
+        form = GroupForm(user=request.user)
     return render(request, 'groups/create_group.html', {'form': form})
 
 @login_required
 def view_group(request, group_id):
-    group = get_object_or_404(Group, pk=group_id)
+    group = get_object_or_404(owned_groups(request.user), pk=group_id)
     return render(request, 'groups/view_group.html', {'group': group})
 
 class GroupDeleteView(DeleteView):
     model = Group
+
+    def get_queryset(self):
+        return owned_groups(self.request.user)
 
     def delete(self, request, *args, **kwargs):
         """
@@ -546,9 +599,9 @@ def comparison(request):
             if read_depth != '':
                 query['read_depth__gte'] = float(read_depth)
             if individual_one_id != '' and individual_two_id != '': 
-                variants_ind_one = Variant.objects.filter(individual__id=individual_one_id, **query).values('chr', 'pos', 'genotype')
+                variants_ind_one = owned_variants(request).filter(individual__id=individual_one_id, **query).values('chr', 'pos', 'genotype')
                 
-                variants_ind_two = Variant.objects.filter(individual__id=individual_two_id, **query).values('chr', 'pos', 'genotype')
+                variants_ind_two = owned_variants(request).filter(individual__id=individual_two_id, **query).values('chr', 'pos', 'genotype')
                 print('Got Variants from Both!')
     
                 genotypes_in_common = 0
@@ -606,3 +659,74 @@ def comparison(request):
         
         
     return render(request, 'individuals/comparison.html', {'form':form, 'summary':summary, 'query_string':query_string})
+
+
+def _individual_storage_path(individual):
+    if individual.user:
+        username = slugify(individual.user.username)
+    else:
+        username = 'public'
+    return os.path.join(settings.BASE_DIR, 'genomes', username, str(individual.id))
+
+
+def _can_view_individual(request, individual):
+    # Staff see everything; everyone else only their own samples.
+    # Samples with no owner are staff-only (they used to be public).
+    if request.user.is_staff:
+        return True
+    return request.user.is_authenticated and individual.user_id == request.user.id
+
+
+def _read_tail(path, max_bytes=60000):
+    if not os.path.exists(path):
+        return ''
+    with open(path, 'rb') as log_file:
+        log_file.seek(0, os.SEEK_END)
+        size = log_file.tell()
+        log_file.seek(max(0, size - max_bytes))
+        return log_file.read().decode('utf-8', errors='replace')
+
+
+def annotation_monitor(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
+    return render(request, 'individuals/annotation_monitor.html', {'individual': individual})
+
+
+def annotation_status(request, individual_id):
+    individual = get_object_or_404(Individual, pk=individual_id)
+    if not _can_view_individual(request, individual):
+        return HttpResponseForbidden()
+
+    path = _individual_storage_path(individual)
+    progress_path = os.path.join(path, 'annotation.progress.json')
+    log_path = os.path.join(path, 'annotation.log')
+    progress = {}
+    if os.path.exists(progress_path):
+        try:
+            with open(progress_path) as progress_file:
+                progress = json.load(progress_file)
+        except ValueError:
+            progress = {}
+    has_log = os.path.exists(log_path)
+    fallback_stage = individual.status or 'pending'
+    fallback_message = ''
+    if not has_log and individual.status == 'new':
+        fallback_stage = 'not_started'
+        fallback_message = 'Annotation has not been queued yet. Click Start annotation.'
+
+    data = {
+        'id': individual.id,
+        'name': individual.name,
+        'status': individual.status,
+        'annotation_time': str(individual.annotation_time or ''),
+        'n_variants': individual.n_variants,
+        'stage': progress.get('stage') or fallback_stage,
+        'percent': progress.get('percent'),
+        'message': progress.get('message') or fallback_message,
+        'updated_at': progress.get('updated_at') or '',
+        'log': _read_tail(log_path),
+        'has_log': has_log,
+    }
+    return DjangoJsonResponse(data)

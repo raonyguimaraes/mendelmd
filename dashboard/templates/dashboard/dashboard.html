@@ -145,10 +145,12 @@
                                     {% if user.is_staff %}<th style="width:30px;"><input type="checkbox" id="select_all"></th>{% endif %}
                                     <th>ID</th>
                                     <th>Name</th>
+                                    <th>Variants</th>
                                     <th>Uploaded by</th>
                                     <th>Lines</th>
                                     <th>Created</th>
                                     <th>Status</th>
+                                    <th>Annotation</th>
                                     {% if user.is_staff %}<th>Operations</th>{% endif %}
                                 </tr>
                             </thead>
@@ -160,6 +162,7 @@
                                 {% endif %}
                                 <td>{{ individual.id }}</td>
                                 <td><a href="{% url 'individual_view' individual.id %}">{{ individual.name|truncatechars:40 }}</a></td>
+                                <td>{{ individual.variant_count }}</td>
                                 <td>{{ individual.user.username }}</td>
                                 <td>{{ individual.n_lines }}</td>
                                 <td>{{ individual.creation_date|date:"Y-m-d" }}</td>
@@ -174,6 +177,14 @@
                                         <span class="label label-default">{{ individual.status }}</span>
                                     {% endif %}
                                 </td>
+                                <td>
+                                    <a href="{% url 'individual_annotation_monitor' individual.id %}" class="btn btn-xs btn-info">
+                                        <i class="fa fa-eye"></i> Watch
+                                    </a>
+                                    <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-warning">
+                                        <i class="fa fa-refresh"></i> Reannotate
+                                    </a>
+                                </td>
                                 {% if user.is_staff %}
                                 <td>
                                     <a href="{% url 'individual_annotate' individual.id %}" class="btn btn-xs btn-primary">Reannotate</a>
@@ -184,7 +195,7 @@
                                 {% endif %}
                             </tr>
                             {% empty %}
-                            <tr><td colspan="8" class="text-center text-muted" style="padding:30px;">
+                            <tr><td colspan="11" class="text-center text-muted" style="padding:30px;">
                                 No individuals yet. <a href="{% url 'individual_create' %}">Upload your first VCF</a>.
                             </td></tr>
                             {% endfor %}
