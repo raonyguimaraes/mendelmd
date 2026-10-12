@@ -189,7 +189,23 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Outgoing email. Set EMAIL_HOST (and friends) in the server's .env.email file to
+# send real mail; without it messages are only printed to the log.
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
+    EMAIL_TIMEOUT = 20
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Mendel,MD <noreply@mendelmd.org>')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+# New accounts must confirm their address once real email is configured.
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory' if EMAIL_HOST else 'optional'
 
 LOGIN_REDIRECT_URL = 'dashboard'
 

@@ -43,3 +43,6 @@ __pycache__
 media/
 scripts/merge_folders.py
 work_dir/*
+
+# Server-only mail credentials
+.env.email

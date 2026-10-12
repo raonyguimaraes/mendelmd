@@ -61,3 +61,47 @@ class SignupProtectionTests(TestCase):
         self.assertEqual(self.users(), 5)
         self.post(ip="198.51.100.2")  # a different client is unaffected
         self.assertEqual(self.users(), 6)
+
+
+@override_settings(SIGNUP_OPEN=True, ACCOUNT_EMAIL_VERIFICATION="mandatory")
+class EmailFlowTests(TestCase):
+    """What happens once real email is configured (tests capture mail in memory)."""
+
+    def setUp(self):
+        cache.clear()
+
+    def test_signup_sends_confirmation_and_blocks_login_until_confirmed(self):
+        from django.core import mail
+        self.client.post("/accounts/signup/", {
+            "email": "new@example.com", "username": "newbie",
+            "password1": "Long-enough-pass-123", "password2": "Long-enough-pass-123",
+            "website": "", "started": stamp(10)}, HTTP_X_REAL_IP="192.0.2.5")
+        self.assertEqual(get_user_model().objects.filter(username="newbie").count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("new@example.com", mail.outbox[0].to)
+        self.client.logout()
+        r = self.client.post("/accounts/login/", {"login": "newbie", "password": "Long-enough-pass-123"})
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_password_reset_sends_email(self):
+        from django.core import mail
+        get_user_model().objects.create_user("resetme", "reset@example.com", "Old-pass-12345")
+        self.client.post("/accounts/password/reset/", {"email": "reset@example.com"}, HTTP_X_REAL_IP="192.0.2.6")
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("reset@example.com", mail.outbox[0].to)
+
+
+class EmailSettingsTests(TestCase):
+    def _settings(self, **env):
+        import json, os, subprocess, sys
+        code = ("import json, django; from django.conf import settings; django.setup(); "
+                "print(json.dumps([settings.EMAIL_BACKEND, settings.ACCOUNT_EMAIL_VERIFICATION]))")
+        full_env = {k: v for k, v in os.environ.items() if not k.startswith("EMAIL_")}
+        full_env.update(env, DJANGO_SETTINGS_MODULE="mendelmd.settings")
+        out = subprocess.run([sys.executable, "-c", code], env=full_env, capture_output=True, text=True, check=True)
+        return json.loads(out.stdout.strip().splitlines()[-1])
+
+    def test_console_without_host_and_smtp_with_host(self):
+        self.assertEqual(self._settings(), ["django.core.mail.backends.console.EmailBackend", "optional"])
+        self.assertEqual(self._settings(EMAIL_HOST="smtp.example.com"),
+                         ["django.core.mail.backends.smtp.EmailBackend", "mandatory"])
