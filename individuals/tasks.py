@@ -39,6 +39,41 @@ from datetime import timedelta
 from django.template.defaultfilters import slugify
 
 
+_STANDARD_GT_HEADER = '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">\n'
+
+
+def normalize_vcf_header(vcf_path):
+    """Rewrite a non-standard FORMAT/GT declaration in place.
+
+    Some converters (e.g. 23andMe/AncestryDNA to VCF tools) declare GT as
+    Type=Integer; htslib then rejects every "0/1" call after VEP has run.
+    Only the header is inspected; the body is copied unchanged.
+    Returns True when the file was rewritten.
+    """
+    header, needs_fix = [], False
+    with open(vcf_path, 'r', encoding='utf-8', errors='replace') as fh:
+        for line in fh:
+            if not line.startswith('##'):
+                break
+            if line.startswith('##FORMAT=<ID=GT,') and 'Type=String' not in line:
+                line, needs_fix = _STANDARD_GT_HEADER, True
+            header.append(line)
+    if not needs_fix:
+        return False
+    tmp = vcf_path + '.tmp'
+    with open(vcf_path, 'r', encoding='utf-8', errors='replace') as src, open(tmp, 'w', encoding='utf-8') as dst:
+        for line in src:
+            if line.startswith('##FORMAT=<ID=GT,') and 'Type=String' not in line:
+                line = _STANDARD_GT_HEADER
+            elif not line.startswith('##'):
+                dst.write(line)
+                shutil.copyfileobj(src, dst)
+                break
+            dst.write(line)
+    os.replace(tmp, vcf_path)
+    return True
+
+
 def _copy_first_vcf_from_tar(tar_path, target_path):
     """Copy the first regular *.vcf member of a .tar.gz to target_path.
 
@@ -235,7 +270,18 @@ def AnnotateVariants(individual_id):
         build = _detect_vcf_build('sample.vcf')
         print('Detected build:', build)
         ann_args = argparse.Namespace(vcf_file=os.path.abspath('sample.vcf'), build=build)
-        Annotator(ann_args).run()
+        try:
+            normalize_vcf_header('sample.vcf')
+            Annotator(ann_args).run()
+        except Exception as exc:
+            # Without this the sample stayed "running" forever and the worker
+            # kept this sample's folder as its working directory.
+            print('Annotation failed for individual %s: %s' % (individual.id, exc))
+            individual.status = 'failed'
+            individual.annotation_time = datetime.datetime.now() - start
+            individual.save(update_fields=['status', 'annotation_time'])
+            os.chdir(settings.BASE_DIR)
+            return
         os.chdir(path)
 
     #get sample name using pyvcf
@@ -254,7 +300,7 @@ def AnnotateVariants(individual_id):
 
     individual.annotation_time = elapsed
 
-    if os.path.exists(annotation_final_file):
+    if os.path.exists(annotation_final_file) and os.path.getsize(annotation_final_file) > 0:
 
         individual.status = 'annotated'
         #send email

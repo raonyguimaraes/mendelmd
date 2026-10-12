@@ -103,3 +103,47 @@ class ReviewFixTests(TestCase):
             self.assertEqual(sorted(os.listdir(sample_dir)), ["sample.vcf", "x.tar.gz"])
         finally:
             shutil.rmtree(work, ignore_errors=True)
+
+    def test_normalize_vcf_header_fixes_integer_gt(self):
+        import os, tempfile
+        from individuals.tasks import normalize_vcf_header
+        fd, path = tempfile.mkstemp(suffix=".vcf"); os.close(fd)
+        body = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tS1\n1\t5\trs1\tA\tG\t.\t.\t.\tGT\t0/1\n"
+        try:
+            with open(path, "w") as fh:
+                fh.write('##fileformat=VCFv4.0\n##FORMAT=<ID=GT,Number=.,Type=Integer,Description="Genotype">\n' + body)
+            self.assertTrue(normalize_vcf_header(path))
+            with open(path) as fh:
+                text = fh.read()
+            self.assertIn('##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">\n', text)
+            self.assertTrue(text.endswith(body))
+            self.assertFalse(normalize_vcf_header(path))  # already standard: untouched
+        finally:
+            os.remove(path)
+
+    def test_annotation_failure_marks_sample_failed(self):
+        import os, shutil, tempfile
+        from unittest import mock
+        from django.test import override_settings
+        from individuals.tasks import AnnotateVariants
+        base = tempfile.mkdtemp()
+        cwd = os.getcwd()
+        try:
+            folder = os.path.join(base, "genomes", "ra", str(self.ind.id))
+            os.makedirs(folder)
+            with open(os.path.join(folder, "a.vcf"), "w") as fh:
+                fh.write("##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
+            self.ind.vcf_file.name = "genomes/ra/%s/a.vcf" % self.ind.id
+            self.ind.save()
+            boom = mock.Mock(side_effect=RuntimeError("htslib parse error"))
+            with override_settings(BASE_DIR=base), \
+                    mock.patch("pynnotator.annotator.Annotator", return_value=mock.Mock(run=boom)), \
+                    mock.patch("individuals.tasks.PopulateVariants.delay") as populate:
+                AnnotateVariants(self.ind.id)
+            self.ind.refresh_from_db()
+            self.assertEqual(self.ind.status, "failed")
+            populate.assert_not_called()
+            self.assertEqual(os.path.realpath(os.getcwd()), os.path.realpath(base))
+        finally:
+            os.chdir(cwd)
+            shutil.rmtree(base, ignore_errors=True)
