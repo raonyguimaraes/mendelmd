@@ -1,3 +1,4 @@
+from mendelmd.access import owned_queryset, owned_or_404, OwnedQuerysetMixin
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -44,7 +45,7 @@ def index(request):
                 analysis.delete()
 
     print('Hello World')
-    analyses = Analysis.objects.all()
+    analyses = owned_queryset(request, Analysis.objects.all())
 
     context = {'analyses': analyses}
 
@@ -55,17 +56,17 @@ def create(request):
     
     if 'files' in request.session:
         file_list = request.session['files']
-        files = File.objects.filter(pk__in=file_list)
+        files = owned_queryset(request, File.objects.filter(pk__in=file_list))
     else:
         file_list = None
         files = None
 
-    files = File.objects.all()
+    files = owned_queryset(request, File.objects.all())
 
     if 'project_id' in request.session:
 
         project_id = request.session['project_id']
-        project = Project.objects.get(pk=project_id)
+        project = owned_or_404(request, Project, pk=project_id)
     else:
         project = None
 
@@ -127,7 +128,7 @@ def create(request):
     return render(request, 'analyses/create.html', context)
 
 
-class AnalysisDelete(DeleteView):
+class AnalysisDelete(OwnedQuerysetMixin, DeleteView):
     model = Analysis
     success_url = reverse_lazy('analyses-index')
 
@@ -135,11 +136,11 @@ class AnalysisDelete(DeleteView):
 #     model = Analysis
 #     fields = ['name']
 
-class AnalysisUpdate(UpdateView):
+class AnalysisUpdate(OwnedQuerysetMixin, UpdateView):
     model = Analysis
     fields = ['name', 'params']
 
-class AnalysisDetailView(DetailView):
+class AnalysisDetailView(OwnedQuerysetMixin, DetailView):
     model = Analysis
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

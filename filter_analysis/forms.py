@@ -1,3 +1,4 @@
+from mendelmd.access import restrict_analysis_form
 from django import forms
 
 from individuals.models import *
@@ -252,6 +253,7 @@ class FilterAnalysisForm(forms.Form):
                     queryset=Individual.objects.filter(Q(user=user) | Q(user=None)).order_by('id'), required=False, label='INDIVIDUALS')
                 self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(
                     queryset=Individual.objects.filter(Q(user=user) | Q(user=None)).order_by('id'), required=False, label='INDIVIDUALS')
+        restrict_analysis_form(self, user)
         # self.fields['sift'].widget.attrs['readonly'] = True
         # self.fields['polyphen'].widget.attrs['readonly'] = True
         # self.fields['genomes1000'].widget.attrs['readonly'] = True
@@ -446,6 +448,7 @@ class FamilyAnalysisForm(forms.Form):
             self.fields['father'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
             self.fields['children'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
             self.fields['exclude_individuals'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
+        restrict_analysis_form(self, user)
 
 
 # INDIVIDUALS = [(x.id, x.name) for x in Individual.objects.all().order_by('id')]

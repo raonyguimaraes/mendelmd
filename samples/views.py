@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from mendelmd.access import owned_queryset, owned_or_404, owned_sample_groups, OwnedSampleGroupMixin, OwnedQuerysetMixin
 from django.shortcuts import render
 
 from .models import Sample, SampleGroup
@@ -53,7 +55,7 @@ def index(request):
 
     else:
 
-        samples = Sample.objects.filter(*args).order_by('id')
+        samples = owned_queryset(request, Sample.objects.filter(*args)).order_by('id')
 
     context = {
         'samples':samples,
@@ -104,7 +106,7 @@ def create_group(request):
 
 
 def group_detail(request, pk):
-    object = SampleGroup.objects.get(pk=pk)
+    object = get_object_or_404(owned_sample_groups(request.user), pk=pk)
     n_samples = object.members.count()
 
     context = {
@@ -113,23 +115,23 @@ def group_detail(request, pk):
     }
     return render(request, 'samples/samplegroup_detail.html', context)
 
-class SampleGroupList(ListView):
+class SampleGroupList(OwnedSampleGroupMixin, ListView):
     model = SampleGroup
 
 
-class SampleGroupDelete(DeleteView):
+class SampleGroupDelete(OwnedSampleGroupMixin, DeleteView):
     model = SampleGroup
     success_url = reverse_lazy('samplegroup-list')
 
-class SampleDetailView(DetailView):
+class SampleDetailView(OwnedQuerysetMixin, DetailView):
     model = Sample
 
-class SampleGroupUpdateView(UpdateView):
+class SampleGroupUpdateView(OwnedSampleGroupMixin, UpdateView):
     model = SampleGroup
     fields = '__all__'
 
 def sample_import_vcf(request, pk):
-    sample = Sample.objects.get(pk=pk)
+    sample = owned_or_404(request, Sample, pk=pk)
     messages.add_message(request, messages.SUCCESS, 'VCF from sample {} will be imported'.format(sample.name))
     import_vcf.delay(pk)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -142,7 +144,10 @@ def bulk_action(request):
         samples = request.POST.getlist('samples')
         action = request.POST['action']
         print(action, samples)
+        allowed = set(str(i) for i in owned_queryset(request, Sample.objects.all()).values_list('id', flat=True))
         for sample_id in samples:
+            if str(sample_id) not in allowed:
+                continue
             if action == "import_vcf":
                 import_vcf.apply_async(sample_id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

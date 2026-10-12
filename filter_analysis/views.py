@@ -1,3 +1,4 @@
+from mendelmd.access import owned_variants, owned_queryset, owned_groups, OwnedQuerysetMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.template import RequestContext
@@ -68,14 +69,14 @@ def oneclick(request):
     return render(request, 'filter_analysis/oneclick.html', {'form':form});
 
 
-def calculate_summary(step, args, query, exclude):
+def calculate_summary(step, args, query, exclude, request):
 
     print('enter calculate summary')    
     summary = {}
     summary[step] = {}
 
     # 1) calculate number of variants
-    variants = Variant.objects.filter(*args, **query).exclude(**exclude)
+    variants = owned_variants(request).filter(*args, **query).exclude(**exclude)
     n_variants = variants.count()#.prefetch_related('individual')
     summary[step]['variants'] = n_variants
     
@@ -116,7 +117,7 @@ def filter_analysis_table(request):
 
     filter_by_individuals(request, args, query, exclude)
 
-    table_list.append(calculate_summary('initial', args, query, exclude))
+    table_list.append(calculate_summary('initial', args, query, exclude, request))
 
     #CHR
     filter_chr(request, query)
@@ -129,7 +130,7 @@ def filter_analysis_table(request):
     #Inheritance_model
     filter_mutation_type(request, args)
 
-    table_list.append(calculate_summary('mutation_type', args, query, exclude))
+    table_list.append(calculate_summary('mutation_type', args, query, exclude, request))
 
     #Clinical
     filter_cln(request, query)
@@ -174,9 +175,9 @@ def filter_analysis_table(request):
     # filter_by_individuals_full(request, args, query, exclude)
 
     #last call to the DATABASE Finally!!!!!! 
-    variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual')
+    variants = owned_variants(request).filter(*args, **query).exclude(**exclude).prefetch_related('individual')
 
-    table_list.append(calculate_summary('final', args, query, exclude))
+    table_list.append(calculate_summary('final', args, query, exclude, request))
 
     #summary
     summary['genes'] = variants.values_list('gene', flat=True)
@@ -332,8 +333,8 @@ def index(request):
     # print 'query string'
     # print query_string 
     
-    filteranalysis = FilterAnalysis.objects.all().prefetch_related('user')
-    filterconfigs = FilterConfig.objects.all().prefetch_related('user')
+    filteranalysis = owned_queryset(request, FilterAnalysis.objects.all()).prefetch_related('user')
+    filterconfigs = owned_queryset(request, FilterConfig.objects.all()).prefetch_related('user')
     
     #this is for checking if query is empty (to avoid loading at the first time)
     if query_string != [''] and query_string != '' :
@@ -374,7 +375,7 @@ def index(request):
             
             # print('exclude keys', list(exclude.keys()))
             #last call to the DATABASE Finally!!!!!! 
-            variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
+            variants = owned_variants(request).filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
             
             #export_to_csv(request, variants)
             export = request.GET.get('export', '')
@@ -471,15 +472,15 @@ def filter_family_analysis(request, query, args, exclude):
     # parents = {'father':father, 'mother':mother}
     # query_bkp = query['individual_id__in']
     #for each parent get variants from parents and build dict for future filtering
-    parents_indexes = Variant.objects.filter(individual__id__in=parents_list).values_list('index', flat=True)
-    parents_positions = Variant.objects.filter(individual__id__in=parents_list).values_list('pos_index', flat=True)
+    parents_indexes = owned_variants(request).filter(individual__id__in=parents_list).values_list('index', flat=True)
+    parents_positions = owned_variants(request).filter(individual__id__in=parents_list).values_list('pos_index', flat=True)
 
     print('parents_indexes', len(parents_indexes), parents_indexes)
     for individual in parents:
         query['individual_id__in'] = [parents[individual]]
-        #parents_variants[individual] = Variant.objects.filter(individual__id=parents[individual], *args, **query).exclude(**exclude)#.values_list('index', flat=True)
+        #parents_variants[individual] = owned_variants(request).filter(individual__id=parents[individual], *args, **query).exclude(**exclude)#.values_list('index', flat=True)
         #print 'parents_variants', len(parents_variants[individual])
-        individual_variants = Variant.objects.filter(individual__id=parents[individual]).values('chr', 'pos', 'mutation_type', 'gene')
+        individual_variants = owned_variants(request).filter(individual__id=parents[individual]).values('chr', 'pos', 'mutation_type', 'gene')
         print('individual variants')
         print(individual, parents[individual])
         print(len(individual_variants)) #all right
@@ -494,8 +495,8 @@ def filter_family_analysis(request, query, args, exclude):
 
     children = request.GET.getlist('children')
 
-    children_indexes = Variant.objects.filter(individual__id__in=children).values_list('index', flat=True)
-    children_positions = Variant.objects.filter(individual__id__in=children).values_list('pos_index', flat=True)
+    children_indexes = owned_variants(request).filter(individual__id__in=children).values_list('index', flat=True)
+    children_positions = owned_variants(request).filter(individual__id__in=children).values_list('pos_index', flat=True)
     #build same dict for children
     print('debug argments', args, query, exclude)
     children_variants = {}
@@ -503,7 +504,7 @@ def filter_family_analysis(request, query, args, exclude):
         print('child', child)
         children_variants[child] = {}
         query['individual_id__in'] = child
-        individual_variants = Variant.objects.filter(individual__id=child, *args, **query).exclude(**exclude).values('id', 'chr', 'pos', 'genotype', 'gene')
+        individual_variants = owned_variants(request).filter(individual__id=child, *args, **query).exclude(**exclude).values('id', 'chr', 'pos', 'genotype', 'gene')
         print('query', individual_variants.query)
         for variant in individual_variants:
             id = '%s-%s' % (variant['chr'], variant['pos'])
@@ -521,7 +522,7 @@ def filter_family_analysis(request, query, args, exclude):
     
     inheritance_option = request.GET.get('inheritance_option', '')
     
-    # variants = Variant.objects.filter(*args, **query).exclude(**exclude)
+    # variants = owned_variants(request).filter(*args, **query).exclude(**exclude)
     # implement recessive model
     if inheritance_option == 'recessive' or inheritance_option == 'xlinked recessive':
         #this guarantee that same genotype is not at parents
@@ -656,7 +657,7 @@ def fill_parents_variants(request, variants, children_positions, parents_variant
     # print 'get position from parents'
     # for individual in parents:
         
-    #     individual_variants = Variant.objects.filter(individual__id=parents[individual], pos_index__in=children_positions).values('chr', 'pos', 'mutation_type', 'gene')
+    #     individual_variants = owned_variants(request).filter(individual__id=parents[individual], pos_index__in=children_positions).values('chr', 'pos', 'mutation_type', 'gene')
     #     print 'parent variants'
     #     print individual, parents[individual]
     #     print len(individual_variants) #all right
@@ -697,8 +698,8 @@ def family_analysis(request):
     # print 'query string'
     # print query_string 
     
-    filteranalysis = FilterAnalysis.objects.all().prefetch_related('user')
-    filterconfigs = FilterConfig.objects.all().prefetch_related('user')
+    filteranalysis = owned_queryset(request, FilterAnalysis.objects.all()).prefetch_related('user')
+    filterconfigs = owned_queryset(request, FilterConfig.objects.all()).prefetch_related('user')
     
     #this is for checking if query is empty (to avoid loading at the first time)
     if query_string != [''] and query_string != '' :
@@ -749,10 +750,10 @@ def family_analysis(request):
 
             #last call to the DATABASE Finally!!!!!! 
             print('last call to database')
-            variants = Variant.objects.filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
+            variants = owned_variants(request).filter(*args, **query).exclude(**exclude).prefetch_related('individual').order_by(order_by)
 
             #child_positions
-            children_positions = Variant.objects.filter(*args, **query).exclude(**exclude).values_list('pos_index', flat=True)
+            children_positions = owned_variants(request).filter(*args, **query).exclude(**exclude).values_list('pos_index', flat=True)
             
             # export_to_csv()
             print('fill parents variants')
@@ -854,23 +855,23 @@ def wizard(request):
     return form(context=RequestContext(request), request=request)
 
 
-class FilterAnalysisUpdateView(UpdateView):
+class FilterAnalysisUpdateView(OwnedQuerysetMixin, UpdateView):
     model = FilterAnalysis    
     def get_success_url(self):
         return reverse('filter_analysis')
 
-class FilterAnalysisDeleteView(DeleteView):
+class FilterAnalysisDeleteView(OwnedQuerysetMixin, DeleteView):
     model = FilterAnalysis    
     def get_success_url(self):
         return reverse('filter_analysis')
 
-class FilterConfigUpdateView(UpdateView):
+class FilterConfigUpdateView(OwnedQuerysetMixin, UpdateView):
     model = FilterConfig
     template_name = "filter_analysis/filteranalysis_form.html"    
     def get_success_url(self):
         return reverse('filter_analysis')
 
-class FilterConfigDeleteView(DeleteView):
+class FilterConfigDeleteView(OwnedQuerysetMixin, DeleteView):
     model = FilterConfig    
     template_name = "filter_analysis/filteranalysis_confirm_delete.html"
     def get_success_url(self):

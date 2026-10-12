@@ -26,6 +26,7 @@ from individuals.forms import IndividualForm, ComparisonForm, GroupForm, Browser
 from individuals.models import Individual, Group
 from individuals.tasks import VerifyVCF, AnnotateVariants, PopulateVariants
 from variants.models import Variant
+from mendelmd.access import owned_groups, owned_variants
 
 
 def get_owned_individual(request, individual_id):
@@ -511,22 +512,25 @@ def download_annotated(request, individual_id):
 @login_required
 def create_group(request):
     if request.method == 'POST':
-        form = GroupForm(request.POST, request.FILES)        
+        form = GroupForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             form.save()
             
             return redirect('individuals_list')
     else:
-        form = GroupForm()
+        form = GroupForm(user=request.user)
     return render(request, 'groups/create_group.html', {'form': form})
 
 @login_required
 def view_group(request, group_id):
-    group = get_object_or_404(Group, pk=group_id)
+    group = get_object_or_404(owned_groups(request.user), pk=group_id)
     return render(request, 'groups/view_group.html', {'group': group})
 
 class GroupDeleteView(DeleteView):
     model = Group
+
+    def get_queryset(self):
+        return owned_groups(self.request.user)
 
     def delete(self, request, *args, **kwargs):
         """
@@ -557,9 +561,9 @@ def comparison(request):
             if read_depth != '':
                 query['read_depth__gte'] = float(read_depth)
             if individual_one_id != '' and individual_two_id != '': 
-                variants_ind_one = Variant.objects.filter(individual__id=individual_one_id, **query).values('chr', 'pos', 'genotype')
+                variants_ind_one = owned_variants(request).filter(individual__id=individual_one_id, **query).values('chr', 'pos', 'genotype')
                 
-                variants_ind_two = Variant.objects.filter(individual__id=individual_two_id, **query).values('chr', 'pos', 'genotype')
+                variants_ind_two = owned_variants(request).filter(individual__id=individual_two_id, **query).values('chr', 'pos', 'genotype')
                 print('Got Variants from Both!')
     
                 genotypes_in_common = 0

@@ -1,3 +1,4 @@
+from mendelmd.access import owned_queryset, OwnedQuerysetMixin
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -20,7 +21,7 @@ def index(request):
             if action == "delete":
                 app.delete()
 
-    app_list = App.objects.all()[:5]
+    app_list = owned_queryset(request, App.objects.all())[:5]
     context = {'app_list': app_list}
     return render(request, 'mapps/index.html', context)
 
@@ -34,7 +35,7 @@ class AppCreate(CreateView):
         return super().form_valid(form)
 
 
-class AppUpdate(UpdateView):
+class AppUpdate(OwnedQuerysetMixin, UpdateView):
     model = App
     fields = ['name', 'status', 'category', 'source', 'repository', 'type', 'config', 'main', 'install']
 

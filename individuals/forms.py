@@ -20,6 +20,11 @@ class GroupForm(ModelForm):
         model = Group
         fields = '__all__'
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        from mendelmd.access import owned_individuals
+        self.fields['members'].queryset = owned_individuals(user)
+
 
 class ControlGroupForm(ModelForm):
     class Meta:
@@ -45,8 +50,8 @@ class ComparisonForm(forms.Form):
 
         elif not user.is_authenticated:
             
-            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
-            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=None).order_by('id'), required=False)
+            self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.none(), required=False)
+            self.fields['individual_two'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.none(), required=False)
         else:
             print('user', user)
             self.fields['individual_one'] = forms.ModelMultipleChoiceField(queryset=Individual.objects.filter(user=user).order_by('id'), required=False)
