@@ -1,3 +1,4 @@
+from mendelmd.access import owned_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -135,17 +136,17 @@ def bulk_action(request):
         
         if request.POST['selectionField'] == "Show":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 individual.featured = True
                 individual.save()
         if request.POST['selectionField'] == "Hide":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 individual.featured = False
                 individual.save()
         if request.POST['selectionField'] == "Delete":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
 
                 individual_id = individual.id
                 if individual.user:
@@ -166,19 +167,19 @@ def bulk_action(request):
             #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))
         if request.POST['selectionField'] == "Populate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 PopulateVariants.delay(individual.id)
             
         if request.POST['selectionField'] == "Annotate":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 individual.status = 'new'
                 individual.n_lines = 0
                 individual.save()
                 AnnotateVariants.delay(individual.id)
         if request.POST['selectionField'] == "Find_Medical_Conditions_and_Medicines":
             for individual_id in individuals:
-                individual = get_object_or_404(Individual, pk=individual_id)
+                individual = owned_or_404(request, Individual, pk=individual_id)
                 Find_Medical_Conditions_and_Medicines.delay(individual.id)
     
     return redirect('dashboard')

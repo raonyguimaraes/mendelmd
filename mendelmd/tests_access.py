@@ -16,7 +16,7 @@ class SiteAccessTests(TestCase):
     def test_landing_is_public_and_shows_no_data(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "Create an account")
+        self.assertContains(r, "Sign in")
         self.assertNotContains(r, "sample-orphan")
         self.assertNotContains(r, "Langdon")
 
@@ -80,3 +80,26 @@ class OrphanAndMonitorTests(TestCase):
     def test_dashboard_does_not_list_orphans(self):
         self.client.force_login(self.user)
         self.assertNotContains(self.client.get("/dashboard/"), "sample-orphan")
+
+
+class SignupClosedTests(TestCase):
+    def test_signup_is_closed_by_default(self):
+        from django.contrib.auth import get_user_model
+        before = get_user_model().objects.count()
+        r = self.client.post("/accounts/signup/", {"email": "x@example.com", "username": "spam1",
+                                                   "password1": "Very-strong-pw-123", "password2": "Very-strong-pw-123"})
+        self.assertEqual(get_user_model().objects.count(), before)
+        self.assertNotContains(self.client.get("/"), "Create an account")
+
+
+class BulkActionTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.owner = User.objects.create_user("bo", "bo@example.com", "pw-bo-123")
+        self.other = User.objects.create_user("bx", "bx@example.com", "pw-bx-123")
+        self.ind = Individual.objects.create(name="keep-me", user=self.owner)
+
+    def test_other_user_cannot_bulk_delete(self):
+        self.client.force_login(self.other)
+        self.client.post("/dashboard/bulk_action/", {"individuals": [self.ind.id], "selectionField": "Delete"})
+        self.assertTrue(Individual.objects.filter(pk=self.ind.id).exists())

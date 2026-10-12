@@ -26,8 +26,8 @@
       exomes and genomes in Mendelian disorders. Upload a VCF and narrow it down to a short
       list of candidate variants without writing code.
     </p>
-    <a class="btn btn-primary btn-lg" href="{% url 'account_signup' %}">Create an account</a>
-    <a class="btn btn-default btn-lg" href="{% url 'account_login' %}">Sign in</a>
+    {% if signup_open %}<a class="btn btn-primary btn-lg" href="{% url 'account_signup' %}">Create an account</a>{% endif %}
+    <a class="btn {% if signup_open %}btn-default{% else %}btn-primary{% endif %} btn-lg" href="{% url 'account_login' %}">Sign in</a>
     <a class="btn btn-default btn-lg" href="https://github.com/raonyguimaraes/mendelmd" target="_blank" rel="noopener">Source code</a>
   </div>
 

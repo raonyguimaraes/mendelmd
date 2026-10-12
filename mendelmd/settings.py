@@ -242,6 +242,12 @@ ACCOUNT_SESSION_REMEMBER=True
 SOCIALACCOUNT_AUTO_SIGNUP=True
 SOCIALACCOUNT_QUERY_EMAIL=True
 
+# Sign-ups are closed while per-user access controls are being completed.
+# Set SIGNUP_OPEN=True in the environment to reopen.
+SIGNUP_OPEN = os.environ.get('SIGNUP_OPEN', 'False') == 'True'
+ACCOUNT_ADAPTER = 'mendelmd.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'mendelmd.adapters.SocialAccountAdapter'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # BROKER_CONNECTION_RETRY = True
