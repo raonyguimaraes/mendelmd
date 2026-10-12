@@ -82,7 +82,7 @@ def calculate_summary(step, args, query, exclude, request):
     
     #2)Calculate number of genes
     genes = variants.values_list('gene', flat=True)
-    genes = sorted(list(set(genes)))
+    genes = sorted(g for g in set(genes) if g)
 
     summary[step]['genes'] = len(genes)
 
@@ -181,7 +181,7 @@ def filter_analysis_table(request):
 
     #summary
     summary['genes'] = variants.values_list('gene', flat=True)
-    summary['genes'] = sorted(list(set(summary['genes'])))
+    summary['genes'] = sorted(g for g in set(summary['genes']) if g)
     summary['n_genes'] =  len(summary['genes'])
     summary['has_variants'] = True
     
@@ -777,7 +777,7 @@ def family_analysis(request):
                 return response
             #summary
             summary['genes'] = variants.values_list('gene', flat=True)
-            summary['genes'] = sorted(list(set(summary['genes'])))
+            summary['genes'] = sorted(g for g in set(summary['genes']) if g)
             summary['n_genes'] =  len(summary['genes'])
             summary['has_variants'] = True
             summary['n_variants'] = len(variants)

@@ -159,6 +159,9 @@ class PopulateAndFilterTests(TestCase):
         from genes.models import Gene
         Gene.objects.create(symbol="GENEB")
         self._populate()
+        intergenic = Variant.objects.filter(individual=self.ind).first()
+        intergenic.pk, intergenic.gene, intergenic.pos = None, None, 99999
+        intergenic.save()  # no gene symbol must not break the gene summaries
         self.client.force_login(self.owner)
         response = self.client.get("/filter_analysis/family_analysis/", {"individuals": str(self.ind.id)})
         self.assertEqual(response.status_code, 200)
