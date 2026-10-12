@@ -16,6 +16,8 @@ services:
  web:
    build: .
    command: bash docker-entrypoint.sh
+   environment:
+     SIGNUP_OPEN: "True"
    volumes:
      - .:/code
      - /home/raony/dev/pynnotator:/pynnotator
