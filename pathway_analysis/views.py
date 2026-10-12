@@ -455,8 +455,8 @@ def analysis(request):
                     variant.granthamscore, variant.protein_position])
                 return response
 
-            summary['genes'] = variants.values_list('gene', flat=True)
-            summary['genes'] = sorted(list(set(summary['genes'])))
+            summary['genes'] = variants.order_by().values_list('gene', flat=True).distinct()
+            summary['genes'] = sorted(g for g in set(summary['genes']) if g)
             summary['n_genes'] =  len(summary['genes'])
             summary['has_variants'] = True
             
@@ -482,7 +482,7 @@ def analysis(request):
                 genes_omim = []
                 genes_cgd = []
 
-            summary['n_variants'] = len(variants)
+            summary['n_variants'] = variants.count()
 
             #Do pathway analysis here
             pathways = Pathway.objects.all().order_by('name')

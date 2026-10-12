@@ -180,7 +180,7 @@ def filter_analysis_table(request):
     table_list.append(calculate_summary('final', args, query, exclude, request))
 
     #summary
-    summary['genes'] = variants.values_list('gene', flat=True)
+    summary['genes'] = variants.order_by().values_list('gene', flat=True).distinct()
     summary['genes'] = sorted(g for g in set(summary['genes']) if g)
     summary['n_genes'] =  len(summary['genes'])
     summary['has_variants'] = True
@@ -209,7 +209,7 @@ def filter_analysis_table(request):
     #     genes_omim = []
     #     genes_cgd = []
 
-    summary['n_variants'] = len(variants)
+    summary['n_variants'] = variants.count()
 
     # 'variants':variants, 
     #     'form':form, 
@@ -396,13 +396,13 @@ def index(request):
                 return response
 
             #summary
-            summary['genes'] = variants.values_list('gene', flat=True)
+            summary['genes'] = variants.order_by().values_list('gene', flat=True).distinct()
             # print(summary['genes'])
             summary['genes'] = list(set(summary['genes']))
             summary['genes'] = sorted(list(filter(None.__ne__, summary['genes'])))
             summary['n_genes'] =  len(summary['genes'])
             summary['has_variants'] = True
-            summary['n_variants'] = len(variants)
+            summary['n_variants'] = variants.count()
 
             genes = get_genes(summary)            
 
@@ -776,11 +776,11 @@ def family_analysis(request):
                     writer.writerow([variant.individual, variant.index, variant.pos_index, variant.chr, variant.pos, variant.variant_id, variant.ref, variant.alt, variant.qual, variant.filter, json.loads(variant.info), variant.format, variant.genotype_col, variant.genotype, variant.father, variant.mother, variant.read_depth, variant.gene, variant.mutation_type, variant.vartype, variant.genomes1k_maf, variant.dbsnp_maf, variant.esp_maf, variant.dbsnp_build, variant.sift, variant.sift_pred, variant.polyphen2, variant.polyphen2_pred, variant.condel, variant.condel_pred, variant.dann, variant.cadd, variant.is_at_omim, variant.is_at_hgmd, variant.hgmd_entries, variant.snpeff_effect, variant.snpeff_impact, variant.snpeff_func_class, variant.snpeff_codon_change, variant.snpeff_aa_change, variant.snpeff_gene_name, variant.snpeff_biotype, variant.snpeff_gene_coding, variant.snpeff_transcript_id, variant.snpeff_exon_rank, variant.vep_allele, variant.vep_gene, variant.vep_feature, variant.vep_feature_type, variant.vep_consequence, variant.vep_cdna_position, variant.vep_cds_position, variant.vep_protein_position, variant.vep_amino_acids, variant.vep_codons, variant.vep_existing_variation, variant.vep_distance, variant.vep_strand, variant.vep_symbol, variant.vep_symbol_source, variant.vep_sift, variant.vep_polyphen, variant.vep_condel])
                 return response
             #summary
-            summary['genes'] = variants.values_list('gene', flat=True)
+            summary['genes'] = variants.order_by().values_list('gene', flat=True).distinct()
             summary['genes'] = sorted(g for g in set(summary['genes']) if g)
             summary['n_genes'] =  len(summary['genes'])
             summary['has_variants'] = True
-            summary['n_variants'] = len(variants)
+            summary['n_variants'] = variants.count()
 
             genes = get_genes(summary)            
 
