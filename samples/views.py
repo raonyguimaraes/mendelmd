@@ -154,5 +154,5 @@ def bulk_action(request):
             if str(sample_id) not in allowed:
                 continue
             if action == "import_vcf":
-                import_vcf.apply_async(sample_id)
+                import_vcf.delay(int(sample_id))
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

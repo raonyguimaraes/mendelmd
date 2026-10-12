@@ -147,3 +147,14 @@ class ReviewFixTests(TestCase):
         finally:
             os.chdir(cwd)
             shutil.rmtree(base, ignore_errors=True)
+
+    def test_sample_bulk_import_queues_only_own_samples(self):
+        from unittest import mock
+        from samples.models import Sample
+        mine = Sample.objects.create(name="mine", user=self.alice)
+        theirs = Sample.objects.create(name="theirs", user=self.bob)
+        self.client.force_login(self.alice)
+        with mock.patch("samples.views.import_vcf.delay") as queued:
+            self.client.post("/samples/bulk_action/", {"action": "import_vcf", "samples": [mine.id, theirs.id]},
+                             HTTP_REFERER="/samples/")
+        queued.assert_called_once_with(mine.id)
