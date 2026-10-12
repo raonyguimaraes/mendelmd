@@ -628,9 +628,9 @@ def _individual_storage_path(individual):
 
 
 def _can_view_individual(request, individual):
+    # Staff see everything; everyone else only their own samples.
+    # Samples with no owner are staff-only (they used to be public).
     if request.user.is_staff:
-        return True
-    if individual.user_id is None:
         return True
     return request.user.is_authenticated and individual.user_id == request.user.id
 

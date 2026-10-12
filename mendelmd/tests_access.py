@@ -57,3 +57,26 @@ class SiteAccessTests(TestCase):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
         self.assertNotContains(r, "sample-orphan")
+
+
+class OrphanAndMonitorTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user("u1", "u1@example.com", "pw-u1-123")
+        self.orphan = Individual.objects.create(name="sample-orphan", user=None)
+
+    def test_logged_in_user_cannot_open_orphan_sample(self):
+        self.client.force_login(self.user)
+        r = self.client.get(f"/individuals/view/{self.orphan.id}/")
+        self.assertIn(r.status_code, (403, 404))
+
+    def test_annotation_monitor_requires_login_and_ownership(self):
+        r = self.client.get(f"/individuals/annotation/{self.orphan.id}/")
+        self.assertEqual(r.status_code, 302)
+        self.client.force_login(self.user)
+        r = self.client.get(f"/individuals/annotation/{self.orphan.id}/")
+        self.assertIn(r.status_code, (403, 404))
+
+    def test_dashboard_does_not_list_orphans(self):
+        self.client.force_login(self.user)
+        self.assertNotContains(self.client.get("/dashboard/"), "sample-orphan")

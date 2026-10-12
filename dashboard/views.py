@@ -79,7 +79,7 @@ def index(request):
     elif request.user.is_authenticated:
         individuals = Individual.objects.filter(user=request.user).order_by('-id')
     else:
-        individuals = Individual.objects.filter(user=None).order_by('-id')
+        individuals = Individual.objects.none()
 
     n_individuals = individuals.count()
     n_annotated = individuals.filter(status='annotated').count()
