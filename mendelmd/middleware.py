@@ -12,6 +12,7 @@ from django.http import Http404
 
 PUBLIC_EXACT = {"/"}
 PUBLIC_PREFIXES = (
+    "/demo/",       # read-only page for a genome explicitly flagged is_public
     "/accounts/",   # allauth login, signup, password reset
     "/admin/",      # Django admin enforces its own staff login
     "/stripe/",     # dj-stripe webhooks, verified by signature

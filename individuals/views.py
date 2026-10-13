@@ -244,8 +244,23 @@ def _counts(summary, column):
 
 
 def view(request, individual_id):
-
     individual = get_owned_individual(request, individual_id)
+    return _individual_page(request, individual)
+
+
+def public_demo(request, individual_id):
+    """Read-only genome page for a genome explicitly flagged is_public.
+
+    Reached through /demo/<id>/, which SiteAccessMiddleware lists as public.
+    Deliberately a separate entry point: /individuals/ stays private by
+    default, and only a genome someone marked is_public is reachable here.
+    Nothing on this path mutates, downloads or re-annotates.
+    """
+    individual = get_object_or_404(Individual, pk=individual_id, is_public=True)
+    return _individual_page(request, individual, public_demo=True)
+
+
+def _individual_page(request, individual, public_demo=False):
 
     parquet_columns, parquet_rows, summary = _load_parquet_variants(individual)
 
@@ -276,6 +291,7 @@ def view(request, individual_id):
         'individual': individual,
         'variants': variants,
         'parquet_columns': parquet_columns,
+        'public_demo': public_demo,
     })
 
 @login_required

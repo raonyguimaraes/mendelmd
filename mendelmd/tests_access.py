@@ -48,6 +48,35 @@ class SiteAccessTests(TestCase):
         self.client.force_login(self.owner)
         self.assertEqual(self.client.get(f"/individuals/view/{self.ind.id}/").status_code, 200)
 
+    def test_anonymous_can_read_a_public_demo_genome(self):
+        demo = Individual.objects.create(name="GIAB demo", user=self.owner, is_public=True)
+        r = self.client.get(f"/demo/{demo.id}/")
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "Public demo genome")
+        # The owner-only actions must not be offered to an anonymous reader.
+        self.assertNotContains(r, f"/individuals/download/{demo.id}/")
+        self.assertNotContains(r, f"/individuals/annotate/{demo.id}/")
+
+    def test_demo_path_refuses_a_genome_not_flagged_public(self):
+        for ind in (self.ind, self.orphan):
+            self.assertEqual(self.client.get(f"/demo/{ind.id}/").status_code, 404, ind.name)
+
+    def test_public_flag_does_not_open_the_private_individual_urls(self):
+        demo = Individual.objects.create(name="GIAB demo", user=self.owner, is_public=True)
+        # Flagging a genome public must not make the owner-only endpoints
+        # reachable: anonymous still gets bounced to login.
+        for path in [f"/individuals/view/{demo.id}/", f"/individuals/download/{demo.id}/",
+                     f"/individuals/download_annotated/{demo.id}/", f"/individuals/edit/{demo.id}/",
+                     f"/individuals/annotate/{demo.id}/"]:
+            r = self.client.get(path)
+            self.assertEqual(r.status_code, 302, path)
+            self.assertIn("/accounts/login/", r["Location"], path)
+
+    def test_other_user_cannot_reach_a_public_genome_through_private_urls(self):
+        demo = Individual.objects.create(name="GIAB demo", user=self.owner, is_public=True)
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(f"/individuals/download/{demo.id}/").status_code, 404)
+
     def test_login_and_signup_pages_are_public(self):
         self.assertEqual(self.client.get("/accounts/login/").status_code, 200)
         self.assertEqual(self.client.get("/accounts/signup/").status_code, 200)

@@ -13,6 +13,19 @@
   <h1>{{ individual.name|default:"Individual" }} <small>#{{ individual.id }}</small></h1>
 </section>
 
+{% if public_demo %}
+<section class="content">
+  <div class="callout callout-info" style="margin-bottom:0;">
+    <h4>Public demo genome</h4>
+    <p>
+      This is a read-only demonstration using a public reference genome. It is
+      not a patient sample and it is not a diagnostic report. Counts shown are
+      the variants actually loaded for this sample.
+    </p>
+  </div>
+</section>
+{% endif %}
+
 <section class="content">
 
   <ul class="nav nav-tabs" id="indTabs">
@@ -113,10 +126,14 @@
 
     <!-- Downloads tab -->
     <div class="tab-pane" id="downloads">
+      {% if public_demo %}
+      <p>Downloads are not available on the public demo.</p>
+      {% else %}
       <ul>
         <li><a href="{% url 'individual_download' individual.id %}">Download Original VCF</a></li>
         <li><a href="{% url 'individual_download_annotated' individual.id %}">Download Annotated VCF (zip)</a></li>
       </ul>
+      {% endif %}
     </div>
 
   </div><!-- tab-content -->

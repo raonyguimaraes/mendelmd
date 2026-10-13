@@ -14,6 +14,7 @@ from . import views
 
 import files.views
 import settings.views
+import individuals.views as individual_views
 
 urlpatterns = [
     # Examples:
@@ -34,6 +35,11 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("dashboard/", include("dashboard.urls")),
     path("individuals/", include("individuals.urls")),
+
+    # Public, read-only page for a genome flagged is_public (e.g. the GIAB
+    # demo genome). Mounted outside individuals/ because that prefix is
+    # private by default; see mendelmd.middleware.
+    path("demo/<int:individual_id>/", individual_views.public_demo, name="public_demo"),
     path("diseases/", include("diseases.urls")),
     path("genes/", include("genes.urls")),
     path("variants/", include("variants.urls")),
