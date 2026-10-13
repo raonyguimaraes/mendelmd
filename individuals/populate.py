@@ -160,7 +160,7 @@ def parse_line(line, csq_fields):
     fmt = cols[8].split(":") if len(cols) > 9 else []
     sample = cols[-1].split(":") if len(cols) > 9 else []
     genotype = sample[0].replace("|", "/") if sample else "./."
-    read_depth = 0
+    read_depth = None  # unknown, e.g. array genotypes carry GT only
     if "DP" in fmt and fmt.index("DP") < len(sample) and sample[fmt.index("DP")].isdigit():
         read_depth = int(sample[fmt.index("DP")])
 
@@ -203,7 +203,7 @@ def parse_line(line, csq_fields):
         variant_id=_rsid(variant_id, ann("Existing_variation")),
         ref=ref,
         alt=alt,
-        qual=qual if qual is not None else 0.0,
+        qual=qual,
         filter=filt,
         info=json.dumps(info),
         format=":".join(fmt),

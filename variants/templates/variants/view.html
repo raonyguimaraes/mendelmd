@@ -21,12 +21,12 @@
                     <tr><th>variant_id</th><td>{{ variant.variant_id }}</td></tr>
                     <tr><th>ref</th><td>{{ variant.ref }}</td></tr>
                     <tr><th>alt</th><td>{{ variant.alt }}</td></tr>
-                    <tr><th>qual</th><td>{{ variant.qual }}</td></tr>
+                    <tr><th>qual</th><td>{{ variant.qual|default_if_none:"" }}</td></tr>
                     <tr><th>filter</th><td>{{ variant.filter }}</td></tr>
                     <tr><th>format</th><td>{{ variant.format }}</td></tr>
                     <tr><th>genotype_col</th><td>{{ variant.genotype_col }}</td></tr>
                     <tr><th>genotype</th><td>{{ variant.genotype }}</td></tr>
-                    <tr><th>read_depth</th><td>{{ variant.read_depth }}</td></tr>
+                    <tr><th>read_depth</th><td>{{ variant.read_depth|default_if_none:"" }}</td></tr>
                     <tr><th>gene</th><td>{{ variant.gene }}</td></tr>
                     <tr><th>mutation_type</th><td>{{ variant.mutation_type }}</td></tr>
                     <tr><th>vartype</th><td>{{ variant.vartype }}</td></tr>
