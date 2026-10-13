@@ -5,7 +5,7 @@ from genes.models import *
 from individuals.models import *
 from variants.models import *
 from django.shortcuts import get_object_or_404
-from mendelmd.access import owned_groups, owned_variants
+from mendelmd.access import owned_groups, owned_individuals, owned_variants
 from mendelmd.access import owned_queryset
 from django.db.models import Count
 
@@ -470,12 +470,25 @@ def filter_qual(request, args):
     qual = request.GET.get('qual', '')
     if qual != '':
         qual_option = request.GET.get('qual_option', '')
+        unknown = Q(qual__isnull=True)  # QUAL '.', e.g. array genotypes
         if qual_option == '<':
-            args.append(Q(qual__lte=float(qual)))
+            args.append(Q(qual__lte=float(qual)) | unknown)
         elif qual_option == '>':
-            args.append(Q(qual__gte=float(qual)))
+            args.append(Q(qual__gte=float(qual)) | unknown)
         elif qual_option == '=':
-            args.append(Q(qual=float(qual)))
+            args.append(Q(qual=float(qual)) | unknown)
+
+
+def samples_without_depth(request, individuals_list):
+    """Names of the selected samples that have no read depth at all (array genotypes),
+    so the page can say the depth/QUAL filters did not apply to them."""
+    if not (request.GET.get('read_depth') or request.GET.get('qual')):
+        return []
+    names = []
+    for individual in owned_individuals(request.user).filter(id__in=individuals_list).order_by('name'):
+        if not owned_variants(request).filter(individual=individual, read_depth__isnull=False).exists():
+            names.append(individual.name)
+    return names
 
 
 def filter_filter(request, query):     
@@ -833,12 +846,15 @@ def filter_read_depth(request, args):
     read_depth = request.GET.get('read_depth', '')
     if read_depth != '':
         read_depth_option = request.GET.get('read_depth_option', '')
+        # Variants without a depth (array genotypes) are kept, like missing
+        # frequencies and dbSNP builds in the filters above.
+        unknown = Q(read_depth__isnull=True)
         if read_depth_option == '<':
-            args.append(Q(read_depth__lte=int(read_depth)))
+            args.append(Q(read_depth__lte=int(read_depth)) | unknown)
         elif read_depth_option == '>':
-            args.append(Q(read_depth__gte=int(read_depth)))
+            args.append(Q(read_depth__gte=int(read_depth)) | unknown)
         elif read_depth_option == '=':
-            args.append(Q(read_depth=int(read_depth)))
+            args.append(Q(read_depth=int(read_depth)) | unknown)
 
                         
 def filter_func_class(request, query):

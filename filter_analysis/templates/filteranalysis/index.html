@@ -144,6 +144,11 @@
   </div>
 </div>
 
+{% if summary.no_depth_samples %}
+	<div class="alert alert-info">
+		No read depth or QUAL in {{ summary.no_depth_samples|join:", " }} (genotyping array data), so the read depth and QUAL filters were not applied to {{ summary.no_depth_samples|length|pluralize:"it,them" }}.
+	</div>
+{% endif %}
 {%if summary.n_variants %} <h4>Summary</h4>
 	<p>
 		Number of Variants: {{ summary.n_variants }}

@@ -79,7 +79,7 @@ class ParseLineTests(TestCase):
 
     def test_missing_qual_and_multi_value_frequency(self):
         v = parse_line(LINES[2], self.fields)
-        self.assertEqual(v["qual"], 0.0)
+        self.assertIsNone(v["qual"])
         self.assertEqual(v["esp_maf"], 0.3)
         self.assertEqual(v["dbsnp_maf"], 0.3)
 
@@ -98,6 +98,12 @@ class ParseLineTests(TestCase):
         self.assertFalse(carries_alt_allele(LINES[0].replace("\t0/1:31", "\t./.:31")))
         self.assertTrue(carries_alt_allele(LINES[0].replace("\t0/1:31", "\t./1:31")))
         self.assertTrue(carries_alt_allele("1\t5\t.\tA\tG\t.\tPASS\t.\n"))  # sites-only
+
+    def test_array_genotype_has_no_depth(self):
+        v = parse_line("1\t5\trs1\tA\tG\t.\tPASS\t.\tGT\t1/1\n", self.fields)
+        self.assertIsNone(v["read_depth"])
+        self.assertIsNone(v["qual"])
+        self.assertEqual(v["mutation_type"], "HOM")
 
     def test_helpers(self):
         self.assertEqual(split_score(""), (None, None))
@@ -203,3 +209,31 @@ class PopulateAndFilterTests(TestCase):
             lines = b"".join(r.streaming_content).decode().strip().splitlines()
             self.assertEqual(len(lines), 4)  # header + 3 variants
             self.assertTrue(lines[0].startswith("Individual" + sep))
+
+    def test_depth_and_qual_filters_keep_array_samples(self):
+        """Genotype-only samples (no DP/QUAL) are not wiped out by depth filters."""
+        array = Individual.objects.create(name="array-sample", user=self.owner, status="annotated")
+        folder = os.path.join(self.base, "genomes", "fo", str(array.id), "ann_sample")
+        os.makedirs(folder)
+        gt_only = [l.split("\t") for l in LINES[:2]]
+        rows = ["\t".join(c[:5] + [".", "PASS", c[7], "GT", c[9].split(":")[0] + "\n"]) for c in gt_only]
+        with open(os.path.join(folder, "annotation.final.vcf"), "w") as fh:
+            fh.write(HEADER + "".join(rows))
+        from individuals.tasks import PopulateVariants
+        with override_settings(BASE_DIR=self.base):
+            self.assertEqual(PopulateVariants(array.id), 2)
+        self._populate()
+        both = "%s" % array.id
+        self.assertEqual(self._filter(individuals=both, read_depth_option=">", read_depth="10"), ["GENEA", "GENEB"])
+        self.assertEqual(self._filter(individuals=both, read_depth_option=">", read_depth="10",
+                                      impact=["HIGH", "MODERATE"], mutation_type="homozygous",
+                                      genes_in_common="on", genomes1000="0 - 0.01",
+                                      dbsnp_frequency="0 - 0.01", esp_frequency="0 - 0.01",
+                                      dbsnp_option=">", dbsnp_build="130"), ["GENEB"])
+        self.assertEqual(self._filter(individuals=both, qual_option=">", qual="30"), ["GENEA", "GENEB"])
+        page = self.client.get("/filter_analysis/", {"individuals": both, "read_depth_option": ">", "read_depth": "10"})
+        self.assertContains(page, "No read depth or QUAL in array-sample")
+        # Sequenced samples are still filtered by depth, and get no note.
+        self.assertEqual(self._filter(read_depth_option=">", read_depth="20"), ["GENEA"])
+        page = self.client.get("/filter_analysis/", {"individuals": str(self.ind.id), "read_depth_option": ">", "read_depth": "20"})
+        self.assertNotContains(page, "No read depth or QUAL")

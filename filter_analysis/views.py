@@ -405,6 +405,7 @@ def index(request):
             summary['n_genes'] =  len(summary['genes'])
             summary['has_variants'] = True
             summary['n_variants'] = variants.count()
+            summary['no_depth_samples'] = samples_without_depth(request, individuals_list)
 
             genes = get_genes(summary)            
 

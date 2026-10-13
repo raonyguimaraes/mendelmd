@@ -14,7 +14,7 @@ class Variant(models.Model):
     variant_id = models.TextField(verbose_name="ID", db_index=True)
     ref = models.TextField(null=True, blank=True)
     alt = models.TextField(null=True, blank=True)
-    qual = models.FloatField()
+    qual = models.FloatField(null=True, blank=True)  # NULL when the VCF QUAL is '.'
     filter = models.TextField()
     info = models.TextField(null=True, blank=True)
     format = models.TextField(null=True, blank=True)
@@ -23,7 +23,7 @@ class Variant(models.Model):
     genotype = models.TextField()
 
     #metrics from genotype_info DP field
-    read_depth = models.IntegerField()
+    read_depth = models.IntegerField(null=True, blank=True)  # NULL when the VCF has no DP (e.g. genotyping arrays)
 
     gene = models.TextField(null=True, blank=True, db_index=True)
     mutation_type = models.TextField(null=True)

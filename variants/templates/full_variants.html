@@ -65,13 +65,13 @@
     <td>{{ variant.variant_id }}</td>
     <td>{{ variant.ref|truncatechars:5 }}</td>
     <td>{{ variant.alt|truncatechars:5 }}</td>
-    <td>{{ variant.qual }}</td>
+    <td>{{ variant.qual|default_if_none:"" }}</td>
     <td>{{ variant.filter }}</td>
     <td>-</td>
     <td>{{ variant.format }}</td>
     <td>{{ variant.genotype_col }}</td>
     <td>{{ variant.genotype }}</td>
-    <td>{{ variant.read_depth }}</td>
+    <td>{{ variant.read_depth|default_if_none:"" }}</td>
     <td>{{ variant.gene }}</td>
     <td>{{ variant.mutation_type }}</td>
     <td>{{ variant.vartype }}</td>

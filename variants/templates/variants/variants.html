@@ -142,12 +142,12 @@
 			<a href="https://www.ncbi.nlm.nih.gov/clinvar/?term={{ variant.variant_id }}">Clinvar</a>
 			</td>
 			{% endif %} <td>{{ variant.pos }}</td>
-			<td>{{ variant.qual }}</td>
+			<td>{{ variant.qual|default_if_none:"" }}</td>
 			<td>{{ variant.ref|truncatechars:5 }}</td>
 			<td>{{ variant.alt|truncatechars:5 }}</td>
 			<td>{{ variant.filter }}</td>
 			<td>{{ variant.genotype }}</td>
-			<td>{{ variant.read_depth }}</td>
+			<td>{{ variant.read_depth|default_if_none:"" }}</td>
 
 			<td>{{ variant.snpeff_effect }}</td>
 			<td>{{ variant.snpeff_impact }}</td>
