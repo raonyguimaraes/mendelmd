@@ -202,7 +202,8 @@ if EMAIL_HOST:
     EMAIL_TIMEOUT = 20
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Mendel,MD <noreply@mendelmd.org>')
+# The display name is quoted: an unquoted comma splits it into two addresses.
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '"Mendel,MD" <noreply@mendelmd.org>')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # New accounts must confirm their address once real email is configured.
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory' if EMAIL_HOST else 'optional'

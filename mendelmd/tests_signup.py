@@ -105,3 +105,19 @@ class EmailSettingsTests(TestCase):
         self.assertEqual(self._settings(), ["django.core.mail.backends.console.EmailBackend", "optional"])
         self.assertEqual(self._settings(EMAIL_HOST="smtp.example.com"),
                          ["django.core.mail.backends.smtp.EmailBackend", "mandatory"])
+
+
+class SenderAddressTests(TestCase):
+    """An unquoted comma in the display name made Django reject the sender."""
+
+    def test_default_and_example_senders_parse(self):
+        import os
+        from django.conf import settings
+        from django.core.mail.message import sanitize_address
+        example = os.path.join(settings.BASE_DIR, '.env.email.example')
+        with open(example) as fh:
+            line = next(l for l in fh if l.startswith('DEFAULT_FROM_EMAIL='))
+        from_example = line.split('=', 1)[1].strip().strip("'")
+        for sender in (settings.DEFAULT_FROM_EMAIL, from_example):
+            self.assertIn('"Mendel,MD"', sender)
+            self.assertTrue(sanitize_address(sender, 'utf-8').endswith('>'))
