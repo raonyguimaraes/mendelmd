@@ -2,6 +2,7 @@
 import os
 import shutil
 import tempfile
+from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
@@ -145,6 +146,19 @@ class PopulateAndFilterTests(TestCase):
         from individuals.tasks import PopulateVariants
         with override_settings(BASE_DIR=self.base):
             self.assertEqual(PopulateVariants(other.id), 0)
+
+    def test_failed_insert_does_not_stay_annotated(self):
+        # A sample whose variants never loaded must not keep reading as finished.
+        # PopulateVariants imports populate_variants inside the function body,
+        # so the patch has to land on the module it is imported from.
+        from individuals.tasks import PopulateVariants
+        with override_settings(BASE_DIR=self.base):
+            with mock.patch('individuals.populate.populate_variants',
+                            side_effect=RuntimeError('index row size')):
+                with self.assertRaises(RuntimeError):
+                    PopulateVariants(self.ind.id)
+        self.ind.refresh_from_db()
+        self.assertEqual(self.ind.status, "failed")
 
     def _filter(self, **params):
         self.client.force_login(self.owner)
