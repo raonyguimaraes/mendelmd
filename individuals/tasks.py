@@ -760,7 +760,20 @@ def PopulateVariants(individual_id):
         return 0
 
     start = datetime.datetime.now()
-    count = populate_variants(individual, vcf_path)
+    try:
+        count = populate_variants(individual, vcf_path)
+    except Exception as exc:
+        # Without this the sample kept the "annotated" status from the VEP step,
+        # so a genome whose variants never loaded still read as finished. That
+        # is how HG002 showed as complete on 2026-06-15 while the insert had
+        # aborted on an oversized btree index entry (see variants migration
+        # 0003) with only 38% of its variants in the table.
+        print('Populate failed for individual %s: %s' % (individual.id, exc))
+        individual.status = 'failed'
+        individual.insertion_time = datetime.datetime.now() - start
+        individual.save(update_fields=['status', 'insertion_time'])
+        raise
+
     individual.insertion_time = datetime.datetime.now() - start
     individual.status = 'populated'
     individual.n_lines = count

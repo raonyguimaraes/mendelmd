@@ -5,7 +5,7 @@ class Variant(models.Model):
 
     individual = models.ForeignKey(Individual, on_delete=models.CASCADE)
 
-    index = models.TextField(db_index=True)#ex. 1-2387623-G-T
+    index = models.TextField()#ex. 1-2387623-G-T; indexed as md5(index), see migration 0003
     pos_index = models.TextField(db_index=True)#ex. 1-326754756
 
     #First save all 9 VCF columns
