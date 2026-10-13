@@ -18,6 +18,9 @@ services:
    command: bash docker-entrypoint.sh
    environment:
      SIGNUP_OPEN: "True"
+   env_file:
+     - path: .env.email
+       required: false
    volumes:
      - .:/code
      - /home/raony/dev/pynnotator:/pynnotator
