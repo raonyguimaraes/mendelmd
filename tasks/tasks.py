@@ -27,6 +27,7 @@ from workers.tasks import launch_worker, launch_workers, terminate_workers
 import os
 from subprocess import run, check_output
 import subprocess
+import shlex
 
 from individuals.tasks import parse_vcf
 from individuals.models import Individual
@@ -67,16 +68,17 @@ def get_file(file):
 
         basename = os.path.basename(file.location)
         if not os.path.exists('input/{}'.format(basename)):
-            command = 'wget -P input/ {}'.format(file.location)
-            run(command, shell=True)
+            command = ['wget', '-P', 'input/', file.location]
+            run(command)
 
-            command = 'md5sum input/{}'.format(basename)
-            output = check_output(command, shell=True).decode('utf-8').split()[0]
+            command = ['md5sum', 'input/{}'.format(basename)]
+            output = check_output(command).decode('utf-8').split()[0]
 
             file.md5 = output
             #upload to b2
-            command = 'b2 upload_file rockbio input/{} files/{}/{}'.format(basename, file.id, basename)
-            output = check_output(command, shell=True)
+            command = ['b2', 'upload_file', 'rockbio', 'input/{}'.format(basename),
+                       'files/{}/{}'.format(file.id, basename)]
+            output = check_output(command)
             
             print(output.decode('utf-8'))
             
@@ -91,8 +93,8 @@ def get_file(file):
         if not os.path.exists('input/{}'.format(basename)):
 
             b2_location = file.location.replace('b2://rockbio/','')
-            command = 'b2 download-file-by-name rockbio {} input/{}'.format(b2_location, basename)
-            output = check_output(command, shell=True)
+            command = ['b2', 'download-file-by-name', 'rockbio', b2_location, 'input/{}'.format(basename)]
+            output = check_output(command)
             print(output.decode('utf-8'))
 
 
@@ -104,8 +106,8 @@ def calculate_md5(path):
     md5_dict = {}
     files = os.listdir(path)
     for file in files:
-        command = 'md5sum output/{}'.format(file)
-        output = check_output(command, shell=True).decode('utf-8').split()[0]
+        command = ['md5sum', 'output/{}'.format(file)]
+        output = check_output(command).decode('utf-8').split()[0]
         file_md5 = output
         md5_dict[file_md5] = file
     return(md5_dict)
@@ -117,10 +119,12 @@ def transfer_nf_tower(task):
     # ip_origin = data['server_ip']
     # ip_dest = data['server_destination']
     # print(os.getcwd())
-    command = 'bash scripts/transfer_nf-tower_to_lxd.sh {} {} > work_dir/out.{}.log 2>&1'.format(data['server_ip'], data['server_destination'],
-                                                                                                 task_id)
+    command = ['bash', 'scripts/transfer_nf-tower_to_lxd.sh', str(data['server_ip']), str(data['server_destination'])]
     print(command)
-    os.system(command)
+    # was: > work_dir/out.{task_id}.log 2>&1 (stdout and stderr both to the log file)
+    os.makedirs('work_dir', exist_ok=True)
+    with open('work_dir/out.{}.log'.format(task_id), 'w') as log_fp:
+        run(command, stdout=log_fp, stderr=subprocess.STDOUT)
 def update_dns(task):
     data=task.manifest
     manifest=task.manifest
@@ -177,10 +181,12 @@ def transfer_galaxy(task):
     data=task.manifest
     task_id=task.id
     
-    command = f'python3 scripts/transfer_galaxy_to_lxd.py -i {task_id} \
-    > work_dir/out.{task_id}.log 2>&1 '
+    command = ['python3', 'scripts/transfer_galaxy_to_lxd.py', '-i', str(task_id)]
     print(command)
-    os.system(command)
+    # was: > work_dir/out.{task_id}.log 2>&1
+    os.makedirs('work_dir', exist_ok=True)
+    with open(f'work_dir/out.{task_id}.log', 'w') as log_fp:
+        run(command, stdout=log_fp, stderr=subprocess.STDOUT)
     
 @shared_task()
 def transfer_discourse(task):
@@ -188,10 +194,12 @@ def transfer_discourse(task):
     data=task.manifest
     task_id=task.id
     
-    command = f'python3 scripts/transfer_discourse_to_lxd.py -i {task_id} \
-    > work_dir/out.{task_id}.log 2>&1 '
+    command = ['python3', 'scripts/transfer_discourse_to_lxd.py', '-i', str(task_id)]
     print(command)
-    os.system(command)
+    # was: > work_dir/out.{task_id}.log 2>&1
+    os.makedirs('work_dir', exist_ok=True)
+    with open(f'work_dir/out.{task_id}.log', 'w') as log_fp:
+        run(command, stdout=log_fp, stderr=subprocess.STDOUT)
         
 
 @shared_task()
@@ -242,10 +250,10 @@ def task_run_task(task_id):
         subcommand = 'lxc list --format=json'
         ip=manifest['server_destination']
         # command = 'ls -larth'
-        command = 'ssh -t root@{} {}'.format(
-            ip, subcommand)
+        # shlex.split reproduces the word splitting the local shell did on subcommand
+        command = ['ssh', '-t', 'root@{}'.format(ip)] + shlex.split(subcommand)
         print(command)
-        output = check_output(command, shell=True)
+        output = check_output(command)
         # print(output.decode())
         outjson=json.loads(output.decode())
         #dict_keys(['architecture', 'config', 'devices', 'ephemeral', 'profiles', 'stateful', 'description', 'created_at', 'expanded_config', 'expanded_devices', 'name', 'status', 'status_code', 'last_used_at', 'location', 'type', 'project', 'backups', 'state', 'snapshots'])
@@ -295,25 +303,21 @@ server {{
 }}
 EOF' '''.format(name,new_dns, name,name,lxc_ip)
 
-        command = 'ssh -t root@{} {}'.format(
-            ip, subcommand)
+        command = ['ssh', '-t', 'root@{}'.format(ip)] + shlex.split(subcommand)
         print(command)
-        output = check_output(command, shell=True)
+        output = check_output(command)
 
         subcommand = 'sudo ln -sf /etc/nginx/sites-available/{}.conf /etc/nginx/sites-enabled/{}.conf'.format(name,name)
-        command = 'ssh -t root@{} {}'.format(
-            ip, subcommand)
-        output = check_output(command, shell=True)
+        command = ['ssh', '-t', 'root@{}'.format(ip)] + shlex.split(subcommand)
+        output = check_output(command)
 
         subcommand = 'sudo service nginx restart'
-        command = 'ssh -t root@{} {}'.format(
-            ip, subcommand)
-        output = check_output(command, shell=True)
+        command = ['ssh', '-t', 'root@{}'.format(ip)] + shlex.split(subcommand)
+        output = check_output(command)
 
         subcommand = 'certbot --nginx --non-interactive --agree-tos -m raony@rockbio.io -d "{}"'.format(new_dns)
-        command = 'ssh -t root@{} {}'.format(
-            ip, subcommand)
-        output = check_output(command, shell=True)
+        command = ['ssh', '-t', 'root@{}'.format(ip)] + shlex.split(subcommand)
+        output = check_output(command)
 
     task.status = 'done'
     stop = datetime.datetime.now()
@@ -356,8 +360,8 @@ def run_qc(task_id):
     # worker.save()
 
     task_location = '/projects/tasks/%s/' % (task.id)
-    command = 'mkdir -p %s' % (task_location)
-    run(command, shell=True)
+    command = ['mkdir', '-p', task_location]
+    run(command)
 
     os.chdir(task_location)
 
@@ -411,9 +415,9 @@ def compress_file(task_id):
 
         path = '/'.join(file.location.split('/')[:-1])
 
-        command = 'bgzip {}'.format(file.location)
+        command = ['bgzip', file.location]
 
-        output = check_output(command, shell=True)
+        output = check_output(command)
         
         file.last_output = output.decode('utf-8')
         file.location += '.gz'
@@ -441,8 +445,8 @@ def annotate_vcf(task_id):
     path, vcf = os.path.split(individual.location)
 
     task_location = '/tmp/tasks/%s/' % (task.id)
-    command = 'mkdir -p %s' % (task_location)
-    run(command, shell=True)
+    command = ['mkdir', '-p', task_location]
+    run(command)
     os.chdir(task_location)
 
     # if not os.path.exists('%s/output/gatk'):
@@ -456,29 +460,33 @@ def annotate_vcf(task_id):
     filename = vcf
 
     if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
-        os.system(command)
+        command = ['cp', filename, 'sample.vcf']
+        run(command)
     if filename.endswith('.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
-        os.system(command)
+        # was: gunzip -c -d FILE > sample.vcf (shell opens/truncates sample.vcf, stdout only)
+        command = ['gunzip', '-c', '-d', filename]
+        with open('sample.vcf', 'wb') as out_fp:
+            run(command, stdout=out_fp)
     if filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
-        os.system(command)
+        # was: unzip -p FILE > sample.vcf
+        command = ['unzip', '-p', filename]
+        with open('sample.vcf', 'wb') as out_fp:
+            run(command, stdout=out_fp)
     if filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
-        os.system(command)
+        command = ['unrar', 'e', filename]
+        run(command)
         #now change filename to sample.vcf
-        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
-        os.system(command)
+        command = ['mv', filename.replace('.rar', ''), 'sample.vcf']
+        run(command)
 
-    command = 'pynnotator -i sample.vcf'
-    run(command, shell=True)
+    command = ['pynnotator', '-i', 'sample.vcf']
+    run(command)
 
     final_file = 'ann_sample/annotation.final.vcf'
     if os.path.exists(final_file):
 
-        command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
-        run(command, shell=True)
+        command = ['zip', 'annotation.final.vcf.zip', 'ann_sample/annotation.final.vcf']
+        run(command)
 
         #send results to s3
         print('Send to S3')
@@ -493,8 +501,8 @@ def annotate_vcf(task_id):
         task.save()
 
         task_location = '/tmp/tasks/%s/' % (task.id)
-        command = 'rm -rf %s' % (task_location)
-        run(command, shell=True)
+        command = ['rm', '-rf', task_location]
+        run(command)
         #add insertion task
         insert_vcf.delay(task.id)
     else:
@@ -511,15 +519,15 @@ def insert_vcf(task_id):
     vcf = '/tmp/tasks/%s/annotation.final.vcf.zip' % (task.id)
 
     task_location = '/tmp/tasks/%s/' % (task.id)
-    command = 'mkdir -p %s' % (task_location)
-    run(command, shell=True)
+    command = ['mkdir', '-p', task_location]
+    run(command)
     os.chdir(task_location)
 
     worker = IWorker()
     worker.get(task.id)
     task_location = '/tmp/tasks/%s/' % (task.id)
-    command = 'mkdir -p %s' % (task_location)
-    run(command, shell=True)
+    command = ['mkdir', '-p', task_location]
+    run(command)
     os.chdir(task_location)
 
     #delete variants from individual before inserting
@@ -778,8 +786,8 @@ def insert_vcf(task_id):
 
     print('Individual %s Populated!' % (individual.id))
 
-    command = 'rm -rf %s' % (task_location)
-    run(command, shell=True)
+    command = ['rm', '-rf', task_location]
+    run(command)
 
     # command = 'rm -rf %s/ann_sample' % (filepath)
     # os.system(command)
