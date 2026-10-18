@@ -39,6 +39,7 @@ class CheckFileUsesArgvTest(SimpleTestCase):
 
         with patch('files.tasks.Task.objects.get', return_value=task), \
              patch('files.tasks.File.objects.get', return_value=file_obj), \
+             patch('files.tasks.os.path.getsize', return_value=1234), \
              patch('files.tasks.subprocess.run') as run:
             run.return_value = MagicMock(stdout=stdout, returncode=0)
             check_file(1)
