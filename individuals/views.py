@@ -2,6 +2,7 @@ from django.http import Http404
 import gzip
 import json
 import os
+import shutil
 
 from django.conf import settings
 from django.contrib import messages
@@ -159,7 +160,7 @@ class IndividualDeleteView(DeleteView):
         #     self.object.strs_file.delete()
         # if self.object.cnvs_file:
         #     self.object.cnvs_file.delete()
-        os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, username, individual_id))
+        shutil.rmtree(os.path.join(settings.BASE_DIR, 'genomes', username, str(individual_id)), ignore_errors=True)
 
         self.object.delete()
         
@@ -407,7 +408,7 @@ def list(request):
                 #     individual.strs_file.delete()
                 # if individual.cnvs_file:
                 #     individual.cnvs_file.delete()
-                os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, username, individual_id))
+                shutil.rmtree(os.path.join(settings.BASE_DIR, 'genomes', username, str(individual_id)), ignore_errors=True)
 
                 individual.delete()
             #os.system('rm -rf rockbio14/site_media/media/genomes/%s/%s' % (username, individual_id))

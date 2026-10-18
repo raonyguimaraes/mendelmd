@@ -4,6 +4,7 @@ from celery import shared_task
 from tasks.models import Task
 from .models import File
 from subprocess import check_output
+import subprocess
 import os
 
 @shared_task()
@@ -26,11 +27,16 @@ def check_file(task_id):
      
         file.name = os.path.basename(file.location)
 
-        command = 'curl -sI {} | grep Content-Length'.format(file.location)
-        output = check_output(command, shell=True)
-
-        # print()
-        size = output.split()[1]
+        # file.location is an editable model field; never let it reach a shell.
+        result = subprocess.run(
+            ['curl', '-sI', file.location], capture_output=True, text=True)
+        size = None
+        for header_line in result.stdout.splitlines():
+            if header_line.lower().startswith('content-length:'):
+                size = header_line.split(':', 1)[1].strip()
+                break
+        if size is None:
+            raise ValueError('No Content-Length header returned for %s' % file.location)
 
         file.size = int(size)
         # file.human_size = human_size(file.size)
@@ -54,9 +60,8 @@ def check_file(task_id):
 
         path = '/'.join(file.location.split('/')[:-1])
 
-        command = 'ls -lah {}'.format(path)
-        output = check_output(command, shell=True)
-        file.last_output = output.decode('utf-8')
+        result = subprocess.run(['ls', '-lah', path], capture_output=True)
+        file.last_output = result.stdout.decode('utf-8', errors='replace')
 
         filename, file_extension = os.path.splitext(file.location)
 
@@ -67,9 +72,9 @@ def check_file(task_id):
 
         file.extension = file_extension
 
-        command = 'file {}'.format(file.location)
-        output = check_output(command, shell=True)
-        file.file_type = ' '.join(output.decode('utf-8').strip().split(' ')[1:])
+        result = subprocess.run(['file', file.location], capture_output=True)
+        file.file_type = ' '.join(
+            result.stdout.decode('utf-8', errors='replace').strip().split(' ')[1:])
 
         file.name = os.path.basename(file.location)
         # print(os.stat(file.location))

@@ -17,6 +17,7 @@ from variants.models import *
 # from mysql_bulk_insert import bulk_insert
 from django.shortcuts import render, get_object_or_404
 import os
+import shutil
 import datetime
 from django.core.mail import send_mail
 # from snpedia.models import *
@@ -45,6 +46,6 @@ def test():
         time_difference = datetime.datetime.now()-individual.creation_date
         if time_difference.days > 0:
             #delete individuals
-            os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
+            shutil.rmtree(os.path.join(settings.BASE_DIR, 'genomes', 'public', str(individual.id)), ignore_errors=True)
             individual.delete()
 
