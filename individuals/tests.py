@@ -1,3 +1,5 @@
+from individuals.tasks import _copy_first_vcf_from_tar
+
 from django.test import TestCase
 
 # Create your tests here.
