@@ -9,20 +9,16 @@ class B2():
         print('main')
 
     def install(self):
-        command = '''
-        git clone https://github.com/Backblaze/B2_Command_Line_Tool.git
-        cd B2_Command_Line_Tool
-        python setup.py build
-        python setup.py install
-        b2 authorize-account
-        '''
-        run(command,shell=True)
+        # Newline-separated shell script: each line ran independently (no '&&',
+        # failures did not stop later lines). 'cd' becomes cwd= for the later steps.
+        run(['git', 'clone', 'https://github.com/Backblaze/B2_Command_Line_Tool.git'])
+        run(['python', 'setup.py', 'build'], cwd='B2_Command_Line_Tool')
+        run(['python', 'setup.py', 'install'], cwd='B2_Command_Line_Tool')
+        run(['b2', 'authorize-account'], cwd='B2_Command_Line_Tool')
 
     def upload(self, source, dest):
-        
-        command = 'b2 upload-file rockbio {} {}'.format(source,dest)
-        
-        output = check_output(command, shell=True).decode('utf-8')
+
+        output = check_output(['b2', 'upload-file', 'rockbio', str(source), str(dest)]).decode('utf-8')
         output = output.splitlines()
         print(output)
         results = ''.join(output[2:])
@@ -44,5 +40,4 @@ class B2():
     def download(self, bucket, file):
 
         basename = os.path.basename(file)
-        command = 'b2 download-file-by-name rockbio {} {}'.format(file, file)
-        run(command, shell=True)
+        run(['b2', 'download-file-by-name', 'rockbio', str(file), str(file)])

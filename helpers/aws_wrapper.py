@@ -1,3 +1,4 @@
+import os
 import boto3
 from time import sleep
 from subprocess import run
@@ -102,47 +103,48 @@ class AWS:
 
         print('Install Worker')
 
-        command = "scp -r -o StrictHostKeyChecking=no ~/.aws ubuntu@%s:~/" % (ip)
-        run(command, shell=True)
+        # local '~' is expanded with expanduser (the shell did this before);
+        # the remote '~/' stays literal and is resolved by scp/sshd on the target.
+        opts = ['-o', 'StrictHostKeyChecking=no']
+        target = 'ubuntu@%s' % (ip)
 
-        command = "scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa ubuntu@%s:~/.ssh" % (ip)
-        run(command, shell=True)
+        run(['scp', '-r'] + opts + [os.path.expanduser('~/.aws'), target + ':~/'])
 
-        command = "scp -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub ubuntu@%s:~/.ssh" % (ip)
-        run(command, shell=True)
+        run(['scp'] + opts + [os.path.expanduser('~/.ssh/id_rsa'), target + ':~/.ssh'])
 
-        command = "scp -o StrictHostKeyChecking=no ~/.ssh/config ubuntu@%s:~/.ssh" % (ip)
-        run(command, shell=True)
+        run(['scp'] + opts + [os.path.expanduser('~/.ssh/id_rsa.pub'), target + ':~/.ssh'])
 
-        command = "scp -o StrictHostKeyChecking=no scripts/install_worker_aws.sh ubuntu@%s:~/" % (ip)
-        run(command, shell=True)
+        run(['scp'] + opts + [os.path.expanduser('~/.ssh/config'), target + ':~/.ssh'])
 
-        command = "scp -o StrictHostKeyChecking=no /projects/scripts/local_settings.py ubuntu@%s:~/" % (ip)
-        run(command, shell=True)
+        run(['scp'] + opts + ['scripts/install_worker_aws.sh', target + ':~/'])
 
-        command = """nohup bash install_worker_aws.sh >nohup.out 2>&1 & sleep 2"""
-        command = """ssh -o StrictHostKeyChecking=no -t ubuntu@%s '%s'""" % (ip, command)
+        run(['scp'] + opts + ['/projects/scripts/local_settings.py', target + ':~/'])
 
-        run(command, shell=True)
+        # '>' redirection, '&' backgrounding and ';'-style chaining are intentionally
+        # still interpreted, but by the REMOTE shell: ssh receives this as one argument.
+        remote_command = """nohup bash install_worker_aws.sh >nohup.out 2>&1 & sleep 2"""
+
+        run(['ssh'] + opts + ['-t', target, remote_command])
 
     def update(self,ip):
 
-        command = "scp -o StrictHostKeyChecking=no scripts/update_worker_aws.sh ubuntu@%s:~/" % (ip)
-        run(command, shell=True)
+        opts = ['-o', 'StrictHostKeyChecking=no']
+        target = 'ubuntu@%s' % (ip)
 
-        command = """nohup bash update_worker_aws.sh >nohup.out 2>&1 & sleep 5"""
-        command = """ssh -o StrictHostKeyChecking=no -t ubuntu@%s '%s'""" % (ip, command)
-        
-        print(command)
+        run(['scp'] + opts + ['scripts/update_worker_aws.sh', target + ':~/'])
 
-        run(command, shell=True)
+        # Executed by the remote shell (redirection/background/chaining), see install().
+        remote_command = """nohup bash update_worker_aws.sh >nohup.out 2>&1 & sleep 5"""
+
+        print(['ssh'] + opts + ['-t', target, remote_command])
+
+        run(['ssh'] + opts + ['-t', target, remote_command])
 
     def upload(source,dest):
 
         dest = '{}{}'.format(settings.UPLOAD_FOLDER, dest)
 
-        command = 'aws s3 sync --profile {} {} {}'.format(settings.UPLOAD_FOLDER_PROFILE, source, dest)
-        run(command, shell=True)
+        run(['aws', 's3', 'sync', '--profile', str(settings.UPLOAD_FOLDER_PROFILE), source, dest])
 
 
 
