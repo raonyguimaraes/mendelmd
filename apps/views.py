@@ -4,6 +4,7 @@ from .forms import MoveAppForm
 from .models import WebApp
 from tasks.models import Task
 from subprocess import run,check_output
+import subprocess
 
 from servers.models import Server
 import paramiko
@@ -111,10 +112,11 @@ def connect_and_find_apps(server):
     ip=server.ip
     username=server.username
 
-    command = 'scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/find_apps.py {}@{}:~/'.format(
-        server.username,ip)
-    output = check_output(command, shell=True)
-    print(output.decode())
+    result = subprocess.run(
+        ['scp', '-q', '-o', 'StrictHostKeyChecking=no',
+         '-o', 'UserKnownHostsFile=/dev/null', 'scripts/find_apps.py',
+         '%s@%s:~/'.format(server.username, ip)], capture_output=True)
+    print(result.stdout.decode(errors='replace'))
 
 
     paramikoclient = paramiko.SSHClient()
@@ -126,10 +128,11 @@ def connect_and_find_apps(server):
     # out=ssh_stdout.read().decode().splitlines()
     # print(out)#.replace('\n', ' '))
 
-    command = 'ssh -o LogLevel=ERROR -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} python3 find_apps.py'.format(
-        username,ip)
-    output = check_output(command, shell=True)
-    print(output.decode())
+    result = subprocess.run(
+        ['ssh', '-o', 'LogLevel=ERROR', '-o', 'StrictHostKeyChecking=no',
+         '-o', 'UserKnownHostsFile=/dev/null', '%s@%s' % (username, ip),
+         'python3', 'find_apps.py'], capture_output=True)
+    print(result.stdout.decode(errors='replace'))
 
     # json_out=ssh_stdout.read().decode().splitlines()
     # print('json_out',json_out)

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 
 import os
+import shutil
 # Create your views here.
 from individuals.models import Individual
 from variants.models import Variant
@@ -160,7 +161,7 @@ def bulk_action(request):
                 #     individual.strs_file.delete()
                 # if individual.cnvs_file:
                 #     individual.cnvs_file.delete()
-                os.system('rm -rf %s/genomes/%s/%s' % (settings.BASE_DIR, slugify(username), individual_id))
+                shutil.rmtree(os.path.join(settings.BASE_DIR, 'genomes', slugify(username), str(individual_id)), ignore_errors=True)
 
                 individual.delete()
             messages.add_message(request, messages.INFO, "Individuals deleted with success!")
