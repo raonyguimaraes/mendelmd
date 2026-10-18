@@ -17,6 +17,7 @@ from variants.models import *
 # from mysql_bulk_insert import bulk_insert
 from django.shortcuts import render, get_object_or_404
 import os
+import shutil
 import datetime
 from django.core.mail import send_mail
 # from snpedia.models import *
@@ -47,6 +48,27 @@ def clean_individuals():
             #delete individuals
             os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
             individual.delete()
+
+def _copy_first_vcf_from_tar(tar_path, target_path):
+    """Copy the first regular *.vcf member of a .tar.gz to target_path.
+
+    Uses extractfile() instead of tar.extract(). extract() honours member
+    names and links (../, absolute paths, symlinks) and can therefore write
+    outside the extraction directory; the member name is never used to build
+    a path here, and the destination is fixed by the caller.
+    Returns True when a VCF member was found.
+    """
+    with tarfile.open(tar_path, "r:gz") as tar:
+        for member in tar:
+            if member.isfile() and member.name.endswith('.vcf'):
+                source = tar.extractfile(member)
+                if source is None:
+                    continue
+                with source, open(target_path, 'wb') as target:
+                    shutil.copyfileobj(source, target)
+                return True
+    return False
+
 
 @shared_task()
 def VerifyVCF(individual_id):
@@ -185,17 +207,9 @@ def AnnotateVariants(individual_id):
         os.system(command)
     elif filename.endswith('.tar.gz'):
         print('targz')
-        tar = tarfile.open(filename, "r:gz")
-        for tarinfo in tar:
-            #print(tarinfo.name, "is", tarinfo.size, "bytes in size and is", end="")
-            if tarinfo.name.endswith('.vcf'):
-                if not os.path.exists('outdir'):
-                    os.mkdir('outdir')
-                tar.extract(tarinfo.name, 'outdir')
-                vcfs = os.listdir('outdir')
-                command = 'cp outdir/%s sample.vcf' % (vcfs[0])
-                print(command)
-                os.system(command)
+        # Never let the archive choose the destination path.
+        if _copy_first_vcf_from_tar(filename, 'sample.vcf'):
+            print('Extracted first VCF member from %s' % filename)
     
     if filename.endswith('.vcf.gz'):
         command = 'gunzip -c -d %s > sample.vcf' % (filename)

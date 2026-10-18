@@ -8,11 +8,14 @@ from variants.models import *
 class IndividualForm(ModelForm):
 
     name = forms.CharField(max_length=600, required=False)
-    vcf_file = forms.CharField(max_length=600, required=False)
 
     class Meta:
         model = Individual
-        fields = '__all__'
+        # Only the display name is user-editable. vcf_file is assigned by the
+        # upload view; accepting it from the form let a user post an arbitrary
+        # path, which is both an arbitrary-file-read and (via the annotation
+        # shell commands) a command-injection vector.
+        fields = ['name']
         #'user', 'shared_with_users', , 'is_featured', 'is_public', 'vcf_file', 'vcf_header', 'status', 'n_variants', 'n_lines', 'creation_date', 'modified_date', 'annotation_time', 'insertion_time', 'insertion_time_mongo'
 
 class GroupForm(ModelForm):
