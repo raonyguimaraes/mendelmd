@@ -184,6 +184,7 @@ def transfer_galaxy(task):
     command = ['python3', 'scripts/transfer_galaxy_to_lxd.py', '-i', str(task_id)]
     print(command)
     # was: > work_dir/out.{task_id}.log 2>&1
+    os.makedirs('work_dir', exist_ok=True)
     with open(f'work_dir/out.{task_id}.log', 'w') as log_fp:
         run(command, stdout=log_fp, stderr=subprocess.STDOUT)
     
@@ -196,6 +197,7 @@ def transfer_discourse(task):
     command = ['python3', 'scripts/transfer_discourse_to_lxd.py', '-i', str(task_id)]
     print(command)
     # was: > work_dir/out.{task_id}.log 2>&1
+    os.makedirs('work_dir', exist_ok=True)
     with open(f'work_dir/out.{task_id}.log', 'w') as log_fp:
         run(command, stdout=log_fp, stderr=subprocess.STDOUT)
         
