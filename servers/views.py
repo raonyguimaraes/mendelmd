@@ -276,8 +276,11 @@ def import_from_hetzner(request):
         # status=try_to_connect(ip)
         
         knownhosts = expanduser("~/.ssh/known_hosts")
-        command = f'ssh-keyscan -T 240 {ip} >> {knownhosts}'#.format(ip,knownhosts)
-        check_output(command,shell=True)
+        # argv, no shell: capture the host keys and append them ourselves
+        # instead of relying on shell '>>' redirection.
+        host_keys = check_output(['ssh-keyscan', '-T', '240', ip])
+        with open(knownhosts, 'ab') as known_hosts_file:
+            known_hosts_file.write(host_keys)
         
         key_file=expanduser("~/.ssh/id_rsa.pub")
         status=check_ssh(ip, 'root', None, key_file)
@@ -412,12 +415,16 @@ def add_sshkey_to_servers(request):
             #     print(line.strip())
             # break
 
-            command = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null scripts/add_ssh_key.py root@{}:~/'.format(ip)
-            output = check_output(command, shell=True)
+            output = check_output(
+                ['scp', '-o', 'StrictHostKeyChecking=no',
+                 '-o', 'UserKnownHostsFile=/dev/null',
+                 'scripts/add_ssh_key.py', 'root@{}:~/'.format(ip)])
             print(output.decode())
 
-            command = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@{} python3 add_ssh_key.py'.format(ip)
-            output = check_output(command, shell=True)
+            output = check_output(
+                ['ssh', '-o', 'StrictHostKeyChecking=no',
+                 '-o', 'UserKnownHostsFile=/dev/null',
+                 'root@{}'.format(ip), 'python3', 'add_ssh_key.py'])
             print(output.decode())
             
             print('nwo reboot again after adding the key')
