@@ -17,6 +17,7 @@ from variants.models import *
 # from mysql_bulk_insert import bulk_insert
 from django.shortcuts import render, get_object_or_404
 import os
+import shlex
 import shutil
 import datetime
 from django.core.mail import send_mail
@@ -28,6 +29,7 @@ import zipfile
 import gzip
 import pickle
 import tarfile
+import tempfile
 from collections import OrderedDict
 
 
@@ -48,6 +50,43 @@ def clean_individuals():
             #delete individuals
             os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
             individual.delete()
+
+def _copy_first_vcf_from_zip(zip_path, target_path):
+    """Copy the first regular *.vcf member of a .zip to target_path.
+
+    Streams members through ZipFile.open() rather than unpacking to disk, so
+    a member name is never used to build a filesystem path.
+    Returns True when a VCF member was found.
+    """
+    with zipfile.ZipFile(zip_path) as archive:
+        for info in archive.infolist():
+            if info.is_dir() or not info.filename.endswith('.vcf'):
+                continue
+            with archive.open(info) as source, open(target_path, 'wb') as target:
+                shutil.copyfileobj(source, target)
+            return True
+    return False
+
+
+def _copy_first_vcf_from_rar(rar_path, target_path):
+    """Extract a .rar into a private temp dir and copy the first *.vcf out.
+
+    There is no Python rar binding in the production image, so the binary is
+    still used. The archive is unpacked into its own throwaway directory
+    (never the task working directory) and the path is shell-quoted.
+    Returns True when a VCF member was found.
+    """
+    with tempfile.TemporaryDirectory() as extract_dir:
+        command = 'unrar e -o+ -inul %s %s' % (
+            shlex.quote(os.path.abspath(rar_path)), shlex.quote(extract_dir))
+        if os.system(command) != 0:
+            return False
+        for name in sorted(os.listdir(extract_dir)):
+            if name.endswith('.vcf'):
+                shutil.copyfile(os.path.join(extract_dir, name), target_path)
+                return True
+    return False
+
 
 def _copy_first_vcf_from_tar(tar_path, target_path):
     """Copy the first regular *.vcf member of a .tar.gz to target_path.
@@ -93,20 +132,16 @@ def VerifyVCF(individual_id):
     print('filename', filename)
 
     if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
-        os.system(command)
+        shutil.copyfile(filename, 'sample.vcf')
     elif filename.endswith('.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
-        os.system(command)
+        with gzip.open(filename, 'rb') as source, open('sample.vcf', 'wb') as target:
+            shutil.copyfileobj(source, target)
     elif filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
-        os.system(command)
+        if not _copy_first_vcf_from_zip(filename, 'sample.vcf'):
+            print('No .vcf member found in %s' % filename)
     elif filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
-        os.system(command)
-        #now change filename to sample.vcf
-        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
-        os.system(command)
+        if not _copy_first_vcf_from_rar(filename, 'sample.vcf'):
+            print('No .vcf member found in %s' % filename)
 
 
     vcf_reader = vcf.Reader(open('sample.vcf', 'r'))
@@ -202,27 +237,22 @@ def AnnotateVariants(individual_id):
     #deal with different types of compressed files
     #ex. zip, vcf, gz, rar
     #check if user uploaded a compressed vcf
-    if filename.endswith('.vcf'):
-        command = 'cp %s sample.vcf' % (filename)
-        os.system(command)
-    elif filename.endswith('.tar.gz'):
+    if filename.endswith('.tar.gz'):
         print('targz')
         # Never let the archive choose the destination path.
         if _copy_first_vcf_from_tar(filename, 'sample.vcf'):
             print('Extracted first VCF member from %s' % filename)
-    
-    if filename.endswith('.vcf.gz'):
-        command = 'gunzip -c -d %s > sample.vcf' % (filename)
-        os.system(command)
-    if filename.endswith('.zip'):
-        command = 'unzip -p %s > sample.vcf' % (filename)
-        os.system(command)
-    if filename.endswith('.rar'):
-        command = 'unrar e %s' % (filename)
-        os.system(command)
-        #now change filename to sample.vcf
-        command = 'mv %s sample.vcf' % (filename.replace('.rar', ''))
-        os.system(command)
+    elif filename.endswith('.vcf'):
+        shutil.copyfile(filename, 'sample.vcf')
+    elif filename.endswith('.gz'):
+        with gzip.open(filename, 'rb') as source, open('sample.vcf', 'wb') as target:
+            shutil.copyfileobj(source, target)
+    elif filename.endswith('.zip'):
+        if not _copy_first_vcf_from_zip(filename, 'sample.vcf'):
+            print('No .vcf member found in %s' % filename)
+    elif filename.endswith('.rar'):
+        if not _copy_first_vcf_from_rar(filename, 'sample.vcf'):
+            print('No .vcf member found in %s' % filename)
 
 
     #     individual.vcf_file.name = individual.vcf_file.name.replace('.zip', '.vcf')
