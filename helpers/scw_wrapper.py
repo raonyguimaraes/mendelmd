@@ -1,5 +1,6 @@
 from subprocess import run, check_output
 import subprocess
+import os
 from time import sleep
 
 
@@ -12,41 +13,38 @@ class SCW():
 		print('main')
 
 	def install():
-		command = '''
-		sudo apt-get update
-		sudo apt-get -y upgrade
-		wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz
-		sudo tar -xvf go1.9.2.linux-amd64.tar.gz
-		sudo mv go /usr/local
-		export GOROOT=/usr/local/go
-
-		export GOPATH=$HOME/go
-
-		export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-		'''
+		# Former newline-separated shell script: each line ran in sequence and a
+		# failure did not stop later lines (no '&&'), so these are plain sequential runs.
+		# The trailing 'export GOROOT/GOPATH/PATH' lines only affected that
+		# throwaway shell (nothing ran after them), so they have no equivalent and are dropped.
+		run(['sudo', 'apt-get', 'update'])
+		run(['sudo', 'apt-get', '-y', 'upgrade'])
+		run(['wget', 'https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz'])
+		run(['sudo', 'tar', '-xvf', 'go1.9.2.linux-amd64.tar.gz'])
+		run(['sudo', 'mv', 'go', '/usr/local'])
 		# command = 'GO15VENDOREXPERIMENT=1 go get -u github.com/scaleway/scaleway-cli/cmd/scw'
-		run(command,shell=True)
 
 	def launch(self, worker_type=None):
 		# Create a new server but do not start it.
 		result = {}
 		# Options:
 
-		command = 'scw --region=ams1 create --name="rockbio_worker" ubuntu-xenial'#--volume=150GB --commercial-type=X64-15GB 
-		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+		# shell quote removal on --name="rockbio_worker" is now just the plain string
+		command = ['scw', '--region=ams1', 'create', '--name=rockbio_worker', 'ubuntu-xenial']#--volume=150GB --commercial-type=X64-15GB
+		output = run(command, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
 
 		short_id = output.split('-')[0]
 		
 		result['id'] = short_id
 
-		command = 'scw --region=ams1 start {}'.format(short_id)
-		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+		command = ['scw', '--region=ams1', 'start', short_id]
+		output = run(command, stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
 		flag = True
 		while(flag):
-			command = 'scw --region=ams1 ps -a'
-			output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()			
+			command = ['scw', '--region=ams1', 'ps', '-a']
+			output = run(command, stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()			
 			for line in output:
 				# print(line)
 				row = line.split()
@@ -60,16 +58,17 @@ class SCW():
 						print('Waiting {} to start'.format(short_id))
 						sleep(30)
 
-		command = 'ssh-keygen -f ~/.ssh/known_hosts -R {}'.format(ip)
+		# '~' was expanded by the shell; expanduser replaces it
+		command = ['ssh-keygen', '-f', os.path.expanduser('~/.ssh/known_hosts'), '-R', str(ip)]
 		print(command)
 
-		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
+		output = run(command, stdout=subprocess.PIPE).stdout.decode('utf-8')
 		print(output)
 		return(result)
 
 	def terminate(self, id):
-		command = 'scw --region=ams1 stop -t {}'.format(id)
-		output = run(command,shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
+		command = ['scw', '--region=ams1', 'stop', '-t', str(id)]
+		output = run(command, stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
 
 
 		# scw ps
