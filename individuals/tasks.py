@@ -17,8 +17,12 @@ from variants.models import *
 # from mysql_bulk_insert import bulk_insert
 from django.shortcuts import render, get_object_or_404
 import os
+import glob
+import hashlib
+import re
 import shlex
 import shutil
+import subprocess
 import datetime
 from django.core.mail import send_mail
 # from snpedia.models import *
@@ -48,8 +52,26 @@ def clean_individuals():
         time_difference = datetime.datetime.now()-individual.creation_date
         if time_difference.days > 0:
             #delete individuals
-            os.system('rm -rf %s/genomes/public/%s' % (settings.BASE_DIR, individual_id))
+            shutil.rmtree(os.path.join(settings.BASE_DIR, 'genomes', 'public', str(individual.id)), ignore_errors=True)
             individual.delete()
+
+def _safe_stem(sample_name):
+    """File-name-safe version of a VCF sample name.
+
+    Sample names come from the uploaded VCF header and are attacker
+    controlled: they may contain '/', '..', quotes or shell metacharacters.
+    Everything outside [A-Za-z0-9._-] is replaced, and names that had to be
+    altered get a short hash suffix so two distinct samples cannot collide
+    onto the same output file.
+    """
+    raw = str(sample_name)
+    stem = re.sub(r'[^A-Za-z0-9._-]', '_', raw).lstrip('.')
+    if not stem:
+        stem = 'sample'
+    if stem != raw:
+        stem = '%s_%s' % (stem, hashlib.sha1(raw.encode('utf-8')).hexdigest()[:8])
+    return stem
+
 
 def _copy_first_vcf_from_zip(zip_path, target_path):
     """Copy the first regular *.vcf member of a .zip to target_path.
@@ -77,9 +99,10 @@ def _copy_first_vcf_from_rar(rar_path, target_path):
     Returns True when a VCF member was found.
     """
     with tempfile.TemporaryDirectory() as extract_dir:
-        command = 'unrar e -o+ -inul %s %s' % (
-            shlex.quote(os.path.abspath(rar_path)), shlex.quote(extract_dir))
-        if os.system(command) != 0:
+        result = subprocess.run(
+            ['unrar', 'e', '-o+', '-inul', os.path.abspath(rar_path), extract_dir],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if result.returncode != 0:
             return False
         for name in sorted(os.listdir(extract_dir)):
             if name.endswith('.vcf'):
@@ -152,14 +175,18 @@ def VerifyVCF(individual_id):
         #extract individuals and create new users
         for sample in vcf_reader.samples:
             print(sample)
-            command = "bcftools view -c 1 -s %s sample.vcf  > %s.vcf" % (sample, sample)
-            print(command)
-            os.system(command)
+            # sample comes from the uploaded VCF header and is attacker
+            # controlled. Pass it as an argv element (never through a shell)
+            # and let Python handle the redirect.
+            with open('%s.vcf' % _safe_stem(sample), 'wb') as split_output:
+                subprocess.run(
+                    ['bcftools', 'view', '-c', '1', '-s', sample, 'sample.vcf'],
+                    stdout=split_output, stderr=subprocess.DEVNULL, check=False)
         #now rename original sample
         first_sample = vcf_reader.samples[0]
         original_name = individual.name
         individual.name += ' %s' % (first_sample)
-        individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, first_sample)
+        individual.vcf_file = "%s/%s/%s.vcf" % (new_path, individual.id, _safe_stem(first_sample))
         individual.save()
         AnnotateVariants.delay(individual.id)
         #create other samples
@@ -171,9 +198,8 @@ def VerifyVCF(individual_id):
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
                 os.chmod(output_folder, 0o777)
-            command = 'mv %s.vcf %s' % (sample, output_folder)
-            os.system(command)
-            new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, sample)
+            shutil.move('%s.vcf' % _safe_stem(sample), output_folder)
+            new_individual.vcf_file = '%s/%s/%s.vcf' % (new_path, new_individual.id, _safe_stem(sample))
             new_individual.save()
             AnnotateVariants.delay(new_individual.id)
     else:
@@ -229,8 +255,14 @@ def AnnotateVariants(individual_id):
     # print(os.getcwd())
 
     #delete annotation folder before start annotating
-    command = 'rm -rf ann_*'
-    os.system(command)
+    for stale in glob.glob('ann_*'):
+        if os.path.isdir(stale):
+            shutil.rmtree(stale, ignore_errors=True)
+        else:
+            try:
+                os.remove(stale)
+            except OSError:
+                pass
 
     filename = str(individual.vcf_file.name.split('/')[-1])
     print(filename)
@@ -294,22 +326,20 @@ Now we need to insert this data to the database.
         #send_mail('[Mendel,MD] Annotation Completed!', message, 'rockbio@rockbio.io',
         #          ['raonyguimaraes@gmail.com', email], fail_silently=False)
         #delete ann folder
-        command = 'rm -rf ann_*'
-        # os.system(command)
         #delete sample
-        command = 'rm -rf sample.vcf'
-        os.system(command)
+        if os.path.exists('sample.vcf'):
+            os.remove('sample.vcf')
 
         #zip, and delete annotation folder
-
-        command = 'zip annotation.final.vcf.zip ann_sample/annotation.final.vcf'
-        os.system(command)
+        final_vcf = os.path.join('ann_sample', 'annotation.final.vcf')
+        if os.path.exists(final_vcf):
+            with zipfile.ZipFile('annotation.final.vcf.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+                archive.write(final_vcf, 'ann_sample/annotation.final.vcf')
 
         individual.save()
 
         if individual.vcf_file.name.endswith(".vcf"):
-            command = 'bgzip %s' % (filename)
-            os.system(command)
+            subprocess.run(['bgzip', filename], stderr=subprocess.DEVNULL, check=False)
             individual.vcf_file.name = '%s.gz' % (individual.vcf_file.name)
             individual.save(update_fields=['vcf_file'])
 
@@ -644,7 +674,7 @@ def PopulateVariants(individual_id):
     filename = os.path.basename(str(individual.vcf_file.name))
 
     print('Populating %s %s' % (individual.id, filename))
-    os.system('echo "Populating Individual %s"' % (individual.name))
+    print('Populating Individual %s' % individual.name)
     # print filepath
     # print filename
     #print basename
@@ -905,9 +935,8 @@ def PopulateVariants(individual_id):
     #          ['raonyguimaraes@gmail.com'], fail_silently=False)
     print('Individual %s Populated!' % (individual.id))
 
-    os.system('echo "Individual %s Populated! %s"' % (individual.name, individual.insertion_time))
+    print('Individual %s Populated! %s' % (individual.name, individual.insertion_time))
 
-    command = 'rm -rf %s/ann_sample' % (filepath)
-    os.system(command)
+    shutil.rmtree(os.path.join(filepath, 'ann_sample'), ignore_errors=True)
 
     # Find_Medical_Conditions_and_Medicines.delay(individual.id)
