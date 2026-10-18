@@ -7,6 +7,20 @@ from subprocess import check_output
 import subprocess
 import os
 
+def _parse_content_length(headers_text):
+    """Return the Content-Length value from HTTP headers, or None.
+
+    Pulled out of check_file() so the header parsing can be tested without
+    a database, a network call or a shell.
+    """
+    if not headers_text:
+        return None
+    for header_line in headers_text.splitlines():
+        if header_line.lower().startswith('content-length:'):
+            return header_line.split(':', 1)[1].strip()
+    return None
+
+
 @shared_task()
 def check_file(task_id):
     task = Task.objects.get(pk=task_id)
@@ -30,11 +44,7 @@ def check_file(task_id):
         # file.location is an editable model field; never let it reach a shell.
         result = subprocess.run(
             ['curl', '-sI', file.location], capture_output=True, text=True)
-        size = None
-        for header_line in result.stdout.splitlines():
-            if header_line.lower().startswith('content-length:'):
-                size = header_line.split(':', 1)[1].strip()
-                break
+        size = _parse_content_length(result.stdout)
         if size is None:
             raise ValueError('No Content-Length header returned for %s' % file.location)
 
