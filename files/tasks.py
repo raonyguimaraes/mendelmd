@@ -70,8 +70,8 @@ def check_file(task_id):
 
         path = '/'.join(file.location.split('/')[:-1])
 
-        result = subprocess.run(['ls', '-lah', path], capture_output=True)
-        file.last_output = result.stdout.decode('utf-8', errors='replace')
+        result = subprocess.run(['ls', '-lah', path], capture_output=True, text=True)
+        file.last_output = result.stdout
 
         filename, file_extension = os.path.splitext(file.location)
 
@@ -82,9 +82,9 @@ def check_file(task_id):
 
         file.extension = file_extension
 
-        result = subprocess.run(['file', file.location], capture_output=True)
+        result = subprocess.run(['file', file.location], capture_output=True, text=True)
         file.file_type = ' '.join(
-            result.stdout.decode('utf-8', errors='replace').strip().split(' ')[1:])
+            result.stdout.strip().split(' ')[1:])
 
         file.name = os.path.basename(file.location)
         # print(os.stat(file.location))
